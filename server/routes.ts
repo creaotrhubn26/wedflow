@@ -1,7 +1,7 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "node:http";
 import { db } from "./db";
-import { vendors, vendorCategories, vendorRegistrationSchema, deliveries, deliveryItems, createDeliverySchema } from "@shared/schema";
+import { vendors, vendorCategories, vendorRegistrationSchema, deliveries, deliveryItems, createDeliverySchema, inspirationCategories, inspirations, inspirationMedia, createInspirationSchema } from "@shared/schema";
 import { eq, and } from "drizzle-orm";
 import crypto from "crypto";
 
@@ -50,6 +50,19 @@ const DEFAULT_CATEGORIES = [
   { name: "Planlegger", icon: "clipboard", description: "Bryllupsplanleggere" },
   { name: "Hår & Makeup", icon: "scissors", description: "Styling og sminke" },
   { name: "Transport", icon: "car", description: "Bryllupstransport" },
+];
+
+const DEFAULT_INSPIRATION_CATEGORIES = [
+  { name: "Brudekjoler", icon: "heart", sortOrder: 1 },
+  { name: "Blomsterarrangementer", icon: "flower", sortOrder: 2 },
+  { name: "Dekorasjon", icon: "star", sortOrder: 3 },
+  { name: "Bryllupskaker", icon: "cake", sortOrder: 4 },
+  { name: "Lokaler", icon: "home", sortOrder: 5 },
+  { name: "Borddekning", icon: "utensils", sortOrder: 6 },
+  { name: "Brudebukett", icon: "gift", sortOrder: 7 },
+  { name: "Hårfrisyrer", icon: "scissors", sortOrder: 8 },
+  { name: "Bryllupsbilder", icon: "camera", sortOrder: 9 },
+  { name: "Invitasjoner", icon: "mail", sortOrder: 10 },
 ];
 
 async function fetchYrWeather(lat: number, lon: number): Promise<any> {
@@ -139,7 +152,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   }
 
+  async function seedInspirationCategories() {
+    const existing = await db.select().from(inspirationCategories);
+    if (existing.length === 0) {
+      await db.insert(inspirationCategories).values(DEFAULT_INSPIRATION_CATEGORIES);
+      console.log("Seeded inspiration categories");
+    }
+  }
+
   seedCategories().catch(console.error);
+  seedInspirationCategories().catch(console.error);
 
   app.get("/api/vendor-categories", async (_req: Request, res: Response) => {
     try {
@@ -467,6 +489,180 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching delivery:", error);
       res.status(500).json({ error: "Kunne ikke hente leveranse" });
+    }
+  });
+
+  app.get("/api/inspiration-categories", async (_req: Request, res: Response) => {
+    try {
+      const categories = await db.select().from(inspirationCategories);
+      res.json(categories);
+    } catch (error) {
+      console.error("Error fetching inspiration categories:", error);
+      res.status(500).json({ error: "Kunne ikke hente kategorier" });
+    }
+  });
+
+  app.get("/api/inspirations", async (req: Request, res: Response) => {
+    try {
+      const categoryId = req.query.categoryId as string | undefined;
+
+      const approvedInspirations = await db.select().from(inspirations).where(eq(inspirations.status, "approved"));
+
+      const filtered = categoryId 
+        ? approvedInspirations.filter(i => i.categoryId === categoryId)
+        : approvedInspirations;
+
+      const inspirationsWithDetails = await Promise.all(
+        filtered.map(async (insp) => {
+          const media = await db.select().from(inspirationMedia).where(eq(inspirationMedia.inspirationId, insp.id));
+          const [vendor] = await db.select({
+            id: vendors.id,
+            businessName: vendors.businessName,
+          }).from(vendors).where(eq(vendors.id, insp.vendorId));
+          const [category] = await db.select().from(inspirationCategories).where(eq(inspirationCategories.id, insp.categoryId || ""));
+          return { ...insp, media, vendor, category };
+        })
+      );
+
+      res.json(inspirationsWithDetails);
+    } catch (error) {
+      console.error("Error fetching inspirations:", error);
+      res.status(500).json({ error: "Kunne ikke hente inspirasjoner" });
+    }
+  });
+
+  app.get("/api/vendor/inspirations", async (req: Request, res: Response) => {
+    const vendorId = await checkVendorAuth(req, res);
+    if (!vendorId) return;
+
+    try {
+      const vendorInspirations = await db.select().from(inspirations).where(eq(inspirations.vendorId, vendorId));
+
+      const inspirationsWithMedia = await Promise.all(
+        vendorInspirations.map(async (insp) => {
+          const media = await db.select().from(inspirationMedia).where(eq(inspirationMedia.inspirationId, insp.id));
+          const [category] = await db.select().from(inspirationCategories).where(eq(inspirationCategories.id, insp.categoryId || ""));
+          return { ...insp, media, category };
+        })
+      );
+
+      res.json(inspirationsWithMedia);
+    } catch (error) {
+      console.error("Error fetching vendor inspirations:", error);
+      res.status(500).json({ error: "Kunne ikke hente inspirasjoner" });
+    }
+  });
+
+  app.post("/api/vendor/inspirations", async (req: Request, res: Response) => {
+    const vendorId = await checkVendorAuth(req, res);
+    if (!vendorId) return;
+
+    try {
+      const validation = createInspirationSchema.safeParse(req.body);
+      if (!validation.success) {
+        return res.status(400).json({
+          error: "Ugyldig data",
+          details: validation.error.errors,
+        });
+      }
+
+      const { media, ...inspirationData } = validation.data;
+
+      const [newInspiration] = await db.insert(inspirations).values({
+        vendorId,
+        categoryId: inspirationData.categoryId,
+        title: inspirationData.title,
+        description: inspirationData.description || null,
+        coverImageUrl: inspirationData.coverImageUrl || (media.length > 0 ? media[0].url : null),
+      }).returning();
+
+      await Promise.all(
+        media.map((item, index) =>
+          db.insert(inspirationMedia).values({
+            inspirationId: newInspiration.id,
+            type: item.type,
+            url: item.url,
+            caption: item.caption || null,
+            sortOrder: index,
+          })
+        )
+      );
+
+      const createdMedia = await db.select().from(inspirationMedia).where(eq(inspirationMedia.inspirationId, newInspiration.id));
+
+      res.status(201).json({
+        inspiration: { ...newInspiration, media: createdMedia },
+        message: "Inspirasjon opprettet! Den vil bli synlig etter godkjenning.",
+      });
+    } catch (error) {
+      console.error("Error creating inspiration:", error);
+      res.status(500).json({ error: "Kunne ikke opprette inspirasjon" });
+    }
+  });
+
+  app.get("/api/admin/inspirations", async (req: Request, res: Response) => {
+    if (!checkAdminAuth(req, res)) return;
+
+    try {
+      const status = req.query.status as string || "pending";
+
+      const inspirationList = await db.select().from(inspirations).where(eq(inspirations.status, status));
+
+      const inspirationsWithDetails = await Promise.all(
+        inspirationList.map(async (insp) => {
+          const media = await db.select().from(inspirationMedia).where(eq(inspirationMedia.inspirationId, insp.id));
+          const [vendor] = await db.select({
+            id: vendors.id,
+            businessName: vendors.businessName,
+          }).from(vendors).where(eq(vendors.id, insp.vendorId));
+          const [category] = await db.select().from(inspirationCategories).where(eq(inspirationCategories.id, insp.categoryId || ""));
+          return { ...insp, media, vendor, category };
+        })
+      );
+
+      res.json(inspirationsWithDetails);
+    } catch (error) {
+      console.error("Error fetching admin inspirations:", error);
+      res.status(500).json({ error: "Kunne ikke hente inspirasjoner" });
+    }
+  });
+
+  app.post("/api/admin/inspirations/:id/approve", async (req: Request, res: Response) => {
+    if (!checkAdminAuth(req, res)) return;
+
+    try {
+      const { id } = req.params;
+
+      await db.update(inspirations)
+        .set({ status: "approved", updatedAt: new Date() })
+        .where(eq(inspirations.id, id));
+
+      res.json({ message: "Inspirasjon godkjent" });
+    } catch (error) {
+      console.error("Error approving inspiration:", error);
+      res.status(500).json({ error: "Kunne ikke godkjenne inspirasjon" });
+    }
+  });
+
+  app.post("/api/admin/inspirations/:id/reject", async (req: Request, res: Response) => {
+    if (!checkAdminAuth(req, res)) return;
+
+    try {
+      const { id } = req.params;
+      const { reason } = req.body;
+
+      await db.update(inspirations)
+        .set({
+          status: "rejected",
+          rejectionReason: reason || null,
+          updatedAt: new Date(),
+        })
+        .where(eq(inspirations.id, id));
+
+      res.json({ message: "Inspirasjon avvist" });
+    } catch (error) {
+      console.error("Error rejecting inspiration:", error);
+      res.status(500).json({ error: "Kunne ikke avvise inspirasjon" });
     }
   });
 

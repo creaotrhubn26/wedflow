@@ -141,3 +141,76 @@ export type Delivery = typeof deliveries.$inferSelect;
 export type InsertDeliveryItem = z.infer<typeof insertDeliveryItemSchema>;
 export type DeliveryItem = typeof deliveryItems.$inferSelect;
 export type CreateDelivery = z.infer<typeof createDeliverySchema>;
+
+export const inspirationCategories = pgTable("inspiration_categories", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  icon: text("icon").notNull(),
+  sortOrder: integer("sort_order").default(0),
+});
+
+export const inspirations = pgTable("inspirations", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  vendorId: varchar("vendor_id").notNull().references(() => vendors.id),
+  categoryId: varchar("category_id").references(() => inspirationCategories.id),
+  title: text("title").notNull(),
+  description: text("description"),
+  coverImageUrl: text("cover_image_url"),
+  status: text("status").notNull().default("pending"),
+  rejectionReason: text("rejection_reason"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const inspirationMedia = pgTable("inspiration_media", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  inspirationId: varchar("inspiration_id").notNull().references(() => inspirations.id),
+  type: text("type").notNull(),
+  url: text("url").notNull(),
+  caption: text("caption"),
+  sortOrder: integer("sort_order").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertInspirationCategorySchema = createInsertSchema(inspirationCategories).omit({
+  id: true,
+});
+
+export const insertInspirationSchema = createInsertSchema(inspirations).omit({
+  id: true,
+  status: true,
+  rejectionReason: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertInspirationMediaSchema = createInsertSchema(inspirationMedia).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const createInspirationSchema = z.object({
+  categoryId: z.string().min(1, "Velg en kategori"),
+  title: z.string().min(2, "Tittel må være minst 2 tegn"),
+  description: z.string().optional(),
+  coverImageUrl: z.string().url("Ugyldig URL").optional().or(z.literal("")),
+  media: z.array(z.object({
+    type: z.enum(["image", "video"]),
+    url: z.string().url("Ugyldig URL"),
+    caption: z.string().optional(),
+  })).min(1, "Legg til minst ett bilde eller video"),
+});
+
+export type InsertInspirationCategory = z.infer<typeof insertInspirationCategorySchema>;
+export type InspirationCategory = typeof inspirationCategories.$inferSelect;
+export type InsertInspiration = z.infer<typeof insertInspirationSchema>;
+export type Inspiration = typeof inspirations.$inferSelect;
+export type InsertInspirationMedia = z.infer<typeof insertInspirationMediaSchema>;
+export type InspirationMedia = typeof inspirationMedia.$inferSelect;
+export type CreateInspiration = z.infer<typeof createInspirationSchema>;
