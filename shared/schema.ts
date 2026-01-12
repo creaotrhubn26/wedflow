@@ -514,3 +514,22 @@ export type VendorOfferItem = typeof vendorOfferItems.$inferSelect;
 export type InsertVendorOffer = z.infer<typeof insertVendorOfferSchema>;
 export type InsertVendorOfferItem = z.infer<typeof insertVendorOfferItemSchema>;
 export type CreateOffer = z.infer<typeof createOfferSchema>;
+
+// App Settings for admin customization
+export const appSettings = pgTable("app_settings", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  key: text("key").notNull().unique(),
+  value: text("value").notNull(),
+  category: text("category").notNull().default("general"),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertAppSettingSchema = createInsertSchema(appSettings).omit({
+  id: true,
+  updatedAt: true,
+});
+
+export type AppSetting = typeof appSettings.$inferSelect;
+export type InsertAppSetting = z.infer<typeof insertAppSettingSchema>;

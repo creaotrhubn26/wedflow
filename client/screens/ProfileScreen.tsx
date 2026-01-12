@@ -296,9 +296,9 @@ export default function ProfileScreen() {
           />
           <MenuItem
             icon="shield"
-            label="Admin: Leverandører"
+            label="Admin"
             theme={theme}
-            onPress={() => navigation.navigate("AdminVendors")}
+            onPress={() => navigation.navigate("AdminDashboard")}
           />
         </View>
       </Animated.View>

@@ -18,6 +18,7 @@ import { Feather } from "@expo/vector-icons";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { useRoute } from "@react-navigation/native";
 
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
@@ -47,9 +48,11 @@ export default function AdminVendorsScreen() {
   const headerHeight = useHeaderHeight();
   const { theme } = useTheme();
   const queryClient = useQueryClient();
+  const route = useRoute();
+  const passedAdminKey = (route.params as any)?.adminKey || "";
 
   const [adminKey, setAdminKey] = useState("");
-  const [storedKey, setStoredKey] = useState("");
+  const [storedKey, setStoredKey] = useState(passedAdminKey);
   const [loginError, setLoginError] = useState("");
   const [selectedTab, setSelectedTab] = useState<"pending" | "approved" | "rejected">("pending");
   const [editingVendor, setEditingVendor] = useState<PendingVendor | null>(null);

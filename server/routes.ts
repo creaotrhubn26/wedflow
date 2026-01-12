@@ -1,8 +1,8 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "node:http";
 import { db } from "./db";
-import { vendors, vendorCategories, vendorRegistrationSchema, deliveries, deliveryItems, createDeliverySchema, inspirationCategories, inspirations, inspirationMedia, createInspirationSchema, vendorFeatures, vendorInspirationCategories, inspirationInquiries, createInquirySchema, coupleProfiles, coupleSessions, conversations, messages, coupleLoginSchema, sendMessageSchema, reminders, createReminderSchema, vendorProducts, createVendorProductSchema, vendorOffers, vendorOfferItems, createOfferSchema } from "@shared/schema";
-import { eq, and, desc } from "drizzle-orm";
+import { vendors, vendorCategories, vendorRegistrationSchema, deliveries, deliveryItems, createDeliverySchema, inspirationCategories, inspirations, inspirationMedia, createInspirationSchema, vendorFeatures, vendorInspirationCategories, inspirationInquiries, createInquirySchema, coupleProfiles, coupleSessions, conversations, messages, coupleLoginSchema, sendMessageSchema, reminders, createReminderSchema, vendorProducts, createVendorProductSchema, vendorOffers, vendorOfferItems, createOfferSchema, appSettings } from "@shared/schema";
+import { eq, and, desc, sql } from "drizzle-orm";
 import crypto from "crypto";
 
 function generateAccessCode(): string {
@@ -2013,6 +2013,270 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching vendor contacts:", error);
       res.status(500).json({ error: "Kunne ikke hente kontakter" });
+    }
+  });
+
+  // Admin Settings Routes
+  app.get("/api/admin/settings", async (req: Request, res: Response) => {
+    if (!checkAdminAuth(req, res)) return;
+    
+    try {
+      const settings = await db.select().from(appSettings);
+      res.json(settings);
+    } catch (error) {
+      console.error("Error fetching settings:", error);
+      res.status(500).json({ error: "Kunne ikke hente innstillinger" });
+    }
+  });
+
+  app.put("/api/admin/settings", async (req: Request, res: Response) => {
+    if (!checkAdminAuth(req, res)) return;
+    
+    try {
+      const { settings: settingsArray } = req.body;
+      
+      for (const setting of settingsArray) {
+        const existing = await db.select().from(appSettings).where(eq(appSettings.key, setting.key));
+        
+        if (existing.length > 0) {
+          await db.update(appSettings)
+            .set({ value: setting.value, category: setting.category, updatedAt: new Date() })
+            .where(eq(appSettings.key, setting.key));
+        } else {
+          await db.insert(appSettings).values({
+            key: setting.key,
+            value: setting.value,
+            category: setting.category,
+          });
+        }
+      }
+      
+      const updated = await db.select().from(appSettings);
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating settings:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere innstillinger" });
+    }
+  });
+
+  // Admin Statistics Routes
+  app.get("/api/admin/statistics", async (req: Request, res: Response) => {
+    if (!checkAdminAuth(req, res)) return;
+    
+    try {
+      const [vendorCount] = await db.select({ count: sql<number>`count(*)` }).from(vendors);
+      const [approvedVendors] = await db.select({ count: sql<number>`count(*)` }).from(vendors).where(eq(vendors.status, "approved"));
+      const [pendingVendors] = await db.select({ count: sql<number>`count(*)` }).from(vendors).where(eq(vendors.status, "pending"));
+      const [coupleCount] = await db.select({ count: sql<number>`count(*)` }).from(coupleProfiles);
+      const [inspirationCount] = await db.select({ count: sql<number>`count(*)` }).from(inspirations);
+      const [pendingInspirations] = await db.select({ count: sql<number>`count(*)` }).from(inspirations).where(eq(inspirations.status, "pending"));
+      const [conversationCount] = await db.select({ count: sql<number>`count(*)` }).from(conversations);
+      const [messageCount] = await db.select({ count: sql<number>`count(*)` }).from(messages);
+      const [deliveryCount] = await db.select({ count: sql<number>`count(*)` }).from(deliveries);
+      const [offerCount] = await db.select({ count: sql<number>`count(*)` }).from(vendorOffers);
+      
+      res.json({
+        vendors: {
+          total: Number(vendorCount?.count || 0),
+          approved: Number(approvedVendors?.count || 0),
+          pending: Number(pendingVendors?.count || 0),
+        },
+        couples: Number(coupleCount?.count || 0),
+        inspirations: {
+          total: Number(inspirationCount?.count || 0),
+          pending: Number(pendingInspirations?.count || 0),
+        },
+        conversations: Number(conversationCount?.count || 0),
+        messages: Number(messageCount?.count || 0),
+        deliveries: Number(deliveryCount?.count || 0),
+        offers: Number(offerCount?.count || 0),
+      });
+    } catch (error) {
+      console.error("Error fetching statistics:", error);
+      res.status(500).json({ error: "Kunne ikke hente statistikk" });
+    }
+  });
+
+  // Admin Categories Management
+  app.post("/api/admin/inspiration-categories", async (req: Request, res: Response) => {
+    if (!checkAdminAuth(req, res)) return;
+    
+    try {
+      const { name, icon, sortOrder } = req.body;
+      const [newCategory] = await db.insert(inspirationCategories).values({
+        name,
+        icon,
+        sortOrder: sortOrder || 0,
+      }).returning();
+      res.json(newCategory);
+    } catch (error) {
+      console.error("Error creating category:", error);
+      res.status(500).json({ error: "Kunne ikke opprette kategori" });
+    }
+  });
+
+  app.put("/api/admin/inspiration-categories/:id", async (req: Request, res: Response) => {
+    if (!checkAdminAuth(req, res)) return;
+    
+    try {
+      const { id } = req.params;
+      const { name, icon, sortOrder } = req.body;
+      
+      await db.update(inspirationCategories)
+        .set({ name, icon, sortOrder })
+        .where(eq(inspirationCategories.id, id));
+      
+      res.json({ message: "Kategori oppdatert" });
+    } catch (error) {
+      console.error("Error updating category:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere kategori" });
+    }
+  });
+
+  app.delete("/api/admin/inspiration-categories/:id", async (req: Request, res: Response) => {
+    if (!checkAdminAuth(req, res)) return;
+    
+    try {
+      const { id } = req.params;
+      await db.delete(inspirationCategories).where(eq(inspirationCategories.id, id));
+      res.json({ message: "Kategori slettet" });
+    } catch (error) {
+      console.error("Error deleting category:", error);
+      res.status(500).json({ error: "Kunne ikke slette kategori" });
+    }
+  });
+
+  // Admin Vendor Categories Management
+  app.post("/api/admin/vendor-categories", async (req: Request, res: Response) => {
+    if (!checkAdminAuth(req, res)) return;
+    
+    try {
+      const { name, icon, description } = req.body;
+      const [newCategory] = await db.insert(vendorCategories).values({
+        name,
+        icon,
+        description: description || null,
+      }).returning();
+      res.json(newCategory);
+    } catch (error) {
+      console.error("Error creating vendor category:", error);
+      res.status(500).json({ error: "Kunne ikke opprette kategori" });
+    }
+  });
+
+  app.put("/api/admin/vendor-categories/:id", async (req: Request, res: Response) => {
+    if (!checkAdminAuth(req, res)) return;
+    
+    try {
+      const { id } = req.params;
+      const { name, icon, description } = req.body;
+      
+      await db.update(vendorCategories)
+        .set({ name, icon, description })
+        .where(eq(vendorCategories.id, id));
+      
+      res.json({ message: "Kategori oppdatert" });
+    } catch (error) {
+      console.error("Error updating vendor category:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere kategori" });
+    }
+  });
+
+  app.delete("/api/admin/vendor-categories/:id", async (req: Request, res: Response) => {
+    if (!checkAdminAuth(req, res)) return;
+    
+    try {
+      const { id } = req.params;
+      await db.delete(vendorCategories).where(eq(vendorCategories.id, id));
+      res.json({ message: "Kategori slettet" });
+    } catch (error) {
+      console.error("Error deleting vendor category:", error);
+      res.status(500).json({ error: "Kunne ikke slette kategori" });
+    }
+  });
+
+  // Admin Couples Management
+  app.get("/api/admin/couples", async (req: Request, res: Response) => {
+    if (!checkAdminAuth(req, res)) return;
+    
+    try {
+      const couples = await db.select().from(coupleProfiles).orderBy(desc(coupleProfiles.createdAt));
+      res.json(couples);
+    } catch (error) {
+      console.error("Error fetching couples:", error);
+      res.status(500).json({ error: "Kunne ikke hente par" });
+    }
+  });
+
+  app.delete("/api/admin/couples/:id", async (req: Request, res: Response) => {
+    if (!checkAdminAuth(req, res)) return;
+    
+    try {
+      const { id } = req.params;
+      // Delete related data first
+      await db.delete(coupleSessions).where(eq(coupleSessions.coupleId, id));
+      await db.delete(messages).where(sql`conversation_id IN (SELECT id FROM conversations WHERE couple_id = ${id})`);
+      await db.delete(conversations).where(eq(conversations.coupleId, id));
+      await db.delete(coupleProfiles).where(eq(coupleProfiles.id, id));
+      res.json({ message: "Par slettet" });
+    } catch (error) {
+      console.error("Error deleting couple:", error);
+      res.status(500).json({ error: "Kunne ikke slette par" });
+    }
+  });
+
+  // Admin Full Vendor Update
+  app.put("/api/admin/vendors/:id", async (req: Request, res: Response) => {
+    if (!checkAdminAuth(req, res)) return;
+    
+    try {
+      const { id } = req.params;
+      const { businessName, email, description, location, phone, website, priceRange, categoryId, status } = req.body;
+      
+      await db.update(vendors)
+        .set({ 
+          businessName, 
+          email, 
+          description, 
+          location, 
+          phone, 
+          website, 
+          priceRange, 
+          categoryId, 
+          status,
+          updatedAt: new Date() 
+        })
+        .where(eq(vendors.id, id));
+      
+      res.json({ message: "Leverandør oppdatert" });
+    } catch (error) {
+      console.error("Error updating vendor:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere leverandør" });
+    }
+  });
+
+  app.delete("/api/admin/vendors/:id", async (req: Request, res: Response) => {
+    if (!checkAdminAuth(req, res)) return;
+    
+    try {
+      const { id } = req.params;
+      // Delete related data
+      await db.delete(vendorFeatures).where(eq(vendorFeatures.vendorId, id));
+      await db.delete(vendorInspirationCategories).where(eq(vendorInspirationCategories.vendorId, id));
+      await db.delete(deliveryItems).where(sql`delivery_id IN (SELECT id FROM deliveries WHERE vendor_id = ${id})`);
+      await db.delete(deliveries).where(eq(deliveries.vendorId, id));
+      await db.delete(inspirationMedia).where(sql`inspiration_id IN (SELECT id FROM inspirations WHERE vendor_id = ${id})`);
+      await db.delete(inspirations).where(eq(inspirations.vendorId, id));
+      await db.delete(messages).where(sql`conversation_id IN (SELECT id FROM conversations WHERE vendor_id = ${id})`);
+      await db.delete(conversations).where(eq(conversations.vendorId, id));
+      await db.delete(vendorOfferItems).where(sql`offer_id IN (SELECT id FROM vendor_offers WHERE vendor_id = ${id})`);
+      await db.delete(vendorOffers).where(eq(vendorOffers.vendorId, id));
+      await db.delete(vendorProducts).where(eq(vendorProducts.vendorId, id));
+      await db.delete(vendors).where(eq(vendors.id, id));
+      res.json({ message: "Leverandør slettet" });
+    } catch (error) {
+      console.error("Error deleting vendor:", error);
+      res.status(500).json({ error: "Kunne ikke slette leverandør" });
     }
   });
 
