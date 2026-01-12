@@ -1,19 +1,35 @@
-import React from "react";
+import React, { useLayoutEffect } from "react";
 import { ScrollView, StyleSheet, View, Pressable, Linking } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
+import { useNavigation } from "@react-navigation/native";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { Image } from "expo-image";
 
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius, Colors } from "@/constants/theme";
 
+import appIcon from "../../assets/images/icon.png";
+
 export default function AboutScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const { theme } = useTheme();
+  const navigation = useNavigation();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => (
+        <View style={styles.headerTitle}>
+          <Image source={appIcon} style={styles.headerLogo} contentFit="contain" />
+          <ThemedText style={styles.headerText}>Om Wedflow</ThemedText>
+        </View>
+      ),
+    });
+  }, [navigation]);
 
   const handleOpenLink = (url: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -145,6 +161,20 @@ function FeatureItem({ icon, text, theme }: { icon: keyof typeof Feather.glyphMa
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  headerTitle: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.sm,
+  },
+  headerLogo: {
+    width: 28,
+    height: 28,
+    borderRadius: 6,
+  },
+  headerText: {
+    fontSize: 17,
+    fontWeight: "600",
+  },
   logoSection: {
     alignItems: "center",
     padding: Spacing.xl,
