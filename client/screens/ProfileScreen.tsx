@@ -268,13 +268,13 @@ export default function ProfileScreen() {
             icon="help-circle"
             label="Hjelp"
             theme={theme}
-            onPress={() => Alert.alert("Hjelp", "Kontakt oss på hjelp@wedflow.no")}
+            onPress={() => Alert.alert("Kontakt oss", "E-post: contact@norwedfilm.no\nNettside: norwedfilm.no\nInstagram: @norwedfilm")}
           />
           <MenuItem
             icon="info"
             label="Om Wedflow"
             theme={theme}
-            onPress={() => Alert.alert("Wedflow", "Versjon 1.0.0\nby Norwedfilm")}
+            onPress={() => Alert.alert("Wedflow", "Versjon 1.0.0\nby Norwedfilm\n\nKontakt:\ncontact@norwedfilm.no\nnorwedfilm.no\n@norwedfilm")}
           />
           <MenuItem
             icon="share-2"

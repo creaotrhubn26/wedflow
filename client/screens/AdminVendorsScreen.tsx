@@ -39,30 +39,31 @@ export default function AdminVendorsScreen() {
   const queryClient = useQueryClient();
 
   const [adminKey, setAdminKey] = useState("");
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [storedKey, setStoredKey] = useState("");
+  const [loginError, setLoginError] = useState("");
   const [selectedTab, setSelectedTab] = useState<"pending" | "approved" | "rejected">("pending");
 
   const { data: vendors = [], isLoading, refetch } = useQuery<PendingVendor[]>({
-    queryKey: ["/api/admin/vendors", selectedTab, adminKey],
+    queryKey: ["/api/admin/vendors", selectedTab, storedKey],
     queryFn: async () => {
       const url = new URL(`/api/admin/vendors?status=${selectedTab}`, getApiUrl());
       const response = await fetch(url.toString(), {
         headers: {
-          Authorization: `Bearer ${adminKey}`,
+          Authorization: `Bearer ${storedKey}`,
         },
       });
       if (!response.ok) {
         if (response.status === 401) {
-          setIsAuthenticated(false);
           throw new Error("Ugyldig admin-nøkkel");
         }
         throw new Error("Kunne ikke hente leverandører");
       }
-      setIsAuthenticated(true);
       return response.json();
     },
-    enabled: adminKey.length > 0 && isAuthenticated,
+    enabled: storedKey.length > 0,
   });
+
+  const isAuthenticated = storedKey.length > 0;
 
   const approveMutation = useMutation({
     mutationFn: async (vendorId: string) => {
@@ -70,7 +71,7 @@ export default function AdminVendorsScreen() {
       const response = await fetch(url.toString(), {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${adminKey}`,
+          Authorization: `Bearer ${storedKey}`,
           "Content-Type": "application/json",
         },
       });
@@ -79,7 +80,7 @@ export default function AdminVendorsScreen() {
     },
     onSuccess: () => {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      refetch();
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/vendors"] });
     },
   });
 
@@ -89,7 +90,7 @@ export default function AdminVendorsScreen() {
       const response = await fetch(url.toString(), {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${adminKey}`,
+          Authorization: `Bearer ${storedKey}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ reason }),
@@ -99,17 +100,43 @@ export default function AdminVendorsScreen() {
     },
     onSuccess: () => {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
-      refetch();
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/vendors"] });
     },
   });
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (adminKey.length < 5) {
-      Alert.alert("Feil", "Skriv inn en gyldig admin-nøkkel");
+      setLoginError("Skriv inn en gyldig admin-nøkkel");
       return;
     }
-    setIsAuthenticated(true);
-    refetch();
+    setLoginError("");
+    
+    try {
+      const url = new URL("/api/admin/vendors?status=pending", getApiUrl());
+      const response = await fetch(url.toString(), {
+        headers: {
+          Authorization: `Bearer ${adminKey}`,
+        },
+      });
+      
+      if (!response.ok) {
+        if (response.status === 401) {
+          setLoginError("Ugyldig admin-nøkkel");
+          return;
+        }
+        if (response.status === 503) {
+          setLoginError("Admin-funksjonalitet er ikke konfigurert");
+          return;
+        }
+        setLoginError("Kunne ikke koble til serveren");
+        return;
+      }
+      
+      setStoredKey(adminKey);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } catch (error) {
+      setLoginError("Nettverksfeil. Prøv igjen.");
+    }
   };
 
   const handleApprove = (vendor: PendingVendor) => {
@@ -256,6 +283,10 @@ export default function AdminVendorsScreen() {
               autoCapitalize="none"
             />
           </View>
+
+          {loginError ? (
+            <ThemedText style={styles.errorText}>{loginError}</ThemedText>
+          ) : null}
 
           <Pressable
             onPress={handleLogin}
@@ -472,5 +503,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
     color: "#fff",
+  },
+  errorText: {
+    color: "#EF5350",
+    fontSize: 14,
+    textAlign: "center",
+    marginBottom: Spacing.md,
   },
 });
