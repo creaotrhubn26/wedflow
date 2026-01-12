@@ -173,9 +173,9 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.lg,
   },
   logoImage: {
-    width: 280,
-    height: 100,
-    marginBottom: Spacing.sm,
+    width: 320,
+    height: 160,
+    marginBottom: Spacing.md,
   },
   version: {
     fontSize: 14,
