@@ -6,6 +6,7 @@ import {
   Pressable,
   ActivityIndicator,
   Alert,
+  Image,
 } from "react-native";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { Feather } from "@expo/vector-icons";
@@ -99,9 +100,11 @@ export default function VendorLoginScreen({ navigation }: Props) {
           { paddingTop: headerHeight + Spacing.xl },
         ]}
       >
-        <View style={[styles.iconContainer, { backgroundColor: Colors.dark.accent + "20" }]}>
-          <Feather name="briefcase" size={32} color={Colors.dark.accent} />
-        </View>
+        <Image
+          source={require("../../assets/images/wedflow-logo.png")}
+          style={styles.logo}
+          resizeMode="contain"
+        />
 
         <ThemedText style={styles.title}>Leverandørportal</ThemedText>
         <ThemedText style={[styles.subtitle, { color: theme.textSecondary }]}>
@@ -174,12 +177,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xl,
     alignItems: "center",
   },
-  iconContainer: {
-    width: 80,
+  logo: {
+    width: 300,
     height: 80,
-    borderRadius: 40,
-    alignItems: "center",
-    justifyContent: "center",
     marginBottom: Spacing.xl,
   },
   title: {

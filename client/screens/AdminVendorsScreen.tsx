@@ -10,6 +10,7 @@ import {
   Modal,
   ScrollView,
   Switch,
+  Image,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
@@ -386,9 +387,11 @@ export default function AdminVendorsScreen() {
     return (
       <View style={[styles.container, { backgroundColor: theme.backgroundRoot }]}>
         <View style={[styles.loginContainer, { paddingTop: headerHeight + Spacing.xl }]}>
-          <View style={[styles.lockIcon, { backgroundColor: Colors.dark.accent + "20" }]}>
-            <Feather name="lock" size={32} color={Colors.dark.accent} />
-          </View>
+          <Image
+            source={require("../../assets/images/wedflow-logo.png")}
+            style={styles.logo}
+            resizeMode="contain"
+          />
           <ThemedText style={styles.loginTitle}>Admin-tilgang</ThemedText>
           <ThemedText style={[styles.loginSubtitle, { color: theme.textSecondary }]}>
             Skriv inn admin-nøkkelen for å administrere leverandører
@@ -588,12 +591,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xl,
     alignItems: "center",
   },
-  lockIcon: {
-    width: 80,
+  logo: {
+    width: 300,
     height: 80,
-    borderRadius: 40,
-    alignItems: "center",
-    justifyContent: "center",
     marginBottom: Spacing.xl,
   },
   loginTitle: {

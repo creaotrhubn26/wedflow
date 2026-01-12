@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   Alert,
   ScrollView,
+  Image,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
@@ -131,6 +132,13 @@ export default function VendorRegistrationScreen() {
         paddingHorizontal: Spacing.lg,
       }}
     >
+      <View style={styles.logoContainer}>
+        <Image
+          source={require("../../assets/images/wedflow-logo.png")}
+          style={styles.logo}
+          resizeMode="contain"
+        />
+      </View>
       <ThemedText style={styles.title}>Bli en Wedflow-leverandør</ThemedText>
       <ThemedText style={[styles.subtitle, { color: theme.textSecondary }]}>
         Registrer din bedrift og nå ut til tusenvis av brudepar i Skandinavia.
@@ -319,6 +327,14 @@ export default function VendorRegistrationScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
+  logoContainer: {
+    alignItems: "center",
+    marginBottom: Spacing.lg,
+  },
+  logo: {
+    width: 300,
+    height: 80,
+  },
   successContainer: {
     flex: 1,
     alignItems: "center",
