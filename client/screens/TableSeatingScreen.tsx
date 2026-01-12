@@ -77,13 +77,8 @@ export default function TableSeatingScreen() {
     mutationFn: async ({ tableId, guestId }: { tableId: string; guestId: string }) => {
       return apiRequest("POST", `/api/couple/tables/${tableId}/guests`, { guestId });
     },
-    onSuccess: (_, { guestId }) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/couple/tables"] });
-      const updatedGuests = guests.map((g) =>
-        g.id === guestId ? { ...g, tableNumber: undefined } : g
-      );
-      setGuests(updatedGuests);
-      saveGuests(updatedGuests);
       setSelectedGuest(null);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     },
@@ -93,18 +88,26 @@ export default function TableSeatingScreen() {
     mutationFn: async ({ tableId, guestId }: { tableId: string; guestId: string }) => {
       return apiRequest("DELETE", `/api/couple/tables/${tableId}/guests/${guestId}`);
     },
-    onSuccess: (_, { guestId }) => {
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/couple/tables"] });
-      const updatedGuests = guests.map((g) =>
-        g.id === guestId ? { ...g, tableNumber: undefined } : g
-      );
-      setGuests(updatedGuests);
-      saveGuests(updatedGuests);
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     },
   });
 
-  const unassignedGuests = guests.filter((g) => !g.tableNumber);
+  const getAssignedGuestIds = () => {
+    const allAssigned = new Set<string>();
+    for (const table of tables) {
+      for (const guestId of table.guests) {
+        allAssigned.add(guestId);
+      }
+    }
+    return allAssigned;
+  };
+
+  const unassignedGuests = React.useMemo(() => {
+    const assignedIds = getAssignedGuestIds();
+    return guests.filter((g) => !assignedIds.has(g.id));
+  }, [guests, tables]);
 
   const handleAssignGuest = async (tableId: string) => {
     if (!selectedGuest) return;
