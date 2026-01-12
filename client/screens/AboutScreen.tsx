@@ -45,10 +45,11 @@ export default function AboutScreen() {
     >
       <Animated.View entering={FadeInDown.duration(400)}>
         <View style={[styles.logoSection, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-          <View style={[styles.logoCircle, { backgroundColor: Colors.dark.accent + "20" }]}>
-            <Feather name="heart" size={40} color={Colors.dark.accent} />
-          </View>
-          <ThemedText style={styles.appName}>Wedflow</ThemedText>
+          <Image
+            source={require("../../assets/images/wedflow-logo.png")}
+            style={styles.logoImage}
+            resizeMode="contain"
+          />
           <ThemedText style={[styles.tagline, { color: theme.textSecondary }]}>
             by Norwedfilm
           </ThemedText>
@@ -174,17 +175,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: Spacing.lg,
   },
-  logoCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: Spacing.md,
-  },
-  appName: {
-    fontSize: 28,
-    fontWeight: "700",
+  logoImage: {
+    width: 280,
+    height: 100,
+    marginBottom: Spacing.sm,
   },
   tagline: {
     fontSize: 16,
