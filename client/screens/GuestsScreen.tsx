@@ -251,7 +251,7 @@ export default function GuestsScreen() {
       </View>
 
       <ThemedText style={[styles.swipeHint, { color: theme.textMuted }]}>
-        Sveip til venstre for å endre eller slette
+        Trykk for å endre status • Sveip til venstre for å endre eller slette
       </ThemedText>
 
       {showAddForm ? (
