@@ -53,6 +53,32 @@ interface Delivery {
   items: DeliveryItem[];
 }
 
+interface InspirationMedia {
+  id: string;
+  type: string;
+  url: string;
+  caption: string | null;
+}
+
+interface InspirationCategory {
+  id: string;
+  name: string;
+  icon: string;
+}
+
+interface Inspiration {
+  id: string;
+  title: string;
+  description: string | null;
+  coverImageUrl: string | null;
+  status: string;
+  createdAt: string;
+  media: InspirationMedia[];
+  category: InspirationCategory | null;
+}
+
+type TabType = "deliveries" | "inspirations";
+
 interface Props {
   navigation: NativeStackNavigationProp<any>;
 }
@@ -65,6 +91,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
 
   const [session, setSession] = useState<VendorSession | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [activeTab, setActiveTab] = useState<TabType>("deliveries");
 
   useEffect(() => {
     loadSession();
@@ -79,7 +106,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
     }
   };
 
-  const { data: deliveries = [], isLoading, refetch } = useQuery<Delivery[]>({
+  const { data: deliveries = [], isLoading: deliveriesLoading, refetch: refetchDeliveries } = useQuery<Delivery[]>({
     queryKey: ["/api/vendor/deliveries"],
     queryFn: async () => {
       if (!session?.sessionToken) return [];
@@ -94,11 +121,30 @@ export default function VendorDashboardScreen({ navigation }: Props) {
     enabled: !!session?.sessionToken,
   });
 
+  const { data: inspirationsData = [], isLoading: inspirationsLoading, refetch: refetchInspirations } = useQuery<Inspiration[]>({
+    queryKey: ["/api/vendor/inspirations"],
+    queryFn: async () => {
+      if (!session?.sessionToken) return [];
+      const response = await fetch(new URL("/api/vendor/inspirations", getApiUrl()).toString(), {
+        headers: {
+          Authorization: `Bearer ${session.sessionToken}`,
+        },
+      });
+      if (!response.ok) throw new Error("Kunne ikke hente inspirasjoner");
+      return response.json();
+    },
+    enabled: !!session?.sessionToken,
+  });
+
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
-    await refetch();
+    if (activeTab === "deliveries") {
+      await refetchDeliveries();
+    } else {
+      await refetchInspirations();
+    }
     setIsRefreshing(false);
-  }, [refetch]);
+  }, [activeTab, refetchDeliveries, refetchInspirations]);
 
   const handleLogout = async () => {
     Alert.alert(
@@ -156,6 +202,64 @@ export default function VendorDashboardScreen({ navigation }: Props) {
       year: "numeric",
     });
   };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case "approved": return "#4CAF50";
+      case "pending": return "#FF9800";
+      case "rejected": return "#F44336";
+      default: return Colors.dark.accent;
+    }
+  };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case "approved": return "Godkjent";
+      case "pending": return "Venter";
+      case "rejected": return "Avvist";
+      default: return status;
+    }
+  };
+
+  const renderInspirationItem = ({ item, index }: { item: Inspiration; index: number }) => (
+    <Animated.View entering={FadeInDown.delay(index * 50).duration(300)}>
+      <View style={[styles.deliveryCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
+        <View style={styles.cardHeader}>
+          <View style={styles.cardTitleRow}>
+            <ThemedText style={styles.cardTitle}>{item.title}</ThemedText>
+            <View style={[styles.statusBadge, { backgroundColor: getStatusColor(item.status) + "30" }]}>
+              <ThemedText style={[styles.statusText, { color: getStatusColor(item.status) }]}>
+                {getStatusLabel(item.status)}
+              </ThemedText>
+            </View>
+          </View>
+          {item.category ? (
+            <ThemedText style={[styles.coupleName, { color: theme.textSecondary }]}>
+              {item.category.name}
+            </ThemedText>
+          ) : null}
+          {item.description ? (
+            <ThemedText style={[styles.dateText, { color: theme.textMuted, marginTop: 4 }]} numberOfLines={2}>
+              {item.description}
+            </ThemedText>
+          ) : null}
+        </View>
+
+        <View style={styles.itemsList}>
+          <View style={styles.itemRow}>
+            <Feather name="image" size={14} color={theme.textSecondary} />
+            <ThemedText style={[styles.itemLabel, { color: theme.textSecondary }]}>
+              {item.media.length} {item.media.length === 1 ? "bilde/video" : "bilder/videoer"}
+            </ThemedText>
+          </View>
+        </View>
+
+        <ThemedText style={[styles.createdAt, { color: theme.textMuted }]}>
+          Opprettet {formatDate(item.createdAt)}
+        </ThemedText>
+      </View>
+    </Animated.View>
+  );
 
   const renderDeliveryItem = ({ item, index }: { item: Delivery; index: number }) => (
     <Animated.View entering={FadeInDown.delay(index * 50).duration(300)}>
@@ -221,6 +325,8 @@ export default function VendorDashboardScreen({ navigation }: Props) {
     );
   }
 
+  const isLoading = activeTab === "deliveries" ? deliveriesLoading : inspirationsLoading;
+
   return (
     <View style={[styles.container, { backgroundColor: theme.backgroundRoot }]}>
       <View style={[styles.header, { paddingTop: headerHeight + Spacing.md }]}>
@@ -233,22 +339,51 @@ export default function VendorDashboardScreen({ navigation }: Props) {
         </Pressable>
       </View>
 
+      <View style={styles.tabContainer}>
+        <Pressable
+          onPress={() => setActiveTab("deliveries")}
+          style={[
+            styles.tab,
+            activeTab === "deliveries" && { borderBottomColor: Colors.dark.accent, borderBottomWidth: 2 }
+          ]}
+        >
+          <Feather name="package" size={16} color={activeTab === "deliveries" ? Colors.dark.accent : theme.textMuted} />
+          <ThemedText style={[styles.tabText, { color: activeTab === "deliveries" ? Colors.dark.accent : theme.textMuted }]}>
+            Leveranser
+          </ThemedText>
+        </Pressable>
+        <Pressable
+          onPress={() => setActiveTab("inspirations")}
+          style={[
+            styles.tab,
+            activeTab === "inspirations" && { borderBottomColor: Colors.dark.accent, borderBottomWidth: 2 }
+          ]}
+        >
+          <Feather name="image" size={16} color={activeTab === "inspirations" ? Colors.dark.accent : theme.textMuted} />
+          <ThemedText style={[styles.tabText, { color: activeTab === "inspirations" ? Colors.dark.accent : theme.textMuted }]}>
+            Inspirasjoner
+          </ThemedText>
+        </Pressable>
+      </View>
+
       <Pressable
         onPress={() => {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-          navigation.navigate("DeliveryCreate");
+          navigation.navigate(activeTab === "deliveries" ? "DeliveryCreate" : "InspirationCreate");
         }}
         style={[styles.createBtn, { backgroundColor: Colors.dark.accent }]}
       >
         <Feather name="plus" size={20} color="#1A1A1A" />
-        <ThemedText style={styles.createBtnText}>Ny leveranse</ThemedText>
+        <ThemedText style={styles.createBtnText}>
+          {activeTab === "deliveries" ? "Ny leveranse" : "Ny inspirasjon"}
+        </ThemedText>
       </Pressable>
 
       {isLoading ? (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={Colors.dark.accent} />
         </View>
-      ) : (
+      ) : activeTab === "deliveries" ? (
         <FlatList
           data={deliveries}
           renderItem={renderDeliveryItem}
@@ -273,6 +408,35 @@ export default function VendorDashboardScreen({ navigation }: Props) {
               </ThemedText>
               <ThemedText style={[styles.emptySubtext, { color: theme.textMuted }]}>
                 Opprett din første leveranse for å dele innhold med brudepar
+              </ThemedText>
+            </View>
+          )}
+        />
+      ) : (
+        <FlatList
+          data={inspirationsData}
+          renderItem={renderInspirationItem}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{
+            paddingHorizontal: Spacing.lg,
+            paddingBottom: insets.bottom + Spacing.xl,
+          }}
+          ItemSeparatorComponent={() => <View style={{ height: Spacing.md }} />}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={handleRefresh}
+              tintColor={Colors.dark.accent}
+            />
+          }
+          ListEmptyComponent={() => (
+            <View style={styles.emptyContainer}>
+              <Feather name="image" size={48} color={theme.textMuted} />
+              <ThemedText style={[styles.emptyText, { color: theme.textMuted }]}>
+                Ingen inspirasjoner ennå
+              </ThemedText>
+              <ThemedText style={[styles.emptySubtext, { color: theme.textMuted }]}>
+                Del vakre bilder og videoer for å inspirere brudepar
               </ThemedText>
             </View>
           )}
@@ -304,6 +468,22 @@ const styles = StyleSheet.create({
   },
   logoutBtn: {
     padding: Spacing.sm,
+  },
+  tabContainer: {
+    flexDirection: "row",
+    marginHorizontal: Spacing.lg,
+    marginBottom: Spacing.md,
+    gap: Spacing.lg,
+  },
+  tab: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: Spacing.sm,
+    gap: Spacing.xs,
+  },
+  tabText: {
+    fontSize: 14,
+    fontWeight: "600",
   },
   createBtn: {
     flexDirection: "row",

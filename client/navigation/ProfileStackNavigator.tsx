@@ -8,6 +8,7 @@ import AdminVendorsScreen from "@/screens/AdminVendorsScreen";
 import VendorLoginScreen from "@/screens/VendorLoginScreen";
 import VendorDashboardScreen from "@/screens/VendorDashboardScreen";
 import DeliveryCreateScreen from "@/screens/DeliveryCreateScreen";
+import InspirationCreateScreen from "@/screens/InspirationCreateScreen";
 import VendorRegistrationScreen from "@/screens/VendorRegistrationScreen";
 import NotificationSettingsScreen from "@/screens/NotificationSettingsScreen";
 import { useScreenOptions } from "@/hooks/useScreenOptions";
@@ -20,6 +21,7 @@ export type ProfileStackParamList = {
   VendorLogin: undefined;
   VendorDashboard: undefined;
   DeliveryCreate: undefined;
+  InspirationCreate: undefined;
   VendorRegistration: undefined;
   NotificationSettings: undefined;
 };
@@ -70,7 +72,7 @@ export default function ProfileStackNavigator() {
         name="VendorDashboard"
         component={VendorDashboardScreen}
         options={{
-          title: "Mine leveranser",
+          title: "Leverandørportal",
         }}
       />
       <Stack.Screen
@@ -78,6 +80,13 @@ export default function ProfileStackNavigator() {
         component={DeliveryCreateScreen}
         options={{
           title: "Ny leveranse",
+        }}
+      />
+      <Stack.Screen
+        name="InspirationCreate"
+        component={InspirationCreateScreen}
+        options={{
+          title: "Ny inspirasjon",
         }}
       />
       <Stack.Screen
