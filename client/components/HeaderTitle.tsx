@@ -12,11 +12,10 @@ export function HeaderTitle({ title }: HeaderTitleProps) {
   return (
     <View style={styles.container}>
       <Image
-        source={require("../../assets/images/icon.png")}
-        style={styles.icon}
+        source={require("../../assets/images/wedflow-logo.png")}
+        style={styles.logo}
         resizeMode="contain"
       />
-      <ThemedText style={styles.title}>{title}</ThemedText>
     </View>
   );
 }
@@ -27,15 +26,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "flex-start",
   },
-  icon: {
-    width: 28,
-    height: 28,
-    marginRight: Spacing.sm,
-    borderRadius: 6,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: Colors.dark.accent,
+  logo: {
+    width: 120,
+    height: 36,
   },
 });
