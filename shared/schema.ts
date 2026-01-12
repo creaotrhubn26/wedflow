@@ -42,6 +42,7 @@ export const vendors = pgTable("vendors", {
   website: text("website"),
   priceRange: text("price_range"),
   imageUrl: text("image_url"),
+  googleReviewUrl: text("google_review_url"),
   status: text("status").notNull().default("pending"),
   rejectionReason: text("rejection_reason"),
   createdAt: timestamp("created_at").defaultNow(),
@@ -674,6 +675,8 @@ export const coupleVendorContracts = pgTable("couple_vendor_contracts", {
   canViewSpeeches: boolean("can_view_speeches").default(false),
   canViewTableSeating: boolean("can_view_table_seating").default(false),
   notifyOnTableChanges: boolean("notify_on_table_changes").default(false),
+  completedAt: timestamp("completed_at"),
+  reviewReminderSentAt: timestamp("review_reminder_sent_at"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -812,3 +815,84 @@ export const insertTableSeatingInvitationSchema = createInsertSchema(tableSeatin
 
 export type TableSeatingInvitation = typeof tableSeatingInvitations.$inferSelect;
 export type InsertTableSeatingInvitation = z.infer<typeof insertTableSeatingInvitationSchema>;
+
+// App Feedback - Feedback to Wedflow from couples and vendors
+export const appFeedback = pgTable("app_feedback", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  submitterType: text("submitter_type").notNull(), // "couple", "vendor"
+  submitterId: varchar("submitter_id").notNull(), // coupleId or vendorId
+  category: text("category").notNull(), // "bug", "feature_request", "general", "complaint"
+  subject: text("subject").notNull(),
+  message: text("message").notNull(),
+  status: text("status").notNull().default("pending"), // "pending", "reviewed", "resolved", "closed"
+  adminNotes: text("admin_notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertAppFeedbackSchema = createInsertSchema(appFeedback).omit({
+  id: true,
+  status: true,
+  adminNotes: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type AppFeedback = typeof appFeedback.$inferSelect;
+export type InsertAppFeedback = z.infer<typeof insertAppFeedbackSchema>;
+
+// Vendor Reviews - Couples review vendors after completed contracts
+export const vendorReviews = pgTable("vendor_reviews", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  contractId: varchar("contract_id").notNull().references(() => coupleVendorContracts.id),
+  coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id),
+  vendorId: varchar("vendor_id").notNull().references(() => vendors.id),
+  rating: integer("rating").notNull(), // 1-5 stars
+  title: text("title"),
+  body: text("body"),
+  isAnonymous: boolean("is_anonymous").notNull().default(false),
+  isApproved: boolean("is_approved").notNull().default(false), // Admin moderation
+  approvedAt: timestamp("approved_at"),
+  approvedBy: varchar("approved_by"), // Admin ID
+  editableUntil: timestamp("editable_until"), // Can edit within 14 days
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertVendorReviewSchema = createInsertSchema(vendorReviews).omit({
+  id: true,
+  isApproved: true,
+  approvedAt: true,
+  approvedBy: true,
+  editableUntil: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type VendorReview = typeof vendorReviews.$inferSelect;
+export type InsertVendorReview = z.infer<typeof insertVendorReviewSchema>;
+
+// Vendor Review Responses - Vendors can respond to reviews
+export const vendorReviewResponses = pgTable("vendor_review_responses", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  reviewId: varchar("review_id").notNull().references(() => vendorReviews.id),
+  vendorId: varchar("vendor_id").notNull().references(() => vendors.id),
+  body: text("body").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertVendorReviewResponseSchema = createInsertSchema(vendorReviewResponses).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type VendorReviewResponse = typeof vendorReviewResponses.$inferSelect;
+export type InsertVendorReviewResponse = z.infer<typeof insertVendorReviewResponseSchema>;
