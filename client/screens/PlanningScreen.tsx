@@ -4,7 +4,6 @@ import {
   StyleSheet,
   View,
   Pressable,
-  Image,
   RefreshControl,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -33,6 +32,8 @@ import {
   saveWeddingDetails,
   saveSchedule,
   saveImportantPeople,
+  getBudgetItems,
+  getTotalBudget,
 } from "@/lib/storage";
 import { WeddingDetails, ScheduleEvent, ImportantPerson } from "@/lib/types";
 
@@ -87,14 +88,18 @@ export default function PlanningScreen() {
   const [wedding, setWedding] = useState<WeddingDetails | null>(null);
   const [schedule, setSchedule] = useState<ScheduleEvent[]>([]);
   const [people, setPeople] = useState<ImportantPerson[]>([]);
+  const [budgetUsed, setBudgetUsed] = useState(0);
+  const [totalBudget, setTotalBudget] = useState(300000);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const loadData = useCallback(async () => {
-    const [weddingData, scheduleData, peopleData] = await Promise.all([
+    const [weddingData, scheduleData, peopleData, budgetItems, budget] = await Promise.all([
       getWeddingDetails(),
       getSchedule(),
       getImportantPeople(),
+      getBudgetItems(),
+      getTotalBudget(),
     ]);
 
     if (!weddingData) {
@@ -118,12 +123,23 @@ export default function PlanningScreen() {
       setPeople(peopleData);
     }
 
+    const used = budgetItems.reduce((sum, item) => sum + item.estimatedCost, 0);
+    setBudgetUsed(used);
+    setTotalBudget(budget);
+
     setLoading(false);
   }, []);
 
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener("focus", () => {
+      loadData();
+    });
+    return unsubscribe;
+  }, [navigation, loadData]);
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -136,6 +152,10 @@ export default function PlanningScreen() {
 
   const getScheduleIcon = (iconName: ScheduleEvent["icon"]) => {
     return iconName;
+  };
+
+  const formatCurrency = (amount: number) => {
+    return (amount / 1000).toFixed(0) + "k";
   };
 
   if (loading) {
@@ -204,6 +224,56 @@ export default function PlanningScreen() {
       </Animated.View>
 
       <Animated.View entering={FadeInDown.delay(200).duration(400)}>
+        <View style={styles.quickActions}>
+          <QuickActionCard
+            icon="calendar"
+            label="Kjøreplan"
+            theme={theme}
+            onPress={() => navigation.navigate("Schedule")}
+          />
+          <QuickActionCard
+            icon="dollar-sign"
+            label="Budsjett"
+            theme={theme}
+            badge={formatCurrency(budgetUsed)}
+            onPress={() => navigation.navigate("Budget")}
+          />
+          <QuickActionCard
+            icon="cpu"
+            label="AI Tid"
+            theme={theme}
+            onPress={() => navigation.navigate("AITime")}
+          />
+        </View>
+      </Animated.View>
+
+      <Animated.View entering={FadeInDown.delay(300).duration(400)}>
+        <Card
+          elevation={1}
+          onPress={() => navigation.navigate("Vendors")}
+          style={[styles.sectionCard, { borderColor: theme.border }]}
+        >
+          <View style={styles.sectionHeader}>
+            <View style={styles.sectionTitleRow}>
+              <Feather
+                name="briefcase"
+                size={20}
+                color={Colors.dark.accent}
+                style={styles.sectionIcon}
+              />
+              <ThemedText type="h3">Leverandører</ThemedText>
+            </View>
+            <Feather name="chevron-right" size={20} color={theme.textSecondary} />
+          </View>
+          <ThemedText
+            style={[styles.sectionSubtitle, { color: theme.textSecondary }]}
+          >
+            Finn fotografer, videografer og DJs i Skandinavia
+          </ThemedText>
+        </Card>
+      </Animated.View>
+
+      <Animated.View entering={FadeInDown.delay(400).duration(400)}>
         <Card
           elevation={1}
           onPress={() => navigation.navigate("Schedule")}
@@ -250,7 +320,7 @@ export default function PlanningScreen() {
         </Card>
       </Animated.View>
 
-      <Animated.View entering={FadeInDown.delay(300).duration(400)}>
+      <Animated.View entering={FadeInDown.delay(500).duration(400)}>
         <Card
           elevation={1}
           onPress={() => navigation.navigate("ImportantPeople")}
@@ -295,29 +365,6 @@ export default function PlanningScreen() {
           </View>
         </Card>
       </Animated.View>
-
-      <Animated.View entering={FadeInDown.delay(400).duration(400)}>
-        <View style={styles.quickActions}>
-          <QuickActionCard
-            icon="camera"
-            label="Fotoplan"
-            theme={theme}
-            onPress={() => {}}
-          />
-          <QuickActionCard
-            icon="users"
-            label="Bordplassering"
-            theme={theme}
-            onPress={() => {}}
-          />
-          <QuickActionCard
-            icon="mic"
-            label="Taleliste"
-            theme={theme}
-            onPress={() => {}}
-          />
-        </View>
-      </Animated.View>
     </ScrollView>
   );
 }
@@ -326,10 +373,11 @@ interface QuickActionCardProps {
   icon: keyof typeof Feather.glyphMap;
   label: string;
   theme: any;
+  badge?: string;
   onPress: () => void;
 }
 
-function QuickActionCard({ icon, label, theme, onPress }: QuickActionCardProps) {
+function QuickActionCard({ icon, label, theme, badge, onPress }: QuickActionCardProps) {
   const scale = useSharedValue(1);
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -363,6 +411,11 @@ function QuickActionCard({ icon, label, theme, onPress }: QuickActionCardProps) 
           <Feather name={icon} size={20} color={Colors.dark.accent} />
         </View>
         <ThemedText style={styles.quickActionLabel}>{label}</ThemedText>
+        {badge ? (
+          <ThemedText style={[styles.quickActionBadge, { color: Colors.dark.accent }]}>
+            {badge}
+          </ThemedText>
+        ) : null}
       </Animated.View>
     </Pressable>
   );
@@ -477,25 +530,31 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     gap: Spacing.md,
+    marginBottom: Spacing.xl,
   },
   quickActionCard: {
     flex: 1,
-    padding: Spacing.lg,
+    padding: Spacing.md,
     borderRadius: BorderRadius.md,
     alignItems: "center",
     borderWidth: 1,
   },
   quickActionIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: Spacing.sm,
+    marginBottom: Spacing.xs,
   },
   quickActionLabel: {
     fontSize: 12,
     fontWeight: "500",
     textAlign: "center",
+  },
+  quickActionBadge: {
+    fontSize: 11,
+    fontWeight: "600",
+    marginTop: 2,
   },
 });

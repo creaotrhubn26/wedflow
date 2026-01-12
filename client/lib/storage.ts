@@ -7,6 +7,7 @@ import {
   Speech,
   ImportantPerson,
   PhotoShot,
+  BudgetItem,
 } from "./types";
 
 const KEYS = {
@@ -17,6 +18,8 @@ const KEYS = {
   SPEECHES: "@wedflow/speeches",
   IMPORTANT_PEOPLE: "@wedflow/important_people",
   PHOTO_SHOTS: "@wedflow/photo_shots",
+  BUDGET_ITEMS: "@wedflow/budget_items",
+  TOTAL_BUDGET: "@wedflow/total_budget",
 };
 
 export async function getWeddingDetails(): Promise<WeddingDetails | null> {
@@ -108,6 +111,32 @@ export async function getPhotoShots(): Promise<PhotoShot[]> {
 
 export async function savePhotoShots(shots: PhotoShot[]): Promise<void> {
   await AsyncStorage.setItem(KEYS.PHOTO_SHOTS, JSON.stringify(shots));
+}
+
+export async function getBudgetItems(): Promise<BudgetItem[]> {
+  try {
+    const data = await AsyncStorage.getItem(KEYS.BUDGET_ITEMS);
+    return data ? JSON.parse(data) : [];
+  } catch {
+    return [];
+  }
+}
+
+export async function saveBudgetItems(items: BudgetItem[]): Promise<void> {
+  await AsyncStorage.setItem(KEYS.BUDGET_ITEMS, JSON.stringify(items));
+}
+
+export async function getTotalBudget(): Promise<number> {
+  try {
+    const data = await AsyncStorage.getItem(KEYS.TOTAL_BUDGET);
+    return data ? JSON.parse(data) : 300000;
+  } catch {
+    return 300000;
+  }
+}
+
+export async function saveTotalBudget(budget: number): Promise<void> {
+  await AsyncStorage.setItem(KEYS.TOTAL_BUDGET, JSON.stringify(budget));
 }
 
 export async function clearAllData(): Promise<void> {

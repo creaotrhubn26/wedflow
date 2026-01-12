@@ -54,3 +54,41 @@ export interface InspirationItem {
   category: string;
   saved: boolean;
 }
+
+export interface BudgetItem {
+  id: string;
+  category: string;
+  name: string;
+  estimatedCost: number;
+  actualCost: number;
+  paid: boolean;
+}
+
+export interface BudgetCategory {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+}
+
+export interface Vendor {
+  id: string;
+  name: string;
+  category: "photographer" | "videographer" | "dj" | "florist" | "caterer" | "venue";
+  location: string;
+  country: "Norway" | "Sweden" | "Denmark";
+  rating: number;
+  priceRange: string;
+  description: string;
+  saved: boolean;
+}
+
+export interface AITimeSlot {
+  id: string;
+  type: string;
+  title: string;
+  duration: number;
+  startTime: string;
+  endTime: string;
+  icon: string;
+}
