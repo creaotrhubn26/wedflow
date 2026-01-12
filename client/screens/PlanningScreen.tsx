@@ -21,7 +21,6 @@ import Animated, {
 } from "react-native-reanimated";
 
 import { ThemedText } from "@/components/ThemedText";
-import { Card } from "@/components/Card";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius, Colors } from "@/constants/theme";
 import { PlanningStackParamList } from "@/navigation/PlanningStackNavigator";
@@ -52,19 +51,18 @@ function getDaysUntilWedding(dateStr: string): number {
 
 function formatWeddingDate(dateStr: string): string {
   const date = new Date(dateStr);
-  return date.toLocaleDateString("nb-NO", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  return date.toLocaleDateString("nb-NO", { day: "numeric", month: "long", year: "numeric" });
 }
 
-interface QuickActionProps {
+interface ActionItemProps {
   icon: keyof typeof Feather.glyphMap;
   label: string;
+  subtitle?: string;
   theme: any;
-  badge?: string;
-  color?: string;
   onPress: () => void;
 }
 
-function QuickActionCard({ icon, label, theme, badge, color, onPress }: QuickActionProps) {
+function ActionItem({ icon, label, subtitle, theme, onPress }: ActionItemProps) {
   const scale = useSharedValue(1);
   const animatedStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
 
@@ -74,18 +72,44 @@ function QuickActionCard({ icon, label, theme, badge, color, onPress }: QuickAct
         onPress();
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       }}
-      onPressIn={() => { scale.value = withSpring(0.95, { damping: 15 }); }}
+      onPressIn={() => { scale.value = withSpring(0.97, { damping: 15 }); }}
       onPressOut={() => { scale.value = withSpring(1, { damping: 15 }); }}
     >
-      <Animated.View
-        style={[styles.quickCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }, animatedStyle]}
-      >
-        <View style={[styles.quickIcon, { backgroundColor: (color || Colors.dark.accent) + "20" }]}>
-          <Feather name={icon} size={18} color={color || Colors.dark.accent} />
+      <Animated.View style={[styles.actionItem, { backgroundColor: theme.backgroundDefault }, animatedStyle]}>
+        <View style={styles.actionIcon}>
+          <Feather name={icon} size={20} color={Colors.dark.accent} />
         </View>
-        <ThemedText style={styles.quickLabel} numberOfLines={1}>{label}</ThemedText>
-        {badge ? <ThemedText style={[styles.quickBadge, { color: color || Colors.dark.accent }]}>{badge}</ThemedText> : null}
+        <View style={styles.actionContent}>
+          <ThemedText style={styles.actionLabel}>{label}</ThemedText>
+          {subtitle ? <ThemedText style={[styles.actionSubtitle, { color: theme.textMuted }]}>{subtitle}</ThemedText> : null}
+        </View>
+        <Feather name="chevron-right" size={18} color={theme.textMuted} />
       </Animated.View>
+    </Pressable>
+  );
+}
+
+interface QuickButtonProps {
+  icon: keyof typeof Feather.glyphMap;
+  label: string;
+  color?: string;
+  theme: any;
+  onPress: () => void;
+}
+
+function QuickButton({ icon, label, color, theme, onPress }: QuickButtonProps) {
+  return (
+    <Pressable
+      onPress={() => {
+        onPress();
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }}
+      style={[styles.quickButton, { backgroundColor: theme.backgroundDefault }]}
+    >
+      <View style={[styles.quickButtonIcon, { backgroundColor: (color || Colors.dark.accent) + "15" }]}>
+        <Feather name={icon} size={18} color={color || Colors.dark.accent} />
+      </View>
+      <ThemedText style={styles.quickButtonLabel} numberOfLines={1}>{label}</ThemedText>
     </Pressable>
   );
 }
@@ -147,81 +171,103 @@ export default function PlanningScreen() {
     <ScrollView
       style={[styles.container, { backgroundColor: theme.backgroundRoot }]}
       contentContainerStyle={{
-        paddingTop: headerHeight + Spacing.lg,
+        paddingTop: headerHeight + Spacing.md,
         paddingBottom: tabBarHeight + Spacing.xl,
         paddingHorizontal: Spacing.lg,
       }}
       scrollIndicatorInsets={{ bottom: insets.bottom }}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.dark.accent} />}
     >
-      <Animated.View entering={FadeInDown.delay(100).duration(400)}>
-        <View style={styles.countdownCard}>
-          <View style={styles.countdownContent}>
-            <ThemedText style={[styles.daysNumber, { color: Colors.dark.accent }]}>{daysLeft}</ThemedText>
-            <ThemedText style={[styles.daysLabel, { color: theme.textSecondary }]}>dager igjen</ThemedText>
-          </View>
-          <View style={styles.weddingInfo}>
-            <ThemedText style={styles.coupleNames}>{wedding?.coupleNames}</ThemedText>
-            <ThemedText style={[styles.weddingDate, { color: theme.textSecondary }]}>
-              {wedding ? formatWeddingDate(wedding.weddingDate) : ""}
-            </ThemedText>
-            <ThemedText style={[styles.venue, { color: theme.textSecondary }]}>{wedding?.venue}</ThemedText>
-          </View>
-        </View>
-      </Animated.View>
-
-      <Animated.View entering={FadeInDown.delay(200).duration(400)}>
-        <ThemedText type="h4" style={styles.sectionLabel}>Planlegging</ThemedText>
-        <View style={styles.quickGrid}>
-          <QuickActionCard icon="calendar" label="Kjøreplan" theme={theme} onPress={() => navigation.navigate("Schedule")} />
-          <QuickActionCard icon="clock" label="Tidslinje" theme={theme} onPress={() => navigation.navigate("Timeline")} />
-          <QuickActionCard icon="check-square" label="Sjekkliste" theme={theme} onPress={() => navigation.navigate("Checklist")} />
-          <QuickActionCard icon="cpu" label="AI Tid" theme={theme} onPress={() => navigation.navigate("AITime")} />
-        </View>
-      </Animated.View>
-
-      <Animated.View entering={FadeInDown.delay(300).duration(400)}>
-        <ThemedText type="h4" style={styles.sectionLabel}>Økonomi</ThemedText>
-        <View style={styles.quickGrid}>
-          <QuickActionCard icon="dollar-sign" label="Budsjett" theme={theme} badge={`${budgetPercent}%`} onPress={() => navigation.navigate("Budget")} />
-          <QuickActionCard icon="sliders" label="Hva om...?" theme={theme} onPress={() => navigation.navigate("BudgetScenarios")} />
-          <QuickActionCard icon="briefcase" label="Leverandører" theme={theme} onPress={() => navigation.navigate("Vendors")} />
-          <QuickActionCard icon="users" label="Viktige" theme={theme} onPress={() => navigation.navigate("ImportantPeople")} />
-        </View>
-      </Animated.View>
-
-      <Animated.View entering={FadeInDown.delay(400).duration(400)}>
-        <ThemedText type="h4" style={styles.sectionLabel}>Inspirasjon & Info</ThemedText>
-        <View style={styles.quickGrid}>
-          <QuickActionCard icon="book-open" label="Tradisjoner" theme={theme} color="#BA68C8" onPress={() => navigation.navigate("Traditions")} />
-          <QuickActionCard icon="cloud" label="Værvarsel" theme={theme} color="#64B5F6" onPress={() => navigation.navigate("Weather")} />
-          <QuickActionCard icon="heart" label="Avspenning" theme={theme} color="#81C784" onPress={() => navigation.navigate("StressTracker")} />
-        </View>
-      </Animated.View>
-
-      <Animated.View entering={FadeInDown.delay(500).duration(400)}>
-        <Card elevation={1} onPress={() => navigation.navigate("Schedule")} style={[styles.previewCard, { borderColor: theme.border }]}>
-          <View style={styles.previewHeader}>
-            <View style={styles.previewTitleRow}>
-              <Feather name="clock" size={18} color={Colors.dark.accent} />
-              <ThemedText type="h4" style={styles.previewTitle}>Dagens kjøreplan</ThemedText>
+      <Animated.View entering={FadeInDown.delay(50).duration(400)}>
+        <View style={[styles.heroCard, { backgroundColor: theme.backgroundDefault }]}>
+          <View style={styles.heroTop}>
+            <View>
+              <ThemedText style={styles.heroNames}>{wedding?.coupleNames}</ThemedText>
+              <ThemedText style={[styles.heroVenue, { color: theme.textSecondary }]}>
+                <Feather name="map-pin" size={12} color={theme.textMuted} /> {wedding?.venue}
+              </ThemedText>
             </View>
-            <Feather name="chevron-right" size={18} color={theme.textSecondary} />
+            <View style={styles.heroCountdown}>
+              <ThemedText style={[styles.heroDays, { color: Colors.dark.accent }]}>{daysLeft}</ThemedText>
+              <ThemedText style={[styles.heroDaysLabel, { color: theme.textMuted }]}>dager</ThemedText>
+            </View>
           </View>
-          {schedule.length > 0 ? (
-            <View style={styles.schedulePreview}>
-              {schedule.slice(0, 3).map((event) => (
+          <View style={[styles.heroDivider, { backgroundColor: theme.border }]} />
+          <View style={styles.heroBottom}>
+            <View style={styles.heroStat}>
+              <Feather name="calendar" size={14} color={Colors.dark.accent} />
+              <ThemedText style={[styles.heroStatText, { color: theme.text }]}>
+                {wedding ? formatWeddingDate(wedding.weddingDate) : ""}
+              </ThemedText>
+            </View>
+            <View style={styles.heroStat}>
+              <Feather name="dollar-sign" size={14} color={Colors.dark.accent} />
+              <ThemedText style={[styles.heroStatText, { color: theme.text }]}>
+                {budgetPercent}% av budsjettet brukt
+              </ThemedText>
+            </View>
+          </View>
+        </View>
+      </Animated.View>
+
+      <Animated.View entering={FadeInDown.delay(150).duration(400)}>
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.quickScroll} contentContainerStyle={styles.quickScrollContent}>
+          <QuickButton icon="check-square" label="Sjekkliste" theme={theme} onPress={() => navigation.navigate("Checklist")} />
+          <QuickButton icon="cloud" label="Vær" color="#64B5F6" theme={theme} onPress={() => navigation.navigate("Weather")} />
+          <QuickButton icon="heart" label="Pust" color="#81C784" theme={theme} onPress={() => navigation.navigate("StressTracker")} />
+          <QuickButton icon="book-open" label="Tradisjoner" color="#BA68C8" theme={theme} onPress={() => navigation.navigate("Traditions")} />
+        </ScrollView>
+      </Animated.View>
+
+      <Animated.View entering={FadeInDown.delay(250).duration(400)}>
+        <ThemedText style={styles.sectionTitle}>Planlegging</ThemedText>
+        <View style={[styles.sectionCard, { backgroundColor: theme.backgroundDefault }]}>
+          <ActionItem icon="calendar" label="Kjøreplan" subtitle="Planlegg bryllupsdagen" theme={theme} onPress={() => navigation.navigate("Schedule")} />
+          <View style={[styles.divider, { backgroundColor: theme.border }]} />
+          <ActionItem icon="clock" label="Tidslinje" subtitle="Visuell oversikt" theme={theme} onPress={() => navigation.navigate("Timeline")} />
+          <View style={[styles.divider, { backgroundColor: theme.border }]} />
+          <ActionItem icon="cpu" label="AI Tidsberegner" subtitle="Smart fotoplanlegger" theme={theme} onPress={() => navigation.navigate("AITime")} />
+        </View>
+      </Animated.View>
+
+      <Animated.View entering={FadeInDown.delay(350).duration(400)}>
+        <ThemedText style={styles.sectionTitle}>Økonomi</ThemedText>
+        <View style={[styles.sectionCard, { backgroundColor: theme.backgroundDefault }]}>
+          <ActionItem icon="dollar-sign" label="Budsjett" subtitle={`${budgetPercent}% brukt`} theme={theme} onPress={() => navigation.navigate("Budget")} />
+          <View style={[styles.divider, { backgroundColor: theme.border }]} />
+          <ActionItem icon="sliders" label="Hva om...?" subtitle="Scenario-kalkulator" theme={theme} onPress={() => navigation.navigate("BudgetScenarios")} />
+          <View style={[styles.divider, { backgroundColor: theme.border }]} />
+          <ActionItem icon="briefcase" label="Leverandører" subtitle="Skandinaviske leverandører" theme={theme} onPress={() => navigation.navigate("Vendors")} />
+        </View>
+      </Animated.View>
+
+      <Animated.View entering={FadeInDown.delay(450).duration(400)}>
+        <ThemedText style={styles.sectionTitle}>Team</ThemedText>
+        <View style={[styles.sectionCard, { backgroundColor: theme.backgroundDefault }]}>
+          <ActionItem icon="users" label="Viktige personer" subtitle="Forlovere, toastmaster" theme={theme} onPress={() => navigation.navigate("ImportantPeople")} />
+        </View>
+      </Animated.View>
+
+      {schedule.length > 0 ? (
+        <Animated.View entering={FadeInDown.delay(550).duration(400)}>
+          <Pressable onPress={() => navigation.navigate("Schedule")}>
+            <View style={[styles.schedulePreview, { backgroundColor: theme.backgroundDefault }]}>
+              <View style={styles.scheduleHeader}>
+                <ThemedText style={styles.scheduleTitle}>Neste hendelser</ThemedText>
+                <Feather name="arrow-right" size={16} color={Colors.dark.accent} />
+              </View>
+              {schedule.slice(0, 2).map((event, idx) => (
                 <View key={event.id} style={styles.scheduleRow}>
-                  <ThemedText style={[styles.scheduleTime, { color: Colors.dark.accent }]}>{event.time}</ThemedText>
-                  <ThemedText style={styles.scheduleTitle}>{event.title}</ThemedText>
+                  <View style={[styles.scheduleTime, { backgroundColor: Colors.dark.accent + "20" }]}>
+                    <ThemedText style={[styles.scheduleTimeText, { color: Colors.dark.accent }]}>{event.time}</ThemedText>
+                  </View>
+                  <ThemedText style={styles.scheduleEventTitle}>{event.title}</ThemedText>
                 </View>
               ))}
             </View>
-          ) : (
-            <ThemedText style={[styles.emptyText, { color: theme.textMuted }]}>Ingen hendelser ennå</ThemedText>
-          )}
-        </Card>
-      </Animated.View>
+          </Pressable>
+        </Animated.View>
+      ) : null}
     </ScrollView>
   );
 }
@@ -229,34 +275,163 @@ export default function PlanningScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   centered: { justifyContent: "center", alignItems: "center" },
-  countdownCard: { flexDirection: "row", marginBottom: Spacing.xl, alignItems: "center" },
-  countdownContent: { alignItems: "center", marginRight: Spacing["2xl"] },
-  daysNumber: { fontSize: 52, fontWeight: "700" },
-  daysLabel: { fontSize: 13, marginTop: -6 },
-  weddingInfo: { flex: 1 },
-  coupleNames: { fontSize: 20, fontWeight: "600", marginBottom: Spacing.xs },
-  weddingDate: { fontSize: 13 },
-  venue: { fontSize: 13 },
-  sectionLabel: { marginBottom: Spacing.md, marginTop: Spacing.sm },
-  quickGrid: { flexDirection: "row", flexWrap: "wrap", gap: Spacing.sm, marginBottom: Spacing.lg },
-  quickCard: {
-    width: "48%",
+
+  heroCard: {
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
+    marginBottom: Spacing.md,
+  },
+  heroTop: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+  },
+  heroNames: {
+    fontSize: 22,
+    fontWeight: "700",
+    letterSpacing: 0.3,
+  },
+  heroVenue: {
+    fontSize: 14,
+    marginTop: Spacing.xs,
+  },
+  heroCountdown: {
+    alignItems: "center",
+  },
+  heroDays: {
+    fontSize: 44,
+    fontWeight: "700",
+    lineHeight: 48,
+  },
+  heroDaysLabel: {
+    fontSize: 12,
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    marginTop: -4,
+  },
+  heroDivider: {
+    height: 1,
+    marginVertical: Spacing.md,
+  },
+  heroBottom: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  heroStat: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.xs,
+  },
+  heroStatText: {
+    fontSize: 13,
+  },
+
+  quickScroll: {
+    marginBottom: Spacing.lg,
+    marginHorizontal: -Spacing.lg,
+  },
+  quickScrollContent: {
+    paddingHorizontal: Spacing.lg,
+    gap: Spacing.sm,
+  },
+  quickButton: {
+    alignItems: "center",
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    borderRadius: BorderRadius.md,
+    minWidth: 80,
+  },
+  quickButtonIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: Spacing.xs,
+  },
+  quickButtonLabel: {
+    fontSize: 12,
+    fontWeight: "500",
+  },
+
+  sectionTitle: {
+    fontSize: 13,
+    fontWeight: "600",
+    color: "#888888",
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    marginBottom: Spacing.sm,
+    marginTop: Spacing.sm,
+    marginLeft: Spacing.xs,
+  },
+  sectionCard: {
+    borderRadius: BorderRadius.lg,
+    overflow: "hidden",
+    marginBottom: Spacing.md,
+  },
+  actionItem: {
     flexDirection: "row",
     alignItems: "center",
     padding: Spacing.md,
-    borderRadius: BorderRadius.md,
-    borderWidth: 1,
+    paddingVertical: Spacing.lg,
   },
-  quickIcon: { width: 36, height: 36, borderRadius: 18, justifyContent: "center", alignItems: "center", marginRight: Spacing.sm },
-  quickLabel: { flex: 1, fontSize: 13, fontWeight: "500" },
-  quickBadge: { fontSize: 12, fontWeight: "600" },
-  previewCard: { borderWidth: 1 },
-  previewHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: Spacing.md },
-  previewTitleRow: { flexDirection: "row", alignItems: "center", gap: Spacing.sm },
-  previewTitle: {},
-  schedulePreview: { gap: Spacing.sm },
-  scheduleRow: { flexDirection: "row", alignItems: "center" },
-  scheduleTime: { width: 50, fontSize: 13, fontWeight: "600" },
-  scheduleTitle: { fontSize: 14 },
-  emptyText: { fontSize: 13 },
+  actionIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: Colors.dark.accent + "15",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: Spacing.md,
+  },
+  actionContent: {
+    flex: 1,
+  },
+  actionLabel: {
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  actionSubtitle: {
+    fontSize: 13,
+    marginTop: 2,
+  },
+  divider: {
+    height: 1,
+    marginLeft: 64,
+  },
+
+  schedulePreview: {
+    borderRadius: BorderRadius.lg,
+    padding: Spacing.lg,
+    marginTop: Spacing.sm,
+  },
+  scheduleHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: Spacing.md,
+  },
+  scheduleTitle: {
+    fontSize: 15,
+    fontWeight: "600",
+  },
+  scheduleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: Spacing.sm,
+  },
+  scheduleTime: {
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.sm,
+    marginRight: Spacing.md,
+  },
+  scheduleTimeText: {
+    fontSize: 13,
+    fontWeight: "600",
+  },
+  scheduleEventTitle: {
+    fontSize: 14,
+    flex: 1,
+  },
 });
