@@ -277,6 +277,12 @@ export default function ProfileScreen() {
             onPress={() => Alert.alert("Wedflow", "Versjon 1.0.0\nby Norwedfilm\n\nKontakt:\ncontact@norwedfilm.no\nnorwedfilm.no\n@norwedfilm")}
           />
           <MenuItem
+            icon="bell"
+            label="Varsler og påminnelser"
+            theme={theme}
+            onPress={() => navigation.navigate("NotificationSettings")}
+          />
+          <MenuItem
             icon="share-2"
             label="Del med partner"
             theme={theme}

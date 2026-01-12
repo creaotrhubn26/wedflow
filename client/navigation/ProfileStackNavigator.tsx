@@ -9,6 +9,7 @@ import VendorLoginScreen from "@/screens/VendorLoginScreen";
 import VendorDashboardScreen from "@/screens/VendorDashboardScreen";
 import DeliveryCreateScreen from "@/screens/DeliveryCreateScreen";
 import VendorRegistrationScreen from "@/screens/VendorRegistrationScreen";
+import NotificationSettingsScreen from "@/screens/NotificationSettingsScreen";
 import { useScreenOptions } from "@/hooks/useScreenOptions";
 
 export type ProfileStackParamList = {
@@ -20,6 +21,7 @@ export type ProfileStackParamList = {
   VendorDashboard: undefined;
   DeliveryCreate: undefined;
   VendorRegistration: undefined;
+  NotificationSettings: undefined;
 };
 
 const Stack = createNativeStackNavigator<ProfileStackParamList>();
@@ -83,6 +85,13 @@ export default function ProfileStackNavigator() {
         component={VendorRegistrationScreen}
         options={{
           title: "Bli leverandør",
+        }}
+      />
+      <Stack.Screen
+        name="NotificationSettings"
+        component={NotificationSettingsScreen}
+        options={{
+          title: "Varsler",
         }}
       />
     </Stack.Navigator>
