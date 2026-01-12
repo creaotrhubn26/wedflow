@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -24,6 +24,40 @@ import { Spacing, BorderRadius, Colors } from "@/constants/theme";
 import { getApiUrl } from "@/lib/query-client";
 
 const COUPLE_STORAGE_KEY = "wedflow_couple_session";
+
+const getCountdown = (validUntil: string): { text: string; color: string; urgency: "urgent" | "warning" | "normal" | "expired" } => {
+  const now = new Date();
+  const expiry = new Date(validUntil);
+  const diffMs = expiry.getTime() - now.getTime();
+  
+  if (diffMs <= 0) {
+    return { text: "Utløpt", color: "#F44336", urgency: "expired" };
+  }
+  
+  const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+  const diffDays = Math.floor(diffHours / 24);
+  const remainingHours = diffHours % 24;
+  
+  if (diffHours < 24) {
+    return { 
+      text: `${diffHours} timer igjen`, 
+      color: "#F44336",
+      urgency: "urgent" 
+    };
+  } else if (diffDays <= 3) {
+    return { 
+      text: diffDays === 1 ? `1 dag ${remainingHours}t igjen` : `${diffDays} dager igjen`, 
+      color: "#FF9800",
+      urgency: "warning" 
+    };
+  } else {
+    return { 
+      text: `${diffDays} dager igjen`, 
+      color: "#4CAF50",
+      urgency: "normal" 
+    };
+  }
+};
 
 interface OfferItem {
   id: string;
@@ -180,9 +214,28 @@ export default function CoupleOffersScreen() {
                   Fra {offer.vendor.businessName}
                 </ThemedText>
               ) : null}
-              <ThemedText style={[styles.offerAmount, { color: Colors.dark.accent }]}>
-                {formatPrice(offer.totalAmount)}
-              </ThemedText>
+              <View style={styles.priceAndCountdown}>
+                <ThemedText style={[styles.offerAmount, { color: Colors.dark.accent }]}>
+                  {formatPrice(offer.totalAmount)}
+                </ThemedText>
+                {offer.status === "pending" && offer.validUntil ? (
+                  (() => {
+                    const countdown = getCountdown(offer.validUntil);
+                    return (
+                      <View style={[styles.countdownBadge, { backgroundColor: countdown.color + "15", borderColor: countdown.color + "40" }]}>
+                        <Feather 
+                          name={countdown.urgency === "urgent" ? "alert-circle" : "clock"} 
+                          size={12} 
+                          color={countdown.color} 
+                        />
+                        <ThemedText style={[styles.countdownText, { color: countdown.color }]}>
+                          {countdown.text}
+                        </ThemedText>
+                      </View>
+                    );
+                  })()
+                ) : null}
+              </View>
             </View>
             <Feather
               name={isExpanded ? "chevron-up" : "chevron-down"}
@@ -393,6 +446,25 @@ const styles = StyleSheet.create({
   offerAmount: {
     fontSize: 18,
     fontWeight: "700",
+  },
+  priceAndCountdown: {
+    flexDirection: "row",
+    alignItems: "center",
+    flexWrap: "wrap",
+    gap: Spacing.sm,
+  },
+  countdownBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 4,
+    borderRadius: BorderRadius.full,
+    borderWidth: 1,
+  },
+  countdownText: {
+    fontSize: 12,
+    fontWeight: "600",
   },
   offerDetails: {
     borderTopWidth: 1,

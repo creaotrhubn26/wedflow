@@ -34,6 +34,16 @@ interface Message {
   readAt: string | null;
 }
 
+interface ConversationDetails {
+  id: string;
+  couple: {
+    id: string;
+    displayName: string;
+    email: string;
+    lastActiveAt: string | null;
+  };
+}
+
 type Props = NativeStackScreenProps<any, "VendorChat">;
 
 export default function VendorChatScreen({ route, navigation }: Props) {
@@ -130,6 +140,21 @@ export default function VendorChatScreen({ route, navigation }: Props) {
     }
   };
 
+  const { data: conversationDetails } = useQuery<ConversationDetails>({
+    queryKey: ["/api/vendor/conversations", conversationId, "details"],
+    queryFn: async () => {
+      if (!sessionToken) return null;
+      const response = await fetch(
+        new URL(`/api/vendor/conversations/${conversationId}`, getApiUrl()).toString(),
+        { headers: { Authorization: `Bearer ${sessionToken}` } }
+      );
+      if (!response.ok) throw new Error("Failed to fetch conversation");
+      return response.json();
+    },
+    enabled: !!sessionToken && !!conversationId,
+    refetchInterval: 30000,
+  });
+
   const { data: messages = [], isLoading } = useQuery<Message[]>({
     queryKey: ["/api/vendor/conversations", conversationId, "messages"],
     queryFn: async () => {
@@ -144,6 +169,23 @@ export default function VendorChatScreen({ route, navigation }: Props) {
     enabled: !!sessionToken && !!conversationId,
     refetchInterval: 5000,
   });
+
+  const formatLastActive = (dateStr: string | null): string => {
+    if (!dateStr) return "Aldri aktiv";
+    const date = new Date(dateStr);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / (1000 * 60));
+    const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    
+    if (diffMins < 5) return "Aktiv nå";
+    if (diffMins < 60) return `Aktiv ${diffMins} min siden`;
+    if (diffHours < 24) return `Aktiv ${diffHours}t siden`;
+    if (diffDays === 1) return "Aktiv i går";
+    if (diffDays < 7) return `Aktiv ${diffDays} dager siden`;
+    return date.toLocaleDateString("nb-NO", { day: "numeric", month: "short" });
+  };
 
   const sendMutation = useMutation({
     mutationFn: async (body: string) => {
@@ -224,14 +266,25 @@ export default function VendorChatScreen({ route, navigation }: Props) {
             >
               {item.body}
             </ThemedText>
-            <ThemedText
-              style={[
-                styles.messageTime,
-                { color: isFromMe ? "rgba(0,0,0,0.6)" : theme.textMuted },
-              ]}
-            >
-              {formatTime(item.createdAt)}
-            </ThemedText>
+            <View style={styles.messageFooter}>
+              <ThemedText
+                style={[
+                  styles.messageTime,
+                  { color: isFromMe ? "rgba(0,0,0,0.6)" : theme.textMuted },
+                ]}
+              >
+                {formatTime(item.createdAt)}
+              </ThemedText>
+              {isFromMe ? (
+                <View style={styles.readReceipt}>
+                  {item.readAt ? (
+                    <Feather name="check-circle" size={12} color="rgba(0,0,0,0.7)" />
+                  ) : (
+                    <Feather name="check" size={12} color="rgba(0,0,0,0.4)" />
+                  )}
+                </View>
+              ) : null}
+            </View>
           </Pressable>
         </View>
       </Animated.View>
@@ -248,15 +301,24 @@ export default function VendorChatScreen({ route, navigation }: Props) {
     );
   }
 
+  const lastActiveText = formatLastActive(conversationDetails?.couple?.lastActiveAt ?? null);
+  const isActive = lastActiveText === "Aktiv nå";
+
   return (
     <View style={[styles.container, { backgroundColor: theme.backgroundRoot }]}>
+      <View style={[styles.lastActiveBar, { backgroundColor: theme.backgroundDefault, borderBottomColor: theme.border }]}>
+        <View style={[styles.activeIndicator, { backgroundColor: isActive ? "#4CAF50" : theme.textMuted }]} />
+        <ThemedText style={[styles.lastActiveText, { color: isActive ? "#4CAF50" : theme.textMuted }]}>
+          {lastActiveText}
+        </ThemedText>
+      </View>
       <FlatList
         ref={flatListRef}
         data={messages}
         renderItem={renderMessage}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{
-          paddingTop: headerHeight + Spacing.md,
+          paddingTop: headerHeight + Spacing.xl + Spacing.md,
           paddingHorizontal: Spacing.md,
           paddingBottom: Spacing.md,
         }}
@@ -347,10 +409,41 @@ const styles = StyleSheet.create({
     fontSize: 15,
     lineHeight: 20,
   },
+  messageFooter: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    gap: 4,
+    marginTop: 4,
+  },
   messageTime: {
     fontSize: 11,
-    marginTop: 4,
-    alignSelf: "flex-end",
+  },
+  readReceipt: {
+    marginLeft: 2,
+  },
+  lastActiveBar: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    zIndex: 10,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: Spacing.xs,
+    paddingTop: Spacing.xs + 100,
+    borderBottomWidth: 1,
+    gap: 6,
+  },
+  activeIndicator: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+  },
+  lastActiveText: {
+    fontSize: 12,
+    fontWeight: "500",
   },
   inputContainer: {
     flexDirection: "row",
