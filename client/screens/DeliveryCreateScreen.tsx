@@ -25,7 +25,7 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 const VENDOR_STORAGE_KEY = "wedflow_vendor_session";
 
 interface DeliveryItemInput {
-  type: "gallery" | "video" | "website" | "download" | "other";
+  type: "gallery" | "video" | "website" | "download" | "contract" | "document" | "other";
   label: string;
   url: string;
   description: string;
@@ -40,6 +40,8 @@ const ITEM_TYPES = [
   { value: "video" as const, label: "Video", icon: "video" },
   { value: "website" as const, label: "Nettside", icon: "globe" },
   { value: "download" as const, label: "Nedlasting", icon: "download" },
+  { value: "contract" as const, label: "Kontrakt", icon: "file-text" },
+  { value: "document" as const, label: "Dokument", icon: "file" },
   { value: "other" as const, label: "Annet", icon: "link" },
 ];
 
@@ -157,6 +159,8 @@ export default function DeliveryCreateScreen({ navigation }: Props) {
       video: "video",
       globe: "globe",
       download: "download",
+      "file-text": "file-text",
+      file: "file",
       link: "link",
     };
     return map[iconName] || "link";

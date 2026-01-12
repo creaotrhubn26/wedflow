@@ -142,6 +142,8 @@ export default function VendorDashboardScreen({ navigation }: Props) {
       case "video": return "video";
       case "website": return "globe";
       case "download": return "download";
+      case "contract": return "file-text";
+      case "document": return "file";
       default: return "link";
     }
   };

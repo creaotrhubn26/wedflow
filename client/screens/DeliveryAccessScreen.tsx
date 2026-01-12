@@ -97,6 +97,8 @@ export default function DeliveryAccessScreen() {
       case "video": return "video";
       case "website": return "globe";
       case "download": return "download";
+      case "contract": return "file-text";
+      case "document": return "file";
       default: return "link";
     }
   };
@@ -107,6 +109,8 @@ export default function DeliveryAccessScreen() {
       case "video": return "Video";
       case "website": return "Nettside";
       case "download": return "Nedlasting";
+      case "contract": return "Kontrakt";
+      case "document": return "Dokument";
       default: return "Lenke";
     }
   };
