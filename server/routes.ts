@@ -1,7 +1,7 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "node:http";
 import { db } from "./db";
-import { vendors, vendorCategories, vendorRegistrationSchema, deliveries, deliveryItems, createDeliverySchema, inspirationCategories, inspirations, inspirationMedia, createInspirationSchema, vendorFeatures, vendorInspirationCategories, inspirationInquiries, createInquirySchema, coupleProfiles, coupleSessions, conversations, messages, coupleLoginSchema, sendMessageSchema, reminders, createReminderSchema } from "@shared/schema";
+import { vendors, vendorCategories, vendorRegistrationSchema, deliveries, deliveryItems, createDeliverySchema, inspirationCategories, inspirations, inspirationMedia, createInspirationSchema, vendorFeatures, vendorInspirationCategories, inspirationInquiries, createInquirySchema, coupleProfiles, coupleSessions, conversations, messages, coupleLoginSchema, sendMessageSchema, reminders, createReminderSchema, vendorProducts, createVendorProductSchema, vendorOffers, vendorOfferItems, createOfferSchema } from "@shared/schema";
 import { eq, and, desc } from "drizzle-orm";
 import crypto from "crypto";
 
@@ -1539,6 +1539,480 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting reminder:", error);
       res.status(500).json({ error: "Kunne ikke slette påminnelse" });
+    }
+  });
+
+  // Vendor Products endpoints
+  app.get("/api/vendor/products", async (req: Request, res: Response) => {
+    try {
+      const token = req.headers.authorization?.replace("Bearer ", "");
+      if (!token) {
+        return res.status(401).json({ error: "Ikke autentisert" });
+      }
+
+      const session = VENDOR_SESSIONS.get(token);
+      if (!session || session.expiresAt < new Date()) {
+        return res.status(401).json({ error: "Ugyldig økt" });
+      }
+
+      const products = await db.select()
+        .from(vendorProducts)
+        .where(and(
+          eq(vendorProducts.vendorId, session.vendorId),
+          eq(vendorProducts.isArchived, false)
+        ))
+        .orderBy(vendorProducts.sortOrder);
+
+      res.json(products);
+    } catch (error) {
+      console.error("Error fetching vendor products:", error);
+      res.status(500).json({ error: "Kunne ikke hente produkter" });
+    }
+  });
+
+  app.post("/api/vendor/products", async (req: Request, res: Response) => {
+    try {
+      const token = req.headers.authorization?.replace("Bearer ", "");
+      if (!token) {
+        return res.status(401).json({ error: "Ikke autentisert" });
+      }
+
+      const session = VENDOR_SESSIONS.get(token);
+      if (!session || session.expiresAt < new Date()) {
+        return res.status(401).json({ error: "Ugyldig økt" });
+      }
+
+      const validatedData = createVendorProductSchema.parse(req.body);
+      
+      const [product] = await db.insert(vendorProducts)
+        .values({
+          vendorId: session.vendorId,
+          title: validatedData.title,
+          description: validatedData.description,
+          unitPrice: validatedData.unitPrice,
+          unitType: validatedData.unitType,
+          leadTimeDays: validatedData.leadTimeDays,
+          minQuantity: validatedData.minQuantity,
+          categoryTag: validatedData.categoryTag,
+          imageUrl: validatedData.imageUrl || null,
+          sortOrder: validatedData.sortOrder,
+        })
+        .returning();
+
+      res.status(201).json(product);
+    } catch (error) {
+      console.error("Error creating vendor product:", error);
+      res.status(500).json({ error: "Kunne ikke opprette produkt" });
+    }
+  });
+
+  app.patch("/api/vendor/products/:id", async (req: Request, res: Response) => {
+    try {
+      const token = req.headers.authorization?.replace("Bearer ", "");
+      if (!token) {
+        return res.status(401).json({ error: "Ikke autentisert" });
+      }
+
+      const session = VENDOR_SESSIONS.get(token);
+      if (!session || session.expiresAt < new Date()) {
+        return res.status(401).json({ error: "Ugyldig økt" });
+      }
+
+      const { id } = req.params;
+      const updates = req.body;
+
+      // Verify ownership
+      const [existing] = await db.select()
+        .from(vendorProducts)
+        .where(and(
+          eq(vendorProducts.id, id),
+          eq(vendorProducts.vendorId, session.vendorId)
+        ));
+
+      if (!existing) {
+        return res.status(404).json({ error: "Produkt ikke funnet" });
+      }
+
+      const [updated] = await db.update(vendorProducts)
+        .set({ ...updates, updatedAt: new Date() })
+        .where(eq(vendorProducts.id, id))
+        .returning();
+
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating vendor product:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere produkt" });
+    }
+  });
+
+  app.delete("/api/vendor/products/:id", async (req: Request, res: Response) => {
+    try {
+      const token = req.headers.authorization?.replace("Bearer ", "");
+      if (!token) {
+        return res.status(401).json({ error: "Ikke autentisert" });
+      }
+
+      const session = VENDOR_SESSIONS.get(token);
+      if (!session || session.expiresAt < new Date()) {
+        return res.status(401).json({ error: "Ugyldig økt" });
+      }
+
+      const { id } = req.params;
+
+      // Soft delete - archive the product
+      const [archived] = await db.update(vendorProducts)
+        .set({ isArchived: true, updatedAt: new Date() })
+        .where(and(
+          eq(vendorProducts.id, id),
+          eq(vendorProducts.vendorId, session.vendorId)
+        ))
+        .returning();
+
+      if (!archived) {
+        return res.status(404).json({ error: "Produkt ikke funnet" });
+      }
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting vendor product:", error);
+      res.status(500).json({ error: "Kunne ikke slette produkt" });
+    }
+  });
+
+  // Vendor Offers endpoints
+  app.get("/api/vendor/offers", async (req: Request, res: Response) => {
+    try {
+      const token = req.headers.authorization?.replace("Bearer ", "");
+      if (!token) {
+        return res.status(401).json({ error: "Ikke autentisert" });
+      }
+
+      const session = VENDOR_SESSIONS.get(token);
+      if (!session || session.expiresAt < new Date()) {
+        return res.status(401).json({ error: "Ugyldig økt" });
+      }
+
+      const offers = await db.select({
+        offer: vendorOffers,
+        couple: {
+          id: coupleProfiles.id,
+          displayName: coupleProfiles.displayName,
+          email: coupleProfiles.email,
+        },
+      })
+        .from(vendorOffers)
+        .leftJoin(coupleProfiles, eq(vendorOffers.coupleId, coupleProfiles.id))
+        .where(eq(vendorOffers.vendorId, session.vendorId))
+        .orderBy(desc(vendorOffers.createdAt));
+
+      // Get offer items for each offer
+      const offersWithItems = await Promise.all(
+        offers.map(async ({ offer, couple }) => {
+          const items = await db.select()
+            .from(vendorOfferItems)
+            .where(eq(vendorOfferItems.offerId, offer.id))
+            .orderBy(vendorOfferItems.sortOrder);
+          return { ...offer, couple, items };
+        })
+      );
+
+      res.json(offersWithItems);
+    } catch (error) {
+      console.error("Error fetching vendor offers:", error);
+      res.status(500).json({ error: "Kunne ikke hente tilbud" });
+    }
+  });
+
+  app.post("/api/vendor/offers", async (req: Request, res: Response) => {
+    try {
+      const token = req.headers.authorization?.replace("Bearer ", "");
+      if (!token) {
+        return res.status(401).json({ error: "Ikke autentisert" });
+      }
+
+      const session = VENDOR_SESSIONS.get(token);
+      if (!session || session.expiresAt < new Date()) {
+        return res.status(401).json({ error: "Ugyldig økt" });
+      }
+
+      const validatedData = createOfferSchema.parse(req.body);
+      
+      // Calculate total
+      const totalAmount = validatedData.items.reduce(
+        (sum, item) => sum + (item.quantity * item.unitPrice), 
+        0
+      );
+
+      const [offer] = await db.insert(vendorOffers)
+        .values({
+          vendorId: session.vendorId,
+          coupleId: validatedData.coupleId,
+          conversationId: validatedData.conversationId || null,
+          title: validatedData.title,
+          message: validatedData.message,
+          totalAmount,
+          validUntil: validatedData.validUntil ? new Date(validatedData.validUntil) : null,
+        })
+        .returning();
+
+      // Insert offer items
+      const items = await Promise.all(
+        validatedData.items.map(async (item, index) => {
+          const [offerItem] = await db.insert(vendorOfferItems)
+            .values({
+              offerId: offer.id,
+              productId: item.productId || null,
+              title: item.title,
+              description: item.description,
+              quantity: item.quantity,
+              unitPrice: item.unitPrice,
+              lineTotal: item.quantity * item.unitPrice,
+              sortOrder: index,
+            })
+            .returning();
+          return offerItem;
+        })
+      );
+
+      // If there's a conversation, add a system message about the offer
+      if (validatedData.conversationId) {
+        await db.insert(messages).values({
+          conversationId: validatedData.conversationId,
+          senderType: "vendor",
+          senderId: session.vendorId,
+          body: `📋 Nytt tilbud: ${validatedData.title}\nTotalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`,
+        });
+
+        // Update conversation
+        await db.update(conversations)
+          .set({ 
+            lastMessageAt: new Date(),
+            coupleUnreadCount: 1,
+          })
+          .where(eq(conversations.id, validatedData.conversationId));
+      }
+
+      res.status(201).json({ ...offer, items });
+    } catch (error) {
+      console.error("Error creating vendor offer:", error);
+      res.status(500).json({ error: "Kunne ikke opprette tilbud" });
+    }
+  });
+
+  app.patch("/api/vendor/offers/:id", async (req: Request, res: Response) => {
+    try {
+      const token = req.headers.authorization?.replace("Bearer ", "");
+      if (!token) {
+        return res.status(401).json({ error: "Ikke autentisert" });
+      }
+
+      const session = VENDOR_SESSIONS.get(token);
+      if (!session || session.expiresAt < new Date()) {
+        return res.status(401).json({ error: "Ugyldig økt" });
+      }
+
+      const { id } = req.params;
+      const updates = req.body;
+
+      // Verify ownership
+      const [existing] = await db.select()
+        .from(vendorOffers)
+        .where(and(
+          eq(vendorOffers.id, id),
+          eq(vendorOffers.vendorId, session.vendorId)
+        ));
+
+      if (!existing) {
+        return res.status(404).json({ error: "Tilbud ikke funnet" });
+      }
+
+      const [updated] = await db.update(vendorOffers)
+        .set({ ...updates, updatedAt: new Date() })
+        .where(eq(vendorOffers.id, id))
+        .returning();
+
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating vendor offer:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere tilbud" });
+    }
+  });
+
+  // Couple can accept/decline offers
+  app.post("/api/couple/offers/:id/respond", async (req: Request, res: Response) => {
+    try {
+      const token = req.headers.authorization?.replace("Bearer ", "");
+      if (!token) {
+        return res.status(401).json({ error: "Ikke autentisert" });
+      }
+
+      // Check couple session
+      let coupleId = COUPLE_SESSIONS.get(token)?.coupleId;
+      if (!coupleId) {
+        const [session] = await db.select()
+          .from(coupleSessions)
+          .where(eq(coupleSessions.token, token));
+
+        if (!session || session.expiresAt < new Date()) {
+          return res.status(401).json({ error: "Ugyldig økt" });
+        }
+        coupleId = session.coupleId;
+        COUPLE_SESSIONS.set(token, { coupleId, expiresAt: session.expiresAt });
+      }
+
+      const { id } = req.params;
+      const { response } = req.body; // 'accept' or 'decline'
+
+      // Verify ownership
+      const [offer] = await db.select()
+        .from(vendorOffers)
+        .where(and(
+          eq(vendorOffers.id, id),
+          eq(vendorOffers.coupleId, coupleId)
+        ));
+
+      if (!offer) {
+        return res.status(404).json({ error: "Tilbud ikke funnet" });
+      }
+
+      if (offer.status !== "pending") {
+        return res.status(400).json({ error: "Tilbudet er allerede behandlet" });
+      }
+
+      const updates: Record<string, any> = {
+        status: response === "accept" ? "accepted" : "declined",
+        updatedAt: new Date(),
+      };
+
+      if (response === "accept") {
+        updates.acceptedAt = new Date();
+      } else {
+        updates.declinedAt = new Date();
+      }
+
+      const [updated] = await db.update(vendorOffers)
+        .set(updates)
+        .where(eq(vendorOffers.id, id))
+        .returning();
+
+      // Notify vendor via message if there's a conversation
+      if (offer.conversationId) {
+        const statusText = response === "accept" ? "akseptert" : "avslått";
+        await db.insert(messages).values({
+          conversationId: offer.conversationId,
+          senderType: "couple",
+          senderId: coupleId,
+          body: `✅ Tilbud "${offer.title}" er ${statusText}`,
+        });
+
+        await db.update(conversations)
+          .set({ 
+            lastMessageAt: new Date(),
+            vendorUnreadCount: 1,
+          })
+          .where(eq(conversations.id, offer.conversationId));
+      }
+
+      res.json(updated);
+    } catch (error) {
+      console.error("Error responding to offer:", error);
+      res.status(500).json({ error: "Kunne ikke svare på tilbud" });
+    }
+  });
+
+  // Get offers for a couple
+  app.get("/api/couple/offers", async (req: Request, res: Response) => {
+    try {
+      const token = req.headers.authorization?.replace("Bearer ", "");
+      if (!token) {
+        return res.status(401).json({ error: "Ikke autentisert" });
+      }
+
+      // Check couple session
+      let coupleId = COUPLE_SESSIONS.get(token)?.coupleId;
+      if (!coupleId) {
+        const [session] = await db.select()
+          .from(coupleSessions)
+          .where(eq(coupleSessions.token, token));
+
+        if (!session || session.expiresAt < new Date()) {
+          return res.status(401).json({ error: "Ugyldig økt" });
+        }
+        coupleId = session.coupleId;
+        COUPLE_SESSIONS.set(token, { coupleId, expiresAt: session.expiresAt });
+      }
+
+      const offers = await db.select({
+        offer: vendorOffers,
+        vendor: {
+          id: vendors.id,
+          businessName: vendors.businessName,
+          imageUrl: vendors.imageUrl,
+        },
+      })
+        .from(vendorOffers)
+        .leftJoin(vendors, eq(vendorOffers.vendorId, vendors.id))
+        .where(eq(vendorOffers.coupleId, coupleId))
+        .orderBy(desc(vendorOffers.createdAt));
+
+      // Get items for each offer
+      const offersWithItems = await Promise.all(
+        offers.map(async ({ offer, vendor }) => {
+          const items = await db.select()
+            .from(vendorOfferItems)
+            .where(eq(vendorOfferItems.offerId, offer.id))
+            .orderBy(vendorOfferItems.sortOrder);
+          return { ...offer, vendor, items };
+        })
+      );
+
+      res.json(offersWithItems);
+    } catch (error) {
+      console.error("Error fetching couple offers:", error);
+      res.status(500).json({ error: "Kunne ikke hente tilbud" });
+    }
+  });
+
+  // Get couples that the vendor has conversations with (for offer recipient selection)
+  app.get("/api/vendor/contacts", async (req: Request, res: Response) => {
+    try {
+      const token = req.headers.authorization?.replace("Bearer ", "");
+      if (!token) {
+        return res.status(401).json({ error: "Ikke autentisert" });
+      }
+
+      const session = VENDOR_SESSIONS.get(token);
+      if (!session || session.expiresAt < new Date()) {
+        return res.status(401).json({ error: "Ugyldig økt" });
+      }
+
+      // Get all couples that have active conversations with this vendor
+      const vendorConversations = await db.select({
+        couple: {
+          id: coupleProfiles.id,
+          displayName: coupleProfiles.displayName,
+          email: coupleProfiles.email,
+          weddingDate: coupleProfiles.weddingDate,
+        },
+        conversationId: conversations.id,
+      })
+        .from(conversations)
+        .leftJoin(coupleProfiles, eq(conversations.coupleId, coupleProfiles.id))
+        .where(and(
+          eq(conversations.vendorId, session.vendorId),
+          eq(conversations.status, "active"),
+          eq(conversations.deletedByVendor, false)
+        ));
+
+      // Deduplicate by couple ID
+      const uniqueCouples = Array.from(
+        new Map(vendorConversations.map(c => [c.couple?.id, c])).values()
+      );
+
+      res.json(uniqueCouples);
+    } catch (error) {
+      console.error("Error fetching vendor contacts:", error);
+      res.status(500).json({ error: "Kunne ikke hente kontakter" });
     }
   });
 

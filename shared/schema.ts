@@ -401,3 +401,116 @@ export const createReminderSchema = z.object({
 export type Reminder = typeof reminders.$inferSelect;
 export type InsertReminder = z.infer<typeof insertReminderSchema>;
 export type CreateReminder = z.infer<typeof createReminderSchema>;
+
+// Vendor Products/Catalog
+export const vendorProducts = pgTable("vendor_products", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  vendorId: varchar("vendor_id").notNull().references(() => vendors.id),
+  title: text("title").notNull(),
+  description: text("description"),
+  unitPrice: integer("unit_price").notNull(), // Price in øre (NOK cents)
+  unitType: text("unit_type").notNull().default("stk"), // stk, time, dag, pakke, etc.
+  leadTimeDays: integer("lead_time_days"),
+  minQuantity: integer("min_quantity").default(1),
+  categoryTag: text("category_tag"), // Internal categorization
+  imageUrl: text("image_url"),
+  isArchived: boolean("is_archived").default(false),
+  sortOrder: integer("sort_order").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertVendorProductSchema = createInsertSchema(vendorProducts).omit({
+  id: true,
+  isArchived: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const createVendorProductSchema = z.object({
+  title: z.string().min(2, "Tittel må være minst 2 tegn"),
+  description: z.string().optional(),
+  unitPrice: z.number().min(0, "Pris må være 0 eller høyere"),
+  unitType: z.string().default("stk"),
+  leadTimeDays: z.number().min(0).optional(),
+  minQuantity: z.number().min(1).default(1),
+  categoryTag: z.string().optional(),
+  imageUrl: z.string().url("Ugyldig URL").optional().or(z.literal("")),
+  sortOrder: z.number().default(0),
+});
+
+export type VendorProduct = typeof vendorProducts.$inferSelect;
+export type InsertVendorProduct = z.infer<typeof insertVendorProductSchema>;
+export type CreateVendorProduct = z.infer<typeof createVendorProductSchema>;
+
+// Vendor Offers to Couples
+export const vendorOffers = pgTable("vendor_offers", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  vendorId: varchar("vendor_id").notNull().references(() => vendors.id),
+  coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id),
+  conversationId: varchar("conversation_id").references(() => conversations.id),
+  title: text("title").notNull(),
+  message: text("message"),
+  status: text("status").notNull().default("pending"), // pending, accepted, declined, expired
+  totalAmount: integer("total_amount").notNull(), // In øre
+  currency: text("currency").default("NOK"),
+  validUntil: timestamp("valid_until"),
+  acceptedAt: timestamp("accepted_at"),
+  declinedAt: timestamp("declined_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const vendorOfferItems = pgTable("vendor_offer_items", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  offerId: varchar("offer_id").notNull().references(() => vendorOffers.id),
+  productId: varchar("product_id").references(() => vendorProducts.id), // Optional - can be custom line
+  title: text("title").notNull(),
+  description: text("description"),
+  quantity: integer("quantity").notNull().default(1),
+  unitPrice: integer("unit_price").notNull(), // In øre
+  lineTotal: integer("line_total").notNull(), // quantity * unitPrice
+  sortOrder: integer("sort_order").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertVendorOfferSchema = createInsertSchema(vendorOffers).omit({
+  id: true,
+  status: true,
+  acceptedAt: true,
+  declinedAt: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertVendorOfferItemSchema = createInsertSchema(vendorOfferItems).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const createOfferSchema = z.object({
+  coupleId: z.string().min(1, "Velg en mottaker"),
+  conversationId: z.string().optional(),
+  title: z.string().min(2, "Tittel må være minst 2 tegn"),
+  message: z.string().optional(),
+  validUntil: z.string().optional(),
+  items: z.array(z.object({
+    productId: z.string().optional(),
+    title: z.string().min(1, "Tittel er påkrevd"),
+    description: z.string().optional(),
+    quantity: z.number().min(1).default(1),
+    unitPrice: z.number().min(0, "Pris må være 0 eller høyere"),
+  })).min(1, "Legg til minst én linje"),
+});
+
+export type VendorOffer = typeof vendorOffers.$inferSelect;
+export type VendorOfferItem = typeof vendorOfferItems.$inferSelect;
+export type InsertVendorOffer = z.infer<typeof insertVendorOfferSchema>;
+export type InsertVendorOfferItem = z.infer<typeof insertVendorOfferItemSchema>;
+export type CreateOffer = z.infer<typeof createOfferSchema>;
