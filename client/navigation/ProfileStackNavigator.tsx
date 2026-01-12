@@ -11,6 +11,8 @@ import DeliveryCreateScreen from "@/screens/DeliveryCreateScreen";
 import InspirationCreateScreen from "@/screens/InspirationCreateScreen";
 import VendorRegistrationScreen from "@/screens/VendorRegistrationScreen";
 import VendorChatScreen from "@/screens/VendorChatScreen";
+import ProductCreateScreen from "@/screens/ProductCreateScreen";
+import OfferCreateScreen from "@/screens/OfferCreateScreen";
 import NotificationSettingsScreen from "@/screens/NotificationSettingsScreen";
 import AboutScreen from "@/screens/AboutScreen";
 import SharePartnerScreen from "@/screens/SharePartnerScreen";
@@ -25,6 +27,8 @@ export type ProfileStackParamList = {
   VendorDashboard: undefined;
   DeliveryCreate: undefined;
   InspirationCreate: undefined;
+  ProductCreate: undefined;
+  OfferCreate: undefined;
   VendorRegistration: undefined;
   VendorChat: { conversationId: string; coupleName: string };
   NotificationSettings: undefined;
@@ -93,6 +97,20 @@ export default function ProfileStackNavigator() {
         component={InspirationCreateScreen}
         options={{
           title: "Ny inspirasjon",
+        }}
+      />
+      <Stack.Screen
+        name="ProductCreate"
+        component={ProductCreateScreen}
+        options={{
+          title: "Nytt produkt",
+        }}
+      />
+      <Stack.Screen
+        name="OfferCreate"
+        component={OfferCreateScreen}
+        options={{
+          title: "Nytt tilbud",
         }}
       />
       <Stack.Screen

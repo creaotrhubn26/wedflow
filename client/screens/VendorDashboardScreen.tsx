@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   Alert,
   RefreshControl,
+  ScrollView,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
@@ -77,7 +78,7 @@ interface Inspiration {
   category: InspirationCategory | null;
 }
 
-type TabType = "deliveries" | "inspirations" | "messages";
+type TabType = "deliveries" | "inspirations" | "messages" | "products" | "offers";
 
 interface Conversation {
   id: string;
@@ -90,6 +91,42 @@ interface Conversation {
   couple: { id: string; displayName: string; email: string };
   inspiration: { id: string; title: string } | null;
   lastMessage: { body: string; senderType: string; createdAt: string } | null;
+}
+
+interface VendorProduct {
+  id: string;
+  title: string;
+  description: string | null;
+  unitPrice: number;
+  unitType: string;
+  leadTimeDays: number | null;
+  minQuantity: number | null;
+  categoryTag: string | null;
+  imageUrl: string | null;
+  sortOrder: number | null;
+  createdAt: string;
+}
+
+interface VendorOfferItem {
+  id: string;
+  title: string;
+  description: string | null;
+  quantity: number;
+  unitPrice: number;
+  lineTotal: number;
+}
+
+interface VendorOffer {
+  id: string;
+  title: string;
+  message: string | null;
+  status: string;
+  totalAmount: number;
+  currency: string | null;
+  validUntil: string | null;
+  createdAt: string;
+  couple: { id: string; displayName: string; email: string } | null;
+  items: VendorOfferItem[];
 }
 
 interface Props {
@@ -164,6 +201,36 @@ export default function VendorDashboardScreen({ navigation }: Props) {
     enabled: !!session?.sessionToken,
   });
 
+  const { data: productsData = [], isLoading: productsLoading, refetch: refetchProducts } = useQuery<VendorProduct[]>({
+    queryKey: ["/api/vendor/products"],
+    queryFn: async () => {
+      if (!session?.sessionToken) return [];
+      const response = await fetch(new URL("/api/vendor/products", getApiUrl()).toString(), {
+        headers: {
+          Authorization: `Bearer ${session.sessionToken}`,
+        },
+      });
+      if (!response.ok) throw new Error("Kunne ikke hente produkter");
+      return response.json();
+    },
+    enabled: !!session?.sessionToken,
+  });
+
+  const { data: offersData = [], isLoading: offersLoading, refetch: refetchOffers } = useQuery<VendorOffer[]>({
+    queryKey: ["/api/vendor/offers"],
+    queryFn: async () => {
+      if (!session?.sessionToken) return [];
+      const response = await fetch(new URL("/api/vendor/offers", getApiUrl()).toString(), {
+        headers: {
+          Authorization: `Bearer ${session.sessionToken}`,
+        },
+      });
+      if (!response.ok) throw new Error("Kunne ikke hente tilbud");
+      return response.json();
+    },
+    enabled: !!session?.sessionToken,
+  });
+
   const totalUnread = conversationsData.reduce((sum, c) => sum + (c.vendorUnreadCount || 0), 0);
 
   const handleRefresh = useCallback(async () => {
@@ -172,11 +239,15 @@ export default function VendorDashboardScreen({ navigation }: Props) {
       await refetchDeliveries();
     } else if (activeTab === "inspirations") {
       await refetchInspirations();
+    } else if (activeTab === "products") {
+      await refetchProducts();
+    } else if (activeTab === "offers") {
+      await refetchOffers();
     } else {
       await refetchConversations();
     }
     setIsRefreshing(false);
-  }, [activeTab, refetchDeliveries, refetchInspirations, refetchConversations]);
+  }, [activeTab, refetchDeliveries, refetchInspirations, refetchConversations, refetchProducts, refetchOffers]);
 
   const handleLogout = async () => {
     Alert.alert(
@@ -357,7 +428,126 @@ export default function VendorDashboardScreen({ navigation }: Props) {
     );
   }
 
-  const isLoading = activeTab === "deliveries" ? deliveriesLoading : activeTab === "inspirations" ? inspirationsLoading : conversationsLoading;
+  const isLoading = 
+    activeTab === "deliveries" ? deliveriesLoading : 
+    activeTab === "inspirations" ? inspirationsLoading : 
+    activeTab === "products" ? productsLoading :
+    activeTab === "offers" ? offersLoading :
+    conversationsLoading;
+
+  const formatPrice = (priceInOre: number) => {
+    return (priceInOre / 100).toLocaleString("nb-NO", { minimumFractionDigits: 0, maximumFractionDigits: 0 }) + " kr";
+  };
+
+  const getOfferStatusColor = (status: string) => {
+    switch (status) {
+      case "accepted": return "#4CAF50";
+      case "declined": return "#F44336";
+      case "expired": return "#9E9E9E";
+      default: return "#FF9800";
+    }
+  };
+
+  const getOfferStatusLabel = (status: string) => {
+    switch (status) {
+      case "accepted": return "Akseptert";
+      case "declined": return "Avslått";
+      case "expired": return "Utløpt";
+      default: return "Venter";
+    }
+  };
+
+  const renderProductItem = ({ item, index }: { item: VendorProduct; index: number }) => (
+    <Animated.View entering={FadeInDown.delay(index * 50).duration(300)}>
+      <View style={[styles.deliveryCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
+        <View style={styles.cardHeader}>
+          <View style={styles.cardTitleRow}>
+            <ThemedText style={styles.cardTitle}>{item.title}</ThemedText>
+            <ThemedText style={[styles.priceTag, { color: Colors.dark.accent }]}>
+              {formatPrice(item.unitPrice)} / {item.unitType}
+            </ThemedText>
+          </View>
+          {item.description ? (
+            <ThemedText style={[styles.dateText, { color: theme.textMuted, marginTop: 4 }]} numberOfLines={2}>
+              {item.description}
+            </ThemedText>
+          ) : null}
+        </View>
+        <View style={styles.itemsList}>
+          {item.minQuantity && item.minQuantity > 1 ? (
+            <View style={styles.itemRow}>
+              <Feather name="hash" size={14} color={theme.textSecondary} />
+              <ThemedText style={[styles.itemLabel, { color: theme.textSecondary }]}>
+                Min. antall: {item.minQuantity}
+              </ThemedText>
+            </View>
+          ) : null}
+          {item.leadTimeDays ? (
+            <View style={styles.itemRow}>
+              <Feather name="clock" size={14} color={theme.textSecondary} />
+              <ThemedText style={[styles.itemLabel, { color: theme.textSecondary }]}>
+                Leveringstid: {item.leadTimeDays} dager
+              </ThemedText>
+            </View>
+          ) : null}
+          {item.categoryTag ? (
+            <View style={styles.itemRow}>
+              <Feather name="tag" size={14} color={theme.textSecondary} />
+              <ThemedText style={[styles.itemLabel, { color: theme.textSecondary }]}>
+                {item.categoryTag}
+              </ThemedText>
+            </View>
+          ) : null}
+        </View>
+      </View>
+    </Animated.View>
+  );
+
+  const renderOfferItem = ({ item, index }: { item: VendorOffer; index: number }) => (
+    <Animated.View entering={FadeInDown.delay(index * 50).duration(300)}>
+      <View style={[styles.deliveryCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
+        <View style={styles.cardHeader}>
+          <View style={styles.cardTitleRow}>
+            <ThemedText style={styles.cardTitle}>{item.title}</ThemedText>
+            <View style={[styles.statusBadge, { backgroundColor: getOfferStatusColor(item.status) + "30" }]}>
+              <ThemedText style={[styles.statusText, { color: getOfferStatusColor(item.status) }]}>
+                {getOfferStatusLabel(item.status)}
+              </ThemedText>
+            </View>
+          </View>
+          {item.couple ? (
+            <ThemedText style={[styles.coupleName, { color: theme.textSecondary }]}>
+              Til: {item.couple.displayName}
+            </ThemedText>
+          ) : null}
+        </View>
+        <View style={[styles.offerTotalContainer, { backgroundColor: theme.backgroundRoot }]}>
+          <ThemedText style={[styles.offerTotalLabel, { color: theme.textMuted }]}>Totalt:</ThemedText>
+          <ThemedText style={[styles.offerTotal, { color: Colors.dark.accent }]}>
+            {formatPrice(item.totalAmount)}
+          </ThemedText>
+        </View>
+        <View style={styles.itemsList}>
+          {item.items.slice(0, 3).map((offerItem) => (
+            <View key={offerItem.id} style={styles.itemRow}>
+              <Feather name="check" size={14} color={theme.textSecondary} />
+              <ThemedText style={[styles.itemLabel, { color: theme.textSecondary }]} numberOfLines={1}>
+                {offerItem.quantity}x {offerItem.title} - {formatPrice(offerItem.lineTotal)}
+              </ThemedText>
+            </View>
+          ))}
+          {item.items.length > 3 ? (
+            <ThemedText style={[styles.moreItems, { color: theme.textMuted }]}>
+              + {item.items.length - 3} flere linjer
+            </ThemedText>
+          ) : null}
+        </View>
+        <ThemedText style={[styles.createdAt, { color: theme.textMuted }]}>
+          Sendt {formatDate(item.createdAt)}
+        </ThemedText>
+      </View>
+    </Animated.View>
+  );
 
   const formatConversationTime = (dateString: string) => {
     const date = new Date(dateString);
@@ -423,7 +613,11 @@ export default function VendorDashboardScreen({ navigation }: Props) {
         </Pressable>
       </View>
 
-      <View style={styles.tabContainer}>
+      <ScrollView 
+        horizontal 
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.tabContainer}
+      >
         <Pressable
           onPress={() => setActiveTab("deliveries")}
           style={[
@@ -449,6 +643,30 @@ export default function VendorDashboardScreen({ navigation }: Props) {
           </ThemedText>
         </Pressable>
         <Pressable
+          onPress={() => setActiveTab("products")}
+          style={[
+            styles.tab,
+            activeTab === "products" && { borderBottomColor: Colors.dark.accent, borderBottomWidth: 2 }
+          ]}
+        >
+          <Feather name="shopping-bag" size={16} color={activeTab === "products" ? Colors.dark.accent : theme.textMuted} />
+          <ThemedText style={[styles.tabText, { color: activeTab === "products" ? Colors.dark.accent : theme.textMuted }]}>
+            Produkter
+          </ThemedText>
+        </Pressable>
+        <Pressable
+          onPress={() => setActiveTab("offers")}
+          style={[
+            styles.tab,
+            activeTab === "offers" && { borderBottomColor: Colors.dark.accent, borderBottomWidth: 2 }
+          ]}
+        >
+          <Feather name="file-text" size={16} color={activeTab === "offers" ? Colors.dark.accent : theme.textMuted} />
+          <ThemedText style={[styles.tabText, { color: activeTab === "offers" ? Colors.dark.accent : theme.textMuted }]}>
+            Tilbud
+          </ThemedText>
+        </Pressable>
+        <Pressable
           onPress={() => setActiveTab("messages")}
           style={[
             styles.tab,
@@ -467,19 +685,29 @@ export default function VendorDashboardScreen({ navigation }: Props) {
             Meldinger
           </ThemedText>
         </Pressable>
-      </View>
+      </ScrollView>
 
       {activeTab !== "messages" ? (
         <Pressable
           onPress={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-            navigation.navigate(activeTab === "deliveries" ? "DeliveryCreate" : "InspirationCreate");
+            if (activeTab === "deliveries") {
+              navigation.navigate("DeliveryCreate");
+            } else if (activeTab === "inspirations") {
+              navigation.navigate("InspirationCreate");
+            } else if (activeTab === "products") {
+              navigation.navigate("ProductCreate");
+            } else if (activeTab === "offers") {
+              navigation.navigate("OfferCreate");
+            }
           }}
           style={[styles.createBtn, { backgroundColor: Colors.dark.accent }]}
         >
           <Feather name="plus" size={20} color="#1A1A1A" />
           <ThemedText style={styles.createBtnText}>
-            {activeTab === "deliveries" ? "Ny leveranse" : "Ny inspirasjon"}
+            {activeTab === "deliveries" ? "Ny leveranse" : 
+             activeTab === "inspirations" ? "Ny inspirasjon" :
+             activeTab === "products" ? "Nytt produkt" : "Nytt tilbud"}
           </ThemedText>
         </Pressable>
       ) : null}
@@ -546,6 +774,64 @@ export default function VendorDashboardScreen({ navigation }: Props) {
             </View>
           )}
         />
+      ) : activeTab === "products" ? (
+        <FlatList
+          data={productsData}
+          renderItem={renderProductItem}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{
+            paddingHorizontal: Spacing.lg,
+            paddingBottom: insets.bottom + Spacing.xl,
+          }}
+          ItemSeparatorComponent={() => <View style={{ height: Spacing.md }} />}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={handleRefresh}
+              tintColor={Colors.dark.accent}
+            />
+          }
+          ListEmptyComponent={() => (
+            <View style={styles.emptyContainer}>
+              <Feather name="shopping-bag" size={48} color={theme.textMuted} />
+              <ThemedText style={[styles.emptyText, { color: theme.textMuted }]}>
+                Ingen produkter ennå
+              </ThemedText>
+              <ThemedText style={[styles.emptySubtext, { color: theme.textMuted }]}>
+                Opprett produkter og tjenester for å kunne sende tilbud
+              </ThemedText>
+            </View>
+          )}
+        />
+      ) : activeTab === "offers" ? (
+        <FlatList
+          data={offersData}
+          renderItem={renderOfferItem}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{
+            paddingHorizontal: Spacing.lg,
+            paddingBottom: insets.bottom + Spacing.xl,
+          }}
+          ItemSeparatorComponent={() => <View style={{ height: Spacing.md }} />}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={handleRefresh}
+              tintColor={Colors.dark.accent}
+            />
+          }
+          ListEmptyComponent={() => (
+            <View style={styles.emptyContainer}>
+              <Feather name="file-text" size={48} color={theme.textMuted} />
+              <ThemedText style={[styles.emptyText, { color: theme.textMuted }]}>
+                Ingen tilbud ennå
+              </ThemedText>
+              <ThemedText style={[styles.emptySubtext, { color: theme.textMuted }]}>
+                Send tilbud til brudepar basert på dine produkter
+              </ThemedText>
+            </View>
+          )}
+        />
       ) : (
         <FlatList
           data={conversationsData}
@@ -605,9 +891,9 @@ const styles = StyleSheet.create({
   },
   tabContainer: {
     flexDirection: "row",
-    marginHorizontal: Spacing.lg,
-    marginBottom: Spacing.md,
-    gap: Spacing.lg,
+    paddingHorizontal: Spacing.lg,
+    paddingBottom: Spacing.md,
+    gap: Spacing.md,
   },
   tab: {
     flexDirection: "row",
@@ -780,5 +1066,29 @@ const styles = StyleSheet.create({
   },
   messageTime: {
     fontSize: 12,
+  },
+  priceTag: {
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  offerTotalContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: Spacing.sm,
+    borderRadius: BorderRadius.sm,
+    marginBottom: Spacing.md,
+  },
+  offerTotalLabel: {
+    fontSize: 13,
+  },
+  offerTotal: {
+    fontSize: 16,
+    fontWeight: "700",
+  },
+  moreItems: {
+    fontSize: 12,
+    marginTop: 4,
+    fontStyle: "italic",
   },
 });
