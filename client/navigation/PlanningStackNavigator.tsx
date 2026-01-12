@@ -42,7 +42,12 @@ export default function PlanningStackNavigator() {
         name="Planning"
         component={PlanningScreen}
         options={{
-          headerTitle: () => <HeaderTitle title="Wedflow" />,
+          headerTitle: () => <HeaderTitle />,
+          headerTransparent: false,
+          headerStyle: {
+            backgroundColor: "#F5F0E8",
+          },
+          headerShadowVisible: false,
         }}
       />
       <Stack.Screen
