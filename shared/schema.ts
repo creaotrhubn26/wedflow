@@ -293,6 +293,7 @@ export const coupleProfiles = pgTable("couple_profiles", {
   displayName: text("display_name").notNull(),
   partnerEmail: text("partner_email"),
   weddingDate: text("wedding_date"),
+  lastActiveAt: timestamp("last_active_at").defaultNow(),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -514,6 +515,58 @@ export type VendorOfferItem = typeof vendorOfferItems.$inferSelect;
 export type InsertVendorOffer = z.infer<typeof insertVendorOfferSchema>;
 export type InsertVendorOfferItem = z.infer<typeof insertVendorOfferItemSchema>;
 export type CreateOffer = z.infer<typeof createOfferSchema>;
+
+// Speeches for wedding day schedule
+export const speeches = pgTable("speeches", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  coupleId: varchar("couple_id").references(() => coupleProfiles.id),
+  speakerName: text("speaker_name").notNull(),
+  role: text("role"), // brudgom, brud, forlovere, foreldre, etc.
+  durationMinutes: integer("duration_minutes").notNull().default(5),
+  sortOrder: integer("sort_order").notNull().default(0),
+  notes: text("notes"),
+  scheduledTime: text("scheduled_time"), // Optional specific time slot
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertSpeechSchema = createInsertSchema(speeches).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const createSpeechSchema = z.object({
+  speakerName: z.string().min(1, "Navn er påkrevd"),
+  role: z.string().optional(),
+  durationMinutes: z.number().min(1).max(60).default(5),
+  sortOrder: z.number().default(0),
+  notes: z.string().optional(),
+  scheduledTime: z.string().optional(),
+});
+
+export type Speech = typeof speeches.$inferSelect;
+export type InsertSpeech = z.infer<typeof insertSpeechSchema>;
+export type CreateSpeech = z.infer<typeof createSpeechSchema>;
+
+// Message reminders for anti-ghosting
+export const messageReminders = pgTable("message_reminders", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  conversationId: varchar("conversation_id").notNull().references(() => conversations.id),
+  vendorId: varchar("vendor_id").notNull().references(() => vendors.id),
+  coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id),
+  reminderType: text("reminder_type").notNull().default("gentle"), // gentle, deadline, final
+  scheduledFor: timestamp("scheduled_for").notNull(),
+  sentAt: timestamp("sent_at"),
+  status: text("status").notNull().default("pending"), // pending, sent, cancelled
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export type MessageReminder = typeof messageReminders.$inferSelect;
 
 // App Settings for admin customization
 export const appSettings = pgTable("app_settings", {

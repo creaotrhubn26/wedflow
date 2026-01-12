@@ -1,7 +1,7 @@
 import type { Express, Request, Response } from "express";
 import { createServer, type Server } from "node:http";
 import { db } from "./db";
-import { vendors, vendorCategories, vendorRegistrationSchema, deliveries, deliveryItems, createDeliverySchema, inspirationCategories, inspirations, inspirationMedia, createInspirationSchema, vendorFeatures, vendorInspirationCategories, inspirationInquiries, createInquirySchema, coupleProfiles, coupleSessions, conversations, messages, coupleLoginSchema, sendMessageSchema, reminders, createReminderSchema, vendorProducts, createVendorProductSchema, vendorOffers, vendorOfferItems, createOfferSchema, appSettings } from "@shared/schema";
+import { vendors, vendorCategories, vendorRegistrationSchema, deliveries, deliveryItems, createDeliverySchema, inspirationCategories, inspirations, inspirationMedia, createInspirationSchema, vendorFeatures, vendorInspirationCategories, inspirationInquiries, createInquirySchema, coupleProfiles, coupleSessions, conversations, messages, coupleLoginSchema, sendMessageSchema, reminders, createReminderSchema, vendorProducts, createVendorProductSchema, vendorOffers, vendorOfferItems, createOfferSchema, appSettings, speeches, createSpeechSchema, messageReminders } from "@shared/schema";
 import { eq, and, desc, sql } from "drizzle-orm";
 import crypto from "crypto";
 
@@ -1539,6 +1539,297 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting reminder:", error);
       res.status(500).json({ error: "Kunne ikke slette påminnelse" });
+    }
+  });
+
+  // Speech list endpoints
+  app.get("/api/speeches", async (req: Request, res: Response) => {
+    try {
+      const coupleId = await checkCoupleAuth(req, res);
+      const allSpeeches = await db.select()
+        .from(speeches)
+        .where(coupleId ? eq(speeches.coupleId, coupleId) : sql`1=1`)
+        .orderBy(speeches.sortOrder);
+      res.json(allSpeeches);
+    } catch (error) {
+      console.error("Error fetching speeches:", error);
+      res.status(500).json({ error: "Kunne ikke hente taleliste" });
+    }
+  });
+
+  app.post("/api/speeches", async (req: Request, res: Response) => {
+    try {
+      const coupleId = await checkCoupleAuth(req, res);
+      const validatedData = createSpeechSchema.parse(req.body);
+      
+      // Get the max sort order
+      const existingSpeeches = await db.select()
+        .from(speeches)
+        .where(coupleId ? eq(speeches.coupleId, coupleId) : sql`1=1`)
+        .orderBy(desc(speeches.sortOrder));
+      const maxOrder = existingSpeeches.length > 0 ? existingSpeeches[0].sortOrder : 0;
+      
+      const [newSpeech] = await db.insert(speeches)
+        .values({
+          coupleId: coupleId || undefined,
+          speakerName: validatedData.speakerName,
+          role: validatedData.role,
+          durationMinutes: validatedData.durationMinutes,
+          sortOrder: maxOrder + 1,
+          notes: validatedData.notes,
+          scheduledTime: validatedData.scheduledTime,
+        })
+        .returning();
+      res.status(201).json(newSpeech);
+    } catch (error) {
+      console.error("Error creating speech:", error);
+      res.status(500).json({ error: "Kunne ikke opprette tale" });
+    }
+  });
+
+  app.patch("/api/speeches/:id", async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const { speakerName, role, durationMinutes, sortOrder, notes, scheduledTime } = req.body;
+
+      const updates: Record<string, any> = { updatedAt: new Date() };
+      if (speakerName !== undefined) updates.speakerName = speakerName;
+      if (role !== undefined) updates.role = role;
+      if (durationMinutes !== undefined) updates.durationMinutes = durationMinutes;
+      if (sortOrder !== undefined) updates.sortOrder = sortOrder;
+      if (notes !== undefined) updates.notes = notes;
+      if (scheduledTime !== undefined) updates.scheduledTime = scheduledTime;
+
+      const [updated] = await db.update(speeches)
+        .set(updates)
+        .where(eq(speeches.id, id))
+        .returning();
+
+      if (!updated) {
+        return res.status(404).json({ error: "Tale ikke funnet" });
+      }
+
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating speech:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere tale" });
+    }
+  });
+
+  app.delete("/api/speeches/:id", async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const [deleted] = await db.delete(speeches)
+        .where(eq(speeches.id, id))
+        .returning();
+
+      if (!deleted) {
+        return res.status(404).json({ error: "Tale ikke funnet" });
+      }
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting speech:", error);
+      res.status(500).json({ error: "Kunne ikke slette tale" });
+    }
+  });
+
+  // Reorder speeches
+  app.post("/api/speeches/reorder", async (req: Request, res: Response) => {
+    try {
+      const { orderedIds } = req.body;
+      if (!Array.isArray(orderedIds)) {
+        return res.status(400).json({ error: "orderedIds må være en liste" });
+      }
+
+      for (let i = 0; i < orderedIds.length; i++) {
+        await db.update(speeches)
+          .set({ sortOrder: i, updatedAt: new Date() })
+          .where(eq(speeches.id, orderedIds[i]));
+      }
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error reordering speeches:", error);
+      res.status(500).json({ error: "Kunne ikke sortere taler" });
+    }
+  });
+
+  // Anti-ghosting: Mark messages as read and update last active
+  app.post("/api/conversations/:id/mark-read", async (req: Request, res: Response) => {
+    try {
+      const { id } = req.params;
+      const { userType } = req.body; // 'couple' or 'vendor'
+      
+      if (userType === 'couple') {
+        const coupleId = await checkCoupleAuth(req, res);
+        if (!coupleId) return;
+        
+        // Update couple's last active
+        await db.update(coupleProfiles)
+          .set({ lastActiveAt: new Date(), updatedAt: new Date() })
+          .where(eq(coupleProfiles.id, coupleId));
+        
+        // Mark vendor messages in this conversation as read
+        await db.update(messages)
+          .set({ readAt: new Date() })
+          .where(and(
+            eq(messages.conversationId, id),
+            eq(messages.senderType, 'vendor'),
+            sql`${messages.readAt} IS NULL`
+          ));
+        
+        // Reset couple unread count
+        await db.update(conversations)
+          .set({ coupleUnreadCount: 0 })
+          .where(eq(conversations.id, id));
+      } else if (userType === 'vendor') {
+        const vendorId = await checkVendorAuth(req, res);
+        if (!vendorId) return;
+        
+        // Mark couple messages in this conversation as read
+        await db.update(messages)
+          .set({ readAt: new Date() })
+          .where(and(
+            eq(messages.conversationId, id),
+            eq(messages.senderType, 'couple'),
+            sql`${messages.readAt} IS NULL`
+          ));
+        
+        // Reset vendor unread count
+        await db.update(conversations)
+          .set({ vendorUnreadCount: 0 })
+          .where(eq(conversations.id, id));
+      }
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error marking conversation as read:", error);
+      res.status(500).json({ error: "Kunne ikke markere som lest" });
+    }
+  });
+
+  // Get conversation with read receipts and last active info
+  app.get("/api/vendor/conversations/:id/details", async (req: Request, res: Response) => {
+    const vendorId = await checkVendorAuth(req, res);
+    if (!vendorId) return;
+
+    try {
+      const { id } = req.params;
+      
+      const [conv] = await db.select().from(conversations).where(eq(conversations.id, id));
+      if (!conv || conv.vendorId !== vendorId) {
+        return res.status(404).json({ error: "Samtale ikke funnet" });
+      }
+      
+      // Get couple profile with last active
+      const [couple] = await db.select().from(coupleProfiles).where(eq(coupleProfiles.id, conv.coupleId));
+      
+      // Get messages with read status
+      const convMessages = await db.select()
+        .from(messages)
+        .where(eq(messages.conversationId, id))
+        .orderBy(messages.createdAt);
+      
+      // Check if couple has seen vendor's last message
+      const vendorMessages = convMessages.filter(m => m.senderType === 'vendor');
+      const lastVendorMessage = vendorMessages[vendorMessages.length - 1];
+      const messageSeenByCuple = lastVendorMessage?.readAt ? true : false;
+      
+      res.json({
+        conversation: conv,
+        couple: couple ? {
+          id: couple.id,
+          displayName: couple.displayName,
+          email: couple.email,
+          lastActiveAt: couple.lastActiveAt,
+        } : null,
+        messages: convMessages,
+        lastMessageSeenByCouple: messageSeenByCuple,
+        lastSeenAt: lastVendorMessage?.readAt || null,
+      });
+    } catch (error) {
+      console.error("Error fetching conversation details:", error);
+      res.status(500).json({ error: "Kunne ikke hente samtaledetaljer" });
+    }
+  });
+
+  // Schedule reminder for unanswered message
+  app.post("/api/vendor/conversations/:id/schedule-reminder", async (req: Request, res: Response) => {
+    const vendorId = await checkVendorAuth(req, res);
+    if (!vendorId) return;
+
+    try {
+      const { id } = req.params;
+      const { reminderType, scheduledFor } = req.body;
+      
+      const [conv] = await db.select().from(conversations).where(eq(conversations.id, id));
+      if (!conv || conv.vendorId !== vendorId) {
+        return res.status(404).json({ error: "Samtale ikke funnet" });
+      }
+      
+      const [reminder] = await db.insert(messageReminders)
+        .values({
+          conversationId: id,
+          vendorId,
+          coupleId: conv.coupleId,
+          reminderType: reminderType || 'gentle',
+          scheduledFor: new Date(scheduledFor),
+        })
+        .returning();
+      
+      res.status(201).json(reminder);
+    } catch (error) {
+      console.error("Error scheduling reminder:", error);
+      res.status(500).json({ error: "Kunne ikke planlegge påminnelse" });
+    }
+  });
+
+  // Get pending reminders for vendor
+  app.get("/api/vendor/message-reminders", async (req: Request, res: Response) => {
+    const vendorId = await checkVendorAuth(req, res);
+    if (!vendorId) return;
+
+    try {
+      const pendingReminders = await db.select()
+        .from(messageReminders)
+        .where(and(
+          eq(messageReminders.vendorId, vendorId),
+          eq(messageReminders.status, 'pending')
+        ))
+        .orderBy(messageReminders.scheduledFor);
+      
+      res.json(pendingReminders);
+    } catch (error) {
+      console.error("Error fetching message reminders:", error);
+      res.status(500).json({ error: "Kunne ikke hente påminnelser" });
+    }
+  });
+
+  // Cancel a scheduled reminder
+  app.delete("/api/vendor/message-reminders/:id", async (req: Request, res: Response) => {
+    const vendorId = await checkVendorAuth(req, res);
+    if (!vendorId) return;
+
+    try {
+      const { id } = req.params;
+      
+      const [deleted] = await db.update(messageReminders)
+        .set({ status: 'cancelled' })
+        .where(and(
+          eq(messageReminders.id, id),
+          eq(messageReminders.vendorId, vendorId)
+        ))
+        .returning();
+      
+      if (!deleted) {
+        return res.status(404).json({ error: "Påminnelse ikke funnet" });
+      }
+      
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error cancelling reminder:", error);
+      res.status(500).json({ error: "Kunne ikke avbryte påminnelse" });
     }
   });
 
