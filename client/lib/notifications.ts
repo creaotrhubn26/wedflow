@@ -6,6 +6,7 @@ import { getWeddingDetails } from "./storage";
 const NOTIFICATION_SETTINGS_KEY = "@wedflow/notification_settings";
 const COUNTDOWN_NOTIFICATIONS_KEY = "@wedflow/countdown_notifications";
 const CHECKLIST_NOTIFICATIONS_KEY = "@wedflow/checklist_notifications";
+const CUSTOM_REMINDERS_KEY = "@wedflow/custom_reminders";
 
 export interface NotificationSettings {
   enabled: boolean;
@@ -207,3 +208,110 @@ export async function cancelChecklistReminder(notificationId: string): Promise<v
 export async function getScheduledNotifications(): Promise<Notifications.NotificationRequest[]> {
   return await Notifications.getAllScheduledNotificationsAsync();
 }
+
+export interface CustomReminder {
+  id: string;
+  title: string;
+  description?: string | null;
+  reminderDate: string | Date;
+  category: string;
+}
+
+const CATEGORY_LABELS: Record<string, string> = {
+  general: "Generell",
+  vendor: "Leverandør",
+  budget: "Budsjett",
+  guest: "Gjester",
+  planning: "Planlegging",
+};
+
+const CATEGORY_ICONS: Record<string, string> = {
+  general: "bell",
+  vendor: "briefcase",
+  budget: "dollar-sign",
+  guest: "users",
+  planning: "calendar",
+};
+
+export async function scheduleCustomReminder(
+  reminder: CustomReminder
+): Promise<string | null> {
+  const settings = await getNotificationSettings();
+  if (!settings.enabled) return null;
+
+  if (Platform.OS === "web") return null;
+
+  const reminderDate = new Date(reminder.reminderDate);
+  reminderDate.setHours(9, 0, 0, 0);
+
+  if (reminderDate <= new Date()) return null;
+
+  try {
+    const categoryLabel = CATEGORY_LABELS[reminder.category] || "Generell";
+    const body = reminder.description 
+      ? reminder.description 
+      : `${categoryLabel} påminnelse`;
+
+    const notificationId = await Notifications.scheduleNotificationAsync({
+      content: {
+        title: reminder.title,
+        body,
+        data: { 
+          type: "custom_reminder", 
+          reminderId: reminder.id,
+          category: reminder.category,
+        },
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.DATE,
+        date: reminderDate,
+      },
+    });
+
+    const storedIds = await AsyncStorage.getItem(CUSTOM_REMINDERS_KEY);
+    const existingIds: Record<string, string> = storedIds ? JSON.parse(storedIds) : {};
+    existingIds[reminder.id] = notificationId;
+    await AsyncStorage.setItem(CUSTOM_REMINDERS_KEY, JSON.stringify(existingIds));
+
+    return notificationId;
+  } catch (error) {
+    console.log("Failed to schedule custom reminder:", error);
+    return null;
+  }
+}
+
+export async function cancelCustomReminder(reminderId: string): Promise<void> {
+  try {
+    const storedIds = await AsyncStorage.getItem(CUSTOM_REMINDERS_KEY);
+    if (storedIds) {
+      const ids: Record<string, string> = JSON.parse(storedIds);
+      const notificationId = ids[reminderId];
+      if (notificationId) {
+        await Notifications.cancelScheduledNotificationAsync(notificationId);
+        delete ids[reminderId];
+        await AsyncStorage.setItem(CUSTOM_REMINDERS_KEY, JSON.stringify(ids));
+      }
+    }
+  } catch (error) {
+    console.log("Failed to cancel custom reminder:", error);
+  }
+}
+
+export async function cancelAllCustomReminders(): Promise<void> {
+  try {
+    const storedIds = await AsyncStorage.getItem(CUSTOM_REMINDERS_KEY);
+    if (storedIds) {
+      const ids: Record<string, string> = JSON.parse(storedIds);
+      await Promise.all(
+        Object.values(ids).map((notificationId) =>
+          Notifications.cancelScheduledNotificationAsync(notificationId)
+        )
+      );
+    }
+    await AsyncStorage.removeItem(CUSTOM_REMINDERS_KEY);
+  } catch (error) {
+    console.log("Failed to cancel all custom reminders:", error);
+  }
+}
+
+export { CATEGORY_LABELS, CATEGORY_ICONS };
