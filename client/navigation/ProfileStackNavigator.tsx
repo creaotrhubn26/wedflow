@@ -10,6 +10,7 @@ import VendorDashboardScreen from "@/screens/VendorDashboardScreen";
 import DeliveryCreateScreen from "@/screens/DeliveryCreateScreen";
 import InspirationCreateScreen from "@/screens/InspirationCreateScreen";
 import VendorRegistrationScreen from "@/screens/VendorRegistrationScreen";
+import VendorChatScreen from "@/screens/VendorChatScreen";
 import NotificationSettingsScreen from "@/screens/NotificationSettingsScreen";
 import AboutScreen from "@/screens/AboutScreen";
 import SharePartnerScreen from "@/screens/SharePartnerScreen";
@@ -25,6 +26,7 @@ export type ProfileStackParamList = {
   DeliveryCreate: undefined;
   InspirationCreate: undefined;
   VendorRegistration: undefined;
+  VendorChat: { conversationId: string; coupleName: string };
   NotificationSettings: undefined;
   About: undefined;
   SharePartner: undefined;
@@ -99,6 +101,13 @@ export default function ProfileStackNavigator() {
         options={{
           title: "Bli leverandør",
         }}
+      />
+      <Stack.Screen
+        name="VendorChat"
+        component={VendorChatScreen}
+        options={({ route }) => ({
+          title: route.params.coupleName,
+        })}
       />
       <Stack.Screen
         name="NotificationSettings"

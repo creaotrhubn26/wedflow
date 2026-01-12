@@ -246,6 +246,8 @@ export default function PlanningScreen() {
         <View style={[styles.sectionCard, { backgroundColor: theme.backgroundDefault }]}>
           <ActionItem icon="users" label="Viktige personer" subtitle="Forlovere, toastmaster" theme={theme} onPress={() => navigation.navigate("ImportantPeople")} />
           <View style={[styles.divider, { backgroundColor: theme.border }]} />
+          <ActionItem icon="message-circle" label="Meldinger" subtitle="Chat med leverandører" theme={theme} onPress={() => navigation.navigate("Messages")} />
+          <View style={[styles.divider, { backgroundColor: theme.border }]} />
           <ActionItem icon="gift" label="Hent leveranse" subtitle="Bilder/video fra fotograf" theme={theme} onPress={() => navigation.navigate("DeliveryAccess")} />
         </View>
       </Animated.View>

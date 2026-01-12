@@ -16,6 +16,9 @@ import WeatherScreen from "@/screens/WeatherScreen";
 import VendorRegistrationScreen from "@/screens/VendorRegistrationScreen";
 import AdminVendorsScreen from "@/screens/AdminVendorsScreen";
 import DeliveryAccessScreen from "@/screens/DeliveryAccessScreen";
+import MessagesScreen from "@/screens/MessagesScreen";
+import CoupleLoginScreen from "@/screens/CoupleLoginScreen";
+import ChatScreen from "@/screens/ChatScreen";
 import { HeaderTitle } from "@/components/HeaderTitle";
 import { useScreenOptions } from "@/hooks/useScreenOptions";
 
@@ -35,6 +38,9 @@ export type PlanningStackParamList = {
   VendorRegistration: undefined;
   AdminVendors: undefined;
   DeliveryAccess: undefined;
+  Messages: undefined;
+  CoupleLogin: undefined;
+  Chat: { conversationId: string; vendorName: string };
 };
 
 const Stack = createNativeStackNavigator<PlanningStackParamList>();
@@ -120,6 +126,21 @@ export default function PlanningStackNavigator() {
         name="DeliveryAccess"
         component={DeliveryAccessScreen}
         options={{ title: "Hent leveranse" }}
+      />
+      <Stack.Screen
+        name="Messages"
+        component={MessagesScreen}
+        options={{ title: "Meldinger" }}
+      />
+      <Stack.Screen
+        name="CoupleLogin"
+        component={CoupleLoginScreen}
+        options={{ title: "Logg inn" }}
+      />
+      <Stack.Screen
+        name="Chat"
+        component={ChatScreen}
+        options={({ route }) => ({ title: route.params.vendorName })}
       />
     </Stack.Navigator>
   );

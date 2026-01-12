@@ -77,7 +77,20 @@ interface Inspiration {
   category: InspirationCategory | null;
 }
 
-type TabType = "deliveries" | "inspirations";
+type TabType = "deliveries" | "inspirations" | "messages";
+
+interface Conversation {
+  id: string;
+  coupleId: string;
+  vendorId: string;
+  inspirationId: string | null;
+  status: string;
+  lastMessageAt: string;
+  vendorUnreadCount: number;
+  couple: { id: string; displayName: string; email: string };
+  inspiration: { id: string; title: string } | null;
+  lastMessage: { body: string; senderType: string; createdAt: string } | null;
+}
 
 interface Props {
   navigation: NativeStackNavigationProp<any>;
@@ -136,15 +149,34 @@ export default function VendorDashboardScreen({ navigation }: Props) {
     enabled: !!session?.sessionToken,
   });
 
+  const { data: conversationsData = [], isLoading: conversationsLoading, refetch: refetchConversations } = useQuery<Conversation[]>({
+    queryKey: ["/api/vendor/conversations"],
+    queryFn: async () => {
+      if (!session?.sessionToken) return [];
+      const response = await fetch(new URL("/api/vendor/conversations", getApiUrl()).toString(), {
+        headers: {
+          Authorization: `Bearer ${session.sessionToken}`,
+        },
+      });
+      if (!response.ok) throw new Error("Kunne ikke hente samtaler");
+      return response.json();
+    },
+    enabled: !!session?.sessionToken,
+  });
+
+  const totalUnread = conversationsData.reduce((sum, c) => sum + (c.vendorUnreadCount || 0), 0);
+
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
     if (activeTab === "deliveries") {
       await refetchDeliveries();
-    } else {
+    } else if (activeTab === "inspirations") {
       await refetchInspirations();
+    } else {
+      await refetchConversations();
     }
     setIsRefreshing(false);
-  }, [activeTab, refetchDeliveries, refetchInspirations]);
+  }, [activeTab, refetchDeliveries, refetchInspirations, refetchConversations]);
 
   const handleLogout = async () => {
     Alert.alert(
@@ -325,7 +357,59 @@ export default function VendorDashboardScreen({ navigation }: Props) {
     );
   }
 
-  const isLoading = activeTab === "deliveries" ? deliveriesLoading : inspirationsLoading;
+  const isLoading = activeTab === "deliveries" ? deliveriesLoading : activeTab === "inspirations" ? inspirationsLoading : conversationsLoading;
+
+  const formatConversationTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    if (days === 0) return date.toLocaleTimeString("no-NO", { hour: "2-digit", minute: "2-digit" });
+    if (days === 1) return "I går";
+    if (days < 7) return date.toLocaleDateString("no-NO", { weekday: "short" });
+    return date.toLocaleDateString("no-NO", { day: "numeric", month: "short" });
+  };
+
+  const renderConversationItem = ({ item, index }: { item: Conversation; index: number }) => (
+    <Animated.View entering={FadeInDown.delay(index * 50).duration(300)}>
+      <Pressable
+        onPress={() => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          navigation.navigate("VendorChat", { conversationId: item.id, coupleName: item.couple.displayName });
+        }}
+        style={[styles.deliveryCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}
+      >
+        <View style={styles.cardHeader}>
+          <View style={styles.cardTitleRow}>
+            <ThemedText style={styles.cardTitle}>{item.couple.displayName}</ThemedText>
+            {item.vendorUnreadCount > 0 ? (
+              <View style={[styles.unreadBadge, { backgroundColor: Colors.dark.accent }]}>
+                <ThemedText style={styles.unreadText}>{item.vendorUnreadCount}</ThemedText>
+              </View>
+            ) : null}
+          </View>
+          <ThemedText style={[styles.coupleName, { color: theme.textSecondary }]}>
+            {item.couple.email}
+          </ThemedText>
+          {item.inspiration ? (
+            <ThemedText style={[styles.dateText, { color: Colors.dark.accent, marginTop: 4 }]}>
+              {item.inspiration.title}
+            </ThemedText>
+          ) : null}
+        </View>
+        {item.lastMessage ? (
+          <View style={styles.lastMessageContainer}>
+            <ThemedText style={[styles.lastMessage, { color: theme.textSecondary }]} numberOfLines={2}>
+              {item.lastMessage.senderType === "vendor" ? "Du: " : ""}{item.lastMessage.body}
+            </ThemedText>
+            <ThemedText style={[styles.messageTime, { color: theme.textMuted }]}>
+              {formatConversationTime(item.lastMessage.createdAt)}
+            </ThemedText>
+          </View>
+        ) : null}
+      </Pressable>
+    </Animated.View>
+  );
 
   return (
     <View style={[styles.container, { backgroundColor: theme.backgroundRoot }]}>
@@ -361,23 +445,44 @@ export default function VendorDashboardScreen({ navigation }: Props) {
         >
           <Feather name="image" size={16} color={activeTab === "inspirations" ? Colors.dark.accent : theme.textMuted} />
           <ThemedText style={[styles.tabText, { color: activeTab === "inspirations" ? Colors.dark.accent : theme.textMuted }]}>
-            Inspirasjoner
+            Inspirasjon
+          </ThemedText>
+        </Pressable>
+        <Pressable
+          onPress={() => setActiveTab("messages")}
+          style={[
+            styles.tab,
+            activeTab === "messages" && { borderBottomColor: Colors.dark.accent, borderBottomWidth: 2 }
+          ]}
+        >
+          <View style={styles.tabWithBadge}>
+            <Feather name="message-circle" size={16} color={activeTab === "messages" ? Colors.dark.accent : theme.textMuted} />
+            {totalUnread > 0 ? (
+              <View style={[styles.tabBadge, { backgroundColor: Colors.dark.accent }]}>
+                <ThemedText style={styles.tabBadgeText}>{totalUnread}</ThemedText>
+              </View>
+            ) : null}
+          </View>
+          <ThemedText style={[styles.tabText, { color: activeTab === "messages" ? Colors.dark.accent : theme.textMuted }]}>
+            Meldinger
           </ThemedText>
         </Pressable>
       </View>
 
-      <Pressable
-        onPress={() => {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-          navigation.navigate(activeTab === "deliveries" ? "DeliveryCreate" : "InspirationCreate");
-        }}
-        style={[styles.createBtn, { backgroundColor: Colors.dark.accent }]}
-      >
-        <Feather name="plus" size={20} color="#1A1A1A" />
-        <ThemedText style={styles.createBtnText}>
-          {activeTab === "deliveries" ? "Ny leveranse" : "Ny inspirasjon"}
-        </ThemedText>
-      </Pressable>
+      {activeTab !== "messages" ? (
+        <Pressable
+          onPress={() => {
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            navigation.navigate(activeTab === "deliveries" ? "DeliveryCreate" : "InspirationCreate");
+          }}
+          style={[styles.createBtn, { backgroundColor: Colors.dark.accent }]}
+        >
+          <Feather name="plus" size={20} color="#1A1A1A" />
+          <ThemedText style={styles.createBtnText}>
+            {activeTab === "deliveries" ? "Ny leveranse" : "Ny inspirasjon"}
+          </ThemedText>
+        </Pressable>
+      ) : null}
 
       {isLoading ? (
         <View style={styles.loadingContainer}>
@@ -412,7 +517,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
             </View>
           )}
         />
-      ) : (
+      ) : activeTab === "inspirations" ? (
         <FlatList
           data={inspirationsData}
           renderItem={renderInspirationItem}
@@ -437,6 +542,35 @@ export default function VendorDashboardScreen({ navigation }: Props) {
               </ThemedText>
               <ThemedText style={[styles.emptySubtext, { color: theme.textMuted }]}>
                 Del vakre bilder og videoer for å inspirere brudepar
+              </ThemedText>
+            </View>
+          )}
+        />
+      ) : (
+        <FlatList
+          data={conversationsData}
+          renderItem={renderConversationItem}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{
+            paddingHorizontal: Spacing.lg,
+            paddingBottom: insets.bottom + Spacing.xl,
+          }}
+          ItemSeparatorComponent={() => <View style={{ height: Spacing.md }} />}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={handleRefresh}
+              tintColor={Colors.dark.accent}
+            />
+          }
+          ListEmptyComponent={() => (
+            <View style={styles.emptyContainer}>
+              <Feather name="message-circle" size={48} color={theme.textMuted} />
+              <ThemedText style={[styles.emptyText, { color: theme.textMuted }]}>
+                Ingen meldinger ennå
+              </ThemedText>
+              <ThemedText style={[styles.emptySubtext, { color: theme.textMuted }]}>
+                Når brudepar kontakter deg, vil samtalene vises her
               </ThemedText>
             </View>
           )}
@@ -601,5 +735,50 @@ const styles = StyleSheet.create({
   createdAt: {
     fontSize: 12,
     textAlign: "right",
+  },
+  tabWithBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  tabBadge: {
+    minWidth: 16,
+    height: 16,
+    borderRadius: 8,
+    alignItems: "center",
+    justifyContent: "center",
+    marginLeft: 4,
+    paddingHorizontal: 4,
+  },
+  tabBadgeText: {
+    fontSize: 10,
+    fontWeight: "700",
+    color: "#1A1A1A",
+  },
+  unreadBadge: {
+    minWidth: 20,
+    height: 20,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 6,
+  },
+  unreadText: {
+    fontSize: 12,
+    fontWeight: "700",
+    color: "#1A1A1A",
+  },
+  lastMessageContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginTop: Spacing.sm,
+    gap: Spacing.sm,
+  },
+  lastMessage: {
+    fontSize: 14,
+    flex: 1,
+  },
+  messageTime: {
+    fontSize: 12,
   },
 });

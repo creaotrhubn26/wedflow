@@ -283,3 +283,79 @@ export type InspirationMedia = typeof inspirationMedia.$inferSelect;
 export type CreateInspiration = z.infer<typeof createInspirationSchema>;
 export type InspirationInquiry = typeof inspirationInquiries.$inferSelect;
 export type CreateInquiry = z.infer<typeof createInquirySchema>;
+
+// Couple Profiles for messaging
+export const coupleProfiles = pgTable("couple_profiles", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  email: text("email").notNull().unique(),
+  displayName: text("display_name").notNull(),
+  partnerEmail: text("partner_email"),
+  weddingDate: text("wedding_date"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const coupleSessions = pgTable("couple_sessions", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id),
+  token: text("token").notNull().unique(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Conversations between couples and vendors
+export const conversations = pgTable("conversations", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id),
+  vendorId: varchar("vendor_id").notNull().references(() => vendors.id),
+  inspirationId: varchar("inspiration_id").references(() => inspirations.id),
+  inquiryId: varchar("inquiry_id").references(() => inspirationInquiries.id),
+  status: text("status").notNull().default("active"),
+  lastMessageAt: timestamp("last_message_at").defaultNow(),
+  coupleUnreadCount: integer("couple_unread_count").default(0),
+  vendorUnreadCount: integer("vendor_unread_count").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const messages = pgTable("messages", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  conversationId: varchar("conversation_id").notNull().references(() => conversations.id),
+  senderType: text("sender_type").notNull(), // 'couple' or 'vendor'
+  senderId: varchar("sender_id").notNull(),
+  body: text("body").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  readAt: timestamp("read_at"),
+});
+
+export const insertCoupleProfileSchema = createInsertSchema(coupleProfiles).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const coupleLoginSchema = z.object({
+  email: z.string().email("Ugyldig e-postadresse"),
+  displayName: z.string().min(2, "Navn må være minst 2 tegn"),
+});
+
+export const sendMessageSchema = z.object({
+  conversationId: z.string().optional(),
+  vendorId: z.string().optional(),
+  inspirationId: z.string().optional(),
+  body: z.string().min(1, "Melding kan ikke være tom"),
+});
+
+export type CoupleProfile = typeof coupleProfiles.$inferSelect;
+export type CoupleSession = typeof coupleSessions.$inferSelect;
+export type Conversation = typeof conversations.$inferSelect;
+export type Message = typeof messages.$inferSelect;
+export type CoupleLogin = z.infer<typeof coupleLoginSchema>;
+export type SendMessage = z.infer<typeof sendMessageSchema>;
