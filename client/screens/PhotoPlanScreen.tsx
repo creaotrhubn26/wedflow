@@ -270,7 +270,7 @@ export default function PhotoPlanScreen() {
                 borderColor: theme.border,
               },
             ]}
-            placeholder="Tittel"
+            placeholder="F.eks. Brudeparet ved sjøen"
             placeholderTextColor={theme.textMuted}
             value={newTitle}
             onChangeText={setNewTitle}
@@ -285,11 +285,15 @@ export default function PhotoPlanScreen() {
                 borderColor: theme.border,
               },
             ]}
-            placeholder="Beskrivelse (valgfritt)"
+            placeholder="F.eks. Ved solnedgang, romantisk stemning"
             placeholderTextColor={theme.textMuted}
             value={newDescription}
             onChangeText={setNewDescription}
           />
+
+          <ThemedText style={[styles.helpText, { color: theme.textMuted }]}>
+            Velg kategori under for å hjelpe AI Tidsberegner
+          </ThemedText>
 
           <View style={styles.categoryPicker}>
             {(Object.keys(CATEGORY_LABELS) as PhotoShot["category"][]).map((cat) => (
@@ -444,6 +448,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     fontSize: 16,
     marginBottom: Spacing.md,
+  },
+  helpText: {
+    fontSize: 12,
+    marginBottom: Spacing.sm,
   },
   categoryPicker: {
     flexDirection: "row",

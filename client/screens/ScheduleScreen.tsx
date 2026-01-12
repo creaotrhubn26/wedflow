@@ -342,7 +342,7 @@ export default function ScheduleScreen() {
                   borderColor: theme.border,
                 },
               ]}
-              placeholder="00:00"
+              placeholder="14:00"
               placeholderTextColor={theme.textMuted}
               value={newTime}
               onChangeText={setNewTime}
@@ -357,12 +357,16 @@ export default function ScheduleScreen() {
                   borderColor: theme.border,
                 },
               ]}
-              placeholder="Tittel"
+              placeholder="F.eks. Fotografering av brudepar"
               placeholderTextColor={theme.textMuted}
               value={newTitle}
               onChangeText={setNewTitle}
             />
           </View>
+
+          <ThemedText style={[styles.helpText, { color: theme.textMuted }]}>
+            Tips: Bruk kamera-ikon for foto/video, så finner AI Tidsberegner det automatisk
+          </ThemedText>
 
           <View style={styles.iconPicker}>
             {ICON_OPTIONS.map((icon) => (
@@ -496,7 +500,11 @@ const styles = StyleSheet.create({
   inputRow: {
     flexDirection: "row",
     gap: Spacing.md,
-    marginBottom: Spacing.lg,
+    marginBottom: Spacing.sm,
+  },
+  helpText: {
+    fontSize: 12,
+    marginBottom: Spacing.md,
   },
   timeInput: {
     width: 80,
