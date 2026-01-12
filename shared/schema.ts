@@ -586,3 +586,70 @@ export const insertAppSettingSchema = createInsertSchema(appSettings).omit({
 
 export type AppSetting = typeof appSettings.$inferSelect;
 export type InsertAppSetting = z.infer<typeof insertAppSettingSchema>;
+
+// Schedule Events - Server-side storage for sharing with coordinators
+export const scheduleEvents = pgTable("schedule_events", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id),
+  time: text("time").notNull(), // HH:mm format
+  title: text("title").notNull(),
+  icon: text("icon").default("star"), // heart, camera, music, users, coffee, sun, moon, star
+  notes: text("notes"),
+  sortOrder: integer("sort_order").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertScheduleEventSchema = createInsertSchema(scheduleEvents).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export type ScheduleEvent = typeof scheduleEvents.$inferSelect;
+export type InsertScheduleEvent = z.infer<typeof insertScheduleEventSchema>;
+
+// Coordinator Invitations - For toastmasters and other helpers
+export const coordinatorInvitations = pgTable("coordinator_invitations", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id),
+  email: text("email"),
+  name: text("name").notNull(), // Display name like "Toastmaster Ole"
+  roleLabel: text("role_label").notNull().default("Toastmaster"), // Toastmaster, Koordinator, etc.
+  accessToken: text("access_token").notNull().unique(),
+  accessCode: text("access_code"), // Optional 6-digit code for easy access
+  canViewSpeeches: boolean("can_view_speeches").default(true),
+  canViewSchedule: boolean("can_view_schedule").default(true),
+  status: text("status").notNull().default("active"), // active, revoked, expired
+  expiresAt: timestamp("expires_at"),
+  lastAccessedAt: timestamp("last_accessed_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertCoordinatorInvitationSchema = createInsertSchema(coordinatorInvitations).omit({
+  id: true,
+  accessToken: true,
+  accessCode: true,
+  status: true,
+  lastAccessedAt: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const createCoordinatorInvitationSchema = z.object({
+  name: z.string().min(1, "Navn er påkrevd"),
+  email: z.string().email().optional().or(z.literal("")),
+  roleLabel: z.string().default("Toastmaster"),
+  canViewSpeeches: z.boolean().default(true),
+  canViewSchedule: z.boolean().default(true),
+  expiresAt: z.string().optional(),
+});
+
+export type CoordinatorInvitation = typeof coordinatorInvitations.$inferSelect;
+export type InsertCoordinatorInvitation = z.infer<typeof insertCoordinatorInvitationSchema>;
+export type CreateCoordinatorInvitation = z.infer<typeof createCoordinatorInvitationSchema>;
