@@ -7,6 +7,10 @@ import {
   Dimensions,
   ActivityIndicator,
   RefreshControl,
+  Modal,
+  TextInput,
+  Alert,
+  Linking,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
@@ -14,12 +18,14 @@ import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInUp } from "react-native-reanimated";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { Image } from "expo-image";
 
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius, Colors } from "@/constants/theme";
+import { getApiUrl } from "@/lib/query-client";
+import { KeyboardAwareScrollViewCompat } from "@/components/KeyboardAwareScrollViewCompat";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const GRID_GAP = Spacing.sm;
@@ -49,6 +55,16 @@ interface InspirationItem {
   title: string;
   description: string | null;
   coverImageUrl: string | null;
+  priceSummary: string | null;
+  priceMin: number | null;
+  priceMax: number | null;
+  currency: string | null;
+  websiteUrl: string | null;
+  inquiryEmail: string | null;
+  inquiryPhone: string | null;
+  ctaLabel: string | null;
+  ctaUrl: string | null;
+  allowInquiryForm: boolean | null;
   status: string;
   createdAt: string;
   media: InspirationMedia[];
@@ -81,6 +97,13 @@ export default function InspirationScreen() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [savedItems, setSavedItems] = useState<Set<string>>(new Set());
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [selectedInspiration, setSelectedInspiration] = useState<InspirationItem | null>(null);
+  const [showInquiryModal, setShowInquiryModal] = useState(false);
+  const [inquiryName, setInquiryName] = useState("");
+  const [inquiryEmail, setInquiryEmail] = useState("");
+  const [inquiryPhone, setInquiryPhone] = useState("");
+  const [inquiryMessage, setInquiryMessage] = useState("");
+  const [inquiryWeddingDate, setInquiryWeddingDate] = useState("");
 
   const { data: categories = [] } = useQuery<InspirationCategory[]>({
     queryKey: ["/api/inspiration-categories"],
@@ -89,6 +112,39 @@ export default function InspirationScreen() {
   const { data: inspirations = [], isLoading, refetch } = useQuery<InspirationItem[]>({
     queryKey: ["/api/inspirations"],
   });
+
+  const inquiryMutation = useMutation({
+    mutationFn: async (data: any) => {
+      const url = new URL(`/api/inspirations/${data.inspirationId}/inquiry`, getApiUrl());
+      const response = await fetch(url.toString(), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || "Kunne ikke sende");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      Alert.alert("Sendt!", "Din forespørsel er sendt til leverandøren.");
+      setShowInquiryModal(false);
+      resetInquiryForm();
+    },
+    onError: (error: Error) => {
+      Alert.alert("Feil", error.message);
+    },
+  });
+
+  const resetInquiryForm = () => {
+    setInquiryName("");
+    setInquiryEmail("");
+    setInquiryPhone("");
+    setInquiryMessage("");
+    setInquiryWeddingDate("");
+  };
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -105,6 +161,37 @@ export default function InspirationScreen() {
     }
     setSavedItems(newSaved);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  };
+
+  const handleOpenDetail = (item: InspirationItem) => {
+    setSelectedInspiration(item);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  };
+
+  const handleSendInquiry = () => {
+    if (!selectedInspiration) return;
+    if (!inquiryName.trim() || !inquiryEmail.trim() || !inquiryMessage.trim()) {
+      Alert.alert("Mangler informasjon", "Fyll ut navn, e-post og melding.");
+      return;
+    }
+    inquiryMutation.mutate({
+      inspirationId: selectedInspiration.id,
+      name: inquiryName.trim(),
+      email: inquiryEmail.trim(),
+      phone: inquiryPhone.trim() || undefined,
+      message: inquiryMessage.trim(),
+      weddingDate: inquiryWeddingDate.trim() || undefined,
+    });
+  };
+
+  const formatPrice = (item: InspirationItem) => {
+    if (item.priceSummary) return item.priceSummary;
+    if (item.priceMin && item.priceMax) {
+      return `${item.priceMin.toLocaleString()} - ${item.priceMax.toLocaleString()} ${item.currency || "kr"}`;
+    }
+    if (item.priceMin) return `Fra ${item.priceMin.toLocaleString()} ${item.currency || "kr"}`;
+    if (item.priceMax) return `Opp til ${item.priceMax.toLocaleString()} ${item.currency || "kr"}`;
+    return null;
   };
 
   const filteredInspirations = selectedCategory
@@ -231,6 +318,7 @@ export default function InspirationScreen() {
               entering={FadeInUp.delay(index * 100).duration(300)}
             >
               <Pressable
+                onPress={() => handleOpenDetail(item)}
                 style={[
                   styles.imageCard,
                   { backgroundColor: theme.backgroundDefault },
@@ -253,28 +341,40 @@ export default function InspirationScreen() {
                   </View>
                 )}
                 <View style={styles.imageOverlay}>
-                  <View style={styles.categoryBadge}>
-                    <ThemedText style={styles.categoryBadgeText}>
-                      {item.category?.name || "Inspirasjon"}
-                    </ThemedText>
+                  <View style={styles.overlayTop}>
+                    <View style={styles.categoryBadge}>
+                      <ThemedText style={styles.categoryBadgeText}>
+                        {item.category?.name || "Inspirasjon"}
+                      </ThemedText>
+                    </View>
+                    <Pressable
+                      onPress={(e) => {
+                        e.stopPropagation();
+                        handleToggleSave(item.id);
+                      }}
+                      style={[
+                        styles.saveButton,
+                        {
+                          backgroundColor: savedItems.has(item.id)
+                            ? Colors.dark.accent
+                            : "rgba(0,0,0,0.5)",
+                        },
+                      ]}
+                    >
+                      <Feather
+                        name="heart"
+                        size={16}
+                        color={savedItems.has(item.id) ? "#1A1A1A" : "#FFFFFF"}
+                      />
+                    </Pressable>
                   </View>
-                  <Pressable
-                    onPress={() => handleToggleSave(item.id)}
-                    style={[
-                      styles.saveButton,
-                      {
-                        backgroundColor: savedItems.has(item.id)
-                          ? Colors.dark.accent
-                          : "rgba(0,0,0,0.5)",
-                      },
-                    ]}
-                  >
-                    <Feather
-                      name="heart"
-                      size={16}
-                      color={savedItems.has(item.id) ? "#1A1A1A" : "#FFFFFF"}
-                    />
-                  </Pressable>
+                  {formatPrice(item) ? (
+                    <View style={styles.priceBadge}>
+                      <ThemedText style={styles.priceBadgeText}>
+                        {formatPrice(item)}
+                      </ThemedText>
+                    </View>
+                  ) : null}
                 </View>
                 <View style={[styles.cardFooter, { borderTopColor: theme.border }]}>
                   <ThemedText style={styles.cardTitle} numberOfLines={1}>
@@ -336,6 +436,186 @@ export default function InspirationScreen() {
           </View>
         </View>
       ) : null}
+
+      <Modal
+        visible={selectedInspiration !== null && !showInquiryModal}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setSelectedInspiration(null)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={[styles.detailModal, { backgroundColor: theme.backgroundRoot }]}>
+            <Pressable style={styles.closeBtn} onPress={() => setSelectedInspiration(null)}>
+              <Feather name="x" size={24} color={theme.text} />
+            </Pressable>
+
+            <ScrollView contentContainerStyle={styles.detailContent}>
+              {selectedInspiration?.coverImageUrl || (selectedInspiration?.media.length && selectedInspiration.media[0].url) ? (
+                <Image
+                  source={{ uri: selectedInspiration.coverImageUrl || selectedInspiration.media[0].url }}
+                  style={styles.detailImage}
+                  contentFit="cover"
+                />
+              ) : null}
+
+              <ThemedText style={styles.detailTitle}>{selectedInspiration?.title}</ThemedText>
+              
+              {selectedInspiration?.vendor ? (
+                <ThemedText style={[styles.detailVendor, { color: Colors.dark.accent }]}>
+                  av {selectedInspiration.vendor.businessName}
+                </ThemedText>
+              ) : null}
+
+              {selectedInspiration?.description ? (
+                <ThemedText style={[styles.detailDesc, { color: theme.textSecondary }]}>
+                  {selectedInspiration.description}
+                </ThemedText>
+              ) : null}
+
+              {formatPrice(selectedInspiration!) ? (
+                <View style={[styles.priceBox, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
+                  <Feather name="tag" size={18} color={Colors.dark.accent} />
+                  <ThemedText style={styles.priceText}>{formatPrice(selectedInspiration!)}</ThemedText>
+                </View>
+              ) : null}
+
+              <View style={styles.contactButtons}>
+                {selectedInspiration?.websiteUrl ? (
+                  <Pressable
+                    onPress={() => Linking.openURL(selectedInspiration.websiteUrl!)}
+                    style={[styles.contactBtn, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}
+                  >
+                    <Feather name="globe" size={18} color={Colors.dark.accent} />
+                    <ThemedText style={styles.contactBtnText}>Nettside</ThemedText>
+                  </Pressable>
+                ) : null}
+
+                {selectedInspiration?.inquiryPhone ? (
+                  <Pressable
+                    onPress={() => Linking.openURL(`tel:${selectedInspiration.inquiryPhone}`)}
+                    style={[styles.contactBtn, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}
+                  >
+                    <Feather name="phone" size={18} color={Colors.dark.accent} />
+                    <ThemedText style={styles.contactBtnText}>Ring</ThemedText>
+                  </Pressable>
+                ) : null}
+
+                {selectedInspiration?.inquiryEmail ? (
+                  <Pressable
+                    onPress={() => Linking.openURL(`mailto:${selectedInspiration.inquiryEmail}`)}
+                    style={[styles.contactBtn, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}
+                  >
+                    <Feather name="mail" size={18} color={Colors.dark.accent} />
+                    <ThemedText style={styles.contactBtnText}>E-post</ThemedText>
+                  </Pressable>
+                ) : null}
+              </View>
+
+              {selectedInspiration?.ctaLabel && selectedInspiration?.ctaUrl ? (
+                <Pressable
+                  onPress={() => Linking.openURL(selectedInspiration.ctaUrl!)}
+                  style={[styles.ctaBtn, { backgroundColor: Colors.dark.accent }]}
+                >
+                  <ThemedText style={styles.ctaBtnText}>{selectedInspiration.ctaLabel}</ThemedText>
+                </Pressable>
+              ) : null}
+
+              {selectedInspiration?.allowInquiryForm ? (
+                <Pressable
+                  onPress={() => setShowInquiryModal(true)}
+                  style={[styles.inquiryBtn, { borderColor: Colors.dark.accent }]}
+                >
+                  <Feather name="send" size={18} color={Colors.dark.accent} />
+                  <ThemedText style={[styles.inquiryBtnText, { color: Colors.dark.accent }]}>
+                    Send forespørsel
+                  </ThemedText>
+                </Pressable>
+              ) : null}
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        visible={showInquiryModal}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setShowInquiryModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={[styles.inquiryModal, { backgroundColor: theme.backgroundRoot }]}>
+            <View style={styles.inquiryHeader}>
+              <ThemedText style={styles.inquiryTitle}>Send forespørsel</ThemedText>
+              <Pressable onPress={() => setShowInquiryModal(false)}>
+                <Feather name="x" size={24} color={theme.text} />
+              </Pressable>
+            </View>
+
+            <KeyboardAwareScrollViewCompat style={styles.inquiryScroll}>
+              <ThemedText style={[styles.inquirySubtitle, { color: theme.textSecondary }]}>
+                Til: {selectedInspiration?.vendor?.businessName}
+              </ThemedText>
+
+              <TextInput
+                style={[styles.inquiryInput, { backgroundColor: theme.backgroundDefault, borderColor: theme.border, color: theme.text }]}
+                value={inquiryName}
+                onChangeText={setInquiryName}
+                placeholder="Ditt navn"
+                placeholderTextColor={theme.textMuted}
+              />
+
+              <TextInput
+                style={[styles.inquiryInput, { backgroundColor: theme.backgroundDefault, borderColor: theme.border, color: theme.text }]}
+                value={inquiryEmail}
+                onChangeText={setInquiryEmail}
+                placeholder="Din e-post"
+                placeholderTextColor={theme.textMuted}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+
+              <TextInput
+                style={[styles.inquiryInput, { backgroundColor: theme.backgroundDefault, borderColor: theme.border, color: theme.text }]}
+                value={inquiryPhone}
+                onChangeText={setInquiryPhone}
+                placeholder="Telefon (valgfritt)"
+                placeholderTextColor={theme.textMuted}
+                keyboardType="phone-pad"
+              />
+
+              <TextInput
+                style={[styles.inquiryInput, { backgroundColor: theme.backgroundDefault, borderColor: theme.border, color: theme.text }]}
+                value={inquiryWeddingDate}
+                onChangeText={setInquiryWeddingDate}
+                placeholder="Bryllupsdato (valgfritt)"
+                placeholderTextColor={theme.textMuted}
+              />
+
+              <TextInput
+                style={[styles.inquiryTextArea, { backgroundColor: theme.backgroundDefault, borderColor: theme.border, color: theme.text }]}
+                value={inquiryMessage}
+                onChangeText={setInquiryMessage}
+                placeholder="Din melding..."
+                placeholderTextColor={theme.textMuted}
+                multiline
+                numberOfLines={4}
+              />
+
+              <Pressable
+                onPress={handleSendInquiry}
+                disabled={inquiryMutation.isPending}
+                style={[styles.sendBtn, { backgroundColor: Colors.dark.accent }]}
+              >
+                {inquiryMutation.isPending ? (
+                  <ActivityIndicator size="small" color="#1A1A1A" />
+                ) : (
+                  <ThemedText style={styles.sendBtnText}>Send forespørsel</ThemedText>
+                )}
+              </Pressable>
+            </KeyboardAwareScrollViewCompat>
+          </View>
+        </View>
+      </Modal>
     </ScrollView>
   );
 }
@@ -411,8 +691,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     padding: Spacing.sm,
   },
+  overlayTop: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+  },
   categoryBadge: {
-    alignSelf: "flex-start",
     backgroundColor: "rgba(0,0,0,0.6)",
     paddingHorizontal: Spacing.sm,
     paddingVertical: Spacing.xs,
@@ -424,12 +708,23 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   saveButton: {
-    alignSelf: "flex-end",
     width: 32,
     height: 32,
     borderRadius: 16,
     justifyContent: "center",
     alignItems: "center",
+  },
+  priceBadge: {
+    alignSelf: "flex-start",
+    backgroundColor: "rgba(201, 169, 98, 0.9)",
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.sm,
+  },
+  priceBadgeText: {
+    fontSize: 11,
+    color: "#1A1A1A",
+    fontWeight: "600",
   },
   cardFooter: {
     padding: Spacing.sm,
@@ -475,5 +770,163 @@ const styles = StyleSheet.create({
   categoryRowCount: {
     fontSize: 14,
     marginRight: Spacing.sm,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.8)",
+    justifyContent: "flex-end",
+  },
+  detailModal: {
+    borderTopLeftRadius: BorderRadius.lg,
+    borderTopRightRadius: BorderRadius.lg,
+    maxHeight: "90%",
+  },
+  closeBtn: {
+    position: "absolute",
+    top: Spacing.md,
+    right: Spacing.md,
+    zIndex: 10,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  detailContent: {
+    padding: Spacing.lg,
+    paddingTop: 0,
+  },
+  detailImage: {
+    width: "100%",
+    height: 250,
+    borderRadius: BorderRadius.md,
+    marginBottom: Spacing.lg,
+  },
+  detailTitle: {
+    fontSize: 22,
+    fontWeight: "700",
+  },
+  detailVendor: {
+    fontSize: 15,
+    fontWeight: "500",
+    marginTop: Spacing.xs,
+  },
+  detailDesc: {
+    fontSize: 15,
+    lineHeight: 22,
+    marginTop: Spacing.md,
+  },
+  priceBox: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: Spacing.md,
+    borderRadius: BorderRadius.sm,
+    borderWidth: 1,
+    marginTop: Spacing.lg,
+    gap: Spacing.sm,
+  },
+  priceText: {
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  contactButtons: {
+    flexDirection: "row",
+    gap: Spacing.sm,
+    marginTop: Spacing.lg,
+  },
+  contactBtn: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: Spacing.md,
+    borderRadius: BorderRadius.sm,
+    borderWidth: 1,
+    gap: Spacing.xs,
+  },
+  contactBtnText: {
+    fontSize: 13,
+    fontWeight: "500",
+  },
+  ctaBtn: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: Spacing.md,
+    borderRadius: BorderRadius.sm,
+    marginTop: Spacing.md,
+  },
+  ctaBtnText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#1A1A1A",
+  },
+  inquiryBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: Spacing.md,
+    borderRadius: BorderRadius.sm,
+    borderWidth: 1,
+    marginTop: Spacing.md,
+    gap: Spacing.sm,
+  },
+  inquiryBtnText: {
+    fontSize: 15,
+    fontWeight: "600",
+  },
+  inquiryModal: {
+    borderTopLeftRadius: BorderRadius.lg,
+    borderTopRightRadius: BorderRadius.lg,
+    maxHeight: "85%",
+  },
+  inquiryHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: Spacing.lg,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(255,255,255,0.1)",
+  },
+  inquiryTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  inquiryScroll: {
+    padding: Spacing.lg,
+  },
+  inquirySubtitle: {
+    fontSize: 14,
+    marginBottom: Spacing.lg,
+  },
+  inquiryInput: {
+    height: 48,
+    borderRadius: BorderRadius.sm,
+    borderWidth: 1,
+    paddingHorizontal: Spacing.md,
+    fontSize: 15,
+    marginBottom: Spacing.md,
+  },
+  inquiryTextArea: {
+    minHeight: 100,
+    borderRadius: BorderRadius.sm,
+    borderWidth: 1,
+    paddingHorizontal: Spacing.md,
+    paddingTop: Spacing.md,
+    fontSize: 15,
+    textAlignVertical: "top",
+    marginBottom: Spacing.lg,
+  },
+  sendBtn: {
+    alignItems: "center",
+    justifyContent: "center",
+    height: 52,
+    borderRadius: BorderRadius.sm,
+    marginBottom: Spacing.xl,
+  },
+  sendBtnText: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#1A1A1A",
   },
 });

@@ -7,6 +7,9 @@ import {
   TextInput,
   Alert,
   ActivityIndicator,
+  Modal,
+  ScrollView,
+  Switch,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
@@ -18,7 +21,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius, Colors } from "@/constants/theme";
-import { getApiUrl, apiRequest } from "@/lib/query-client";
+import { getApiUrl } from "@/lib/query-client";
 
 interface PendingVendor {
   id: string;
@@ -32,6 +35,12 @@ interface PendingVendor {
   createdAt: string;
 }
 
+interface InspirationCategory {
+  id: string;
+  name: string;
+  icon: string;
+}
+
 export default function AdminVendorsScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
@@ -42,6 +51,12 @@ export default function AdminVendorsScreen() {
   const [storedKey, setStoredKey] = useState("");
   const [loginError, setLoginError] = useState("");
   const [selectedTab, setSelectedTab] = useState<"pending" | "approved" | "rejected">("pending");
+  const [editingVendor, setEditingVendor] = useState<PendingVendor | null>(null);
+  const [vendorFeatures, setVendorFeatures] = useState<Record<string, boolean>>({
+    deliveries: true,
+    inspirations: true,
+  });
+  const [vendorCategories, setVendorCategories] = useState<string[]>([]);
 
   const { data: vendors = [], isLoading, refetch } = useQuery<PendingVendor[]>({
     queryKey: ["/api/admin/vendors", selectedTab, storedKey],
@@ -61,6 +76,10 @@ export default function AdminVendorsScreen() {
       return response.json();
     },
     enabled: storedKey.length > 0,
+  });
+
+  const { data: inspirationCats = [] } = useQuery<InspirationCategory[]>({
+    queryKey: ["/api/inspiration-categories"],
   });
 
   const isAuthenticated = storedKey.length > 0;
@@ -101,6 +120,44 @@ export default function AdminVendorsScreen() {
     onSuccess: () => {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
       queryClient.invalidateQueries({ queryKey: ["/api/admin/vendors"] });
+    },
+  });
+
+  const updateFeaturesMutation = useMutation({
+    mutationFn: async ({ vendorId, features }: { vendorId: string; features: { featureKey: string; isEnabled: boolean }[] }) => {
+      const url = new URL(`/api/admin/vendors/${vendorId}/features`, getApiUrl());
+      const response = await fetch(url.toString(), {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${storedKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ features }),
+      });
+      if (!response.ok) throw new Error("Kunne ikke oppdatere");
+      return response.json();
+    },
+    onSuccess: () => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    },
+  });
+
+  const updateCategoriesMutation = useMutation({
+    mutationFn: async ({ vendorId, categoryIds }: { vendorId: string; categoryIds: string[] }) => {
+      const url = new URL(`/api/admin/vendors/${vendorId}/inspiration-categories`, getApiUrl());
+      const response = await fetch(url.toString(), {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${storedKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ categoryIds }),
+      });
+      if (!response.ok) throw new Error("Kunne ikke oppdatere");
+      return response.json();
+    },
+    onSuccess: () => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     },
   });
 
@@ -167,6 +224,60 @@ export default function AdminVendorsScreen() {
       ],
       "plain-text"
     );
+  };
+
+  const openEditModal = async (vendor: PendingVendor) => {
+    setEditingVendor(vendor);
+    
+    try {
+      const featuresUrl = new URL(`/api/admin/vendors/${vendor.id}/features`, getApiUrl());
+      const featuresRes = await fetch(featuresUrl.toString(), {
+        headers: { Authorization: `Bearer ${storedKey}` },
+      });
+      if (featuresRes.ok) {
+        const features = await featuresRes.json();
+        const featureMap: Record<string, boolean> = { deliveries: true, inspirations: true };
+        for (const f of features) {
+          featureMap[f.featureKey] = f.isEnabled;
+        }
+        setVendorFeatures(featureMap);
+      }
+
+      const catsUrl = new URL(`/api/admin/vendors/${vendor.id}/inspiration-categories`, getApiUrl());
+      const catsRes = await fetch(catsUrl.toString(), {
+        headers: { Authorization: `Bearer ${storedKey}` },
+      });
+      if (catsRes.ok) {
+        const cats = await catsRes.json();
+        setVendorCategories(cats);
+      }
+    } catch (error) {
+      console.error("Error loading vendor settings:", error);
+    }
+  };
+
+  const handleSaveSettings = async () => {
+    if (!editingVendor) return;
+
+    const features = Object.entries(vendorFeatures).map(([featureKey, isEnabled]) => ({
+      featureKey,
+      isEnabled,
+    }));
+
+    await updateFeaturesMutation.mutateAsync({ vendorId: editingVendor.id, features });
+    await updateCategoriesMutation.mutateAsync({ vendorId: editingVendor.id, categoryIds: vendorCategories });
+
+    setEditingVendor(null);
+    Alert.alert("Suksess", "Innstillinger lagret!");
+  };
+
+  const toggleCategory = (categoryId: string) => {
+    setVendorCategories(prev => 
+      prev.includes(categoryId)
+        ? prev.filter(id => id !== categoryId)
+        : [...prev, categoryId]
+    );
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
   const formatDate = (dateString: string) => {
@@ -254,6 +365,18 @@ export default function AdminVendorsScreen() {
               <ThemedText style={styles.actionBtnText}>Avvis</ThemedText>
             </Pressable>
           </View>
+        ) : null}
+
+        {item.status === "approved" ? (
+          <Pressable
+            onPress={() => openEditModal(item)}
+            style={[styles.settingsBtn, { borderColor: Colors.dark.accent }]}
+          >
+            <Feather name="settings" size={16} color={Colors.dark.accent} />
+            <ThemedText style={[styles.settingsBtnText, { color: Colors.dark.accent }]}>
+              Administrer tilganger
+            </ThemedText>
+          </Pressable>
         ) : null}
       </View>
     </Animated.View>
@@ -353,6 +476,107 @@ export default function AdminVendorsScreen() {
           )}
         />
       )}
+
+      <Modal
+        visible={editingVendor !== null}
+        animationType="slide"
+        transparent
+        onRequestClose={() => setEditingVendor(null)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { backgroundColor: theme.backgroundRoot }]}>
+            <View style={styles.modalHeader}>
+              <ThemedText style={styles.modalTitle}>
+                {editingVendor?.businessName}
+              </ThemedText>
+              <Pressable onPress={() => setEditingVendor(null)}>
+                <Feather name="x" size={24} color={theme.text} />
+              </Pressable>
+            </View>
+
+            <ScrollView style={styles.modalScroll}>
+              <ThemedText style={styles.sectionTitle}>Funksjoner</ThemedText>
+              <View style={[styles.featureRow, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
+                <View style={styles.featureInfo}>
+                  <Feather name="package" size={18} color={Colors.dark.accent} />
+                  <ThemedText style={styles.featureLabel}>Leveranser</ThemedText>
+                </View>
+                <Switch
+                  value={vendorFeatures.deliveries}
+                  onValueChange={(val) => setVendorFeatures(prev => ({ ...prev, deliveries: val }))}
+                  trackColor={{ false: theme.border, true: Colors.dark.accent }}
+                  thumbColor="#fff"
+                />
+              </View>
+              <View style={[styles.featureRow, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
+                <View style={styles.featureInfo}>
+                  <Feather name="image" size={18} color={Colors.dark.accent} />
+                  <ThemedText style={styles.featureLabel}>Inspirasjoner</ThemedText>
+                </View>
+                <Switch
+                  value={vendorFeatures.inspirations}
+                  onValueChange={(val) => setVendorFeatures(prev => ({ ...prev, inspirations: val }))}
+                  trackColor={{ false: theme.border, true: Colors.dark.accent }}
+                  thumbColor="#fff"
+                />
+              </View>
+
+              <ThemedText style={[styles.sectionTitle, { marginTop: Spacing.xl }]}>
+                Tillatte inspirasjonskategorier
+              </ThemedText>
+              <ThemedText style={[styles.sectionSubtitle, { color: theme.textMuted }]}>
+                Velg hvilke kategorier denne leverandøren kan legge inn inspirasjoner i. Hvis ingen er valgt, har de tilgang til alle.
+              </ThemedText>
+
+              <View style={styles.categoriesGrid}>
+                {inspirationCats.map((cat) => (
+                  <Pressable
+                    key={cat.id}
+                    onPress={() => toggleCategory(cat.id)}
+                    style={[
+                      styles.categoryChip,
+                      {
+                        backgroundColor: vendorCategories.includes(cat.id)
+                          ? Colors.dark.accent
+                          : theme.backgroundDefault,
+                        borderColor: vendorCategories.includes(cat.id)
+                          ? Colors.dark.accent
+                          : theme.border,
+                      },
+                    ]}
+                  >
+                    <ThemedText
+                      style={[
+                        styles.categoryChipText,
+                        {
+                          color: vendorCategories.includes(cat.id) ? "#1A1A1A" : theme.text,
+                        },
+                      ]}
+                    >
+                      {cat.name}
+                    </ThemedText>
+                  </Pressable>
+                ))}
+              </View>
+            </ScrollView>
+
+            <View style={styles.modalFooter}>
+              <Pressable
+                onPress={() => setEditingVendor(null)}
+                style={[styles.modalBtn, { backgroundColor: theme.backgroundDefault, borderColor: theme.border, borderWidth: 1 }]}
+              >
+                <ThemedText style={{ color: theme.text }}>Avbryt</ThemedText>
+              </Pressable>
+              <Pressable
+                onPress={handleSaveSettings}
+                style={[styles.modalBtn, { backgroundColor: Colors.dark.accent }]}
+              >
+                <ThemedText style={{ color: "#1A1A1A", fontWeight: "600" }}>Lagre</ThemedText>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
@@ -504,10 +728,103 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     color: "#fff",
   },
+  settingsBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.sm,
+    borderWidth: 1,
+    gap: Spacing.xs,
+  },
+  settingsBtnText: {
+    fontSize: 14,
+    fontWeight: "500",
+  },
   errorText: {
     color: "#EF5350",
     fontSize: 14,
     textAlign: "center",
     marginBottom: Spacing.md,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0,0,0,0.7)",
+    justifyContent: "flex-end",
+  },
+  modalContent: {
+    borderTopLeftRadius: BorderRadius.lg,
+    borderTopRightRadius: BorderRadius.lg,
+    maxHeight: "85%",
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: Spacing.lg,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(255,255,255,0.1)",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  modalScroll: {
+    padding: Spacing.lg,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: Spacing.sm,
+  },
+  sectionSubtitle: {
+    fontSize: 13,
+    marginBottom: Spacing.md,
+  },
+  featureRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: Spacing.md,
+    borderRadius: BorderRadius.sm,
+    borderWidth: 1,
+    marginBottom: Spacing.sm,
+  },
+  featureInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.sm,
+  },
+  featureLabel: {
+    fontSize: 15,
+  },
+  categoriesGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: Spacing.sm,
+  },
+  categoryChip: {
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.full,
+    borderWidth: 1,
+  },
+  categoryChipText: {
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  modalFooter: {
+    flexDirection: "row",
+    padding: Spacing.lg,
+    gap: Spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: "rgba(255,255,255,0.1)",
+  },
+  modalBtn: {
+    flex: 1,
+    height: 48,
+    borderRadius: BorderRadius.sm,
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
