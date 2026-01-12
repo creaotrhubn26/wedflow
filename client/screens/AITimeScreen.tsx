@@ -165,11 +165,14 @@ export default function AITimeScreen() {
       <Animated.View entering={FadeInDown.delay(100).duration(400)}>
         <View style={[styles.headerCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
           <View style={[styles.aiIcon, { backgroundColor: Colors.dark.accent + "20" }]}>
-            <Feather name="cpu" size={24} color={Colors.dark.accent} />
+            <View style={styles.mediaIconContainer}>
+              <Feather name="camera" size={16} color={Colors.dark.accent} />
+              <Feather name="video" size={16} color={Colors.dark.accent} />
+            </View>
           </View>
-          <ThemedText type="h2" style={styles.title}>AI Tidsberegner</ThemedText>
+          <ThemedText type="h2" style={styles.title}>Foto & Video Tidsplan</ThemedText>
           <ThemedText style={[styles.subtitle, { color: theme.textSecondary }]}>
-            Foreslåtte tidsrammer basert på fotoplanen og foto-hendelser i kjøreplanen.
+            Foreslåtte tidsrammer basert på fotoplanen og foto/video-hendelser i kjøreplanen.
           </ThemedText>
         </View>
       </Animated.View>
@@ -300,6 +303,10 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     marginBottom: Spacing.md,
+  },
+  mediaIconContainer: {
+    flexDirection: "row",
+    gap: 4,
   },
   title: { textAlign: "center", marginBottom: Spacing.sm },
   subtitle: { textAlign: "center", fontSize: 14 },

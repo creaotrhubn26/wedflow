@@ -365,7 +365,7 @@ export default function ScheduleScreen() {
           </View>
 
           <ThemedText style={[styles.helpText, { color: theme.textMuted }]}>
-            Tips: Bruk kamera-ikon for foto/video, så finner AI Tidsberegner det automatisk
+            Tips: Bruk kamera-ikon for foto/video, så finner Foto & Video Tidsplan det automatisk
           </ThemedText>
 
           <View style={styles.iconPicker}>

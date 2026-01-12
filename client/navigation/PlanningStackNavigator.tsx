@@ -96,7 +96,7 @@ export default function PlanningStackNavigator() {
       <Stack.Screen
         name="AITime"
         component={AITimeScreen}
-        options={{ title: "AI Tidsberegner" }}
+        options={{ title: "Foto & Video Tidsplan" }}
       />
       <Stack.Screen
         name="Vendors"

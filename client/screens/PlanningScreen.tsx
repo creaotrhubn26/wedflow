@@ -227,7 +227,7 @@ export default function PlanningScreen() {
           <View style={[styles.divider, { backgroundColor: theme.border }]} />
           <ActionItem icon="clock" label="Tidslinje" subtitle="Visuell oversikt" theme={theme} onPress={() => navigation.navigate("Timeline")} />
           <View style={[styles.divider, { backgroundColor: theme.border }]} />
-          <ActionItem icon="cpu" label="AI Tidsberegner" subtitle="Smart fotoplanlegger" theme={theme} onPress={() => navigation.navigate("AITime")} />
+          <ActionItem icon="camera" label="Foto & Video Tidsplan" subtitle="Beregn tid for opptak" theme={theme} onPress={() => navigation.navigate("AITime")} />
         </View>
       </Animated.View>
 

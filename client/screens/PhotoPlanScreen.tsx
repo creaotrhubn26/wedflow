@@ -292,7 +292,7 @@ export default function PhotoPlanScreen() {
           />
 
           <ThemedText style={[styles.helpText, { color: theme.textMuted }]}>
-            Velg kategori under for å hjelpe AI Tidsberegner
+            Velg kategori under for Foto & Video Tidsplan
           </ThemedText>
 
           <View style={styles.categoryPicker}>
