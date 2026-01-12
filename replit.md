@@ -2,13 +2,41 @@
 
 ## Overview
 
-Wedflow is a comprehensive wedding planning mobile application designed for Scandinavian couples. Built with Expo/React Native for cross-platform mobile and web support, it helps couples organize their wedding day by managing schedules, guests, table seating, speeches, budgets, and vendor coordination.
+Wedflow by Norwedfilm is a comprehensive wedding planning mobile application designed for Scandinavian couples. Built with Expo/React Native for cross-platform mobile and web support, it helps couples organize their wedding day by managing schedules, guests, table seating, speeches, budgets, and vendor coordination.
 
 The app follows a "Dark Elegance" design aesthetic with rich black backgrounds (#1A1A1A) and antique gold accents (#C9A962), creating a sophisticated, premium feel appropriate for wedding planning.
 
+## Key Features
+
+### For Couples
+- **Schedule & Timeline**: Plan your wedding day with detailed schedules and visual timeline
+- **Guest Management**: Track guests, RSVPs, dietary requirements, and table seating
+- **Budget Tracking**: Monitor spending with category breakdowns and scenario planning
+- **Vendor Marketplace**: Browse and contact Scandinavian wedding vendors
+- **Messaging System**: Chat directly with vendors through the app
+- **Offers & Quotes**: Receive and accept/decline structured price quotes from vendors
+- **Delivery Access**: Retrieve photos/videos from photographers with access codes
+- **Weather Forecast**: Check wedding day weather from YR.no
+- **Reminders & Notifications**: Get timely reminders for important tasks
+- **Partner Collaboration**: Share access with your partner
+- **Inspiration Gallery**: Browse vendor-curated wedding inspiration
+
+### For Vendors
+- **Vendor Dashboard**: Manage deliveries, inspirations, products, offers, and messages
+- **Product Catalog**: Create and manage product listings with pricing, units, and lead times
+- **Quote System**: Send structured offers to couples with line items and expiration dates
+- **Delivery System**: Upload and share media files with access code protection
+- **Inspiration Submissions**: Submit photos/videos for the inspiration gallery (admin approval required)
+- **Messaging**: Communicate directly with couples
+
+### Admin Features
+- **Vendor Approval**: Review and approve vendor registrations
+- **Inspiration Moderation**: Approve/reject vendor-submitted inspiration content
+- **Granular Permissions**: Control what vendors can access and do
+
 ## User Preferences
 
-Preferred communication style: Simple, everyday language.
+Preferred communication style: Simple, everyday language (Norwegian Bokmål).
 
 ## System Architecture
 
@@ -22,14 +50,15 @@ Preferred communication style: Simple, everyday language.
 
 ### Data Layer
 - **Local Storage**: AsyncStorage for client-side persistence of wedding data, guests, schedules, budgets
+- **Database**: PostgreSQL with Drizzle ORM for vendors, couples, messages, offers, products, and more
 - **Schema Definition**: Drizzle ORM with PostgreSQL dialect (schema in `shared/schema.ts`)
 - **Validation**: Zod schemas generated from Drizzle schema using drizzle-zod
 
 ### Backend Architecture
 - **Server**: Express.js with TypeScript (runs via tsx in development)
 - **API Design**: RESTful endpoints under `/api/*` prefix
-- **Current Endpoints**: Weather API proxy to YR.no (Norwegian Meteorological Institute)
-- **Storage Pattern**: In-memory storage class (`MemStorage`) with interface for future database integration
+- **Authentication**: Separate session systems for couples (email-based) and vendors (email/password)
+- **Storage Pattern**: PostgreSQL database with in-memory session caching
 
 ### Project Structure
 ```

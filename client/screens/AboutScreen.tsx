@@ -79,8 +79,12 @@ export default function AboutScreen() {
             <FeatureItem icon="dollar-sign" text="Budsjettoppfølging" theme={theme} />
             <FeatureItem icon="image" text="Inspirasjonsgalleri fra leverandører" theme={theme} />
             <FeatureItem icon="package" text="Leveranser fra fotografer og videografer" theme={theme} />
+            <FeatureItem icon="message-circle" text="Meldinger med leverandører" theme={theme} />
+            <FeatureItem icon="file-text" text="Pristilbud og tilbudsbehandling" theme={theme} />
+            <FeatureItem icon="shopping-bag" text="Leverandørmarkedsplass" theme={theme} />
             <FeatureItem icon="cloud" text="Værvarsel for bryllupsdagen" theme={theme} />
             <FeatureItem icon="bell" text="Påminnelser og varsler" theme={theme} />
+            <FeatureItem icon="shield" text="GDPR-kompatibel datahåndtering" theme={theme} />
           </View>
         </View>
       </Animated.View>
