@@ -7,6 +7,12 @@ import ImportantPeopleScreen from "@/screens/ImportantPeopleScreen";
 import BudgetScreen from "@/screens/BudgetScreen";
 import AITimeScreen from "@/screens/AITimeScreen";
 import VendorsScreen from "@/screens/VendorsScreen";
+import TimelineScreen from "@/screens/TimelineScreen";
+import StressTrackerScreen from "@/screens/StressTrackerScreen";
+import BudgetScenariosScreen from "@/screens/BudgetScenariosScreen";
+import TraditionsScreen from "@/screens/TraditionsScreen";
+import ChecklistScreen from "@/screens/ChecklistScreen";
+import WeatherScreen from "@/screens/WeatherScreen";
 import { HeaderTitle } from "@/components/HeaderTitle";
 import { useScreenOptions } from "@/hooks/useScreenOptions";
 
@@ -17,6 +23,12 @@ export type PlanningStackParamList = {
   Budget: undefined;
   AITime: undefined;
   Vendors: undefined;
+  Timeline: undefined;
+  StressTracker: undefined;
+  BudgetScenarios: undefined;
+  Traditions: undefined;
+  Checklist: undefined;
+  Weather: undefined;
 };
 
 const Stack = createNativeStackNavigator<PlanningStackParamList>();
@@ -36,37 +48,57 @@ export default function PlanningStackNavigator() {
       <Stack.Screen
         name="Schedule"
         component={ScheduleScreen}
-        options={{
-          title: "Kjøreplan",
-        }}
+        options={{ title: "Kjøreplan" }}
       />
       <Stack.Screen
         name="ImportantPeople"
         component={ImportantPeopleScreen}
-        options={{
-          title: "Viktige personer",
-        }}
+        options={{ title: "Viktige personer" }}
       />
       <Stack.Screen
         name="Budget"
         component={BudgetScreen}
-        options={{
-          title: "Budsjett",
-        }}
+        options={{ title: "Budsjett" }}
       />
       <Stack.Screen
         name="AITime"
         component={AITimeScreen}
-        options={{
-          title: "AI Tidsberegner",
-        }}
+        options={{ title: "AI Tidsberegner" }}
       />
       <Stack.Screen
         name="Vendors"
         component={VendorsScreen}
-        options={{
-          title: "Leverandører",
-        }}
+        options={{ title: "Leverandører" }}
+      />
+      <Stack.Screen
+        name="Timeline"
+        component={TimelineScreen}
+        options={{ title: "Tidslinje" }}
+      />
+      <Stack.Screen
+        name="StressTracker"
+        component={StressTrackerScreen}
+        options={{ title: "Avspenning" }}
+      />
+      <Stack.Screen
+        name="BudgetScenarios"
+        component={BudgetScenariosScreen}
+        options={{ title: "Hva om...?" }}
+      />
+      <Stack.Screen
+        name="Traditions"
+        component={TraditionsScreen}
+        options={{ title: "Tradisjoner" }}
+      />
+      <Stack.Screen
+        name="Checklist"
+        component={ChecklistScreen}
+        options={{ title: "Sjekkliste" }}
+      />
+      <Stack.Screen
+        name="Weather"
+        component={WeatherScreen}
+        options={{ title: "Værvarsel" }}
       />
     </Stack.Navigator>
   );

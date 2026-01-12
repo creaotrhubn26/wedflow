@@ -28,34 +28,18 @@ import { PlanningStackParamList } from "@/navigation/PlanningStackNavigator";
 import {
   getWeddingDetails,
   getSchedule,
-  getImportantPeople,
-  saveWeddingDetails,
-  saveSchedule,
-  saveImportantPeople,
   getBudgetItems,
   getTotalBudget,
 } from "@/lib/storage";
-import { WeddingDetails, ScheduleEvent, ImportantPerson } from "@/lib/types";
+import { WeddingDetails, ScheduleEvent } from "@/lib/types";
 
 type NavigationProp = NativeStackNavigationProp<PlanningStackParamList>;
 
 const DEFAULT_WEDDING: WeddingDetails = {
   coupleNames: "Emma & Erik",
   weddingDate: "2026-06-20",
-  venue: "Oslo Domkirke",
+  venue: "Oslo",
 };
-
-const DEFAULT_SCHEDULE: ScheduleEvent[] = [
-  { id: "1", time: "14:00", title: "Brudevielse", icon: "heart" },
-  { id: "2", time: "16:00", title: "Gratulasjoner", icon: "users" },
-  { id: "3", time: "18:00", title: "Fotografering", icon: "camera" },
-  { id: "4", time: "19:00", title: "Middag", icon: "coffee" },
-];
-
-const DEFAULT_PEOPLE: ImportantPerson[] = [
-  { id: "1", name: "Lars Hansen", role: "Toastmaster" },
-  { id: "2", name: "Anna Berg", role: "Forlover" },
-];
 
 function getDaysUntilWedding(dateStr: string): number {
   const weddingDate = new Date(dateStr);
@@ -63,19 +47,47 @@ function getDaysUntilWedding(dateStr: string): number {
   today.setHours(0, 0, 0, 0);
   weddingDate.setHours(0, 0, 0, 0);
   const diffTime = weddingDate.getTime() - today.getTime();
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  return diffDays;
+  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 }
 
 function formatWeddingDate(dateStr: string): string {
   const date = new Date(dateStr);
-  const options: Intl.DateTimeFormatOptions = {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-  };
-  return date.toLocaleDateString("nb-NO", options);
+  return date.toLocaleDateString("nb-NO", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+}
+
+interface QuickActionProps {
+  icon: keyof typeof Feather.glyphMap;
+  label: string;
+  theme: any;
+  badge?: string;
+  color?: string;
+  onPress: () => void;
+}
+
+function QuickActionCard({ icon, label, theme, badge, color, onPress }: QuickActionProps) {
+  const scale = useSharedValue(1);
+  const animatedStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
+
+  return (
+    <Pressable
+      onPress={() => {
+        onPress();
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      }}
+      onPressIn={() => { scale.value = withSpring(0.95, { damping: 15 }); }}
+      onPressOut={() => { scale.value = withSpring(1, { damping: 15 }); }}
+    >
+      <Animated.View
+        style={[styles.quickCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }, animatedStyle]}
+      >
+        <View style={[styles.quickIcon, { backgroundColor: (color || Colors.dark.accent) + "20" }]}>
+          <Feather name={icon} size={18} color={color || Colors.dark.accent} />
+        </View>
+        <ThemedText style={styles.quickLabel} numberOfLines={1}>{label}</ThemedText>
+        {badge ? <ThemedText style={[styles.quickBadge, { color: color || Colors.dark.accent }]}>{badge}</ThemedText> : null}
+      </Animated.View>
+    </Pressable>
+  );
 }
 
 export default function PlanningScreen() {
@@ -87,57 +99,29 @@ export default function PlanningScreen() {
 
   const [wedding, setWedding] = useState<WeddingDetails | null>(null);
   const [schedule, setSchedule] = useState<ScheduleEvent[]>([]);
-  const [people, setPeople] = useState<ImportantPerson[]>([]);
   const [budgetUsed, setBudgetUsed] = useState(0);
   const [totalBudget, setTotalBudget] = useState(300000);
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const loadData = useCallback(async () => {
-    const [weddingData, scheduleData, peopleData, budgetItems, budget] = await Promise.all([
+    const [weddingData, scheduleData, budgetItems, budget] = await Promise.all([
       getWeddingDetails(),
       getSchedule(),
-      getImportantPeople(),
       getBudgetItems(),
       getTotalBudget(),
     ]);
 
-    if (!weddingData) {
-      await saveWeddingDetails(DEFAULT_WEDDING);
-      setWedding(DEFAULT_WEDDING);
-    } else {
-      setWedding(weddingData);
-    }
-
-    if (scheduleData.length === 0) {
-      await saveSchedule(DEFAULT_SCHEDULE);
-      setSchedule(DEFAULT_SCHEDULE);
-    } else {
-      setSchedule(scheduleData);
-    }
-
-    if (peopleData.length === 0) {
-      await saveImportantPeople(DEFAULT_PEOPLE);
-      setPeople(DEFAULT_PEOPLE);
-    } else {
-      setPeople(peopleData);
-    }
-
-    const used = budgetItems.reduce((sum, item) => sum + item.estimatedCost, 0);
-    setBudgetUsed(used);
+    setWedding(weddingData || DEFAULT_WEDDING);
+    setSchedule(scheduleData);
+    setBudgetUsed(budgetItems.reduce((sum, item) => sum + item.estimatedCost, 0));
     setTotalBudget(budget);
-
     setLoading(false);
   }, []);
 
+  useEffect(() => { loadData(); }, [loadData]);
   useEffect(() => {
-    loadData();
-  }, [loadData]);
-
-  useEffect(() => {
-    const unsubscribe = navigation.addListener("focus", () => {
-      loadData();
-    });
+    const unsubscribe = navigation.addListener("focus", loadData);
     return unsubscribe;
   }, [navigation, loadData]);
 
@@ -149,27 +133,12 @@ export default function PlanningScreen() {
   }, [loadData]);
 
   const daysLeft = wedding ? getDaysUntilWedding(wedding.weddingDate) : 0;
-
-  const getScheduleIcon = (iconName: ScheduleEvent["icon"]) => {
-    return iconName;
-  };
-
-  const formatCurrency = (amount: number) => {
-    return (amount / 1000).toFixed(0) + "k";
-  };
+  const budgetPercent = Math.round((budgetUsed / totalBudget) * 100);
 
   if (loading) {
     return (
-      <View
-        style={[
-          styles.container,
-          styles.loadingContainer,
-          { backgroundColor: theme.backgroundRoot },
-        ]}
-      >
-        <ThemedText style={{ color: theme.textSecondary }}>
-          Laster...
-        </ThemedText>
+      <View style={[styles.container, styles.centered, { backgroundColor: theme.backgroundRoot }]}>
+        <ThemedText style={{ color: theme.textSecondary }}>Laster...</ThemedText>
       </View>
     );
   }
@@ -183,378 +152,111 @@ export default function PlanningScreen() {
         paddingHorizontal: Spacing.lg,
       }}
       scrollIndicatorInsets={{ bottom: insets.bottom }}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          tintColor={Colors.dark.accent}
-        />
-      }
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.dark.accent} />}
     >
       <Animated.View entering={FadeInDown.delay(100).duration(400)}>
         <View style={styles.countdownCard}>
           <View style={styles.countdownContent}>
-            <ThemedText
-              style={[styles.daysNumber, { color: Colors.dark.accent }]}
-            >
-              {daysLeft}
-            </ThemedText>
-            <ThemedText
-              style={[styles.daysLabel, { color: theme.textSecondary }]}
-            >
-              dager igjen
-            </ThemedText>
+            <ThemedText style={[styles.daysNumber, { color: Colors.dark.accent }]}>{daysLeft}</ThemedText>
+            <ThemedText style={[styles.daysLabel, { color: theme.textSecondary }]}>dager igjen</ThemedText>
           </View>
           <View style={styles.weddingInfo}>
-            <ThemedText style={styles.coupleNames}>
-              {wedding?.coupleNames}
-            </ThemedText>
-            <ThemedText
-              style={[styles.weddingDate, { color: theme.textSecondary }]}
-            >
+            <ThemedText style={styles.coupleNames}>{wedding?.coupleNames}</ThemedText>
+            <ThemedText style={[styles.weddingDate, { color: theme.textSecondary }]}>
               {wedding ? formatWeddingDate(wedding.weddingDate) : ""}
             </ThemedText>
-            <ThemedText
-              style={[styles.venue, { color: theme.textSecondary }]}
-            >
-              {wedding?.venue}
-            </ThemedText>
+            <ThemedText style={[styles.venue, { color: theme.textSecondary }]}>{wedding?.venue}</ThemedText>
           </View>
         </View>
       </Animated.View>
 
       <Animated.View entering={FadeInDown.delay(200).duration(400)}>
-        <View style={styles.quickActions}>
-          <QuickActionCard
-            icon="calendar"
-            label="Kjøreplan"
-            theme={theme}
-            onPress={() => navigation.navigate("Schedule")}
-          />
-          <QuickActionCard
-            icon="dollar-sign"
-            label="Budsjett"
-            theme={theme}
-            badge={formatCurrency(budgetUsed)}
-            onPress={() => navigation.navigate("Budget")}
-          />
-          <QuickActionCard
-            icon="cpu"
-            label="AI Tid"
-            theme={theme}
-            onPress={() => navigation.navigate("AITime")}
-          />
+        <ThemedText type="h4" style={styles.sectionLabel}>Planlegging</ThemedText>
+        <View style={styles.quickGrid}>
+          <QuickActionCard icon="calendar" label="Kjøreplan" theme={theme} onPress={() => navigation.navigate("Schedule")} />
+          <QuickActionCard icon="clock" label="Tidslinje" theme={theme} onPress={() => navigation.navigate("Timeline")} />
+          <QuickActionCard icon="check-square" label="Sjekkliste" theme={theme} onPress={() => navigation.navigate("Checklist")} />
+          <QuickActionCard icon="cpu" label="AI Tid" theme={theme} onPress={() => navigation.navigate("AITime")} />
         </View>
       </Animated.View>
 
       <Animated.View entering={FadeInDown.delay(300).duration(400)}>
-        <Card
-          elevation={1}
-          onPress={() => navigation.navigate("Vendors")}
-          style={[styles.sectionCard, { borderColor: theme.border }]}
-        >
-          <View style={styles.sectionHeader}>
-            <View style={styles.sectionTitleRow}>
-              <Feather
-                name="briefcase"
-                size={20}
-                color={Colors.dark.accent}
-                style={styles.sectionIcon}
-              />
-              <ThemedText type="h3">Leverandører</ThemedText>
-            </View>
-            <Feather name="chevron-right" size={20} color={theme.textSecondary} />
-          </View>
-          <ThemedText
-            style={[styles.sectionSubtitle, { color: theme.textSecondary }]}
-          >
-            Finn fotografer, videografer og DJs i Skandinavia
-          </ThemedText>
-        </Card>
+        <ThemedText type="h4" style={styles.sectionLabel}>Økonomi</ThemedText>
+        <View style={styles.quickGrid}>
+          <QuickActionCard icon="dollar-sign" label="Budsjett" theme={theme} badge={`${budgetPercent}%`} onPress={() => navigation.navigate("Budget")} />
+          <QuickActionCard icon="sliders" label="Hva om...?" theme={theme} onPress={() => navigation.navigate("BudgetScenarios")} />
+          <QuickActionCard icon="briefcase" label="Leverandører" theme={theme} onPress={() => navigation.navigate("Vendors")} />
+          <QuickActionCard icon="users" label="Viktige" theme={theme} onPress={() => navigation.navigate("ImportantPeople")} />
+        </View>
       </Animated.View>
 
       <Animated.View entering={FadeInDown.delay(400).duration(400)}>
-        <Card
-          elevation={1}
-          onPress={() => navigation.navigate("Schedule")}
-          style={[styles.sectionCard, { borderColor: theme.border }]}
-        >
-          <View style={styles.sectionHeader}>
-            <View style={styles.sectionTitleRow}>
-              <Feather
-                name="clock"
-                size={20}
-                color={Colors.dark.accent}
-                style={styles.sectionIcon}
-              />
-              <ThemedText type="h3">Kjøreplan</ThemedText>
-            </View>
-            <Feather name="chevron-right" size={20} color={theme.textSecondary} />
-          </View>
-          <ThemedText
-            style={[styles.sectionSubtitle, { color: theme.textSecondary }]}
-          >
-            {wedding ? formatWeddingDate(wedding.weddingDate) : ""}
-          </ThemedText>
-
-          <View style={styles.schedulePreview}>
-            {schedule.slice(0, 3).map((event) => (
-              <View key={event.id} style={styles.scheduleItem}>
-                <ThemedText
-                  style={[styles.scheduleTime, { color: Colors.dark.accent }]}
-                >
-                  {event.time}
-                </ThemedText>
-                <Feather
-                  name={getScheduleIcon(event.icon)}
-                  size={16}
-                  color={theme.textSecondary}
-                  style={styles.scheduleIcon}
-                />
-                <ThemedText style={styles.scheduleTitle}>
-                  {event.title}
-                </ThemedText>
-              </View>
-            ))}
-          </View>
-        </Card>
+        <ThemedText type="h4" style={styles.sectionLabel}>Inspirasjon & Info</ThemedText>
+        <View style={styles.quickGrid}>
+          <QuickActionCard icon="book-open" label="Tradisjoner" theme={theme} color="#BA68C8" onPress={() => navigation.navigate("Traditions")} />
+          <QuickActionCard icon="cloud" label="Værvarsel" theme={theme} color="#64B5F6" onPress={() => navigation.navigate("Weather")} />
+          <QuickActionCard icon="heart" label="Avspenning" theme={theme} color="#81C784" onPress={() => navigation.navigate("StressTracker")} />
+        </View>
       </Animated.View>
 
       <Animated.View entering={FadeInDown.delay(500).duration(400)}>
-        <Card
-          elevation={1}
-          onPress={() => navigation.navigate("ImportantPeople")}
-          style={[styles.sectionCard, { borderColor: theme.border }]}
-        >
-          <View style={styles.sectionHeader}>
-            <View style={styles.sectionTitleRow}>
-              <Feather
-                name="users"
-                size={20}
-                color={Colors.dark.accent}
-                style={styles.sectionIcon}
-              />
-              <ThemedText type="h3">Viktige personer</ThemedText>
+        <Card elevation={1} onPress={() => navigation.navigate("Schedule")} style={[styles.previewCard, { borderColor: theme.border }]}>
+          <View style={styles.previewHeader}>
+            <View style={styles.previewTitleRow}>
+              <Feather name="clock" size={18} color={Colors.dark.accent} />
+              <ThemedText type="h4" style={styles.previewTitle}>Dagens kjøreplan</ThemedText>
             </View>
-            <Feather name="chevron-right" size={20} color={theme.textSecondary} />
+            <Feather name="chevron-right" size={18} color={theme.textSecondary} />
           </View>
-
-          <View style={styles.peoplePreview}>
-            {people.slice(0, 3).map((person) => (
-              <View key={person.id} style={styles.personItem}>
-                <View
-                  style={[
-                    styles.personAvatar,
-                    { backgroundColor: theme.backgroundSecondary },
-                  ]}
-                >
-                  <Feather name="user" size={16} color={theme.textSecondary} />
+          {schedule.length > 0 ? (
+            <View style={styles.schedulePreview}>
+              {schedule.slice(0, 3).map((event) => (
+                <View key={event.id} style={styles.scheduleRow}>
+                  <ThemedText style={[styles.scheduleTime, { color: Colors.dark.accent }]}>{event.time}</ThemedText>
+                  <ThemedText style={styles.scheduleTitle}>{event.title}</ThemedText>
                 </View>
-                <View style={styles.personInfo}>
-                  <ThemedText style={styles.personName}>
-                    {person.name}
-                  </ThemedText>
-                  <ThemedText
-                    style={[styles.personRole, { color: theme.textSecondary }]}
-                  >
-                    {person.role}
-                  </ThemedText>
-                </View>
-              </View>
-            ))}
-          </View>
+              ))}
+            </View>
+          ) : (
+            <ThemedText style={[styles.emptyText, { color: theme.textMuted }]}>Ingen hendelser ennå</ThemedText>
+          )}
         </Card>
       </Animated.View>
     </ScrollView>
   );
 }
 
-interface QuickActionCardProps {
-  icon: keyof typeof Feather.glyphMap;
-  label: string;
-  theme: any;
-  badge?: string;
-  onPress: () => void;
-}
-
-function QuickActionCard({ icon, label, theme, badge, onPress }: QuickActionCardProps) {
-  const scale = useSharedValue(1);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  const handlePressIn = () => {
-    scale.value = withSpring(0.95, { damping: 15 });
-  };
-
-  const handlePressOut = () => {
-    scale.value = withSpring(1, { damping: 15 });
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-  };
-
-  return (
-    <Pressable onPress={onPress} onPressIn={handlePressIn} onPressOut={handlePressOut}>
-      <Animated.View
-        style={[
-          styles.quickActionCard,
-          { backgroundColor: theme.backgroundDefault, borderColor: theme.border },
-          animatedStyle,
-        ]}
-      >
-        <View
-          style={[
-            styles.quickActionIcon,
-            { backgroundColor: theme.backgroundSecondary },
-          ]}
-        >
-          <Feather name={icon} size={20} color={Colors.dark.accent} />
-        </View>
-        <ThemedText style={styles.quickActionLabel}>{label}</ThemedText>
-        {badge ? (
-          <ThemedText style={[styles.quickActionBadge, { color: Colors.dark.accent }]}>
-            {badge}
-          </ThemedText>
-        ) : null}
-      </Animated.View>
-    </Pressable>
-  );
-}
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  loadingContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  countdownCard: {
-    flexDirection: "row",
-    marginBottom: Spacing["2xl"],
-    alignItems: "center",
-  },
-  countdownContent: {
-    alignItems: "center",
-    marginRight: Spacing["2xl"],
-  },
-  daysNumber: {
-    fontSize: 56,
-    fontWeight: "700",
-  },
-  daysLabel: {
-    fontSize: 14,
-    marginTop: -8,
-  },
-  weddingInfo: {
-    flex: 1,
-  },
-  coupleNames: {
-    fontSize: 22,
-    fontWeight: "600",
-    marginBottom: Spacing.xs,
-  },
-  weddingDate: {
-    fontSize: 14,
-    marginBottom: Spacing.xs,
-  },
-  venue: {
-    fontSize: 14,
-  },
-  sectionCard: {
-    marginBottom: Spacing.lg,
-    borderWidth: 1,
-  },
-  sectionHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: Spacing.xs,
-  },
-  sectionTitleRow: {
+  container: { flex: 1 },
+  centered: { justifyContent: "center", alignItems: "center" },
+  countdownCard: { flexDirection: "row", marginBottom: Spacing.xl, alignItems: "center" },
+  countdownContent: { alignItems: "center", marginRight: Spacing["2xl"] },
+  daysNumber: { fontSize: 52, fontWeight: "700" },
+  daysLabel: { fontSize: 13, marginTop: -6 },
+  weddingInfo: { flex: 1 },
+  coupleNames: { fontSize: 20, fontWeight: "600", marginBottom: Spacing.xs },
+  weddingDate: { fontSize: 13 },
+  venue: { fontSize: 13 },
+  sectionLabel: { marginBottom: Spacing.md, marginTop: Spacing.sm },
+  quickGrid: { flexDirection: "row", flexWrap: "wrap", gap: Spacing.sm, marginBottom: Spacing.lg },
+  quickCard: {
+    width: "48%",
     flexDirection: "row",
     alignItems: "center",
-  },
-  sectionIcon: {
-    marginRight: Spacing.sm,
-  },
-  sectionSubtitle: {
-    fontSize: 13,
-    marginBottom: Spacing.lg,
-  },
-  schedulePreview: {
-    gap: Spacing.md,
-  },
-  scheduleItem: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  scheduleTime: {
-    fontSize: 14,
-    fontWeight: "600",
-    width: 50,
-  },
-  scheduleIcon: {
-    marginHorizontal: Spacing.sm,
-  },
-  scheduleTitle: {
-    fontSize: 15,
-  },
-  peoplePreview: {
-    gap: Spacing.md,
-    marginTop: Spacing.sm,
-  },
-  personItem: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  personAvatar: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: Spacing.md,
-  },
-  personInfo: {
-    flex: 1,
-  },
-  personName: {
-    fontSize: 15,
-    fontWeight: "500",
-  },
-  personRole: {
-    fontSize: 13,
-  },
-  quickActions: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    gap: Spacing.md,
-    marginBottom: Spacing.xl,
-  },
-  quickActionCard: {
-    flex: 1,
     padding: Spacing.md,
     borderRadius: BorderRadius.md,
-    alignItems: "center",
     borderWidth: 1,
   },
-  quickActionIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: Spacing.xs,
-  },
-  quickActionLabel: {
-    fontSize: 12,
-    fontWeight: "500",
-    textAlign: "center",
-  },
-  quickActionBadge: {
-    fontSize: 11,
-    fontWeight: "600",
-    marginTop: 2,
-  },
+  quickIcon: { width: 36, height: 36, borderRadius: 18, justifyContent: "center", alignItems: "center", marginRight: Spacing.sm },
+  quickLabel: { flex: 1, fontSize: 13, fontWeight: "500" },
+  quickBadge: { fontSize: 12, fontWeight: "600" },
+  previewCard: { borderWidth: 1 },
+  previewHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: Spacing.md },
+  previewTitleRow: { flexDirection: "row", alignItems: "center", gap: Spacing.sm },
+  previewTitle: {},
+  schedulePreview: { gap: Spacing.sm },
+  scheduleRow: { flexDirection: "row", alignItems: "center" },
+  scheduleTime: { width: 50, fontSize: 13, fontWeight: "600" },
+  scheduleTitle: { fontSize: 14 },
+  emptyText: { fontSize: 13 },
 });
