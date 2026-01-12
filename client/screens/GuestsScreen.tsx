@@ -19,6 +19,7 @@ import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
 
 import { ThemedText } from "@/components/ThemedText";
 import { Button } from "@/components/Button";
+import { SwipeableRow } from "@/components/SwipeableRow";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius, Colors } from "@/constants/theme";
 import { GuestsStackParamList } from "@/navigation/GuestsStackNavigator";
@@ -52,6 +53,7 @@ export default function GuestsScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const [showAddForm, setShowAddForm] = useState(false);
   const [newName, setNewName] = useState("");
+  const [editingGuest, setEditingGuest] = useState<Guest | null>(null);
 
   const loadData = useCallback(async () => {
     const data = await getGuests();
@@ -76,19 +78,34 @@ export default function GuestsScreen() {
       return;
     }
 
-    const newGuest: Guest = {
-      id: generateId(),
-      name: newName.trim(),
-      status: "pending",
-    };
+    let updatedGuests: Guest[];
 
-    const updatedGuests = [...guests, newGuest];
+    if (editingGuest) {
+      updatedGuests = guests.map((g) =>
+        g.id === editingGuest.id ? { ...g, name: newName.trim() } : g
+      );
+    } else {
+      const newGuest: Guest = {
+        id: generateId(),
+        name: newName.trim(),
+        status: "pending",
+      };
+      updatedGuests = [...guests, newGuest];
+    }
+
     setGuests(updatedGuests);
     await saveGuests(updatedGuests);
 
     setNewName("");
+    setEditingGuest(null);
     setShowAddForm(false);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+  };
+
+  const handleEditGuest = (guest: Guest) => {
+    setEditingGuest(guest);
+    setNewName(guest.name);
+    setShowAddForm(true);
   };
 
   const handleToggleStatus = async (guest: Guest) => {
@@ -122,47 +139,52 @@ export default function GuestsScreen() {
 
   const renderGuestItem = ({ item, index }: { item: Guest; index: number }) => (
     <Animated.View entering={FadeInRight.delay(index * 50).duration(300)}>
-      <Pressable
-        onPress={() => handleToggleStatus(item)}
-        onLongPress={() => handleDeleteGuest(item.id)}
-        style={({ pressed }) => [
-          styles.guestItem,
-          { backgroundColor: theme.backgroundDefault, borderColor: theme.border },
-          pressed && { opacity: 0.9 },
-        ]}
+      <SwipeableRow
+        onEdit={() => handleEditGuest(item)}
+        onDelete={() => handleDeleteGuest(item.id)}
+        backgroundColor={theme.backgroundDefault}
       >
-        <View
-          style={[styles.avatar, { backgroundColor: theme.backgroundSecondary }]}
-        >
-          <Feather name="user" size={18} color={theme.textSecondary} />
-        </View>
-        <View style={styles.guestInfo}>
-          <ThemedText style={styles.guestName}>{item.name}</ThemedText>
-          {item.tableNumber ? (
-            <ThemedText style={[styles.tableNumber, { color: theme.textSecondary }]}>
-              Bord {item.tableNumber}
-            </ThemedText>
-          ) : null}
-        </View>
-        <View
-          style={[
-            styles.statusBadge,
-            { backgroundColor: STATUS_COLORS[item.status] + "20" },
+        <Pressable
+          onPress={() => handleToggleStatus(item)}
+          style={({ pressed }) => [
+            styles.guestItem,
+            { backgroundColor: theme.backgroundDefault, borderColor: theme.border },
+            pressed && { opacity: 0.9 },
           ]}
         >
           <View
-            style={[
-              styles.statusDot,
-              { backgroundColor: STATUS_COLORS[item.status] },
-            ]}
-          />
-          <ThemedText
-            style={[styles.statusText, { color: STATUS_COLORS[item.status] }]}
+            style={[styles.avatar, { backgroundColor: theme.backgroundSecondary }]}
           >
-            {STATUS_LABELS[item.status]}
-          </ThemedText>
-        </View>
-      </Pressable>
+            <Feather name="user" size={18} color={theme.textSecondary} />
+          </View>
+          <View style={styles.guestInfo}>
+            <ThemedText style={styles.guestName}>{item.name}</ThemedText>
+            {item.tableNumber ? (
+              <ThemedText style={[styles.tableNumber, { color: theme.textSecondary }]}>
+                Bord {item.tableNumber}
+              </ThemedText>
+            ) : null}
+          </View>
+          <View
+            style={[
+              styles.statusBadge,
+              { backgroundColor: STATUS_COLORS[item.status] + "20" },
+            ]}
+          >
+            <View
+              style={[
+                styles.statusDot,
+                { backgroundColor: STATUS_COLORS[item.status] },
+              ]}
+            />
+            <ThemedText
+              style={[styles.statusText, { color: STATUS_COLORS[item.status] }]}
+            >
+              {STATUS_LABELS[item.status]}
+            </ThemedText>
+          </View>
+        </Pressable>
+      </SwipeableRow>
     </Animated.View>
   );
 
@@ -228,6 +250,10 @@ export default function GuestsScreen() {
         />
       </View>
 
+      <ThemedText style={[styles.swipeHint, { color: theme.textMuted }]}>
+        Sveip til venstre for å endre eller slette
+      </ThemedText>
+
       {showAddForm ? (
         <Animated.View
           entering={FadeInDown.duration(300)}
@@ -236,6 +262,9 @@ export default function GuestsScreen() {
             { backgroundColor: theme.backgroundDefault, borderColor: theme.border },
           ]}
         >
+          <ThemedText type="h4" style={styles.formTitle}>
+            {editingGuest ? "Endre gjest" : "Legg til gjest"}
+          </ThemedText>
           <TextInput
             style={[
               styles.addInput,
@@ -249,13 +278,17 @@ export default function GuestsScreen() {
           />
           <View style={styles.addFormButtons}>
             <Pressable
-              onPress={() => setShowAddForm(false)}
+              onPress={() => {
+                setShowAddForm(false);
+                setEditingGuest(null);
+                setNewName("");
+              }}
               style={[styles.cancelButton, { borderColor: theme.border }]}
             >
               <ThemedText style={{ color: theme.textSecondary }}>Avbryt</ThemedText>
             </Pressable>
             <Button onPress={handleAddGuest} style={styles.saveButton}>
-              Legg til
+              {editingGuest ? "Oppdater" : "Legg til"}
             </Button>
           </View>
         </Animated.View>
@@ -388,11 +421,19 @@ const styles = StyleSheet.create({
     marginLeft: Spacing.sm,
     fontSize: 16,
   },
+  swipeHint: {
+    fontSize: 12,
+    textAlign: "center",
+    marginBottom: Spacing.md,
+  },
   addForm: {
     padding: Spacing.lg,
     borderRadius: BorderRadius.md,
     borderWidth: 1,
     marginBottom: Spacing.lg,
+  },
+  formTitle: {
+    marginBottom: Spacing.md,
   },
   addInput: {
     height: Spacing.inputHeight,
