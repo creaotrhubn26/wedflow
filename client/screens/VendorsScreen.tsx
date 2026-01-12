@@ -5,18 +5,23 @@ import {
   View,
   Pressable,
   TextInput,
+  ActivityIndicator,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInRight } from "react-native-reanimated";
+import { useQuery } from "@tanstack/react-query";
 
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius, Colors } from "@/constants/theme";
 import { Vendor } from "@/lib/types";
+import { PlanningStackParamList } from "@/navigation/PlanningStackNavigator";
 
 const SCANDINAVIAN_VENDORS: Vendor[] = [
   { id: "1", name: "Nordic Moments", category: "photographer", location: "Oslo", country: "Norway", rating: 4.9, priceRange: "25 000 - 40 000 kr", description: "Naturlig lys og tidløse øyeblikk", saved: false },
@@ -47,29 +52,67 @@ const COUNTRIES = [
   { id: "Denmark", name: "Danmark" },
 ];
 
+interface ApiVendor {
+  id: string;
+  businessName: string;
+  categoryId: string | null;
+  description: string | null;
+  location: string | null;
+  phone: string | null;
+  website: string | null;
+  priceRange: string | null;
+  imageUrl: string | null;
+}
+
 export default function VendorsScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const tabBarHeight = useBottomTabBarHeight();
   const { theme } = useTheme();
+  const navigation = useNavigation<NativeStackNavigationProp<PlanningStackParamList>>();
 
-  const [vendors, setVendors] = useState(SCANDINAVIAN_VENDORS);
+  const { data: apiVendors = [], isLoading } = useQuery<ApiVendor[]>({
+    queryKey: ["/api/vendors"],
+  });
+
+  const allVendors: Vendor[] = [
+    ...SCANDINAVIAN_VENDORS,
+    ...apiVendors.map((v) => ({
+      id: v.id,
+      name: v.businessName,
+      category: "photographer" as Vendor["category"],
+      location: v.location || "Norge",
+      country: "Norway" as Vendor["country"],
+      rating: 5.0,
+      priceRange: v.priceRange || "",
+      description: v.description || "",
+      saved: false,
+    })),
+  ];
+
+  const [savedVendors, setSavedVendors] = useState<Set<string>>(new Set());
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedCountry, setSelectedCountry] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredVendors = vendors.filter((v) => {
+  const filteredVendors = allVendors.filter((v) => {
     const matchesCategory = selectedCategory === "all" || v.category === selectedCategory;
     const matchesCountry = selectedCountry === "all" || v.country === selectedCountry;
     const matchesSearch = v.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       v.location.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesCountry && matchesSearch;
-  });
+  }).map(v => ({ ...v, saved: savedVendors.has(v.id) }));
 
   const handleToggleSave = (id: string) => {
-    setVendors((prev) =>
-      prev.map((v) => (v.id === id ? { ...v, saved: !v.saved } : v))
-    );
+    setSavedVendors((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(id)) {
+        newSet.delete(id);
+      } else {
+        newSet.add(id);
+      }
+      return newSet;
+    });
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
@@ -224,6 +267,25 @@ export default function VendorsScreen() {
       <ThemedText style={[styles.resultsCount, { color: theme.textSecondary }]}>
         {filteredVendors.length} leverandører funnet
       </ThemedText>
+
+      <Pressable
+        onPress={() => {
+          navigation.navigate("VendorRegistration");
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+        }}
+        style={[styles.vendorCta, { backgroundColor: theme.backgroundDefault, borderColor: Colors.dark.accent }]}
+      >
+        <View style={styles.vendorCtaContent}>
+          <Feather name="briefcase" size={20} color={Colors.dark.accent} />
+          <View style={styles.vendorCtaText}>
+            <ThemedText style={styles.vendorCtaTitle}>Er du leverandør?</ThemedText>
+            <ThemedText style={[styles.vendorCtaSubtitle, { color: theme.textSecondary }]}>
+              Registrer din bedrift og nå tusenvis av brudepar
+            </ThemedText>
+          </View>
+        </View>
+        <Feather name="chevron-right" size={20} color={Colors.dark.accent} />
+      </Pressable>
     </>
   );
 
@@ -306,4 +368,30 @@ const styles = StyleSheet.create({
   ratingContainer: { flexDirection: "row", alignItems: "center" },
   rating: { fontSize: 14, fontWeight: "600", marginLeft: Spacing.xs },
   price: { fontSize: 12 },
+  vendorCta: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: Spacing.md,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    marginBottom: Spacing.lg,
+  },
+  vendorCtaContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+  },
+  vendorCtaText: {
+    marginLeft: Spacing.md,
+    flex: 1,
+  },
+  vendorCtaTitle: {
+    fontSize: 15,
+    fontWeight: "600",
+  },
+  vendorCtaSubtitle: {
+    fontSize: 13,
+    marginTop: 2,
+  },
 });

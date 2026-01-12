@@ -13,6 +13,7 @@ import BudgetScenariosScreen from "@/screens/BudgetScenariosScreen";
 import TraditionsScreen from "@/screens/TraditionsScreen";
 import ChecklistScreen from "@/screens/ChecklistScreen";
 import WeatherScreen from "@/screens/WeatherScreen";
+import VendorRegistrationScreen from "@/screens/VendorRegistrationScreen";
 import { HeaderTitle } from "@/components/HeaderTitle";
 import { useScreenOptions } from "@/hooks/useScreenOptions";
 
@@ -29,6 +30,7 @@ export type PlanningStackParamList = {
   Traditions: undefined;
   Checklist: undefined;
   Weather: undefined;
+  VendorRegistration: undefined;
 };
 
 const Stack = createNativeStackNavigator<PlanningStackParamList>();
@@ -99,6 +101,11 @@ export default function PlanningStackNavigator() {
         name="Weather"
         component={WeatherScreen}
         options={{ title: "Værvarsel" }}
+      />
+      <Stack.Screen
+        name="VendorRegistration"
+        component={VendorRegistrationScreen}
+        options={{ title: "Bli leverandør" }}
       />
     </Stack.Navigator>
   );
