@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   StyleSheet,
   View,
@@ -22,6 +22,43 @@ import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius, Colors } from "@/constants/theme";
 import { getApiUrl } from "@/lib/query-client";
 
+const useFieldValidation = () => {
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validateField = useCallback((field: string, value: string): string => {
+    switch (field) {
+      case "supportEmail":
+        if (value && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return "Ugyldig e-postadresse";
+        return "";
+      case "privacyPolicyUrl":
+      case "termsUrl":
+        if (value && !/^https?:\/\/.+/.test(value)) return "URL må starte med http:// eller https://";
+        return "";
+      case "maxFileUploadMb":
+        if (value && !/^\d+$/.test(value)) return "Må være et tall";
+        return "";
+      default:
+        return "";
+    }
+  }, []);
+
+  const handleBlur = useCallback((field: string, value: string) => {
+    setTouched((prev) => ({ ...prev, [field]: true }));
+    const error = validateField(field, value);
+    setErrors((prev) => ({ ...prev, [field]: error }));
+  }, [validateField]);
+
+  const getFieldStyle = useCallback((field: string) => {
+    if (touched[field] && errors[field]) {
+      return { borderColor: "#DC3545" };
+    }
+    return {};
+  }, [touched, errors]);
+
+  return { touched, errors, handleBlur, getFieldStyle };
+};
+
 interface AppSetting {
   id: string;
   key: string;
@@ -36,6 +73,7 @@ export default function AdminSettingsScreen() {
   const queryClient = useQueryClient();
   const route = useRoute();
   const adminKey = (route.params as any)?.adminKey || "";
+  const { touched, errors, handleBlur, getFieldStyle } = useFieldValidation();
 
   const [enableVendorRegistration, setEnableVendorRegistration] = useState(true);
   const [requireInspirationApproval, setRequireInspirationApproval] = useState(true);
@@ -188,13 +226,17 @@ export default function AdminSettingsScreen() {
             Maks filopplasting (MB)
           </ThemedText>
           <TextInput
-            style={[styles.input, { backgroundColor: theme.backgroundSecondary, color: theme.text, borderColor: theme.border }]}
+            style={[styles.input, { backgroundColor: theme.backgroundSecondary, color: theme.text, borderColor: theme.border }, getFieldStyle("maxFileUploadMb")]}
             value={maxFileUploadMb}
             onChangeText={setMaxFileUploadMb}
+            onBlur={() => handleBlur("maxFileUploadMb", maxFileUploadMb)}
             placeholder="50"
             placeholderTextColor={theme.textMuted}
             keyboardType="numeric"
           />
+          {touched.maxFileUploadMb && errors.maxFileUploadMb ? (
+            <ThemedText style={styles.errorText}>{errors.maxFileUploadMb}</ThemedText>
+          ) : null}
         </View>
       </Animated.View>
 
@@ -204,14 +246,18 @@ export default function AdminSettingsScreen() {
           
           <ThemedText style={[styles.label, { color: theme.textSecondary }]}>Support e-post</ThemedText>
           <TextInput
-            style={[styles.input, { backgroundColor: theme.backgroundSecondary, color: theme.text, borderColor: theme.border }]}
+            style={[styles.input, { backgroundColor: theme.backgroundSecondary, color: theme.text, borderColor: theme.border }, getFieldStyle("supportEmail")]}
             value={supportEmail}
             onChangeText={setSupportEmail}
+            onBlur={() => handleBlur("supportEmail", supportEmail)}
             placeholder="support@example.com"
             placeholderTextColor={theme.textMuted}
             keyboardType="email-address"
             autoCapitalize="none"
           />
+          {touched.supportEmail && errors.supportEmail ? (
+            <ThemedText style={styles.errorText}>{errors.supportEmail}</ThemedText>
+          ) : null}
         </View>
       </Animated.View>
 
@@ -221,27 +267,35 @@ export default function AdminSettingsScreen() {
           
           <ThemedText style={[styles.label, { color: theme.textSecondary }]}>Personvernerklæring URL</ThemedText>
           <TextInput
-            style={[styles.input, { backgroundColor: theme.backgroundSecondary, color: theme.text, borderColor: theme.border }]}
+            style={[styles.input, { backgroundColor: theme.backgroundSecondary, color: theme.text, borderColor: theme.border }, getFieldStyle("privacyPolicyUrl")]}
             value={privacyPolicyUrl}
             onChangeText={setPrivacyPolicyUrl}
+            onBlur={() => handleBlur("privacyPolicyUrl", privacyPolicyUrl)}
             placeholder="https://..."
             placeholderTextColor={theme.textMuted}
             autoCapitalize="none"
             keyboardType="url"
           />
+          {touched.privacyPolicyUrl && errors.privacyPolicyUrl ? (
+            <ThemedText style={styles.errorText}>{errors.privacyPolicyUrl}</ThemedText>
+          ) : null}
 
           <ThemedText style={[styles.label, { color: theme.textSecondary, marginTop: Spacing.md }]}>
             Vilkår for bruk URL
           </ThemedText>
           <TextInput
-            style={[styles.input, { backgroundColor: theme.backgroundSecondary, color: theme.text, borderColor: theme.border }]}
+            style={[styles.input, { backgroundColor: theme.backgroundSecondary, color: theme.text, borderColor: theme.border }, getFieldStyle("termsUrl")]}
             value={termsUrl}
             onChangeText={setTermsUrl}
+            onBlur={() => handleBlur("termsUrl", termsUrl)}
             placeholder="https://..."
             placeholderTextColor={theme.textMuted}
             autoCapitalize="none"
             keyboardType="url"
           />
+          {touched.termsUrl && errors.termsUrl ? (
+            <ThemedText style={styles.errorText}>{errors.termsUrl}</ThemedText>
+          ) : null}
         </View>
       </Animated.View>
 
@@ -323,5 +377,11 @@ const styles = StyleSheet.create({
     color: "#000",
     fontSize: 16,
     fontWeight: "600",
+  },
+  errorText: {
+    fontSize: 12,
+    color: "#DC3545",
+    marginTop: 4,
+    marginBottom: Spacing.sm,
   },
 });
