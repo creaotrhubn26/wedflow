@@ -33,6 +33,8 @@ interface CoupleSession {
   displayName: string;
 }
 
+const GOOGLE_LOGO_URI = "https://developers.google.com/identity/images/g-logo.png";
+
 interface Props {
   navigation: NativeStackNavigationProp<any>;
   onLoginSuccess?: () => void;
@@ -289,7 +291,11 @@ export default function CoupleLoginScreen({ navigation, onLoginSuccess }: Props)
               <ActivityIndicator size="small" color={Colors.dark.accent} />
             ) : (
               <>
-                <Feather name="globe" size={18} color={Colors.dark.accent} />
+                <Image
+                  source={{ uri: GOOGLE_LOGO_URI }}
+                  style={styles.googleLogo}
+                  resizeMode="contain"
+                />
                 <ThemedText style={[styles.googleBtnText, { color: Colors.dark.accent }]}>
                   Logg inn med Google
                 </ThemedText>
@@ -435,6 +441,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: Spacing.sm,
     width: "100%",
+  },
+  googleLogo: {
+    width: 18,
+    height: 18,
   },
   googleBtnText: {
     fontSize: 16,
