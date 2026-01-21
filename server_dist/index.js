@@ -2162,6 +2162,68 @@ async function registerRoutes(app2) {
       res.status(500).json({ error: "Kunne ikke logge inn" });
     }
   });
+  app2.post("/api/vendors/google-login", async (req, res) => {
+    try {
+      const { googleEmail, googleName, googleId } = req.body;
+      if (!googleEmail || !googleName) {
+        return res.status(400).json({ error: "Google informasjon mangler" });
+      }
+      const [existingVendor] = await db.select().from(vendors).where(eq2(vendors.email, googleEmail));
+      if (existingVendor) {
+        if (existingVendor.status === "approved") {
+          const sessionToken = generateSessionToken();
+          const expiresAt = new Date(Date.now() + SESSION_DURATION_MS);
+          await db.insert(vendorSessions).values({
+            vendorId: existingVendor.id,
+            token: sessionToken,
+            expiresAt
+          });
+          const { password: _, ...vendorWithoutPassword } = existingVendor;
+          return res.json({
+            vendor: vendorWithoutPassword,
+            sessionToken,
+            status: "approved",
+            message: "Velkommen tilbake!"
+          });
+        } else if (existingVendor.status === "pending") {
+          return res.status(403).json({
+            status: "pending",
+            message: "Din s\xF8knad venter p\xE5 godkjenning. Du vil motta en e-post n\xE5r den er behandlet."
+          });
+        } else if (existingVendor.status === "rejected") {
+          return res.status(403).json({
+            status: "rejected",
+            message: `Din s\xF8knad ble avvist. \xC5rsak: ${existingVendor.rejectionReason || "Ikke spesifisert"}`,
+            rejectionReason: existingVendor.rejectionReason
+          });
+        }
+      }
+      const newVendorId = generateSessionToken().substring(0, 21);
+      const [newVendor] = await db.insert(vendors).values({
+        id: newVendorId,
+        email: googleEmail,
+        password: generateSessionToken(),
+        // Random password since using OAuth
+        businessName: googleName || "Min Bedrift",
+        status: "pending",
+        createdAt: /* @__PURE__ */ new Date(),
+        updatedAt: /* @__PURE__ */ new Date()
+      }).returning();
+      res.status(201).json({
+        vendor: {
+          id: newVendor.id,
+          email: newVendor.email,
+          businessName: newVendor.businessName,
+          status: newVendor.status
+        },
+        status: "pending",
+        message: "Konto opprettet! Din s\xF8knad venter p\xE5 godkjenning."
+      });
+    } catch (error) {
+      console.error("Error with Google vendor login:", error);
+      res.status(500).json({ error: "Kunne ikke logge inn med Google" });
+    }
+  });
   app2.post("/api/vendors/logout", async (req, res) => {
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith("Bearer ")) {
@@ -7044,7 +7106,8 @@ function setupCors(app2) {
     const isGitHubCodespaces = origin?.includes(".app.github.dev") || origin?.includes(".github.dev");
     const isCloudflare = origin?.includes(".trycloudflare.com");
     const isReplit = origin?.includes(".replit.dev") || origin?.includes(".repl.co");
-    const shouldAllowOrigin = isDev || isLocalhost || isGitHubCodespaces || isCloudflare || isReplit;
+    const isProductionDomain = origin === "https://wedflow.no" || origin?.includes(".vercel.app");
+    const shouldAllowOrigin = isDev || isLocalhost || isGitHubCodespaces || isCloudflare || isReplit || isProductionDomain;
     if (origin && shouldAllowOrigin) {
       res.header("Access-Control-Allow-Origin", origin);
       res.header(
