@@ -2106,8 +2106,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (!checkAdminAuth(req, res)) return;
     try {
       const { id } = req.params;
-      const { body, attachmentUrl, attachmentType } = req.body as any;
-      const parse = sendAdminMessageSchema.safeParse({ body, attachmentUrl, attachmentType });
+      const { body, attachmentUrl, attachmentType, videoGuideId } = req.body as any;
+      const parse = sendAdminMessageSchema.safeParse({ body, attachmentUrl, attachmentType, videoGuideId });
       if (!parse.success) {
         return res.status(400).json({ error: parse.error.errors[0]?.message || "Ugyldig melding" });
       }
@@ -2120,6 +2120,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           body,
           attachmentUrl: attachmentUrl || null,
           attachmentType: attachmentType || null,
+          videoGuideId: videoGuideId || null,
         })
         .returning();
 
@@ -2152,6 +2153,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ success: true });
     } catch (error) {
       res.status(500).json({ error: "Kunne ikke sende skrive-status" });
+    }
+  });
+
+  // Update conversation status (resolve/reopen)
+  app.patch("/api/admin/vendor-admin-conversations/:id/status", async (req: Request, res: Response) => {
+    if (!checkAdminAuth(req, res)) return;
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+
+      if (!["active", "resolved"].includes(status)) {
+        return res.status(400).json({ error: "Ugyldig status" });
+      }
+
+      await db
+        .update(adminConversations)
+        .set({ status })
+        .where(eq(adminConversations.id, id));
+
+      broadcastAdminConv(id, { type: "status-update", payload: { status, updatedAt: new Date().toISOString() } });
+      res.json({ success: true, status });
+    } catch (error) {
+      console.error("Error updating conversation status:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere status" });
     }
   });
 

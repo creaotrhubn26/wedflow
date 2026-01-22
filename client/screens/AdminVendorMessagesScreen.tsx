@@ -8,17 +8,21 @@ import {
   ActivityIndicator,
   Alert,
   RefreshControl,
+  Modal,
+  ScrollView,
 } from "react-native";
 import * as Clipboard from "expo-clipboard";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { useHeaderHeight } from "@react-navigation/elements";
+import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "@/hooks/useTheme";
 import { ThemedText } from "@/components/ThemedText";
 import { Spacing, BorderRadius } from "@/constants/theme";
 import { getApiUrl } from "@/lib/query-client";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import type { VideoGuide } from "@shared/schema";
 
 interface AdminConvWithVendor {
   conv: { id: string; vendorId: string; lastMessageAt: string; adminUnreadCount: number };
@@ -32,6 +36,7 @@ interface AdminMessage {
   senderId: string;
   body: string;
   createdAt: string;
+  videoGuideId?: string;
 }
 
 type Props = NativeStackScreenProps<any, "AdminVendorMessages">;
@@ -46,11 +51,23 @@ export default function AdminVendorMessagesScreen({ route, navigation }: Props) 
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [selectedGuideId, setSelectedGuideId] = useState<string | null>(null);
+  const [showGuideModal, setShowGuideModal] = useState(false);
   const typingTimerRef = useRef<NodeJS.Timeout | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const wsTypingTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [vendorTypingWs, setVendorTypingWs] = useState(false);
   const listRef = useRef<FlatList<any> | null>(null);
+
+  const { data: videoGuides = [] } = useQuery<VideoGuide[]>({
+    queryKey: ["video-guides"],
+    queryFn: async () => {
+      const url = new URL("/api/video-guides", getApiUrl());
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Kunne ikke hente videoguider");
+      return res.json();
+    },
+  });
 
   const items = useMemo(() => {
     // Build a list with date separators
@@ -93,7 +110,7 @@ export default function AdminVendorMessagesScreen({ route, navigation }: Props) 
   };
 
   const sendReply = async () => {
-    if (!replyText.trim()) return;
+    if (!replyText.trim() && !selectedGuideId) return;
     try {
       setSending(true);
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -104,12 +121,16 @@ export default function AdminVendorMessagesScreen({ route, navigation }: Props) 
           "Content-Type": "application/json",
           Authorization: `Bearer ${adminKey}`,
         },
-        body: JSON.stringify({ body: replyText.trim() }),
+        body: JSON.stringify({ 
+          body: replyText.trim(),
+          videoGuideId: selectedGuideId || undefined,
+        }),
       });
       if (!res.ok) throw new Error("Kunne ikke sende svar");
       const msg = await res.json();
       setMessages((prev) => [...prev, msg]);
       setReplyText("");
+      setSelectedGuideId(null);
     } catch (e) {
       Alert.alert("Feil", (e as Error).message);
     } finally {
@@ -228,7 +249,16 @@ export default function AdminVendorMessagesScreen({ route, navigation }: Props) 
                 <ThemedText style={[styles.senderLabel, { color: m.senderType === "admin" ? theme.accent : theme.textSecondary }]}>
                   {m.senderType === "admin" ? "Du (Admin)" : "Leverandør"}
                 </ThemedText>
-                <ThemedText style={styles.body}>{m.body}</ThemedText>
+                {m.body && <ThemedText style={styles.body}>{m.body}</ThemedText>}
+                {m.videoGuideId && (
+                  <View style={[styles.guideRef, { backgroundColor: theme.accent + "15", borderColor: theme.accent }]}>
+                    <Feather name="video" size={14} color={theme.accent} />
+                    <ThemedText style={[styles.guideRefText, { color: theme.accent }]}>
+                      {videoGuides.find((g) => g.id === m.videoGuideId)?.title || "Videoguide"}
+                    </ThemedText>
+                    <Feather name="external-link" size={12} color={theme.accent} />
+                  </View>
+                )}
                 <ThemedText style={styles.meta}>{new Date(m.createdAt).toLocaleString()}</ThemedText>
               </Pressable>
             );
@@ -239,6 +269,18 @@ export default function AdminVendorMessagesScreen({ route, navigation }: Props) 
       {vendorTypingWs && (
         <View style={{ paddingHorizontal: Spacing.md, paddingBottom: 4 }}>
           <ThemedText style={{ fontSize: 12, color: theme.textMuted }}>Leverandør skriver…</ThemedText>
+        </View>
+      )}
+
+      {selectedGuideId && (
+        <View style={[styles.selectedGuideBar, { backgroundColor: theme.accent + "10", borderColor: theme.accent }]}>
+          <Feather name="video" size={16} color={theme.accent} />
+          <ThemedText style={[styles.selectedGuideText, { color: theme.accent, flex: 1 }]}>
+            {videoGuides.find((g) => g.id === selectedGuideId)?.title || "Videoguide"}
+          </ThemedText>
+          <Pressable onPress={() => setSelectedGuideId(null)}>
+            <Feather name="x" size={16} color={theme.accent} />
+          </Pressable>
         </View>
       )}
 
@@ -259,6 +301,12 @@ export default function AdminVendorMessagesScreen({ route, navigation }: Props) 
       </View>
 
       <View style={[styles.inputBar, { backgroundColor: theme.backgroundSecondary }]}>
+        <Pressable
+          style={[styles.guideBtn, { backgroundColor: selectedGuideId ? theme.accent : theme.backgroundDefault }]}
+          onPress={() => setShowGuideModal(true)}
+        >
+          <Feather name="video" size={18} color={selectedGuideId ? "#FFFFFF" : theme.textSecondary} />
+        </Pressable>
         <TextInput
           style={[styles.input, { color: theme.text }]}
           placeholder="Svar på melding…"
@@ -271,11 +319,56 @@ export default function AdminVendorMessagesScreen({ route, navigation }: Props) 
         <Pressable
           style={[styles.sendBtn, { backgroundColor: theme.accent }]}
           onPress={sendReply}
-          disabled={sending || !replyText.trim()}
+          disabled={sending || (!replyText.trim() && !selectedGuideId)}
         >
           {sending ? <ActivityIndicator color="#FFFFFF" /> : <Feather name="send" size={18} color="#FFFFFF" />}
         </Pressable>
       </View>
+
+      <Modal visible={showGuideModal} transparent animationType="slide">
+        <SafeAreaView style={[styles.modal, { backgroundColor: theme.backgroundRoot }]}>
+          <View style={[styles.modalHeader, { backgroundColor: theme.backgroundSecondary }]}>
+            <ThemedText style={styles.modalTitle}>Velg videoguide</ThemedText>
+            <Pressable onPress={() => setShowGuideModal(false)}>
+              <Feather name="x" size={20} color={theme.text} />
+            </Pressable>
+          </View>
+          <ScrollView style={styles.modalContent} contentContainerStyle={{ padding: Spacing.md }}>
+            {videoGuides.length === 0 ? (
+              <ThemedText style={{ textAlign: "center", color: theme.textMuted, marginTop: Spacing.lg }}>
+                Ingen videoguider tilgjengelig
+              </ThemedText>
+            ) : (
+              videoGuides.map((guide) => (
+                <Pressable
+                  key={guide.id}
+                  onPress={() => {
+                    setSelectedGuideId(guide.id);
+                    setShowGuideModal(false);
+                  }}
+                  style={[
+                    styles.guideOption,
+                    {
+                      backgroundColor: selectedGuideId === guide.id ? theme.accent + "20" : theme.backgroundSecondary,
+                      borderColor: selectedGuideId === guide.id ? theme.accent : theme.border,
+                    },
+                  ]}
+                >
+                  <View style={{ flex: 1 }}>
+                    <ThemedText style={styles.guideOptionTitle}>{guide.title}</ThemedText>
+                    <ThemedText style={[styles.guideOptionDesc, { color: theme.textSecondary }]}>
+                      {guide.category}
+                    </ThemedText>
+                  </View>
+                  {selectedGuideId === guide.id && (
+                    <Feather name="check" size={18} color={theme.accent} />
+                  )}
+                </Pressable>
+              ))
+            )}
+          </ScrollView>
+        </SafeAreaView>
+      </Modal>
     </SafeAreaView>
   );
 }
@@ -291,13 +384,25 @@ const styles = StyleSheet.create({
   senderLabel: { fontSize: 11, fontWeight: "600", marginBottom: Spacing.xs },
   body: { fontSize: 14, lineHeight: 20 },
   meta: { fontSize: 11, opacity: 0.6, marginTop: 4 },
+  guideRef: { borderWidth: 1, borderRadius: BorderRadius.sm, paddingHorizontal: Spacing.sm, paddingVertical: Spacing.xs, flexDirection: "row", alignItems: "center", gap: 6, marginTop: 6 },
+  guideRefText: { fontSize: 12, fontWeight: "600", flex: 1 },
   sepWrap: { flexDirection: "row", alignItems: "center", gap: 8, marginVertical: Spacing.sm, paddingHorizontal: Spacing.md },
   sepLine: { flex: 1, height: 1, opacity: 0.3, backgroundColor: "#888" },
   sepText: { fontSize: 11, opacity: 0.7 },
   quickRow: { flexDirection: "row", flexWrap: "wrap", gap: 8, paddingHorizontal: Spacing.md, paddingBottom: Spacing.sm },
   quickChip: { borderWidth: 1, borderRadius: 16, paddingHorizontal: 10, paddingVertical: 6 },
   quickText: { fontSize: 12 },
+  selectedGuideBar: { flexDirection: "row", alignItems: "center", gap: Spacing.sm, paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm, borderWidth: 1, borderBottomWidth: 1, marginHorizontal: Spacing.md },
+  selectedGuideText: { fontSize: 12, fontWeight: "600" },
   inputBar: { flexDirection: "row", alignItems: "flex-end", padding: Spacing.sm, gap: Spacing.sm },
+  guideBtn: { height: 44, width: 44, borderRadius: 22, alignItems: "center", justifyContent: "center" },
   input: { flex: 1, maxHeight: 100, borderRadius: BorderRadius.md, paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm, backgroundColor: "#2D2D2D" },
   sendBtn: { height: 44, width: 44, borderRadius: 22, alignItems: "center", justifyContent: "center" },
+  modal: { flex: 1 },
+  modalHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: Spacing.md, paddingVertical: Spacing.md },
+  modalTitle: { fontSize: 16, fontWeight: "700" },
+  modalContent: { flex: 1 },
+  guideOption: { borderWidth: 1, borderRadius: BorderRadius.md, padding: Spacing.md, marginBottom: Spacing.sm, flexDirection: "row", alignItems: "center", gap: Spacing.md },
+  guideOptionTitle: { fontSize: 14, fontWeight: "600", marginBottom: Spacing.xs },
+  guideOptionDesc: { fontSize: 12 },
 });

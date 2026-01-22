@@ -430,6 +430,7 @@ export const adminMessages = pgTable("admin_messages", {
   editedAt: timestamp("edited_at"),
   attachmentUrl: text("attachment_url"),
   attachmentType: text("attachment_type"),
+  videoGuideId: varchar("video_guide_id").references(() => videoGuides.id, { onDelete: "set null" }),
 });
 
 export const sendAdminMessageSchema = z.object({
@@ -437,6 +438,7 @@ export const sendAdminMessageSchema = z.object({
   body: z.string().min(1, "Melding er påkrevd"),
   attachmentUrl: z.string().optional(),
   attachmentType: z.string().optional(),
+  videoGuideId: z.string().optional(),
 });
 
 export type AdminConversation = typeof adminConversations.$inferSelect;
