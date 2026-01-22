@@ -20,7 +20,7 @@ const WELCOME_MESSAGE = "Velkommen til Wedflow Support!\n\nHer kan du kontakte o
 const HELP_LINKS = [
   { label: "Fullstendig Dokumentasjon", icon: "book-open" as const, screen: "Documentation" as const, url: null },
   { label: "Hjelp & FAQ", icon: "help-circle" as const, screen: null, url: null },
-  { label: "Videoguider", icon: "video" as const, screen: null, url: null },
+  { label: "Videoguider", icon: "video" as const, screen: null, url: "https://github.com/creaotrhubn26/wedflow/blob/main/VENDOR_DOCUMENTATION.md#videoguider" },
   { label: "Hva er nytt", icon: "star" as const, screen: "WhatsNew" as const, screenParams: { category: "vendor" }, url: null },
   { label: "Systemstatus", icon: "activity" as const, screen: "Status" as const, url: null },
   { label: "E-post Support", icon: "mail" as const, screen: null, url: "mailto:support@wedflow.no" },
