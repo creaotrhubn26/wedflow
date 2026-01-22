@@ -538,7 +538,7 @@ export default function GuestsScreen() {
         </Animated.View>
       )}
 
-      <View style={styles.filterRow}>>
+      <View style={styles.filterRow}>
         {[
           { value: "all", label: "Alle" },
           { value: "hasInvite", label: "Har invitasjon" },

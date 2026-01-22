@@ -1,23 +1,12 @@
 var __defProp = Object.defineProperty;
+var __getOwnPropNames = Object.getOwnPropertyNames;
+var __esm = (fn, res) => function __init() {
+  return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+};
 var __export = (target, all) => {
   for (var name in all)
     __defProp(target, name, { get: all[name], enumerable: true });
 };
-
-// server/index.ts
-import "dotenv/config";
-import express from "express";
-
-// server/routes.ts
-import { createServer } from "node:http";
-import { WebSocketServer } from "ws";
-import crypto2 from "node:crypto";
-
-// server/db.ts
-import "dotenv/config";
-import { config } from "dotenv";
-import { drizzle } from "drizzle-orm/node-postgres";
-import pg from "pg";
 
 // shared/schema.ts
 var schema_exports = {};
@@ -105,6 +94,7 @@ __export(schema_exports, {
   updateWhatsNewSchema: () => updateWhatsNewSchema,
   users: () => users,
   vendorCategories: () => vendorCategories,
+  vendorCategoryDetails: () => vendorCategoryDetails,
   vendorFeatures: () => vendorFeatures,
   vendorInspirationCategories: () => vendorInspirationCategories,
   vendorOfferItems: () => vendorOfferItems,
@@ -127,1078 +117,1130 @@ import { sql } from "drizzle-orm";
 import { pgTable, text, varchar, timestamp, integer, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
-var users = pgTable("users", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  username: text("username").notNull().unique(),
-  password: text("password").notNull()
-});
-var insertUserSchema = createInsertSchema(users).pick({
-  username: true,
-  password: true
-});
-var vendorCategories = pgTable("vendor_categories", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  name: text("name").notNull(),
-  icon: text("icon").notNull(),
-  description: text("description")
-});
-var vendors = pgTable("vendors", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  email: text("email").notNull().unique(),
-  password: text("password").notNull(),
-  businessName: text("business_name").notNull(),
-  organizationNumber: text("organization_number"),
-  categoryId: varchar("category_id").references(() => vendorCategories.id),
-  description: text("description"),
-  location: text("location"),
-  phone: text("phone"),
-  website: text("website"),
-  priceRange: text("price_range"),
-  imageUrl: text("image_url"),
-  googleReviewUrl: text("google_review_url"),
-  status: text("status").notNull().default("pending"),
-  rejectionReason: text("rejection_reason"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow()
-});
-var vendorSessions = pgTable("vendor_sessions", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
-  token: text("token").notNull().unique(),
-  expiresAt: timestamp("expires_at").notNull(),
-  createdAt: timestamp("created_at").defaultNow()
-});
-var insertVendorCategorySchema = createInsertSchema(vendorCategories).pick({
-  name: true,
-  icon: true,
-  description: true
-});
-var insertVendorSchema = createInsertSchema(vendors).omit({
-  id: true,
-  status: true,
-  rejectionReason: true,
-  createdAt: true,
-  updatedAt: true
-});
-var vendorRegistrationSchema = z.object({
-  email: z.string().email("Ugyldig e-postadresse"),
-  password: z.string().min(8, "Passord m\xE5 v\xE6re minst 8 tegn"),
-  businessName: z.string().min(2, "Bedriftsnavn m\xE5 v\xE6re minst 2 tegn"),
-  organizationNumber: z.string().optional(),
-  categoryId: z.string().min(1, "Velg en kategori"),
-  description: z.string().optional(),
-  location: z.string().optional(),
-  phone: z.string().optional(),
-  website: z.string().optional(),
-  priceRange: z.string().optional()
-});
-var vendorFeatures = pgTable("vendor_features", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
-  featureKey: text("feature_key").notNull(),
-  isEnabled: boolean("is_enabled").notNull().default(true),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow()
-});
-var vendorInspirationCategories = pgTable("vendor_inspiration_categories", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
-  categoryId: varchar("category_id").notNull().references(() => inspirationCategories.id, { onDelete: "cascade" }),
-  assignedAt: timestamp("assigned_at").defaultNow()
-});
-var deliveries = pgTable("deliveries", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
-  coupleName: text("couple_name").notNull(),
-  coupleEmail: text("couple_email"),
-  accessCode: text("access_code").notNull().unique(),
-  title: text("title").notNull(),
-  description: text("description"),
-  weddingDate: text("wedding_date"),
-  status: text("status").notNull().default("active"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow()
-});
-var deliveryItems = pgTable("delivery_items", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  deliveryId: varchar("delivery_id").notNull().references(() => deliveries.id, { onDelete: "cascade" }),
-  type: text("type").notNull(),
-  label: text("label").notNull(),
-  url: text("url").notNull(),
-  description: text("description"),
-  sortOrder: integer("sort_order").default(0),
-  createdAt: timestamp("created_at").defaultNow()
-});
-var insertDeliverySchema = createInsertSchema(deliveries).omit({
-  id: true,
-  accessCode: true,
-  status: true,
-  createdAt: true,
-  updatedAt: true
-});
-var insertDeliveryItemSchema = createInsertSchema(deliveryItems).omit({
-  id: true,
-  createdAt: true
-});
-var createDeliverySchema = z.object({
-  coupleName: z.string().min(2, "Navn m\xE5 v\xE6re minst 2 tegn"),
-  coupleEmail: z.string().email("Ugyldig e-postadresse").optional().or(z.literal("")),
-  title: z.string().min(2, "Tittel m\xE5 v\xE6re minst 2 tegn"),
-  description: z.string().optional(),
-  weddingDate: z.string().optional(),
-  items: z.array(z.object({
-    type: z.enum(["gallery", "video", "website", "download", "other"]),
-    label: z.string().min(1, "Etikett er p\xE5krevd"),
-    url: z.string().url("Ugyldig URL"),
-    description: z.string().optional()
-  })).min(1, "Legg til minst \xE9n leveranse")
-});
-var inspirationCategories = pgTable("inspiration_categories", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  name: text("name").notNull(),
-  icon: text("icon").notNull(),
-  sortOrder: integer("sort_order").default(0)
-});
-var inspirations = pgTable("inspirations", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
-  categoryId: varchar("category_id").references(() => inspirationCategories.id, { onDelete: "set null" }),
-  title: text("title").notNull(),
-  description: text("description"),
-  coverImageUrl: text("cover_image_url"),
-  priceSummary: text("price_summary"),
-  priceMin: integer("price_min"),
-  priceMax: integer("price_max"),
-  currency: text("currency").default("NOK"),
-  websiteUrl: text("website_url"),
-  inquiryEmail: text("inquiry_email"),
-  inquiryPhone: text("inquiry_phone"),
-  ctaLabel: text("cta_label"),
-  ctaUrl: text("cta_url"),
-  allowInquiryForm: boolean("allow_inquiry_form").default(false),
-  status: text("status").notNull().default("pending"),
-  rejectionReason: text("rejection_reason"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow()
-});
-var inspirationMedia = pgTable("inspiration_media", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  inspirationId: varchar("inspiration_id").notNull().references(() => inspirations.id, { onDelete: "cascade" }),
-  type: text("type").notNull(),
-  url: text("url").notNull(),
-  caption: text("caption"),
-  sortOrder: integer("sort_order").default(0),
-  createdAt: timestamp("created_at").defaultNow()
-});
-var insertInspirationCategorySchema = createInsertSchema(inspirationCategories).omit({
-  id: true
-});
-var insertInspirationSchema = createInsertSchema(inspirations).omit({
-  id: true,
-  status: true,
-  rejectionReason: true,
-  createdAt: true,
-  updatedAt: true
-});
-var insertInspirationMediaSchema = createInsertSchema(inspirationMedia).omit({
-  id: true,
-  createdAt: true
-});
-var createInspirationSchema = z.object({
-  categoryId: z.string().min(1, "Velg en kategori"),
-  title: z.string().min(2, "Tittel m\xE5 v\xE6re minst 2 tegn"),
-  description: z.string().optional(),
-  coverImageUrl: z.string().url("Ugyldig URL").optional().or(z.literal("")),
-  priceSummary: z.string().optional(),
-  priceMin: z.number().min(0).optional(),
-  priceMax: z.number().min(0).optional(),
-  currency: z.string().default("NOK"),
-  websiteUrl: z.string().url("Ugyldig URL").optional().or(z.literal("")),
-  inquiryEmail: z.string().email("Ugyldig e-post").optional().or(z.literal("")),
-  inquiryPhone: z.string().optional(),
-  ctaLabel: z.string().optional(),
-  ctaUrl: z.string().url("Ugyldig URL").optional().or(z.literal("")),
-  allowInquiryForm: z.boolean().default(false),
-  media: z.array(z.object({
-    type: z.enum(["image", "video"]),
-    url: z.string().url("Ugyldig URL"),
-    caption: z.string().optional()
-  })).min(1, "Legg til minst ett bilde eller video")
-});
-var inspirationInquiries = pgTable("inspiration_inquiries", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  inspirationId: varchar("inspiration_id").notNull().references(() => inspirations.id, { onDelete: "cascade" }),
-  vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
-  name: text("name").notNull(),
-  email: text("email").notNull(),
-  phone: text("phone"),
-  message: text("message").notNull(),
-  weddingDate: text("wedding_date"),
-  status: text("status").notNull().default("new"),
-  createdAt: timestamp("created_at").defaultNow()
-});
-var createInquirySchema = z.object({
-  inspirationId: z.string(),
-  name: z.string().min(2, "Navn m\xE5 v\xE6re minst 2 tegn"),
-  email: z.string().email("Ugyldig e-postadresse"),
-  phone: z.string().optional(),
-  message: z.string().min(10, "Melding m\xE5 v\xE6re minst 10 tegn"),
-  weddingDate: z.string().optional()
-});
-var checklistTasks = pgTable("checklist_tasks", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
-  title: text("title").notNull(),
-  monthsBefore: integer("months_before").notNull().default(12),
-  category: text("category").notNull().default("planning"),
-  // planning, vendors, attire, logistics, final
-  completed: boolean("completed").notNull().default(false),
-  completedAt: timestamp("completed_at"),
-  completedBy: varchar("completed_by"),
-  // coupleId who completed it
-  assignedTo: varchar("assigned_to"),
-  // Optional: assign to partner
-  notes: text("notes"),
-  linkedReminderId: varchar("linked_reminder_id").references(() => reminders.id),
-  isDefault: boolean("is_default").notNull().default(false),
-  // True for system-generated tasks
-  sortOrder: integer("sort_order").notNull().default(0),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow()
-});
-var insertChecklistTaskSchema = createInsertSchema(checklistTasks).omit({
-  id: true,
-  completedAt: true,
-  completedBy: true,
-  createdAt: true,
-  updatedAt: true
-});
-var createChecklistTaskSchema = z.object({
-  title: z.string().min(1, "Tittel er p\xE5krevd"),
-  monthsBefore: z.number().min(0).max(24).default(12),
-  category: z.enum(["planning", "vendors", "attire", "logistics", "final"]).default("planning"),
-  notes: z.string().optional(),
-  assignedTo: z.string().optional()
-});
-var coupleProfiles = pgTable("couple_profiles", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  email: text("email").notNull().unique(),
-  displayName: text("display_name").notNull(),
-  password: text("password").notNull(),
-  partnerEmail: text("partner_email"),
-  weddingDate: text("wedding_date"),
-  lastActiveAt: timestamp("last_active_at").defaultNow(),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow()
-});
-var coupleSessions = pgTable("couple_sessions", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
-  token: text("token").notNull().unique(),
-  expiresAt: timestamp("expires_at").notNull(),
-  createdAt: timestamp("created_at").defaultNow()
-});
-var conversations = pgTable("conversations", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
-  vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
-  inspirationId: varchar("inspiration_id").references(() => inspirations.id, { onDelete: "set null" }),
-  inquiryId: varchar("inquiry_id").references(() => inspirationInquiries.id, { onDelete: "set null" }),
-  status: text("status").notNull().default("active"),
-  lastMessageAt: timestamp("last_message_at").defaultNow(),
-  coupleUnreadCount: integer("couple_unread_count").default(0),
-  vendorUnreadCount: integer("vendor_unread_count").default(0),
-  coupleTypingAt: timestamp("couple_typing_at"),
-  vendorTypingAt: timestamp("vendor_typing_at"),
-  createdAt: timestamp("created_at").defaultNow(),
-  deletedByCouple: boolean("deleted_by_couple").default(false),
-  deletedByVendor: boolean("deleted_by_vendor").default(false),
-  coupleDeletedAt: timestamp("couple_deleted_at"),
-  vendorDeletedAt: timestamp("vendor_deleted_at")
-});
-var messages = pgTable("messages", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  conversationId: varchar("conversation_id").notNull().references(() => conversations.id, { onDelete: "cascade" }),
-  senderType: text("sender_type").notNull(),
-  // 'couple' or 'vendor'
-  senderId: varchar("sender_id").notNull(),
-  body: text("body").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
-  readAt: timestamp("read_at"),
-  editedAt: timestamp("edited_at"),
-  attachmentUrl: text("attachment_url"),
-  attachmentType: text("attachment_type"),
-  deletedByCouple: boolean("deleted_by_couple").default(false),
-  deletedByVendor: boolean("deleted_by_vendor").default(false),
-  coupleDeletedAt: timestamp("couple_deleted_at"),
-  vendorDeletedAt: timestamp("vendor_deleted_at")
-});
-var adminConversations = pgTable("admin_conversations", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
-  status: text("status").notNull().default("active"),
-  lastMessageAt: timestamp("last_message_at").defaultNow(),
-  vendorUnreadCount: integer("vendor_unread_count").default(0),
-  adminUnreadCount: integer("admin_unread_count").default(0),
-  createdAt: timestamp("created_at").defaultNow()
-});
-var adminMessages = pgTable("admin_messages", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  conversationId: varchar("conversation_id").notNull().references(() => adminConversations.id, { onDelete: "cascade" }),
-  senderType: text("sender_type").notNull(),
-  // 'vendor' or 'admin'
-  senderId: varchar("sender_id").notNull(),
-  body: text("body").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
-  readAt: timestamp("read_at"),
-  editedAt: timestamp("edited_at"),
-  attachmentUrl: text("attachment_url"),
-  attachmentType: text("attachment_type")
-});
-var sendAdminMessageSchema = z.object({
-  conversationId: z.string().optional(),
-  body: z.string().min(1, "Melding er p\xE5krevd"),
-  attachmentUrl: z.string().optional(),
-  attachmentType: z.string().optional()
-});
-var insertCoupleProfileSchema = createInsertSchema(coupleProfiles).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true
-});
-var coupleLoginSchema = z.object({
-  email: z.string().email("Ugyldig e-postadresse"),
-  displayName: z.string().min(2, "Navn m\xE5 v\xE6re minst 2 tegn"),
-  password: z.string().min(8, "Passord m\xE5 v\xE6re minst 8 tegn")
-});
-var sendMessageSchema = z.object({
-  conversationId: z.string().optional(),
-  vendorId: z.string().optional(),
-  inspirationId: z.string().optional(),
-  body: z.string().optional(),
-  attachmentUrl: z.string().optional(),
-  attachmentType: z.string().optional()
-}).refine((data) => data.body || data.attachmentUrl, "Melding eller vedlegg er p\xE5krevd");
-var reminders = pgTable("reminders", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  title: text("title").notNull(),
-  description: text("description"),
-  reminderDate: timestamp("reminder_date").notNull(),
-  category: text("category").notNull().default("general"),
-  isCompleted: boolean("is_completed").default(false),
-  notificationId: text("notification_id"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow()
-});
-var insertReminderSchema = createInsertSchema(reminders).omit({
-  id: true,
-  isCompleted: true,
-  notificationId: true,
-  createdAt: true,
-  updatedAt: true
-});
-var createReminderSchema = z.object({
-  title: z.string().min(1, "Tittel er p\xE5krevd"),
-  description: z.string().optional(),
-  reminderDate: z.string(),
-  category: z.enum(["general", "vendor", "budget", "guest", "planning"]).default("general")
-});
-var vendorProducts = pgTable("vendor_products", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
-  title: text("title").notNull(),
-  description: text("description"),
-  unitPrice: integer("unit_price").notNull(),
-  // Price in øre (NOK cents)
-  unitType: text("unit_type").notNull().default("stk"),
-  // stk, time, dag, pakke, etc.
-  leadTimeDays: integer("lead_time_days"),
-  minQuantity: integer("min_quantity").default(1),
-  categoryTag: text("category_tag"),
-  // Internal categorization
-  imageUrl: text("image_url"),
-  isArchived: boolean("is_archived").default(false),
-  sortOrder: integer("sort_order").default(0),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow()
-});
-var insertVendorProductSchema = createInsertSchema(vendorProducts).omit({
-  id: true,
-  isArchived: true,
-  createdAt: true,
-  updatedAt: true
-});
-var createVendorProductSchema = z.object({
-  title: z.string().min(2, "Tittel m\xE5 v\xE6re minst 2 tegn"),
-  description: z.string().optional(),
-  unitPrice: z.number().min(0, "Pris m\xE5 v\xE6re 0 eller h\xF8yere"),
-  unitType: z.string().default("stk"),
-  leadTimeDays: z.number().min(0).optional(),
-  minQuantity: z.number().min(1).default(1),
-  categoryTag: z.string().optional(),
-  imageUrl: z.string().url("Ugyldig URL").optional().or(z.literal("")),
-  sortOrder: z.number().default(0)
-});
-var vendorOffers = pgTable("vendor_offers", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
-  coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
-  conversationId: varchar("conversation_id").references(() => conversations.id, { onDelete: "set null" }),
-  title: text("title").notNull(),
-  message: text("message"),
-  status: text("status").notNull().default("pending"),
-  // pending, accepted, declined, expired
-  totalAmount: integer("total_amount").notNull(),
-  // In øre
-  currency: text("currency").default("NOK"),
-  validUntil: timestamp("valid_until"),
-  acceptedAt: timestamp("accepted_at"),
-  declinedAt: timestamp("declined_at"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow()
-});
-var vendorOfferItems = pgTable("vendor_offer_items", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  offerId: varchar("offer_id").notNull().references(() => vendorOffers.id, { onDelete: "cascade" }),
-  productId: varchar("product_id").references(() => vendorProducts.id, { onDelete: "set null" }),
-  // Optional - can be custom line
-  title: text("title").notNull(),
-  description: text("description"),
-  quantity: integer("quantity").notNull().default(1),
-  unitPrice: integer("unit_price").notNull(),
-  // In øre
-  lineTotal: integer("line_total").notNull(),
-  // quantity * unitPrice
-  sortOrder: integer("sort_order").default(0),
-  createdAt: timestamp("created_at").defaultNow()
-});
-var insertVendorOfferSchema = createInsertSchema(vendorOffers).omit({
-  id: true,
-  status: true,
-  acceptedAt: true,
-  declinedAt: true,
-  createdAt: true,
-  updatedAt: true
-});
-var insertVendorOfferItemSchema = createInsertSchema(vendorOfferItems).omit({
-  id: true,
-  createdAt: true
-});
-var createOfferSchema = z.object({
-  coupleId: z.string().min(1, "Velg en mottaker"),
-  conversationId: z.string().optional(),
-  title: z.string().min(2, "Tittel m\xE5 v\xE6re minst 2 tegn"),
-  message: z.string().optional(),
-  validUntil: z.string().optional(),
-  items: z.array(z.object({
-    productId: z.string().optional(),
-    title: z.string().min(1, "Tittel er p\xE5krevd"),
-    description: z.string().optional(),
-    quantity: z.number().min(1).default(1),
-    unitPrice: z.number().min(0, "Pris m\xE5 v\xE6re 0 eller h\xF8yere")
-  })).min(1, "Legg til minst \xE9n linje")
-});
-var speeches = pgTable("speeches", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  coupleId: varchar("couple_id").references(() => coupleProfiles.id, { onDelete: "cascade" }),
-  speakerName: text("speaker_name").notNull(),
-  role: text("role"),
-  // brudgom, brud, forlovere, foreldre, etc.
-  durationMinutes: integer("duration_minutes").notNull().default(5),
-  sortOrder: integer("sort_order").notNull().default(0),
-  notes: text("notes"),
-  scheduledTime: text("scheduled_time"),
-  // Optional specific time slot
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow()
-});
-var insertSpeechSchema = createInsertSchema(speeches).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true
-});
-var createSpeechSchema = z.object({
-  speakerName: z.string().min(1, "Navn er p\xE5krevd"),
-  role: z.string().optional(),
-  durationMinutes: z.number().min(1).max(60).default(5),
-  sortOrder: z.number().default(0),
-  notes: z.string().optional(),
-  scheduledTime: z.string().optional()
-});
-var messageReminders = pgTable("message_reminders", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  conversationId: varchar("conversation_id").notNull().references(() => conversations.id, { onDelete: "cascade" }),
-  vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
-  coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
-  reminderType: text("reminder_type").notNull().default("gentle"),
-  // gentle, deadline, final
-  scheduledFor: timestamp("scheduled_for").notNull(),
-  sentAt: timestamp("sent_at"),
-  status: text("status").notNull().default("pending"),
-  // pending, sent, cancelled
-  createdAt: timestamp("created_at").defaultNow()
-});
-var appSettings = pgTable("app_settings", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  key: text("key").notNull().unique(),
-  value: text("value").notNull(),
-  category: text("category").notNull().default("general"),
-  updatedAt: timestamp("updated_at").defaultNow()
-});
-var insertAppSettingSchema = createInsertSchema(appSettings).omit({
-  id: true,
-  updatedAt: true
-});
-var updateAppSettingSchema = z.object({
-  value: z.string().min(1, "Verdi er p\xE5krevd")
-});
-var whatsNewItems = pgTable("whats_new_items", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  category: text("category").notNull().default("vendor"),
-  // vendor or couple
-  title: text("title").notNull(),
-  description: text("description").notNull(),
-  icon: text("icon").notNull().default("star"),
-  minAppVersion: text("min_app_version").notNull(),
-  isActive: boolean("is_active").notNull().default(true),
-  sortOrder: integer("sort_order").notNull().default(0),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow()
-});
-var insertWhatsNewSchema = createInsertSchema(whatsNewItems).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true
-}).extend({
-  category: z.enum(["vendor", "couple"]).default("vendor")
-});
-var updateWhatsNewSchema = z.object({
-  category: z.enum(["vendor", "couple"]).default("vendor"),
-  title: z.string().min(1, "Tittel er p\xE5krevd"),
-  description: z.string().min(1, "Beskrivelse er p\xE5krevd"),
-  icon: z.string().default("star"),
-  minAppVersion: z.string().min(1, "Minimumversjon er p\xE5krevd"),
-  isActive: z.boolean(),
-  sortOrder: z.number().int()
-});
-var scheduleEvents = pgTable("schedule_events", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
-  time: text("time").notNull(),
-  // HH:mm format
-  title: text("title").notNull(),
-  icon: text("icon").default("star"),
-  // heart, camera, music, users, coffee, sun, moon, star
-  notes: text("notes"),
-  sortOrder: integer("sort_order").default(0),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow()
-});
-var insertScheduleEventSchema = createInsertSchema(scheduleEvents).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true
-});
-var coordinatorInvitations = pgTable("coordinator_invitations", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
-  email: text("email"),
-  name: text("name").notNull(),
-  // Display name like "Toastmaster Ole"
-  roleLabel: text("role_label").notNull().default("Toastmaster"),
-  // Toastmaster, Koordinator, etc.
-  accessToken: text("access_token").notNull().unique(),
-  accessCode: text("access_code"),
-  // Optional 6-digit code for easy access
-  canViewSpeeches: boolean("can_view_speeches").default(true),
-  canViewSchedule: boolean("can_view_schedule").default(true),
-  canEditSpeeches: boolean("can_edit_speeches").default(false),
-  // Edit permission for speeches
-  canEditSchedule: boolean("can_edit_schedule").default(false),
-  // Edit permission for schedule
-  status: text("status").notNull().default("active"),
-  // active, revoked, expired
-  expiresAt: timestamp("expires_at"),
-  lastAccessedAt: timestamp("last_accessed_at"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow()
-});
-var insertCoordinatorInvitationSchema = createInsertSchema(coordinatorInvitations).omit({
-  id: true,
-  accessToken: true,
-  accessCode: true,
-  status: true,
-  lastAccessedAt: true,
-  createdAt: true,
-  updatedAt: true
-});
-var createCoordinatorInvitationSchema = z.object({
-  name: z.string().min(1, "Navn er p\xE5krevd"),
-  email: z.string().email().optional().or(z.literal("")),
-  roleLabel: z.string().default("Toastmaster"),
-  canViewSpeeches: z.boolean().default(true),
-  canViewSchedule: z.boolean().default(true),
-  canEditSpeeches: z.boolean().default(false),
-  canEditSchedule: z.boolean().default(false),
-  expiresAt: z.string().optional()
-});
-var guestInvitations = pgTable("guest_invitations", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
-  name: text("name").notNull(),
-  email: text("email"),
-  phone: text("phone"),
-  template: text("template").notNull().default("classic"),
-  // classic, floral, modern
-  message: text("message"),
-  inviteToken: text("invite_token").notNull().unique(),
-  status: text("status").notNull().default("pending"),
-  // pending, sent, responded, declined
-  responseAttending: boolean("response_attending"),
-  responseDietary: text("response_dietary"),
-  responseAllergies: text("response_allergies"),
-  responseNotes: text("response_notes"),
-  responsePlusOne: text("response_plus_one"),
-  respondedAt: timestamp("responded_at"),
-  expiresAt: timestamp("expires_at"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow()
-});
-var insertGuestInvitationSchema = createInsertSchema(guestInvitations).omit({
-  id: true,
-  inviteToken: true,
-  status: true,
-  responseAttending: true,
-  responseDietary: true,
-  responseAllergies: true,
-  responseNotes: true,
-  responsePlusOne: true,
-  respondedAt: true,
-  createdAt: true,
-  updatedAt: true
-});
-var createGuestInvitationSchema = z.object({
-  name: z.string().min(1, "Navn er p\xE5krevd"),
-  email: z.string().email().optional().or(z.literal("")),
-  phone: z.string().optional().or(z.literal("")),
-  template: z.enum(["classic", "floral", "modern"]).default("classic"),
-  message: z.string().optional().or(z.literal("")),
-  expiresAt: z.string().optional()
-});
-var coupleVendorContracts = pgTable("couple_vendor_contracts", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
-  vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
-  offerId: varchar("offer_id").references(() => vendorOffers.id, { onDelete: "set null" }),
-  // Link to accepted offer
-  status: text("status").notNull().default("active"),
-  // active, completed, cancelled
-  vendorRole: text("vendor_role"),
-  // "photographer", "videographer", "caterer", etc.
-  notifyOnScheduleChanges: boolean("notify_on_schedule_changes").default(true),
-  notifyOnSpeechChanges: boolean("notify_on_speech_changes").default(true),
-  canViewSchedule: boolean("can_view_schedule").default(true),
-  canViewSpeeches: boolean("can_view_speeches").default(false),
-  canViewTableSeating: boolean("can_view_table_seating").default(false),
-  notifyOnTableChanges: boolean("notify_on_table_changes").default(false),
-  completedAt: timestamp("completed_at"),
-  reviewReminderSentAt: timestamp("review_reminder_sent_at"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow()
-});
-var insertCoupleVendorContractSchema = createInsertSchema(coupleVendorContracts).omit({
-  id: true,
-  status: true,
-  createdAt: true,
-  updatedAt: true
-});
-var notifications = pgTable("notifications", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  recipientType: text("recipient_type").notNull(),
-  // "couple", "vendor", "coordinator"
-  recipientId: varchar("recipient_id").notNull(),
-  // coupleId, vendorId, or coordinatorInvitationId
-  type: text("type").notNull(),
-  // "schedule_changed", "speech_changed", "vendor_update", "offer_accepted", etc.
-  title: text("title").notNull(),
-  body: text("body"),
-  payload: text("payload"),
-  // JSON string with additional data
-  relatedEntityType: text("related_entity_type"),
-  // "schedule_event", "speech", "offer", etc.
-  relatedEntityId: varchar("related_entity_id"),
-  actorType: text("actor_type"),
-  // "couple", "vendor", "coordinator"
-  actorId: varchar("actor_id"),
-  actorName: text("actor_name"),
-  readAt: timestamp("read_at"),
-  sentVia: text("sent_via").default("in_app"),
-  // "in_app", "push", "email"
-  createdAt: timestamp("created_at").defaultNow()
-});
-var insertNotificationSchema = createInsertSchema(notifications).omit({
-  id: true,
-  readAt: true,
-  createdAt: true
-});
-var activityLogs = pgTable("activity_logs", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
-  actorType: text("actor_type").notNull(),
-  // "couple", "coordinator"
-  actorId: varchar("actor_id").notNull(),
-  // coupleId or coordinatorInvitationId
-  actorName: text("actor_name"),
-  action: text("action").notNull(),
-  // "created", "updated", "deleted"
-  entityType: text("entity_type").notNull(),
-  // "schedule_event", "speech"
-  entityId: varchar("entity_id").notNull(),
-  previousValue: text("previous_value"),
-  // JSON snapshot
-  newValue: text("new_value"),
-  // JSON snapshot
-  createdAt: timestamp("created_at").defaultNow()
-});
-var weddingGuests = pgTable("wedding_guests", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
-  name: text("name").notNull(),
-  email: text("email"),
-  phone: text("phone"),
-  category: text("category"),
-  // "family", "friends", "colleagues", "reserved", "other"
-  status: text("status").notNull().default("pending"),
-  // "pending", "confirmed", "declined"
-  dietaryRequirements: text("dietary_requirements"),
-  allergies: text("allergies"),
-  notes: text("notes"),
-  plusOne: boolean("plus_one").notNull().default(false),
-  plusOneName: text("plus_one_name"),
-  tableNumber: integer("table_number"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow()
-});
-var insertWeddingGuestSchema = createInsertSchema(weddingGuests).omit({
-  id: true,
-  coupleId: true,
-  createdAt: true,
-  updatedAt: true
-});
-var updateWeddingGuestSchema = insertWeddingGuestSchema.partial();
-var weddingTables = pgTable("wedding_tables", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
-  tableNumber: integer("table_number").notNull(),
-  name: text("name").notNull(),
-  // "Bord 1", "Hovedbord", etc.
-  category: text("category"),
-  // "bride_family", "groom_family", "friends", "colleagues", "reserved", "main"
-  label: text("label"),
-  // Custom label like "Brudens familie", "Brudgommens venner", etc.
-  seats: integer("seats").notNull().default(8),
-  isReserved: boolean("is_reserved").notNull().default(false),
-  notes: text("notes"),
-  // Private notes for couple
-  vendorNotes: text("vendor_notes"),
-  // Notes visible to venue/decorators
-  sortOrder: integer("sort_order").notNull().default(0),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow()
-});
-var insertWeddingTableSchema = createInsertSchema(weddingTables).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true
-});
-var tableGuestAssignments = pgTable("table_guest_assignments", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
-  tableId: varchar("table_id").notNull().references(() => weddingTables.id, { onDelete: "cascade" }),
-  guestId: varchar("guest_id").notNull().references(() => weddingGuests.id, { onDelete: "cascade" }),
-  seatNumber: integer("seat_number"),
-  createdAt: timestamp("created_at").defaultNow()
-});
-var tableSeatingInvitations = pgTable("table_seating_invitations", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
-  recipientName: text("recipient_name").notNull(),
-  // "Lokalet AS", "Dekoratør Hansen"
-  recipientType: text("recipient_type").notNull(),
-  // "venue", "decorator", "planner", "other"
-  email: text("email"),
-  phone: text("phone"),
-  accessToken: text("access_token").notNull().unique(),
-  accessCode: text("access_code").notNull(),
-  // 6-digit code for easy entry
-  canSeeGuestNames: boolean("can_see_guest_names").notNull().default(true),
-  canSeeNotes: boolean("can_see_notes").notNull().default(false),
-  // Whether they can see vendor_notes
-  expiresAt: timestamp("expires_at"),
-  status: text("status").notNull().default("active"),
-  // "active", "revoked"
-  lastAccessedAt: timestamp("last_accessed_at"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow()
-});
-var insertTableSeatingInvitationSchema = createInsertSchema(tableSeatingInvitations).omit({
-  id: true,
-  accessToken: true,
-  accessCode: true,
-  status: true,
-  lastAccessedAt: true,
-  createdAt: true,
-  updatedAt: true
-});
-var appFeedback = pgTable("app_feedback", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  submitterType: text("submitter_type").notNull(),
-  // "couple", "vendor"
-  submitterId: varchar("submitter_id").notNull(),
-  // coupleId or vendorId
-  category: text("category").notNull(),
-  // "bug", "feature_request", "general", "complaint"
-  subject: text("subject").notNull(),
-  message: text("message").notNull(),
-  status: text("status").notNull().default("pending"),
-  // "pending", "reviewed", "resolved", "closed"
-  adminNotes: text("admin_notes"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow()
-});
-var insertAppFeedbackSchema = createInsertSchema(appFeedback).omit({
-  id: true,
-  status: true,
-  adminNotes: true,
-  createdAt: true,
-  updatedAt: true
-});
-var vendorReviews = pgTable("vendor_reviews", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  contractId: varchar("contract_id").notNull().references(() => coupleVendorContracts.id, { onDelete: "cascade" }),
-  coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
-  vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
-  rating: integer("rating").notNull(),
-  // 1-5 stars
-  title: text("title"),
-  body: text("body"),
-  isAnonymous: boolean("is_anonymous").notNull().default(false),
-  isApproved: boolean("is_approved").notNull().default(false),
-  // Admin moderation
-  approvedAt: timestamp("approved_at"),
-  approvedBy: varchar("approved_by"),
-  // Admin ID
-  editableUntil: timestamp("editable_until"),
-  // Can edit within 14 days
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow()
-});
-var insertVendorReviewSchema = createInsertSchema(vendorReviews).omit({
-  id: true,
-  isApproved: true,
-  approvedAt: true,
-  approvedBy: true,
-  editableUntil: true,
-  createdAt: true,
-  updatedAt: true
-});
-var vendorReviewResponses = pgTable("vendor_review_responses", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  reviewId: varchar("review_id").notNull().references(() => vendorReviews.id, { onDelete: "cascade" }),
-  vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
-  body: text("body").notNull(),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow()
-});
-var insertVendorReviewResponseSchema = createInsertSchema(vendorReviewResponses).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true
-});
-var faqItems = pgTable("faq_items", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  category: text("category").notNull(),
-  // 'couple' or 'vendor'
-  icon: text("icon").notNull(),
-  // Feather icon name
-  question: text("question").notNull(),
-  answer: text("answer").notNull(),
-  sortOrder: integer("sort_order").notNull().default(0),
-  isActive: boolean("is_active").notNull().default(true),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow()
-});
-var insertFaqItemSchema = createInsertSchema(faqItems).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true
-});
-var updateFaqItemSchema = z.object({
-  category: z.enum(["couple", "vendor"]).optional(),
-  icon: z.string().optional(),
-  question: z.string().optional(),
-  answer: z.string().optional(),
-  sortOrder: z.number().optional(),
-  isActive: z.boolean().optional()
-});
-var videoGuides = pgTable("video_guides", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  title: text("title").notNull(),
-  description: text("description").notNull(),
-  videoUrl: text("video_url").notNull(),
-  thumbnail: text("thumbnail"),
-  duration: text("duration"),
-  // HH:mm:ss format
-  category: text("category").notNull().default("vendor"),
-  // vendor or couple
-  icon: text("icon").notNull().default("video"),
-  sortOrder: integer("sort_order").notNull().default(0),
-  isActive: boolean("is_active").notNull().default(true),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow()
-});
-var insertVideoGuideSchema = createInsertSchema(videoGuides).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true
-}).extend({
-  category: z.enum(["vendor", "couple"]).default("vendor")
-});
-var updateVideoGuideSchema = z.object({
-  title: z.string().min(1, "Tittel er p\xE5krevd"),
-  description: z.string().min(1, "Beskrivelse er p\xE5krevd"),
-  videoUrl: z.string().url("Gyldig video-URL er p\xE5krevd"),
-  thumbnail: z.string().optional(),
-  duration: z.string().optional(),
-  category: z.enum(["vendor", "couple"]).default("vendor"),
-  icon: z.string().default("video"),
-  sortOrder: z.number().int(),
-  isActive: z.boolean()
-});
-var subscriptionTiers = pgTable("subscription_tiers", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  name: text("name").notNull(),
-  // "Starter", "Professional", "Enterprise"
-  displayName: text("display_name").notNull(),
-  description: text("description"),
-  priceNok: integer("price_nok").notNull(),
-  // Price in NOK per month
-  sortOrder: integer("sort_order").notNull().default(0),
-  isActive: boolean("is_active").notNull().default(true),
-  // Feature limits per tier
-  maxInspirationPhotos: integer("max_inspiration_photos").notNull().default(10),
-  // -1 = unlimited
-  maxMonthlyVideoMinutes: integer("max_monthly_video_minutes").notNull().default(0),
-  maxStorageGb: integer("max_storage_gb").notNull().default(5),
-  // Features
-  hasAdvancedAnalytics: boolean("has_advanced_analytics").notNull().default(false),
-  hasPrioritizedSearch: boolean("has_prioritized_search").notNull().default(false),
-  hasCustomLandingPage: boolean("has_custom_landing_page").notNull().default(false),
-  hasApiAccess: boolean("has_api_access").notNull().default(false),
-  hasVippsPaymentLink: boolean("has_vipps_payment_link").notNull().default(false),
-  hasCustomBranding: boolean("has_custom_branding").notNull().default(false),
-  // Pricing adjustments
-  commissionPercentage: integer("commission_percentage").notNull().default(3),
-  // 3% = 300 basis points
-  stripeFeePercentage: integer("stripe_fee_percentage").notNull().default(0),
-  // Extra fee if any
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow()
-});
-var vendorSubscriptions = pgTable("vendor_subscriptions", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
-  tierId: varchar("tier_id").notNull().references(() => subscriptionTiers.id),
-  // Stripe subscription info
-  stripeSubscriptionId: text("stripe_subscription_id"),
-  stripeCustomerId: text("stripe_customer_id"),
-  // Status
-  status: text("status").notNull().default("active"),
-  // active, cancelled, past_due, paused
-  currentPeriodStart: timestamp("current_period_start").notNull(),
-  currentPeriodEnd: timestamp("current_period_end").notNull(),
-  cancelledAt: timestamp("cancelled_at"),
-  pausedUntil: timestamp("paused_until"),
-  // Auto-renewal
-  autoRenew: boolean("auto_renew").notNull().default(true),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow()
-});
-var vendorUsageMetrics = pgTable("vendor_usage_metrics", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
-  year: integer("year").notNull(),
-  month: integer("month").notNull(),
-  // 1-12
-  // Usage counts
-  inspirationPhotosUploaded: integer("inspiration_photos_uploaded").notNull().default(0),
-  videoMinutesUsed: integer("video_minutes_used").notNull().default(0),
-  storageUsedGb: integer("storage_used_gb").notNull().default(0),
-  profileViewsCount: integer("profile_views_count").notNull().default(0),
-  messagesSent: integer("messages_sent").notNull().default(0),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow()
-});
-var vendorPayments = pgTable("vendor_payments", {
-  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
-  subscriptionId: varchar("subscription_id").references(() => vendorSubscriptions.id),
-  stripePaymentIntentId: text("stripe_payment_intent_id"),
-  stripeInvoiceId: text("stripe_invoice_id"),
-  amountNok: integer("amount_nok").notNull(),
-  // Amount in øre (cents)
-  currency: text("currency").notNull().default("NOK"),
-  status: text("status").notNull().default("pending"),
-  // pending, succeeded, failed, refunded
-  description: text("description"),
-  billingPeriodStart: timestamp("billing_period_start"),
-  billingPeriodEnd: timestamp("billing_period_end"),
-  paidAt: timestamp("paid_at"),
-  failureReason: text("failure_reason"),
-  createdAt: timestamp("created_at").defaultNow(),
-  updatedAt: timestamp("updated_at").defaultNow()
-});
-var insertSubscriptionTierSchema = createInsertSchema(subscriptionTiers).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true
-});
-var updateSubscriptionTierSchema = z.object({
-  name: z.string().optional(),
-  displayName: z.string().optional(),
-  description: z.string().optional(),
-  priceNok: z.number().int().positive().optional(),
-  sortOrder: z.number().int().optional(),
-  isActive: z.boolean().optional(),
-  maxInspirationPhotos: z.number().int().optional(),
-  maxMonthlyVideoMinutes: z.number().int().optional(),
-  maxStorageGb: z.number().int().optional(),
-  hasAdvancedAnalytics: z.boolean().optional(),
-  hasPrioritizedSearch: z.boolean().optional(),
-  hasCustomLandingPage: z.boolean().optional(),
-  hasApiAccess: z.boolean().optional(),
-  hasVippsPaymentLink: z.boolean().optional(),
-  hasCustomBranding: z.boolean().optional(),
-  commissionPercentage: z.number().int().optional(),
-  stripeFeePercentage: z.number().int().optional()
-});
-var insertVendorSubscriptionSchema = createInsertSchema(vendorSubscriptions).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true
-});
-var insertVendorUsageSchema = createInsertSchema(vendorUsageMetrics).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true
-});
-var insertVendorPaymentSchema = createInsertSchema(vendorPayments).omit({
-  id: true,
-  createdAt: true,
-  updatedAt: true
+var users, insertUserSchema, vendorCategories, vendors, vendorSessions, insertVendorCategorySchema, insertVendorSchema, vendorRegistrationSchema, vendorFeatures, vendorInspirationCategories, vendorCategoryDetails, deliveries, deliveryItems, insertDeliverySchema, insertDeliveryItemSchema, createDeliverySchema, inspirationCategories, inspirations, inspirationMedia, insertInspirationCategorySchema, insertInspirationSchema, insertInspirationMediaSchema, createInspirationSchema, inspirationInquiries, createInquirySchema, checklistTasks, insertChecklistTaskSchema, createChecklistTaskSchema, coupleProfiles, coupleSessions, conversations, messages, adminConversations, adminMessages, sendAdminMessageSchema, insertCoupleProfileSchema, coupleLoginSchema, sendMessageSchema, reminders, insertReminderSchema, createReminderSchema, vendorProducts, insertVendorProductSchema, createVendorProductSchema, vendorOffers, vendorOfferItems, insertVendorOfferSchema, insertVendorOfferItemSchema, createOfferSchema, speeches, insertSpeechSchema, createSpeechSchema, messageReminders, appSettings, insertAppSettingSchema, updateAppSettingSchema, whatsNewItems, insertWhatsNewSchema, updateWhatsNewSchema, scheduleEvents, insertScheduleEventSchema, coordinatorInvitations, insertCoordinatorInvitationSchema, createCoordinatorInvitationSchema, guestInvitations, insertGuestInvitationSchema, createGuestInvitationSchema, coupleVendorContracts, insertCoupleVendorContractSchema, notifications, insertNotificationSchema, activityLogs, weddingGuests, insertWeddingGuestSchema, updateWeddingGuestSchema, weddingTables, insertWeddingTableSchema, tableGuestAssignments, tableSeatingInvitations, insertTableSeatingInvitationSchema, appFeedback, insertAppFeedbackSchema, vendorReviews, insertVendorReviewSchema, vendorReviewResponses, insertVendorReviewResponseSchema, faqItems, insertFaqItemSchema, updateFaqItemSchema, videoGuides, insertVideoGuideSchema, updateVideoGuideSchema, subscriptionTiers, vendorSubscriptions, vendorUsageMetrics, vendorPayments, insertSubscriptionTierSchema, updateSubscriptionTierSchema, insertVendorSubscriptionSchema, insertVendorUsageSchema, insertVendorPaymentSchema;
+var init_schema = __esm({
+  "shared/schema.ts"() {
+    "use strict";
+    users = pgTable("users", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      username: text("username").notNull().unique(),
+      password: text("password").notNull()
+    });
+    insertUserSchema = createInsertSchema(users).pick({
+      username: true,
+      password: true
+    });
+    vendorCategories = pgTable("vendor_categories", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      name: text("name").notNull(),
+      icon: text("icon").notNull(),
+      description: text("description")
+    });
+    vendors = pgTable("vendors", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      email: text("email").notNull().unique(),
+      password: text("password").notNull(),
+      businessName: text("business_name").notNull(),
+      organizationNumber: text("organization_number"),
+      categoryId: varchar("category_id").references(() => vendorCategories.id),
+      description: text("description"),
+      location: text("location"),
+      phone: text("phone"),
+      website: text("website"),
+      priceRange: text("price_range"),
+      imageUrl: text("image_url"),
+      googleReviewUrl: text("google_review_url"),
+      status: text("status").notNull().default("pending"),
+      rejectionReason: text("rejection_reason"),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    vendorSessions = pgTable("vendor_sessions", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
+      token: text("token").notNull().unique(),
+      expiresAt: timestamp("expires_at").notNull(),
+      createdAt: timestamp("created_at").defaultNow()
+    });
+    insertVendorCategorySchema = createInsertSchema(vendorCategories).pick({
+      name: true,
+      icon: true,
+      description: true
+    });
+    insertVendorSchema = createInsertSchema(vendors).omit({
+      id: true,
+      status: true,
+      rejectionReason: true,
+      createdAt: true,
+      updatedAt: true
+    });
+    vendorRegistrationSchema = z.object({
+      email: z.string().email("Ugyldig e-postadresse"),
+      password: z.string().min(8, "Passord m\xE5 v\xE6re minst 8 tegn"),
+      businessName: z.string().min(2, "Bedriftsnavn m\xE5 v\xE6re minst 2 tegn"),
+      organizationNumber: z.string().optional(),
+      categoryId: z.string().min(1, "Velg en kategori"),
+      description: z.string().optional(),
+      location: z.string().optional(),
+      phone: z.string().optional(),
+      website: z.string().optional(),
+      priceRange: z.string().optional()
+    });
+    vendorFeatures = pgTable("vendor_features", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
+      featureKey: text("feature_key").notNull(),
+      isEnabled: boolean("is_enabled").notNull().default(true),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    vendorInspirationCategories = pgTable("vendor_inspiration_categories", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
+      categoryId: varchar("category_id").notNull().references(() => inspirationCategories.id, { onDelete: "cascade" }),
+      assignedAt: timestamp("assigned_at").defaultNow()
+    });
+    vendorCategoryDetails = pgTable("vendor_category_details", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
+      venueCapacityMin: integer("venue_capacity_min"),
+      venueCapacityMax: integer("venue_capacity_max"),
+      cateringMinGuests: integer("catering_min_guests"),
+      cateringMaxGuests: integer("catering_max_guests"),
+      venueType: text("venue_type"),
+      venueLocation: text("venue_location"),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    deliveries = pgTable("deliveries", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
+      coupleName: text("couple_name").notNull(),
+      coupleEmail: text("couple_email"),
+      accessCode: text("access_code").notNull().unique(),
+      title: text("title").notNull(),
+      description: text("description"),
+      weddingDate: text("wedding_date"),
+      status: text("status").notNull().default("active"),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    deliveryItems = pgTable("delivery_items", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      deliveryId: varchar("delivery_id").notNull().references(() => deliveries.id, { onDelete: "cascade" }),
+      type: text("type").notNull(),
+      label: text("label").notNull(),
+      url: text("url").notNull(),
+      description: text("description"),
+      sortOrder: integer("sort_order").default(0),
+      createdAt: timestamp("created_at").defaultNow()
+    });
+    insertDeliverySchema = createInsertSchema(deliveries).omit({
+      id: true,
+      accessCode: true,
+      status: true,
+      createdAt: true,
+      updatedAt: true
+    });
+    insertDeliveryItemSchema = createInsertSchema(deliveryItems).omit({
+      id: true,
+      createdAt: true
+    });
+    createDeliverySchema = z.object({
+      coupleName: z.string().min(2, "Navn m\xE5 v\xE6re minst 2 tegn"),
+      coupleEmail: z.string().email("Ugyldig e-postadresse").optional().or(z.literal("")),
+      title: z.string().min(2, "Tittel m\xE5 v\xE6re minst 2 tegn"),
+      description: z.string().optional(),
+      weddingDate: z.string().optional(),
+      items: z.array(z.object({
+        type: z.enum(["gallery", "video", "website", "download", "other"]),
+        label: z.string().min(1, "Etikett er p\xE5krevd"),
+        url: z.string().url("Ugyldig URL"),
+        description: z.string().optional()
+      })).min(1, "Legg til minst \xE9n leveranse")
+    });
+    inspirationCategories = pgTable("inspiration_categories", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      name: text("name").notNull(),
+      icon: text("icon").notNull(),
+      sortOrder: integer("sort_order").default(0)
+    });
+    inspirations = pgTable("inspirations", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
+      categoryId: varchar("category_id").references(() => inspirationCategories.id, { onDelete: "set null" }),
+      title: text("title").notNull(),
+      description: text("description"),
+      coverImageUrl: text("cover_image_url"),
+      priceSummary: text("price_summary"),
+      priceMin: integer("price_min"),
+      priceMax: integer("price_max"),
+      currency: text("currency").default("NOK"),
+      websiteUrl: text("website_url"),
+      inquiryEmail: text("inquiry_email"),
+      inquiryPhone: text("inquiry_phone"),
+      ctaLabel: text("cta_label"),
+      ctaUrl: text("cta_url"),
+      allowInquiryForm: boolean("allow_inquiry_form").default(false),
+      status: text("status").notNull().default("pending"),
+      rejectionReason: text("rejection_reason"),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    inspirationMedia = pgTable("inspiration_media", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      inspirationId: varchar("inspiration_id").notNull().references(() => inspirations.id, { onDelete: "cascade" }),
+      type: text("type").notNull(),
+      url: text("url").notNull(),
+      caption: text("caption"),
+      sortOrder: integer("sort_order").default(0),
+      createdAt: timestamp("created_at").defaultNow()
+    });
+    insertInspirationCategorySchema = createInsertSchema(inspirationCategories).omit({
+      id: true
+    });
+    insertInspirationSchema = createInsertSchema(inspirations).omit({
+      id: true,
+      status: true,
+      rejectionReason: true,
+      createdAt: true,
+      updatedAt: true
+    });
+    insertInspirationMediaSchema = createInsertSchema(inspirationMedia).omit({
+      id: true,
+      createdAt: true
+    });
+    createInspirationSchema = z.object({
+      categoryId: z.string().min(1, "Velg en kategori"),
+      title: z.string().min(2, "Tittel m\xE5 v\xE6re minst 2 tegn"),
+      description: z.string().optional(),
+      coverImageUrl: z.string().url("Ugyldig URL").optional().or(z.literal("")),
+      priceSummary: z.string().optional(),
+      priceMin: z.number().min(0).optional(),
+      priceMax: z.number().min(0).optional(),
+      currency: z.string().default("NOK"),
+      websiteUrl: z.string().url("Ugyldig URL").optional().or(z.literal("")),
+      inquiryEmail: z.string().email("Ugyldig e-post").optional().or(z.literal("")),
+      inquiryPhone: z.string().optional(),
+      ctaLabel: z.string().optional(),
+      ctaUrl: z.string().url("Ugyldig URL").optional().or(z.literal("")),
+      allowInquiryForm: z.boolean().default(false),
+      media: z.array(z.object({
+        type: z.enum(["image", "video"]),
+        url: z.string().url("Ugyldig URL"),
+        caption: z.string().optional()
+      })).min(1, "Legg til minst ett bilde eller video")
+    });
+    inspirationInquiries = pgTable("inspiration_inquiries", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      inspirationId: varchar("inspiration_id").notNull().references(() => inspirations.id, { onDelete: "cascade" }),
+      vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
+      name: text("name").notNull(),
+      email: text("email").notNull(),
+      phone: text("phone"),
+      message: text("message").notNull(),
+      weddingDate: text("wedding_date"),
+      status: text("status").notNull().default("new"),
+      createdAt: timestamp("created_at").defaultNow()
+    });
+    createInquirySchema = z.object({
+      inspirationId: z.string(),
+      name: z.string().min(2, "Navn m\xE5 v\xE6re minst 2 tegn"),
+      email: z.string().email("Ugyldig e-postadresse"),
+      phone: z.string().optional(),
+      message: z.string().min(10, "Melding m\xE5 v\xE6re minst 10 tegn"),
+      weddingDate: z.string().optional()
+    });
+    checklistTasks = pgTable("checklist_tasks", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      title: text("title").notNull(),
+      monthsBefore: integer("months_before").notNull().default(12),
+      category: text("category").notNull().default("planning"),
+      // planning, vendors, attire, logistics, final
+      completed: boolean("completed").notNull().default(false),
+      completedAt: timestamp("completed_at"),
+      completedBy: varchar("completed_by"),
+      // coupleId who completed it
+      assignedTo: varchar("assigned_to"),
+      // Optional: assign to partner
+      notes: text("notes"),
+      linkedReminderId: varchar("linked_reminder_id").references(() => reminders.id),
+      isDefault: boolean("is_default").notNull().default(false),
+      // True for system-generated tasks
+      sortOrder: integer("sort_order").notNull().default(0),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    insertChecklistTaskSchema = createInsertSchema(checklistTasks).omit({
+      id: true,
+      completedAt: true,
+      completedBy: true,
+      createdAt: true,
+      updatedAt: true
+    });
+    createChecklistTaskSchema = z.object({
+      title: z.string().min(1, "Tittel er p\xE5krevd"),
+      monthsBefore: z.number().min(0).max(24).default(12),
+      category: z.enum(["planning", "vendors", "attire", "logistics", "final"]).default("planning"),
+      notes: z.string().optional(),
+      assignedTo: z.string().optional()
+    });
+    coupleProfiles = pgTable("couple_profiles", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      email: text("email").notNull().unique(),
+      displayName: text("display_name").notNull(),
+      password: text("password").notNull(),
+      partnerEmail: text("partner_email"),
+      weddingDate: text("wedding_date"),
+      lastActiveAt: timestamp("last_active_at").defaultNow(),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    coupleSessions = pgTable("couple_sessions", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      token: text("token").notNull().unique(),
+      expiresAt: timestamp("expires_at").notNull(),
+      createdAt: timestamp("created_at").defaultNow()
+    });
+    conversations = pgTable("conversations", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
+      inspirationId: varchar("inspiration_id").references(() => inspirations.id, { onDelete: "set null" }),
+      inquiryId: varchar("inquiry_id").references(() => inspirationInquiries.id, { onDelete: "set null" }),
+      status: text("status").notNull().default("active"),
+      lastMessageAt: timestamp("last_message_at").defaultNow(),
+      coupleUnreadCount: integer("couple_unread_count").default(0),
+      vendorUnreadCount: integer("vendor_unread_count").default(0),
+      coupleTypingAt: timestamp("couple_typing_at"),
+      vendorTypingAt: timestamp("vendor_typing_at"),
+      createdAt: timestamp("created_at").defaultNow(),
+      deletedByCouple: boolean("deleted_by_couple").default(false),
+      deletedByVendor: boolean("deleted_by_vendor").default(false),
+      coupleDeletedAt: timestamp("couple_deleted_at"),
+      vendorDeletedAt: timestamp("vendor_deleted_at")
+    });
+    messages = pgTable("messages", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      conversationId: varchar("conversation_id").notNull().references(() => conversations.id, { onDelete: "cascade" }),
+      senderType: text("sender_type").notNull(),
+      // 'couple' or 'vendor'
+      senderId: varchar("sender_id").notNull(),
+      body: text("body").notNull(),
+      createdAt: timestamp("created_at").defaultNow(),
+      readAt: timestamp("read_at"),
+      editedAt: timestamp("edited_at"),
+      attachmentUrl: text("attachment_url"),
+      attachmentType: text("attachment_type"),
+      deletedByCouple: boolean("deleted_by_couple").default(false),
+      deletedByVendor: boolean("deleted_by_vendor").default(false),
+      coupleDeletedAt: timestamp("couple_deleted_at"),
+      vendorDeletedAt: timestamp("vendor_deleted_at")
+    });
+    adminConversations = pgTable("admin_conversations", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
+      status: text("status").notNull().default("active"),
+      lastMessageAt: timestamp("last_message_at").defaultNow(),
+      vendorUnreadCount: integer("vendor_unread_count").default(0),
+      adminUnreadCount: integer("admin_unread_count").default(0),
+      createdAt: timestamp("created_at").defaultNow()
+    });
+    adminMessages = pgTable("admin_messages", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      conversationId: varchar("conversation_id").notNull().references(() => adminConversations.id, { onDelete: "cascade" }),
+      senderType: text("sender_type").notNull(),
+      // 'vendor' or 'admin'
+      senderId: varchar("sender_id").notNull(),
+      body: text("body").notNull(),
+      createdAt: timestamp("created_at").defaultNow(),
+      readAt: timestamp("read_at"),
+      editedAt: timestamp("edited_at"),
+      attachmentUrl: text("attachment_url"),
+      attachmentType: text("attachment_type"),
+      videoGuideId: varchar("video_guide_id").references(() => videoGuides.id, { onDelete: "set null" })
+    });
+    sendAdminMessageSchema = z.object({
+      conversationId: z.string().optional(),
+      body: z.string().min(1, "Melding er p\xE5krevd"),
+      attachmentUrl: z.string().optional(),
+      attachmentType: z.string().optional(),
+      videoGuideId: z.string().optional()
+    });
+    insertCoupleProfileSchema = createInsertSchema(coupleProfiles).omit({
+      id: true,
+      createdAt: true,
+      updatedAt: true
+    });
+    coupleLoginSchema = z.object({
+      email: z.string().email("Ugyldig e-postadresse"),
+      displayName: z.string().min(2, "Navn m\xE5 v\xE6re minst 2 tegn"),
+      password: z.string().min(8, "Passord m\xE5 v\xE6re minst 8 tegn")
+    });
+    sendMessageSchema = z.object({
+      conversationId: z.string().optional(),
+      vendorId: z.string().optional(),
+      inspirationId: z.string().optional(),
+      body: z.string().optional(),
+      attachmentUrl: z.string().optional(),
+      attachmentType: z.string().optional()
+    }).refine((data) => data.body || data.attachmentUrl, "Melding eller vedlegg er p\xE5krevd");
+    reminders = pgTable("reminders", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      title: text("title").notNull(),
+      description: text("description"),
+      reminderDate: timestamp("reminder_date").notNull(),
+      category: text("category").notNull().default("general"),
+      isCompleted: boolean("is_completed").default(false),
+      notificationId: text("notification_id"),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    insertReminderSchema = createInsertSchema(reminders).omit({
+      id: true,
+      isCompleted: true,
+      notificationId: true,
+      createdAt: true,
+      updatedAt: true
+    });
+    createReminderSchema = z.object({
+      title: z.string().min(1, "Tittel er p\xE5krevd"),
+      description: z.string().optional(),
+      reminderDate: z.string(),
+      category: z.enum(["general", "vendor", "budget", "guest", "planning"]).default("general")
+    });
+    vendorProducts = pgTable("vendor_products", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
+      title: text("title").notNull(),
+      description: text("description"),
+      unitPrice: integer("unit_price").notNull(),
+      // Price in øre (NOK cents)
+      unitType: text("unit_type").notNull().default("stk"),
+      // stk, time, dag, pakke, etc.
+      leadTimeDays: integer("lead_time_days"),
+      minQuantity: integer("min_quantity").default(1),
+      categoryTag: text("category_tag"),
+      // Internal categorization
+      imageUrl: text("image_url"),
+      isArchived: boolean("is_archived").default(false),
+      sortOrder: integer("sort_order").default(0),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    insertVendorProductSchema = createInsertSchema(vendorProducts).omit({
+      id: true,
+      isArchived: true,
+      createdAt: true,
+      updatedAt: true
+    });
+    createVendorProductSchema = z.object({
+      title: z.string().min(2, "Tittel m\xE5 v\xE6re minst 2 tegn"),
+      description: z.string().optional(),
+      unitPrice: z.number().min(0, "Pris m\xE5 v\xE6re 0 eller h\xF8yere"),
+      unitType: z.string().default("stk"),
+      leadTimeDays: z.number().min(0).optional(),
+      minQuantity: z.number().min(1).default(1),
+      categoryTag: z.string().optional(),
+      imageUrl: z.string().url("Ugyldig URL").optional().or(z.literal("")),
+      sortOrder: z.number().default(0)
+    });
+    vendorOffers = pgTable("vendor_offers", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      conversationId: varchar("conversation_id").references(() => conversations.id, { onDelete: "set null" }),
+      title: text("title").notNull(),
+      message: text("message"),
+      status: text("status").notNull().default("pending"),
+      // pending, accepted, declined, expired
+      totalAmount: integer("total_amount").notNull(),
+      // In øre
+      currency: text("currency").default("NOK"),
+      validUntil: timestamp("valid_until"),
+      acceptedAt: timestamp("accepted_at"),
+      declinedAt: timestamp("declined_at"),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    vendorOfferItems = pgTable("vendor_offer_items", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      offerId: varchar("offer_id").notNull().references(() => vendorOffers.id, { onDelete: "cascade" }),
+      productId: varchar("product_id").references(() => vendorProducts.id, { onDelete: "set null" }),
+      // Optional - can be custom line
+      title: text("title").notNull(),
+      description: text("description"),
+      quantity: integer("quantity").notNull().default(1),
+      unitPrice: integer("unit_price").notNull(),
+      // In øre
+      lineTotal: integer("line_total").notNull(),
+      // quantity * unitPrice
+      sortOrder: integer("sort_order").default(0),
+      createdAt: timestamp("created_at").defaultNow()
+    });
+    insertVendorOfferSchema = createInsertSchema(vendorOffers).omit({
+      id: true,
+      status: true,
+      acceptedAt: true,
+      declinedAt: true,
+      createdAt: true,
+      updatedAt: true
+    });
+    insertVendorOfferItemSchema = createInsertSchema(vendorOfferItems).omit({
+      id: true,
+      createdAt: true
+    });
+    createOfferSchema = z.object({
+      coupleId: z.string().min(1, "Velg en mottaker"),
+      conversationId: z.string().optional(),
+      title: z.string().min(2, "Tittel m\xE5 v\xE6re minst 2 tegn"),
+      message: z.string().optional(),
+      validUntil: z.string().optional(),
+      items: z.array(z.object({
+        productId: z.string().optional(),
+        title: z.string().min(1, "Tittel er p\xE5krevd"),
+        description: z.string().optional(),
+        quantity: z.number().min(1).default(1),
+        unitPrice: z.number().min(0, "Pris m\xE5 v\xE6re 0 eller h\xF8yere")
+      })).min(1, "Legg til minst \xE9n linje")
+    });
+    speeches = pgTable("speeches", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      speakerName: text("speaker_name").notNull(),
+      role: text("role"),
+      // brudgom, brud, forlovere, foreldre, etc.
+      durationMinutes: integer("duration_minutes").notNull().default(5),
+      sortOrder: integer("sort_order").notNull().default(0),
+      notes: text("notes"),
+      scheduledTime: text("scheduled_time"),
+      // Optional specific time slot
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    insertSpeechSchema = createInsertSchema(speeches).omit({
+      id: true,
+      createdAt: true,
+      updatedAt: true
+    });
+    createSpeechSchema = z.object({
+      speakerName: z.string().min(1, "Navn er p\xE5krevd"),
+      role: z.string().optional(),
+      durationMinutes: z.number().min(1).max(60).default(5),
+      sortOrder: z.number().default(0),
+      notes: z.string().optional(),
+      scheduledTime: z.string().optional()
+    });
+    messageReminders = pgTable("message_reminders", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      conversationId: varchar("conversation_id").notNull().references(() => conversations.id, { onDelete: "cascade" }),
+      vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      reminderType: text("reminder_type").notNull().default("gentle"),
+      // gentle, deadline, final
+      scheduledFor: timestamp("scheduled_for").notNull(),
+      sentAt: timestamp("sent_at"),
+      status: text("status").notNull().default("pending"),
+      // pending, sent, cancelled
+      createdAt: timestamp("created_at").defaultNow()
+    });
+    appSettings = pgTable("app_settings", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      key: text("key").notNull().unique(),
+      value: text("value").notNull(),
+      category: text("category").notNull().default("general"),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    insertAppSettingSchema = createInsertSchema(appSettings).omit({
+      id: true,
+      updatedAt: true
+    });
+    updateAppSettingSchema = z.object({
+      value: z.string().min(1, "Verdi er p\xE5krevd")
+    });
+    whatsNewItems = pgTable("whats_new_items", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      category: text("category").notNull().default("vendor"),
+      // vendor or couple
+      title: text("title").notNull(),
+      description: text("description").notNull(),
+      icon: text("icon").notNull().default("star"),
+      minAppVersion: text("min_app_version").notNull(),
+      isActive: boolean("is_active").notNull().default(true),
+      sortOrder: integer("sort_order").notNull().default(0),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    insertWhatsNewSchema = createInsertSchema(whatsNewItems).omit({
+      id: true,
+      createdAt: true,
+      updatedAt: true
+    }).extend({
+      category: z.enum(["vendor", "couple"]).default("vendor")
+    });
+    updateWhatsNewSchema = z.object({
+      category: z.enum(["vendor", "couple"]).default("vendor"),
+      title: z.string().min(1, "Tittel er p\xE5krevd"),
+      description: z.string().min(1, "Beskrivelse er p\xE5krevd"),
+      icon: z.string().default("star"),
+      minAppVersion: z.string().min(1, "Minimumversjon er p\xE5krevd"),
+      isActive: z.boolean(),
+      sortOrder: z.number().int()
+    });
+    scheduleEvents = pgTable("schedule_events", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      time: text("time").notNull(),
+      // HH:mm format
+      title: text("title").notNull(),
+      icon: text("icon").default("star"),
+      // heart, camera, music, users, coffee, sun, moon, star
+      notes: text("notes"),
+      sortOrder: integer("sort_order").default(0),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    insertScheduleEventSchema = createInsertSchema(scheduleEvents).omit({
+      id: true,
+      createdAt: true,
+      updatedAt: true
+    });
+    coordinatorInvitations = pgTable("coordinator_invitations", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      email: text("email"),
+      name: text("name").notNull(),
+      // Display name like "Toastmaster Ole"
+      roleLabel: text("role_label").notNull().default("Toastmaster"),
+      // Toastmaster, Koordinator, etc.
+      accessToken: text("access_token").notNull().unique(),
+      accessCode: text("access_code"),
+      // Optional 6-digit code for easy access
+      canViewSpeeches: boolean("can_view_speeches").default(true),
+      canViewSchedule: boolean("can_view_schedule").default(true),
+      canEditSpeeches: boolean("can_edit_speeches").default(false),
+      // Edit permission for speeches
+      canEditSchedule: boolean("can_edit_schedule").default(false),
+      // Edit permission for schedule
+      status: text("status").notNull().default("active"),
+      // active, revoked, expired
+      expiresAt: timestamp("expires_at"),
+      lastAccessedAt: timestamp("last_accessed_at"),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    insertCoordinatorInvitationSchema = createInsertSchema(coordinatorInvitations).omit({
+      id: true,
+      accessToken: true,
+      accessCode: true,
+      status: true,
+      lastAccessedAt: true,
+      createdAt: true,
+      updatedAt: true
+    });
+    createCoordinatorInvitationSchema = z.object({
+      name: z.string().min(1, "Navn er p\xE5krevd"),
+      email: z.string().email().optional().or(z.literal("")),
+      roleLabel: z.string().default("Toastmaster"),
+      canViewSpeeches: z.boolean().default(true),
+      canViewSchedule: z.boolean().default(true),
+      canEditSpeeches: z.boolean().default(false),
+      canEditSchedule: z.boolean().default(false),
+      expiresAt: z.string().optional()
+    });
+    guestInvitations = pgTable("guest_invitations", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      name: text("name").notNull(),
+      email: text("email"),
+      phone: text("phone"),
+      template: text("template").notNull().default("classic"),
+      // classic, floral, modern
+      message: text("message"),
+      inviteToken: text("invite_token").notNull().unique(),
+      status: text("status").notNull().default("pending"),
+      // pending, sent, responded, declined
+      responseAttending: boolean("response_attending"),
+      responseDietary: text("response_dietary"),
+      responseAllergies: text("response_allergies"),
+      responseNotes: text("response_notes"),
+      responsePlusOne: text("response_plus_one"),
+      respondedAt: timestamp("responded_at"),
+      expiresAt: timestamp("expires_at"),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    insertGuestInvitationSchema = createInsertSchema(guestInvitations).omit({
+      id: true,
+      inviteToken: true,
+      status: true,
+      responseAttending: true,
+      responseDietary: true,
+      responseAllergies: true,
+      responseNotes: true,
+      responsePlusOne: true,
+      respondedAt: true,
+      createdAt: true,
+      updatedAt: true
+    });
+    createGuestInvitationSchema = z.object({
+      name: z.string().min(1, "Navn er p\xE5krevd"),
+      email: z.string().email().optional().or(z.literal("")),
+      phone: z.string().optional().or(z.literal("")),
+      template: z.enum(["classic", "floral", "modern"]).default("classic"),
+      message: z.string().optional().or(z.literal("")),
+      expiresAt: z.string().optional()
+    });
+    coupleVendorContracts = pgTable("couple_vendor_contracts", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
+      offerId: varchar("offer_id").references(() => vendorOffers.id, { onDelete: "set null" }),
+      // Link to accepted offer
+      status: text("status").notNull().default("active"),
+      // active, completed, cancelled
+      vendorRole: text("vendor_role"),
+      // "photographer", "videographer", "caterer", etc.
+      notifyOnScheduleChanges: boolean("notify_on_schedule_changes").default(true),
+      notifyOnSpeechChanges: boolean("notify_on_speech_changes").default(true),
+      canViewSchedule: boolean("can_view_schedule").default(true),
+      canViewSpeeches: boolean("can_view_speeches").default(false),
+      canViewTableSeating: boolean("can_view_table_seating").default(false),
+      notifyOnTableChanges: boolean("notify_on_table_changes").default(false),
+      completedAt: timestamp("completed_at"),
+      reviewReminderSentAt: timestamp("review_reminder_sent_at"),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    insertCoupleVendorContractSchema = createInsertSchema(coupleVendorContracts).omit({
+      id: true,
+      status: true,
+      createdAt: true,
+      updatedAt: true
+    });
+    notifications = pgTable("notifications", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      recipientType: text("recipient_type").notNull(),
+      // "couple", "vendor", "coordinator"
+      recipientId: varchar("recipient_id").notNull(),
+      // coupleId, vendorId, or coordinatorInvitationId
+      type: text("type").notNull(),
+      // "schedule_changed", "speech_changed", "vendor_update", "offer_accepted", etc.
+      title: text("title").notNull(),
+      body: text("body"),
+      payload: text("payload"),
+      // JSON string with additional data
+      relatedEntityType: text("related_entity_type"),
+      // "schedule_event", "speech", "offer", etc.
+      relatedEntityId: varchar("related_entity_id"),
+      actorType: text("actor_type"),
+      // "couple", "vendor", "coordinator"
+      actorId: varchar("actor_id"),
+      actorName: text("actor_name"),
+      readAt: timestamp("read_at"),
+      sentVia: text("sent_via").default("in_app"),
+      // "in_app", "push", "email"
+      createdAt: timestamp("created_at").defaultNow()
+    });
+    insertNotificationSchema = createInsertSchema(notifications).omit({
+      id: true,
+      readAt: true,
+      createdAt: true
+    });
+    activityLogs = pgTable("activity_logs", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      actorType: text("actor_type").notNull(),
+      // "couple", "coordinator"
+      actorId: varchar("actor_id").notNull(),
+      // coupleId or coordinatorInvitationId
+      actorName: text("actor_name"),
+      action: text("action").notNull(),
+      // "created", "updated", "deleted"
+      entityType: text("entity_type").notNull(),
+      // "schedule_event", "speech"
+      entityId: varchar("entity_id").notNull(),
+      previousValue: text("previous_value"),
+      // JSON snapshot
+      newValue: text("new_value"),
+      // JSON snapshot
+      createdAt: timestamp("created_at").defaultNow()
+    });
+    weddingGuests = pgTable("wedding_guests", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      name: text("name").notNull(),
+      email: text("email"),
+      phone: text("phone"),
+      category: text("category"),
+      // "family", "friends", "colleagues", "reserved", "other"
+      status: text("status").notNull().default("pending"),
+      // "pending", "confirmed", "declined"
+      dietaryRequirements: text("dietary_requirements"),
+      allergies: text("allergies"),
+      notes: text("notes"),
+      plusOne: boolean("plus_one").notNull().default(false),
+      plusOneName: text("plus_one_name"),
+      tableNumber: integer("table_number"),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    insertWeddingGuestSchema = createInsertSchema(weddingGuests).omit({
+      id: true,
+      coupleId: true,
+      createdAt: true,
+      updatedAt: true
+    });
+    updateWeddingGuestSchema = insertWeddingGuestSchema.partial();
+    weddingTables = pgTable("wedding_tables", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      tableNumber: integer("table_number").notNull(),
+      name: text("name").notNull(),
+      // "Bord 1", "Hovedbord", etc.
+      category: text("category"),
+      // "bride_family", "groom_family", "friends", "colleagues", "reserved", "main"
+      label: text("label"),
+      // Custom label like "Brudens familie", "Brudgommens venner", etc.
+      seats: integer("seats").notNull().default(8),
+      isReserved: boolean("is_reserved").notNull().default(false),
+      notes: text("notes"),
+      // Private notes for couple
+      vendorNotes: text("vendor_notes"),
+      // Notes visible to venue/decorators
+      sortOrder: integer("sort_order").notNull().default(0),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    insertWeddingTableSchema = createInsertSchema(weddingTables).omit({
+      id: true,
+      createdAt: true,
+      updatedAt: true
+    });
+    tableGuestAssignments = pgTable("table_guest_assignments", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      tableId: varchar("table_id").notNull().references(() => weddingTables.id, { onDelete: "cascade" }),
+      guestId: varchar("guest_id").notNull().references(() => weddingGuests.id, { onDelete: "cascade" }),
+      seatNumber: integer("seat_number"),
+      createdAt: timestamp("created_at").defaultNow()
+    });
+    tableSeatingInvitations = pgTable("table_seating_invitations", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      recipientName: text("recipient_name").notNull(),
+      // "Lokalet AS", "Dekoratør Hansen"
+      recipientType: text("recipient_type").notNull(),
+      // "venue", "decorator", "planner", "other"
+      email: text("email"),
+      phone: text("phone"),
+      accessToken: text("access_token").notNull().unique(),
+      accessCode: text("access_code").notNull(),
+      // 6-digit code for easy entry
+      canSeeGuestNames: boolean("can_see_guest_names").notNull().default(true),
+      canSeeNotes: boolean("can_see_notes").notNull().default(false),
+      // Whether they can see vendor_notes
+      expiresAt: timestamp("expires_at"),
+      status: text("status").notNull().default("active"),
+      // "active", "revoked"
+      lastAccessedAt: timestamp("last_accessed_at"),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    insertTableSeatingInvitationSchema = createInsertSchema(tableSeatingInvitations).omit({
+      id: true,
+      accessToken: true,
+      accessCode: true,
+      status: true,
+      lastAccessedAt: true,
+      createdAt: true,
+      updatedAt: true
+    });
+    appFeedback = pgTable("app_feedback", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      submitterType: text("submitter_type").notNull(),
+      // "couple", "vendor"
+      submitterId: varchar("submitter_id").notNull(),
+      // coupleId or vendorId
+      category: text("category").notNull(),
+      // "bug", "feature_request", "general", "complaint"
+      subject: text("subject").notNull(),
+      message: text("message").notNull(),
+      status: text("status").notNull().default("pending"),
+      // "pending", "reviewed", "resolved", "closed"
+      adminNotes: text("admin_notes"),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    insertAppFeedbackSchema = createInsertSchema(appFeedback).omit({
+      id: true,
+      status: true,
+      adminNotes: true,
+      createdAt: true,
+      updatedAt: true
+    });
+    vendorReviews = pgTable("vendor_reviews", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      contractId: varchar("contract_id").notNull().references(() => coupleVendorContracts.id, { onDelete: "cascade" }),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
+      rating: integer("rating").notNull(),
+      // 1-5 stars
+      title: text("title"),
+      body: text("body"),
+      isAnonymous: boolean("is_anonymous").notNull().default(false),
+      isApproved: boolean("is_approved").notNull().default(false),
+      // Admin moderation
+      approvedAt: timestamp("approved_at"),
+      approvedBy: varchar("approved_by"),
+      // Admin ID
+      editableUntil: timestamp("editable_until"),
+      // Can edit within 14 days
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    insertVendorReviewSchema = createInsertSchema(vendorReviews).omit({
+      id: true,
+      isApproved: true,
+      approvedAt: true,
+      approvedBy: true,
+      editableUntil: true,
+      createdAt: true,
+      updatedAt: true
+    });
+    vendorReviewResponses = pgTable("vendor_review_responses", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      reviewId: varchar("review_id").notNull().references(() => vendorReviews.id, { onDelete: "cascade" }),
+      vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
+      body: text("body").notNull(),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    insertVendorReviewResponseSchema = createInsertSchema(vendorReviewResponses).omit({
+      id: true,
+      createdAt: true,
+      updatedAt: true
+    });
+    faqItems = pgTable("faq_items", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      category: text("category").notNull(),
+      // 'couple' or 'vendor'
+      icon: text("icon").notNull(),
+      // Feather icon name
+      question: text("question").notNull(),
+      answer: text("answer").notNull(),
+      sortOrder: integer("sort_order").notNull().default(0),
+      isActive: boolean("is_active").notNull().default(true),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    insertFaqItemSchema = createInsertSchema(faqItems).omit({
+      id: true,
+      createdAt: true,
+      updatedAt: true
+    });
+    updateFaqItemSchema = z.object({
+      category: z.enum(["couple", "vendor"]).optional(),
+      icon: z.string().optional(),
+      question: z.string().optional(),
+      answer: z.string().optional(),
+      sortOrder: z.number().optional(),
+      isActive: z.boolean().optional()
+    });
+    videoGuides = pgTable("video_guides", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      title: text("title").notNull(),
+      description: text("description").notNull(),
+      videoUrl: text("video_url").notNull(),
+      thumbnail: text("thumbnail"),
+      duration: text("duration"),
+      // HH:mm:ss format
+      category: text("category").notNull().default("vendor"),
+      // vendor or couple
+      icon: text("icon").notNull().default("video"),
+      sortOrder: integer("sort_order").notNull().default(0),
+      isActive: boolean("is_active").notNull().default(true),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    insertVideoGuideSchema = createInsertSchema(videoGuides).omit({
+      id: true,
+      createdAt: true,
+      updatedAt: true
+    }).extend({
+      category: z.enum(["vendor", "couple"]).default("vendor")
+    });
+    updateVideoGuideSchema = z.object({
+      title: z.string().min(1, "Tittel er p\xE5krevd"),
+      description: z.string().min(1, "Beskrivelse er p\xE5krevd"),
+      videoUrl: z.string().url("Gyldig video-URL er p\xE5krevd"),
+      thumbnail: z.string().optional(),
+      duration: z.string().optional(),
+      category: z.enum(["vendor", "couple"]).default("vendor"),
+      icon: z.string().default("video"),
+      sortOrder: z.number().int(),
+      isActive: z.boolean()
+    });
+    subscriptionTiers = pgTable("subscription_tiers", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      name: text("name").notNull(),
+      // "Starter", "Professional", "Enterprise"
+      displayName: text("display_name").notNull(),
+      description: text("description"),
+      priceNok: integer("price_nok").notNull(),
+      // Price in NOK per month
+      sortOrder: integer("sort_order").notNull().default(0),
+      isActive: boolean("is_active").notNull().default(true),
+      // Feature limits per tier
+      maxInspirationPhotos: integer("max_inspiration_photos").notNull().default(10),
+      // Gallery/showcase photos
+      maxProducts: integer("max_products").notNull().default(5),
+      // Product catalog items
+      maxMonthlyOffers: integer("max_monthly_offers").notNull().default(10),
+      // Offers to couples per month
+      maxMonthlyDeliveries: integer("max_monthly_deliveries").notNull().default(5),
+      // Deliveries per month
+      maxStorageGb: integer("max_storage_gb").notNull().default(5),
+      // File storage limit
+      // Features
+      canSendMessages: boolean("can_send_messages").notNull().default(true),
+      // Chat with couples
+      canReceiveInquiries: boolean("can_receive_inquiries").notNull().default(true),
+      // Get contacted by couples
+      canCreateOffers: boolean("can_create_offers").notNull().default(true),
+      // Send quotes/offers
+      canCreateDeliveries: boolean("can_create_deliveries").notNull().default(true),
+      // Upload deliveries
+      canShowcaseWork: boolean("can_showcase_work").notNull().default(true),
+      // Post inspirations
+      hasAdvancedAnalytics: boolean("has_advanced_analytics").notNull().default(false),
+      hasPrioritizedSearch: boolean("has_prioritized_search").notNull().default(false),
+      canHighlightProfile: boolean("can_highlight_profile").notNull().default(false),
+      // Featured placement
+      canUseVideoGallery: boolean("can_use_video_gallery").notNull().default(false),
+      // Video uploads
+      hasReviewBadge: boolean("has_review_badge").notNull().default(false),
+      // Premium badge
+      hasMultipleCategories: boolean("has_multiple_categories").notNull().default(false),
+      // List in multiple categories
+      // Pricing adjustments
+      commissionPercentage: integer("commission_percentage").notNull().default(3),
+      // 3% = 300 basis points
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    vendorSubscriptions = pgTable("vendor_subscriptions", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
+      tierId: varchar("tier_id").notNull().references(() => subscriptionTiers.id),
+      // Stripe subscription info
+      stripeSubscriptionId: text("stripe_subscription_id"),
+      stripeCustomerId: text("stripe_customer_id"),
+      // Status
+      status: text("status").notNull().default("active"),
+      // active, cancelled, past_due, paused
+      currentPeriodStart: timestamp("current_period_start").notNull(),
+      currentPeriodEnd: timestamp("current_period_end").notNull(),
+      cancelledAt: timestamp("cancelled_at"),
+      pausedUntil: timestamp("paused_until"),
+      // Auto-renewal
+      autoRenew: boolean("auto_renew").notNull().default(true),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    vendorUsageMetrics = pgTable("vendor_usage_metrics", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
+      year: integer("year").notNull(),
+      month: integer("month").notNull(),
+      // 1-12
+      // Usage counts
+      inspirationPhotosUploaded: integer("inspiration_photos_uploaded").notNull().default(0),
+      videoMinutesUsed: integer("video_minutes_used").notNull().default(0),
+      storageUsedGb: integer("storage_used_gb").notNull().default(0),
+      profileViewsCount: integer("profile_views_count").notNull().default(0),
+      messagesSent: integer("messages_sent").notNull().default(0),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    vendorPayments = pgTable("vendor_payments", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
+      subscriptionId: varchar("subscription_id").references(() => vendorSubscriptions.id),
+      stripePaymentIntentId: text("stripe_payment_intent_id"),
+      stripeInvoiceId: text("stripe_invoice_id"),
+      amountNok: integer("amount_nok").notNull(),
+      // Amount in øre (cents)
+      currency: text("currency").notNull().default("NOK"),
+      status: text("status").notNull().default("pending"),
+      // pending, succeeded, failed, refunded
+      description: text("description"),
+      billingPeriodStart: timestamp("billing_period_start"),
+      billingPeriodEnd: timestamp("billing_period_end"),
+      paidAt: timestamp("paid_at"),
+      failureReason: text("failure_reason"),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    insertSubscriptionTierSchema = createInsertSchema(subscriptionTiers).omit({
+      id: true,
+      createdAt: true,
+      updatedAt: true
+    });
+    updateSubscriptionTierSchema = z.object({
+      name: z.string().optional(),
+      displayName: z.string().optional(),
+      description: z.string().optional(),
+      priceNok: z.number().int().positive().optional(),
+      sortOrder: z.number().int().optional(),
+      isActive: z.boolean().optional(),
+      maxInspirationPhotos: z.number().int().optional(),
+      maxMonthlyVideoMinutes: z.number().int().optional(),
+      maxStorageGb: z.number().int().optional(),
+      hasAdvancedAnalytics: z.boolean().optional(),
+      hasPrioritizedSearch: z.boolean().optional(),
+      hasCustomLandingPage: z.boolean().optional(),
+      hasApiAccess: z.boolean().optional(),
+      hasVippsPaymentLink: z.boolean().optional(),
+      hasCustomBranding: z.boolean().optional(),
+      commissionPercentage: z.number().int().optional(),
+      stripeFeePercentage: z.number().int().optional()
+    });
+    insertVendorSubscriptionSchema = createInsertSchema(vendorSubscriptions).omit({
+      id: true,
+      createdAt: true,
+      updatedAt: true
+    });
+    insertVendorUsageSchema = createInsertSchema(vendorUsageMetrics).omit({
+      id: true,
+      createdAt: true,
+      updatedAt: true
+    });
+    insertVendorPaymentSchema = createInsertSchema(vendorPayments).omit({
+      id: true,
+      createdAt: true,
+      updatedAt: true
+    });
+  }
 });
 
+// server/index.ts
+import "dotenv/config";
+import express from "express";
+
+// server/routes.ts
+import { createServer } from "node:http";
+import { WebSocketServer } from "ws";
+import crypto2 from "node:crypto";
+
 // server/db.ts
+init_schema();
+import "dotenv/config";
+import { config } from "dotenv";
+import { drizzle } from "drizzle-orm/node-postgres";
+import pg from "pg";
 config({ path: ".env.local", override: true });
 var pool = new pg.Pool({
   connectionString: process.env.DATABASE_URL
@@ -1209,6 +1251,7 @@ var db = drizzle(pool, { schema: schema_exports });
 import bcrypt from "bcryptjs";
 
 // server/subscription-routes.ts
+init_schema();
 import { eq, and, sql as sql2 } from "drizzle-orm";
 
 // server/vipps-service.ts
@@ -1687,11 +1730,14 @@ function registerSubscriptionRoutes(app2) {
       if (!tier) {
         return res.status(404).json({ error: "Tier ikke funnet" });
       }
+      const [subscription] = await db.select().from(vendorSubscriptions).where(eq(vendorSubscriptions.vendorId, vendorId)).limit(1);
       const orderId = `WF-${vendorId.substring(0, 8)}-${Date.now()}`;
       const now = /* @__PURE__ */ new Date();
       const nextBillingDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
       const [payment] = await db.insert(vendorPayments).values({
         vendorId,
+        subscriptionId: subscription?.id,
+        // Link to subscription
         amountNok: tier.priceNok * 100,
         // Convert to øre
         currency: "NOK",
@@ -1778,6 +1824,18 @@ function registerSubscriptionRoutes(app2) {
           paidAt: /* @__PURE__ */ new Date(),
           updatedAt: /* @__PURE__ */ new Date()
         }).where(eq(vendorPayments.id, payment.id));
+        if (payment.subscriptionId) {
+          const now = /* @__PURE__ */ new Date();
+          const nextBilling = new Date(now.getFullYear(), now.getMonth() + 1, now.getDate());
+          await db.update(vendorSubscriptions).set({
+            status: "active",
+            // Activate subscription after successful payment
+            currentPeriodStart: now,
+            currentPeriodEnd: nextBilling,
+            updatedAt: /* @__PURE__ */ new Date()
+          }).where(eq(vendorSubscriptions.id, payment.subscriptionId));
+          console.log(`Subscription ${payment.subscriptionId} activated for vendor ${payment.vendorId}`);
+        }
         console.log(`Payment ${orderId} captured successfully`);
       } else if (status === "FAILED" || status === "ABORTED") {
         await db.update(vendorPayments).set({
@@ -1837,6 +1895,7 @@ function registerSubscriptionRoutes(app2) {
 }
 
 // server/routes.ts
+init_schema();
 import { eq as eq2, and as and2, desc, sql as sql3, inArray } from "drizzle-orm";
 function generateAccessCode() {
   return crypto2.randomBytes(8).toString("hex").toUpperCase();
@@ -2098,9 +2157,131 @@ async function registerRoutes(app2) {
       res.status(500).json({ error: "Kunne ikke hente kategorier" });
     }
   });
+  app2.get("/api/subscription/tiers", async (_req, res) => {
+    try {
+      const { subscriptionTiers: subscriptionTiers3 } = await Promise.resolve().then(() => (init_schema(), schema_exports));
+      const tiers = await db.select().from(subscriptionTiers3).where(eq2(subscriptionTiers3.isActive, true)).orderBy(subscriptionTiers3.sortOrder);
+      res.json(tiers);
+    } catch (error) {
+      console.error("Error fetching subscription tiers:", error);
+      res.status(500).json({ error: "Kunne ikke hente abonnement" });
+    }
+  });
+  app2.post("/api/admin/subscriptions/check-expired-trials", async (req, res) => {
+    if (!checkAdminAuth(req, res)) return;
+    try {
+      const { vendorSubscriptions: vendorSubscriptions2 } = await Promise.resolve().then(() => (init_schema(), schema_exports));
+      const now = /* @__PURE__ */ new Date();
+      const expiredTrials = await db.select().from(vendorSubscriptions2).where(
+        and2(
+          eq2(vendorSubscriptions2.status, "trialing"),
+          sql3`${vendorSubscriptions2.currentPeriodEnd} < ${now}`
+        )
+      );
+      if (expiredTrials.length > 0) {
+        await db.update(vendorSubscriptions2).set({
+          status: "paused",
+          pausedUntil: sql3`${vendorSubscriptions2.currentPeriodEnd} + interval '365 days'`,
+          // Pause for 1 year
+          updatedAt: now
+        }).where(
+          and2(
+            eq2(vendorSubscriptions2.status, "trialing"),
+            sql3`${vendorSubscriptions2.currentPeriodEnd} < ${now}`
+          )
+        );
+        for (const sub of expiredTrials) {
+          const [vendor] = await db.select().from(vendors).where(eq2(vendors.id, sub.vendorId));
+          if (!vendor) continue;
+          await db.insert(notifications).values({
+            recipientType: "vendor",
+            recipientId: sub.vendorId,
+            type: "payment_required",
+            title: "Betaling p\xE5krevd",
+            body: "Din 30-dagers pr\xF8veperiode har utl\xF8pt. Betal for \xE5 fortsette \xE5 bruke Wedflow og motta henvendelser fra brudepar.",
+            sentVia: "in_app"
+          });
+          console.log(`Trial expired for vendor ${vendor.email} - notification created`);
+        }
+      }
+      res.json({
+        message: "Sjekket utl\xF8pte pr\xF8veperioder",
+        expiredCount: expiredTrials.length
+      });
+    } catch (error) {
+      console.error("Error checking expired trials:", error);
+      res.status(500).json({ error: "Kunne ikke sjekke utl\xF8pte pr\xF8veperioder" });
+    }
+  });
+  app2.post("/api/admin/subscriptions/send-trial-reminders", async (req, res) => {
+    if (!checkAdminAuth(req, res)) return;
+    try {
+      const { vendorSubscriptions: vendorSubscriptions2, subscriptionTiers: subscriptionTiers3 } = await Promise.resolve().then(() => (init_schema(), schema_exports));
+      const now = /* @__PURE__ */ new Date();
+      const reminderDays = [7, 3, 1];
+      let sentCount = 0;
+      for (const days of reminderDays) {
+        const targetDate = new Date(now.getTime() + days * 24 * 60 * 60 * 1e3);
+        const startOfDay = new Date(targetDate.setHours(0, 0, 0, 0));
+        const endOfDay = new Date(targetDate.setHours(23, 59, 59, 999));
+        const expiringTrials = await db.select({
+          subscription: vendorSubscriptions2,
+          tier: subscriptionTiers3,
+          vendor: vendors
+        }).from(vendorSubscriptions2).innerJoin(subscriptionTiers3, eq2(vendorSubscriptions2.tierId, subscriptionTiers3.id)).innerJoin(vendors, eq2(vendorSubscriptions2.vendorId, vendors.id)).where(
+          and2(
+            eq2(vendorSubscriptions2.status, "trialing"),
+            sql3`${vendorSubscriptions2.currentPeriodEnd}::date = ${startOfDay}::date`
+          )
+        );
+        for (const { subscription, tier, vendor } of expiringTrials) {
+          let title = "";
+          let body = "";
+          if (days === 7) {
+            title = "7 dager til pr\xF8veperioden utl\xF8per";
+            body = `Ikke g\xE5 glipp av henvendelser! Showcase-galleriet, meldinger og nye leads deaktiveres om en uke.
+
+Sikre din plass for kun ${tier.priceNok} NOK/mnd.`;
+          } else if (days === 3) {
+            title = "Siste sjanse - 3 dager igjen!";
+            body = `Om 3 dager mister du tilgang til alle funksjoner:
+\u2022 Showcase-galleriet
+\u2022 Aktive samtaler
+\u2022 Nye henvendelser
+\u2022 Statistikk
+
+Betal n\xE5: ${tier.priceNok} NOK/mnd`;
+          } else if (days === 1) {
+            title = "SISTE DAG - Pr\xF8veperioden utl\xF8per i morgen!";
+            body = `I morgen g\xE5r du glipp av potensielle kunder!
+
+Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvendelser.`;
+          }
+          await db.insert(notifications).values({
+            recipientType: "vendor",
+            recipientId: vendor.id,
+            type: "trial_reminder",
+            title,
+            body,
+            sentVia: "in_app"
+          });
+          console.log(`Sent ${days}-day reminder to ${vendor.email}`);
+          sentCount++;
+        }
+      }
+      res.json({
+        message: "Sendte pr\xF8veperiode-p\xE5minnelser",
+        sentCount
+      });
+    } catch (error) {
+      console.error("Error sending trial reminders:", error);
+      res.status(500).json({ error: "Kunne ikke sende p\xE5minnelser" });
+    }
+  });
   app2.post("/api/vendors/register", async (req, res) => {
     try {
-      const validation = vendorRegistrationSchema.safeParse(req.body);
+      const { tierId, ...restData } = req.body;
+      const validation = vendorRegistrationSchema.safeParse(restData);
       if (!validation.success) {
         return res.status(400).json({
           error: "Ugyldig data",
@@ -2125,9 +2306,21 @@ async function registerRoutes(app2) {
         website: profileData.website || null,
         priceRange: profileData.priceRange || null
       }).returning();
+      if (tierId) {
+        const now = /* @__PURE__ */ new Date();
+        const trialEnd = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1e3);
+        await db.insert(vendorSubscriptions).values({
+          vendorId: newVendor.id,
+          tierId,
+          status: "trialing",
+          currentPeriodStart: now,
+          currentPeriodEnd: trialEnd,
+          autoRenew: true
+        }).onConflictDoNothing();
+      }
       const { password: _, ...vendorWithoutPassword } = newVendor;
       res.status(201).json({
-        message: "Registrering vellykket! Din s\xF8knad er under behandling.",
+        message: "Registrering vellykket! Din s\xF8knad er under behandling. Du f\xE5r 30 dager gratis pr\xF8veperiode.",
         vendor: vendorWithoutPassword
       });
     } catch (error) {
@@ -2280,6 +2473,68 @@ async function registerRoutes(app2) {
       res.status(500).json({ error: "Kunne ikke hente leverand\xF8rer" });
     }
   });
+  app2.get("/api/vendors/matching", async (req, res) => {
+    try {
+      const { category, guestCount, location } = req.query;
+      const guestCountNum = guestCount ? parseInt(guestCount) : void 0;
+      const approvedVendors = await db.select({
+        id: vendors.id,
+        businessName: vendors.businessName,
+        categoryId: vendors.categoryId,
+        description: vendors.description,
+        location: vendors.location,
+        phone: vendors.phone,
+        website: vendors.website,
+        priceRange: vendors.priceRange,
+        imageUrl: vendors.imageUrl
+      }).from(vendors).where(eq2(vendors.status, "approved"));
+      let filtered = category ? approvedVendors.filter((v) => v.categoryId === category) : approvedVendors;
+      const vendorIds = filtered.map((v) => v.id);
+      let categoryDetails = [];
+      if (vendorIds.length > 0) {
+        categoryDetails = await db.select().from(vendorCategoryDetails).where(inArray(vendorCategoryDetails.vendorId, vendorIds));
+      }
+      const vendorsWithDetails = filtered.map((vendor) => {
+        const details = categoryDetails.find((d) => d.vendorId === vendor.id) || {};
+        return {
+          ...vendor,
+          venueCapacityMin: details.venueCapacityMin,
+          venueCapacityMax: details.venueCapacityMax,
+          cateringMinGuests: details.cateringMinGuests,
+          cateringMaxGuests: details.cateringMaxGuests,
+          venueType: details.venueType,
+          venueLocation: details.venueLocation
+        };
+      });
+      let result = vendorsWithDetails;
+      if (guestCountNum && category === "venue") {
+        result = result.filter((v) => {
+          if (!v.venueCapacityMin && !v.venueCapacityMax) return true;
+          if (v.venueCapacityMax && guestCountNum > v.venueCapacityMax) return false;
+          if (v.venueCapacityMin && guestCountNum < v.venueCapacityMin * 0.7) return false;
+          return true;
+        });
+      }
+      if (guestCountNum && category === "catering") {
+        result = result.filter((v) => {
+          if (!v.cateringMinGuests && !v.cateringMaxGuests) return true;
+          if (v.cateringMaxGuests && guestCountNum > v.cateringMaxGuests) return false;
+          if (v.cateringMinGuests && guestCountNum < v.cateringMinGuests * 0.7) return false;
+          return true;
+        });
+      }
+      if (location && typeof location === "string") {
+        const locationLower = location.toLowerCase();
+        result = result.filter(
+          (v) => v.location?.toLowerCase().includes(locationLower) || v.venueLocation?.toLowerCase().includes(locationLower)
+        );
+      }
+      res.json(result);
+    } catch (error) {
+      console.error("Error fetching matching vendors:", error);
+      res.status(500).json({ error: "Kunne ikke hente matchende leverand\xF8rer" });
+    }
+  });
   const checkAdminAuth = (req, res) => {
     const adminSecret = process.env.ADMIN_SECRET;
     if (!adminSecret) {
@@ -2322,7 +2577,30 @@ async function registerRoutes(app2) {
     if (!checkAdminAuth(req, res)) return;
     try {
       const { id } = req.params;
+      const { tierId } = req.body;
       await db.update(vendors).set({ status: "approved", updatedAt: /* @__PURE__ */ new Date() }).where(eq2(vendors.id, id));
+      const { vendorSubscriptions: vendorSubscriptions2 } = await Promise.resolve().then(() => (init_schema(), schema_exports));
+      const [existingSubscription] = await db.select().from(vendorSubscriptions2).where(eq2(vendorSubscriptions2.vendorId, id)).limit(1);
+      if (existingSubscription) {
+        if (tierId && existingSubscription.tierId !== tierId) {
+          await db.update(vendorSubscriptions2).set({
+            tierId,
+            updatedAt: /* @__PURE__ */ new Date()
+          }).where(eq2(vendorSubscriptions2.vendorId, id));
+        }
+      } else if (tierId) {
+        const now = /* @__PURE__ */ new Date();
+        const trialEnd = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1e3);
+        await db.insert(vendorSubscriptions2).values({
+          vendorId: id,
+          tierId,
+          status: "trialing",
+          // Trial - requires payment
+          currentPeriodStart: now,
+          currentPeriodEnd: trialEnd,
+          autoRenew: true
+        });
+      }
       res.json({ message: "Leverand\xF8r godkjent" });
     } catch (error) {
       console.error("Error approving vendor:", error);
@@ -2367,6 +2645,49 @@ async function registerRoutes(app2) {
     }
     return vendorSession.vendorId;
   };
+  const checkVendorSubscriptionAccess = async (vendorId, res) => {
+    try {
+      const { vendorSubscriptions: vendorSubscriptions2 } = await Promise.resolve().then(() => (init_schema(), schema_exports));
+      const [subscription] = await db.select().from(vendorSubscriptions2).where(eq2(vendorSubscriptions2.vendorId, vendorId)).limit(1);
+      if (!subscription) {
+        res.status(403).json({
+          error: "Ingen aktivt abonnement",
+          message: "Du m\xE5 ha et aktivt abonnement for \xE5 bruke denne funksjonen.",
+          requiresPayment: true
+        });
+        return false;
+      }
+      if (subscription.status === "paused") {
+        res.status(403).json({
+          error: "Abonnement satt p\xE5 pause",
+          message: "Ditt abonnement er satt p\xE5 pause. Betal for \xE5 fortsette \xE5 bruke Wedflow og motta henvendelser.",
+          requiresPayment: true,
+          isPaused: true
+        });
+        return false;
+      }
+      if (subscription.status === "trialing") {
+        const now = /* @__PURE__ */ new Date();
+        if (subscription.currentPeriodEnd < now) {
+          await db.update(vendorSubscriptions2).set({
+            status: "paused",
+            updatedAt: now
+          }).where(eq2(vendorSubscriptions2.id, subscription.id));
+          res.status(403).json({
+            error: "Pr\xF8veperiode utl\xF8pt",
+            message: "Din 30-dagers pr\xF8veperiode har utl\xF8pt. Betal for \xE5 fortsette.",
+            requiresPayment: true,
+            trialExpired: true
+          });
+          return false;
+        }
+      }
+      return true;
+    } catch (error) {
+      console.error("Error checking subscription access:", error);
+      return true;
+    }
+  };
   app2.get("/api/vendor/profile", async (req, res) => {
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
@@ -2400,6 +2721,49 @@ async function registerRoutes(app2) {
       res.status(500).json({ error: "Kunne ikke hente profil" });
     }
   });
+  app2.get("/api/vendor/subscription/status", async (req, res) => {
+    const vendorId = await checkVendorAuth2(req, res);
+    if (!vendorId) return;
+    try {
+      const { vendorSubscriptions: vendorSubscriptions2, subscriptionTiers: subscriptionTiers3 } = await Promise.resolve().then(() => (init_schema(), schema_exports));
+      const [subscription] = await db.select({
+        id: vendorSubscriptions2.id,
+        status: vendorSubscriptions2.status,
+        currentPeriodStart: vendorSubscriptions2.currentPeriodStart,
+        currentPeriodEnd: vendorSubscriptions2.currentPeriodEnd,
+        autoRenew: vendorSubscriptions2.autoRenew,
+        tier: {
+          id: subscriptionTiers3.id,
+          name: subscriptionTiers3.name,
+          displayName: subscriptionTiers3.displayName,
+          priceNok: subscriptionTiers3.priceNok
+        }
+      }).from(vendorSubscriptions2).innerJoin(subscriptionTiers3, eq2(vendorSubscriptions2.tierId, subscriptionTiers3.id)).where(eq2(vendorSubscriptions2.vendorId, vendorId)).limit(1);
+      if (!subscription) {
+        return res.json({ hasSubscription: false });
+      }
+      const now = /* @__PURE__ */ new Date();
+      const daysRemaining = Math.ceil(
+        (subscription.currentPeriodEnd.getTime() - now.getTime()) / (1e3 * 60 * 60 * 24)
+      );
+      const needsPayment = subscription.status === "paused" || subscription.status === "past_due" || subscription.status === "trialing" && daysRemaining <= 0;
+      res.json({
+        hasSubscription: true,
+        status: subscription.status,
+        tier: subscription.tier,
+        currentPeriodStart: subscription.currentPeriodStart,
+        currentPeriodEnd: subscription.currentPeriodEnd,
+        daysRemaining: daysRemaining > 0 ? daysRemaining : 0,
+        needsPayment,
+        isTrialing: subscription.status === "trialing",
+        isPaused: subscription.status === "paused",
+        autoRenew: subscription.autoRenew
+      });
+    } catch (error) {
+      console.error("Error fetching subscription status:", error);
+      res.status(500).json({ error: "Kunne ikke hente abonnementsstatus" });
+    }
+  });
   app2.patch("/api/vendor/profile", async (req, res) => {
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
@@ -2425,6 +2789,52 @@ async function registerRoutes(app2) {
       res.status(500).json({ error: "Kunne ikke oppdatere profil" });
     }
   });
+  app2.get("/api/vendor/category-details", async (req, res) => {
+    const vendorId = await checkVendorAuth2(req, res);
+    if (!vendorId) return;
+    try {
+      const [details] = await db.select().from(vendorCategoryDetails).where(eq2(vendorCategoryDetails.vendorId, vendorId));
+      const [vendor] = await db.select({
+        categoryId: vendors.categoryId
+      }).from(vendors).where(eq2(vendors.id, vendorId));
+      let categoryName = null;
+      if (vendor?.categoryId) {
+        const [cat] = await db.select().from(vendorCategories).where(eq2(vendorCategories.id, vendor.categoryId));
+        categoryName = cat?.name || null;
+      }
+      res.json({
+        details: details || null,
+        categoryName
+      });
+    } catch (error) {
+      console.error("Error fetching category details:", error);
+      res.status(500).json({ error: "Kunne ikke hente kategori-detaljer" });
+    }
+  });
+  app2.patch("/api/vendor/category-details", async (req, res) => {
+    const vendorId = await checkVendorAuth2(req, res);
+    if (!vendorId) return;
+    try {
+      const updateData = { ...req.body, updatedAt: /* @__PURE__ */ new Date() };
+      delete updateData.id;
+      delete updateData.vendorId;
+      delete updateData.createdAt;
+      const [existing] = await db.select().from(vendorCategoryDetails).where(eq2(vendorCategoryDetails.vendorId, vendorId));
+      if (existing) {
+        const [updated] = await db.update(vendorCategoryDetails).set(updateData).where(eq2(vendorCategoryDetails.vendorId, vendorId)).returning();
+        res.json(updated);
+      } else {
+        const [created] = await db.insert(vendorCategoryDetails).values({
+          vendorId,
+          ...updateData
+        }).returning();
+        res.json(created);
+      }
+    } catch (error) {
+      console.error("Error updating category details:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere kategori-detaljer" });
+    }
+  });
   app2.get("/api/vendor/deliveries", async (req, res) => {
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
@@ -2445,6 +2855,7 @@ async function registerRoutes(app2) {
   app2.post("/api/vendor/deliveries", async (req, res) => {
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
+    if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const validation = createDeliverySchema.safeParse(req.body);
       if (!validation.success) {
@@ -2626,6 +3037,7 @@ async function registerRoutes(app2) {
   app2.post("/api/vendor/inspirations", async (req, res) => {
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
+    if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const featureRows = await db.select().from(vendorFeatures).where(and2(eq2(vendorFeatures.vendorId, vendorId), eq2(vendorFeatures.featureKey, "inspirations")));
       if (featureRows.length > 0 && !featureRows[0].isEnabled) {
@@ -3410,8 +3822,8 @@ async function registerRoutes(app2) {
     if (!checkAdminAuth(req, res)) return;
     try {
       const { id } = req.params;
-      const { body, attachmentUrl, attachmentType } = req.body;
-      const parse = sendAdminMessageSchema.safeParse({ body, attachmentUrl, attachmentType });
+      const { body, attachmentUrl, attachmentType, videoGuideId } = req.body;
+      const parse = sendAdminMessageSchema.safeParse({ body, attachmentUrl, attachmentType, videoGuideId });
       if (!parse.success) {
         return res.status(400).json({ error: parse.error.errors[0]?.message || "Ugyldig melding" });
       }
@@ -3421,7 +3833,8 @@ async function registerRoutes(app2) {
         senderId: "admin",
         body,
         attachmentUrl: attachmentUrl || null,
-        attachmentType: attachmentType || null
+        attachmentType: attachmentType || null,
+        videoGuideId: videoGuideId || null
       }).returning();
       const newLast = /* @__PURE__ */ new Date();
       await db.update(adminConversations).set({
@@ -3444,6 +3857,22 @@ async function registerRoutes(app2) {
       res.json({ success: true });
     } catch (error) {
       res.status(500).json({ error: "Kunne ikke sende skrive-status" });
+    }
+  });
+  app2.patch("/api/admin/vendor-admin-conversations/:id/status", async (req, res) => {
+    if (!checkAdminAuth(req, res)) return;
+    try {
+      const { id } = req.params;
+      const { status } = req.body;
+      if (!["active", "resolved"].includes(status)) {
+        return res.status(400).json({ error: "Ugyldig status" });
+      }
+      await db.update(adminConversations).set({ status }).where(eq2(adminConversations.id, id));
+      broadcastAdminConv(id, { type: "status-update", payload: { status, updatedAt: (/* @__PURE__ */ new Date()).toISOString() } });
+      res.json({ success: true, status });
+    } catch (error) {
+      console.error("Error updating conversation status:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere status" });
     }
   });
   app2.patch("/api/couples/messages/:id", async (req, res) => {
@@ -4025,6 +4454,7 @@ async function registerRoutes(app2) {
   app2.post("/api/vendor/products", async (req, res) => {
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
+    if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const validatedData = createVendorProductSchema.parse(req.body);
       const [product] = await db.insert(vendorProducts).values({
@@ -4110,6 +4540,7 @@ async function registerRoutes(app2) {
   app2.post("/api/vendor/offers", async (req, res) => {
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
+    if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const validatedData = createOfferSchema.parse(req.body);
       const totalAmount = validatedData.items.reduce(
@@ -4386,6 +4817,94 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     } catch (error) {
       console.error("Error fetching statistics:", error);
       res.status(500).json({ error: "Kunne ikke hente statistikk" });
+    }
+  });
+  app2.get("/api/admin/preview/couple/users", async (req, res) => {
+    if (!checkAdminAuth(req, res)) return;
+    try {
+      const coupleData = await db.select({
+        id: coupleProfiles.id,
+        name: coupleProfiles.partnerName,
+        email: coupleProfiles.email
+      }).from(coupleProfiles).limit(50);
+      res.json({
+        role: "couple",
+        users: coupleData
+      });
+    } catch (error) {
+      console.error("Error fetching couple list:", error);
+      res.status(500).json({ error: "Kunne ikke hente brudepar-liste" });
+    }
+  });
+  app2.get("/api/admin/preview/vendor/users", async (req, res) => {
+    if (!checkAdminAuth(req, res)) return;
+    try {
+      const vendorData = await db.select({
+        id: vendors.id,
+        name: vendors.companyName,
+        email: vendors.email,
+        category: vendors.category
+      }).from(vendors).where(eq2(vendors.status, "approved")).limit(50);
+      res.json({
+        role: "vendor",
+        users: vendorData
+      });
+    } catch (error) {
+      console.error("Error fetching vendor list:", error);
+      res.status(500).json({ error: "Kunne ikke hente leverand\xF8r-liste" });
+    }
+  });
+  app2.post("/api/admin/preview/couple/impersonate", async (req, res) => {
+    if (!checkAdminAuth(req, res)) return;
+    try {
+      const { userId } = req.body;
+      if (!userId) {
+        return res.status(400).json({ error: "userId is required" });
+      }
+      const couple = await db.select().from(coupleProfiles).where(eq2(coupleProfiles.id, userId)).limit(1);
+      if (!couple || couple.length === 0) {
+        return res.status(404).json({ error: "Brudepar ikke funnet" });
+      }
+      const sessionToken = generateSessionToken();
+      COUPLE_SESSIONS.set(sessionToken, {
+        coupleId: userId,
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1e3)
+      });
+      res.json({
+        sessionToken,
+        coupleId: userId,
+        coupleData: couple[0]
+      });
+    } catch (error) {
+      console.error("Error impersonating couple:", error);
+      res.status(500).json({ error: "Kunne ikke logge inn som brudepar" });
+    }
+  });
+  app2.post("/api/admin/preview/vendor/impersonate", async (req, res) => {
+    if (!checkAdminAuth(req, res)) return;
+    try {
+      const { userId } = req.body;
+      if (!userId) {
+        return res.status(400).json({ error: "userId is required" });
+      }
+      const vendor = await db.select().from(vendors).where(eq2(vendors.id, userId)).limit(1);
+      if (!vendor || vendor.length === 0) {
+        return res.status(404).json({ error: "Leverand\xF8r ikke funnet" });
+      }
+      const sessionToken = generateSessionToken();
+      VENDOR_SESSIONS.set(sessionToken, {
+        vendorId: userId,
+        createdAt: /* @__PURE__ */ new Date(),
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1e3)
+      });
+      res.json({
+        sessionToken,
+        vendorId: userId,
+        vendorData: vendor[0]
+      });
+    } catch (error) {
+      console.error("Error impersonating vendor:", error);
+      res.status(500).json({ error: "Kunne ikke logge inn som leverand\xF8r" });
     }
   });
   app2.post("/api/admin/jobs/expire-offers", async (req, res) => {
@@ -5885,6 +6404,80 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       res.status(500).json({ error: "Kunne ikke hente program" });
     }
   });
+  app2.post("/api/vendor/schedule-suggestions", async (req, res) => {
+    const vendorId = await checkVendorAuth2(req, res);
+    if (!vendorId) return;
+    try {
+      const { coupleId, type, eventId, suggestedTime, suggestedTitle, message } = req.body;
+      if (!coupleId || !message) {
+        return res.status(400).json({ error: "Mangler p\xE5krevde felter" });
+      }
+      const [contract] = await db.select().from(coupleVendorContracts).where(and2(
+        eq2(coupleVendorContracts.coupleId, coupleId),
+        eq2(coupleVendorContracts.vendorId, vendorId),
+        eq2(coupleVendorContracts.status, "active")
+      ));
+      if (!contract) {
+        return res.status(403).json({ error: "Ingen aktiv avtale med dette brudeparet" });
+      }
+      const [vendor] = await db.select({ businessName: vendors.businessName }).from(vendors).where(eq2(vendors.id, vendorId));
+      const payload = {
+        type,
+        eventId,
+        suggestedTime,
+        suggestedTitle,
+        message,
+        vendorId
+      };
+      await db.insert(notifications).values({
+        recipientType: "couple",
+        recipientId: coupleId,
+        type: "schedule_suggestion",
+        title: "Forslag til programendring",
+        body: `${vendor?.businessName || "En leverand\xF8r"} foresl\xE5r en endring: ${message.substring(0, 100)}${message.length > 100 ? "..." : ""}`,
+        actorType: "vendor",
+        actorId: vendorId,
+        payload: JSON.stringify(payload)
+      });
+      await db.insert(activityLogs).values({
+        coupleId,
+        actorType: "vendor",
+        actorId: vendorId,
+        actorName: vendor?.businessName || "Leverand\xF8r",
+        action: "schedule_suggestion",
+        description: `Foreslo endring: ${message.substring(0, 50)}${message.length > 50 ? "..." : ""}`
+      });
+      res.json({ success: true, message: "Forslag sendt til brudeparet" });
+    } catch (error) {
+      console.error("Error sending schedule suggestion:", error);
+      res.status(500).json({ error: "Kunne ikke sende forslag" });
+    }
+  });
+  app2.get("/api/vendor/couple-contracts", async (req, res) => {
+    const vendorId = await checkVendorAuth2(req, res);
+    if (!vendorId) return;
+    try {
+      const contracts = await db.select({
+        id: coupleVendorContracts.id,
+        coupleId: coupleVendorContracts.coupleId,
+        vendorRole: coupleVendorContracts.vendorRole,
+        status: coupleVendorContracts.status,
+        canViewSchedule: coupleVendorContracts.canViewSchedule,
+        canViewSpeeches: coupleVendorContracts.canViewSpeeches,
+        canViewTableSeating: coupleVendorContracts.canViewTableSeating,
+        createdAt: coupleVendorContracts.createdAt,
+        coupleName: coupleProfiles.displayName,
+        weddingDate: coupleProfiles.weddingDate
+      }).from(coupleVendorContracts).innerJoin(coupleProfiles, eq2(coupleVendorContracts.coupleId, coupleProfiles.id)).where(and2(
+        eq2(coupleVendorContracts.vendorId, vendorId),
+        eq2(coupleVendorContracts.status, "active")
+      )).orderBy(desc(coupleVendorContracts.createdAt));
+      res.json(contracts);
+    } catch (error) {
+      console.error("Error fetching vendor couple contracts:", error);
+      res.status(500).json({ error: "Kunne ikke hente avtaler" });
+    }
+  });
   app2.get("/api/couple/activity-log", async (req, res) => {
     const coupleId = await checkCoupleAuth(req, res);
     if (!coupleId) return;
@@ -6798,6 +7391,15 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       res.status(500).json({ error: "Kunne ikke slette hva som er nytt" });
     }
   });
+  app2.get("/api/video-guides", async (req, res) => {
+    try {
+      const guides = await db.select().from(videoGuides).where(eq2(videoGuides.isActive, true)).orderBy(videoGuides.sortOrder);
+      res.json(guides);
+    } catch (error) {
+      console.error("Error fetching video guides:", error);
+      res.status(500).json({ error: "Kunne ikke hente videoguider" });
+    }
+  });
   app2.get("/api/video-guides/:category", async (req, res) => {
     try {
       const { category } = req.params;
@@ -7089,6 +7691,75 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
   return httpServer;
 }
 
+// server/cron-subscriptions.ts
+import cron from "node-cron";
+var API_URL = process.env.API_URL || "http://localhost:5000";
+var ADMIN_SECRET = process.env.ADMIN_CRON_SECRET || "your-secure-admin-secret";
+var scheduleExpiredTrialsCheck = () => {
+  cron.schedule("0 9 * * *", async () => {
+    console.log("[CRON] Running expired trials check...", (/* @__PURE__ */ new Date()).toISOString());
+    try {
+      const response = await fetch(`${API_URL}/api/admin/subscriptions/check-expired-trials`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${ADMIN_SECRET}`
+        }
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      const result = await response.json();
+      console.log("[CRON] Expired trials check completed:", result);
+      if (result.expiredCount > 0) {
+        console.log(`[CRON] \u2705 Paused ${result.expiredCount} expired trial(s)`);
+      } else {
+        console.log("[CRON] \u2139\uFE0F No expired trials found");
+      }
+    } catch (error) {
+      console.error("[CRON] \u274C Error checking expired trials:", error);
+    }
+  });
+  console.log("[CRON] \u2705 Expired trials check scheduled (daily at 09:00 UTC)");
+};
+var scheduleTrialReminders = () => {
+  cron.schedule("0 10 * * *", async () => {
+    console.log("[CRON] Running trial reminders...", (/* @__PURE__ */ new Date()).toISOString());
+    try {
+      const response = await fetch(`${API_URL}/api/admin/subscriptions/send-trial-reminders`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${ADMIN_SECRET}`
+        }
+      });
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      const result = await response.json();
+      console.log("[CRON] Trial reminders completed:", result);
+      const total = result.reminders7d + result.reminders3d + result.reminders1d;
+      if (total > 0) {
+        console.log(`[CRON] \u2705 Sent ${total} reminder(s):`);
+        console.log(`  - 7 days: ${result.reminders7d}`);
+        console.log(`  - 3 days: ${result.reminders3d}`);
+        console.log(`  - 1 day: ${result.reminders1d}`);
+      } else {
+        console.log("[CRON] \u2139\uFE0F No reminders to send");
+      }
+    } catch (error) {
+      console.error("[CRON] \u274C Error sending trial reminders:", error);
+    }
+  });
+  console.log("[CRON] \u2705 Trial reminders scheduled (daily at 10:00 UTC)");
+};
+var initializeSubscriptionCrons = () => {
+  console.log("\n[CRON] Initializing subscription cron jobs...");
+  scheduleExpiredTrialsCheck();
+  scheduleTrialReminders();
+  console.log("[CRON] All subscription cron jobs initialized\n");
+};
+
 // server/index.ts
 import * as fs from "fs";
 import * as path from "path";
@@ -7268,6 +7939,21 @@ function setupErrorHandler(app2) {
   setupBodyParsing(app);
   setupRequestLogging(app);
   const server = await registerRoutes(app);
+  app.get("/terms-of-sale", (_req, res) => {
+    const termsPath = path.resolve(
+      process.cwd(),
+      "server",
+      "templates",
+      "terms-of-sale.html"
+    );
+    try {
+      const termsHtml = fs.readFileSync(termsPath, "utf-8");
+      res.setHeader("Content-Type", "text/html; charset=utf-8");
+      res.status(200).send(termsHtml);
+    } catch (err) {
+      res.status(404).json({ error: "Terms of sale not found" });
+    }
+  });
   configureExpoAndLanding(app);
   setupErrorHandler(app);
   const port = parseInt(process.env.PORT || "5000", 10);
@@ -7279,6 +7965,7 @@ function setupErrorHandler(app2) {
     },
     () => {
       log(`express server serving on port ${port}`);
+      initializeSubscriptionCrons();
     }
   );
 })();

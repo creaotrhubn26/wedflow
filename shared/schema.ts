@@ -116,6 +116,24 @@ export const vendorInspirationCategories = pgTable("vendor_inspiration_categorie
 export type VendorFeature = typeof vendorFeatures.$inferSelect;
 export type VendorInspirationCategory = typeof vendorInspirationCategories.$inferSelect;
 
+// Category-specific details per vendor (used for capacity matching, venue info, etc.)
+export const vendorCategoryDetails = pgTable("vendor_category_details", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
+  venueCapacityMin: integer("venue_capacity_min"),
+  venueCapacityMax: integer("venue_capacity_max"),
+  cateringMinGuests: integer("catering_min_guests"),
+  cateringMaxGuests: integer("catering_max_guests"),
+  venueType: text("venue_type"),
+  venueLocation: text("venue_location"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type VendorCategoryDetails = typeof vendorCategoryDetails.$inferSelect;
+
 export const deliveries = pgTable("deliveries", {
   id: varchar("id")
     .primaryKey()

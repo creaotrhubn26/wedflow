@@ -68,9 +68,9 @@ interface PhotographerDetails {
   blackAndWhiteIncluded: boolean;
   
   // Ekstra
-  sneak peekAvailable: boolean;
+  sneakPeekAvailable: boolean;
   sneakPeekDays: number | null;
-  sameDay EditAvailable: boolean;
+  sameDayEditAvailable: boolean;
   photoBoothAvailable: boolean;
   backupEquipment: boolean;
 }

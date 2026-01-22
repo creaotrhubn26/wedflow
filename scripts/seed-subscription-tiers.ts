@@ -1,5 +1,10 @@
-import { db } from "./db";
-import { subscriptionTiers } from "@shared/schema";
+import { config } from "dotenv";
+import { drizzle } from "drizzle-orm/node-postgres";
+import pg from "pg";
+import { subscriptionTiers } from "../shared/schema";
+
+// Load environment variables from .env.local
+config({ path: ".env.local" });
 
 const DEFAULT_TIERS = [
   {
@@ -10,16 +15,22 @@ const DEFAULT_TIERS = [
     sortOrder: 1,
     isActive: true,
     maxInspirationPhotos: 10,
-    maxMonthlyVideoMinutes: 0,
+    maxProducts: 5,
+    maxMonthlyOffers: 5,
+    maxMonthlyDeliveries: 2,
     maxStorageGb: 5,
+    canSendMessages: true,
+    canReceiveInquiries: true,
+    canCreateOffers: true,
+    canCreateDeliveries: true,
+    canShowcaseWork: true,
     hasAdvancedAnalytics: false,
     hasPrioritizedSearch: false,
-    hasCustomLandingPage: false,
-    hasApiAccess: false,
-    hasVippsPaymentLink: false,
-    hasCustomBranding: false,
+    canHighlightProfile: false,
+    canUseVideoGallery: false,
+    hasReviewBadge: false,
+    hasMultipleCategories: false,
     commissionPercentage: 3,
-    stripeFeePercentage: 0,
   },
   {
     name: "professional",
@@ -29,16 +40,22 @@ const DEFAULT_TIERS = [
     sortOrder: 2,
     isActive: true,
     maxInspirationPhotos: -1, // Unlimited
-    maxMonthlyVideoMinutes: 60,
+    maxProducts: 50,
+    maxMonthlyOffers: 50,
+    maxMonthlyDeliveries: 20,
     maxStorageGb: 50,
+    canSendMessages: true,
+    canReceiveInquiries: true,
+    canCreateOffers: true,
+    canCreateDeliveries: true,
+    canShowcaseWork: true,
     hasAdvancedAnalytics: true,
     hasPrioritizedSearch: true,
-    hasCustomLandingPage: true,
-    hasApiAccess: false,
-    hasVippsPaymentLink: true,
-    hasCustomBranding: false,
+    canHighlightProfile: true,
+    canUseVideoGallery: true,
+    hasReviewBadge: true,
+    hasMultipleCategories: true,
     commissionPercentage: 2,
-    stripeFeePercentage: 0,
   },
   {
     name: "enterprise",
@@ -48,20 +65,30 @@ const DEFAULT_TIERS = [
     sortOrder: 3,
     isActive: true,
     maxInspirationPhotos: -1, // Unlimited
-    maxMonthlyVideoMinutes: 300,
+    maxProducts: -1,
+    maxMonthlyOffers: -1,
+    maxMonthlyDeliveries: -1,
     maxStorageGb: 500,
+    canSendMessages: true,
+    canReceiveInquiries: true,
+    canCreateOffers: true,
+    canCreateDeliveries: true,
+    canShowcaseWork: true,
     hasAdvancedAnalytics: true,
     hasPrioritizedSearch: true,
-    hasCustomLandingPage: true,
-    hasApiAccess: true,
-    hasVippsPaymentLink: true,
-    hasCustomBranding: true,
+    canHighlightProfile: true,
+    canUseVideoGallery: true,
+    hasReviewBadge: true,
+    hasMultipleCategories: true,
     commissionPercentage: 1,
-    stripeFeePercentage: 0,
   },
 ];
 
 async function seedTiers() {
+  const client = new pg.Client({ connectionString: process.env.DATABASE_URL });
+  await client.connect();
+  const db = drizzle(client);
+
   try {
     console.log("🌱 Starting subscription tiers seed...");
 
@@ -69,6 +96,7 @@ async function seedTiers() {
     const existing = await db.select().from(subscriptionTiers);
     if (existing.length > 0) {
       console.log("⚠️  Tiers already exist. Skipping seed.");
+      await client.end();
       return;
     }
 
@@ -83,8 +111,10 @@ async function seedTiers() {
     DEFAULT_TIERS.forEach((t) => {
       console.log(`  • ${t.displayName}: ${t.priceNok} NOK/month`);
     });
+    await client.end();
   } catch (error) {
     console.error("❌ Error seeding tiers:", error);
+    await client.end();
     throw error;
   }
 }

@@ -153,12 +153,17 @@ export function registerSubscriptionRoutes(app: Express) {
       }
 
       const featureAccess: Record<string, boolean> = {
+        send_messages: tier.canSendMessages,
+        receive_inquiries: tier.canReceiveInquiries,
+        create_offers: tier.canCreateOffers,
+        create_deliveries: tier.canCreateDeliveries,
+        showcase_work: tier.canShowcaseWork,
         advanced_analytics: tier.hasAdvancedAnalytics,
         prioritized_search: tier.hasPrioritizedSearch,
-        custom_landing_page: tier.hasCustomLandingPage,
-        api_access: tier.hasApiAccess,
-        vipps_payment_link: tier.hasVippsPaymentLink,
-        custom_branding: tier.hasCustomBranding,
+        highlight_profile: tier.canHighlightProfile,
+        video_gallery: tier.canUseVideoGallery,
+        review_badge: tier.hasReviewBadge,
+        multiple_categories: tier.hasMultipleCategories,
       };
 
       const hasAccess = featureAccess[feature] ?? false;
@@ -185,7 +190,9 @@ export function registerSubscriptionRoutes(app: Express) {
 
       const limits = {
         maxInspirationPhotos: tier?.maxInspirationPhotos ?? 10,
-        maxMonthlyVideoMinutes: tier?.maxMonthlyVideoMinutes ?? 0,
+        maxProducts: tier?.maxProducts ?? 5,
+        maxMonthlyOffers: tier?.maxMonthlyOffers ?? 10,
+        maxMonthlyDeliveries: tier?.maxMonthlyDeliveries ?? 5,
         maxStorageGb: tier?.maxStorageGb ?? 5,
       };
 
@@ -204,10 +211,9 @@ export function registerSubscriptionRoutes(app: Express) {
             ? 999999 
             : limits.maxInspirationPhotos) - (usage_data.inspirationPhotosUploaded ?? 0)
         ),
-        videoMinutes: Math.max(
-          0,
-          limits.maxMonthlyVideoMinutes - (usage_data.videoMinutesUsed ?? 0)
-        ),
+        products: Math.max(0, limits.maxProducts),
+        offers: Math.max(0, limits.maxMonthlyOffers),
+        deliveries: Math.max(0, limits.maxMonthlyDeliveries),
         storageGb: Math.max(
           0,
           limits.maxStorageGb - (usage_data.storageUsedGb ?? 0)

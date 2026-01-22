@@ -32,16 +32,24 @@ interface TierForm {
   priceNok: string;
   sortOrder: string;
   maxInspirationPhotos: string;
-  maxMonthlyVideoMinutes: string;
+  maxProducts: string;
+  maxMonthlyOffers: string;
+  maxMonthlyDeliveries: string;
   maxStorageGb: string;
   commissionPercentage: string;
-  stripeFeePercentage: string;
+  // Core feature flags
+  canSendMessages: boolean;
+  canReceiveInquiries: boolean;
+  canCreateOffers: boolean;
+  canCreateDeliveries: boolean;
+  canShowcaseWork: boolean;
+  // Premium feature flags
   hasAdvancedAnalytics: boolean;
   hasPrioritizedSearch: boolean;
-  hasCustomLandingPage: boolean;
-  hasApiAccess: boolean;
-  hasVippsPaymentLink: boolean;
-  hasCustomBranding: boolean;
+  canHighlightProfile: boolean;
+  canUseVideoGallery: boolean;
+  hasReviewBadge: boolean;
+  hasMultipleCategories: boolean;
 }
 
 export default function AdminSubscriptionsScreen({ route }: Props) {
@@ -62,16 +70,22 @@ export default function AdminSubscriptionsScreen({ route }: Props) {
     priceNok: "0",
     sortOrder: "0",
     maxInspirationPhotos: "10",
-    maxMonthlyVideoMinutes: "0",
+    maxProducts: "5",
+    maxMonthlyOffers: "10",
+    maxMonthlyDeliveries: "5",
     maxStorageGb: "5",
     commissionPercentage: "3",
-    stripeFeePercentage: "0",
+    canSendMessages: true,
+    canReceiveInquiries: true,
+    canCreateOffers: true,
+    canCreateDeliveries: true,
+    canShowcaseWork: true,
     hasAdvancedAnalytics: false,
     hasPrioritizedSearch: false,
-    hasCustomLandingPage: false,
-    hasApiAccess: false,
-    hasVippsPaymentLink: false,
-    hasCustomBranding: false,
+    canHighlightProfile: false,
+    canUseVideoGallery: false,
+    hasReviewBadge: false,
+    hasMultipleCategories: false,
   });
 
   const { data: tiers = [], isLoading: tiersLoading } = useQuery<SubscriptionTier[]>({
@@ -115,16 +129,22 @@ export default function AdminSubscriptionsScreen({ route }: Props) {
       priceNok: "0",
       sortOrder: "0",
       maxInspirationPhotos: "10",
-      maxMonthlyVideoMinutes: "0",
+      maxProducts: "5",
+      maxMonthlyOffers: "10",
+      maxMonthlyDeliveries: "5",
       maxStorageGb: "5",
       commissionPercentage: "3",
-      stripeFeePercentage: "0",
+      canSendMessages: true,
+      canReceiveInquiries: true,
+      canCreateOffers: true,
+      canCreateDeliveries: true,
+      canShowcaseWork: true,
       hasAdvancedAnalytics: false,
       hasPrioritizedSearch: false,
-      hasCustomLandingPage: false,
-      hasApiAccess: false,
-      hasVippsPaymentLink: false,
-      hasCustomBranding: false,
+      canHighlightProfile: false,
+      canUseVideoGallery: false,
+      hasReviewBadge: false,
+      hasMultipleCategories: false,
     });
     setShowModal(true);
   };
@@ -138,16 +158,22 @@ export default function AdminSubscriptionsScreen({ route }: Props) {
       priceNok: tier.priceNok.toString(),
       sortOrder: tier.sortOrder.toString(),
       maxInspirationPhotos: tier.maxInspirationPhotos.toString(),
-      maxMonthlyVideoMinutes: tier.maxMonthlyVideoMinutes.toString(),
+      maxProducts: tier.maxProducts?.toString() ?? "0",
+      maxMonthlyOffers: tier.maxMonthlyOffers?.toString() ?? "0",
+      maxMonthlyDeliveries: tier.maxMonthlyDeliveries?.toString() ?? "0",
       maxStorageGb: tier.maxStorageGb.toString(),
       commissionPercentage: tier.commissionPercentage.toString(),
-      stripeFeePercentage: tier.stripeFeePercentage.toString(),
+      canSendMessages: tier.canSendMessages,
+      canReceiveInquiries: tier.canReceiveInquiries,
+      canCreateOffers: tier.canCreateOffers,
+      canCreateDeliveries: tier.canCreateDeliveries,
+      canShowcaseWork: tier.canShowcaseWork,
       hasAdvancedAnalytics: tier.hasAdvancedAnalytics,
       hasPrioritizedSearch: tier.hasPrioritizedSearch,
-      hasCustomLandingPage: tier.hasCustomLandingPage,
-      hasApiAccess: tier.hasApiAccess,
-      hasVippsPaymentLink: tier.hasVippsPaymentLink,
-      hasCustomBranding: tier.hasCustomBranding,
+      canHighlightProfile: tier.canHighlightProfile,
+      canUseVideoGallery: tier.canUseVideoGallery,
+      hasReviewBadge: tier.hasReviewBadge,
+      hasMultipleCategories: tier.hasMultipleCategories,
     });
     setShowModal(true);
   };
@@ -179,16 +205,22 @@ export default function AdminSubscriptionsScreen({ route }: Props) {
           priceNok: parseInt(form.priceNok),
           sortOrder: parseInt(form.sortOrder),
           maxInspirationPhotos: parseInt(form.maxInspirationPhotos),
-          maxMonthlyVideoMinutes: parseInt(form.maxMonthlyVideoMinutes),
+          maxProducts: parseInt(form.maxProducts),
+          maxMonthlyOffers: parseInt(form.maxMonthlyOffers),
+          maxMonthlyDeliveries: parseInt(form.maxMonthlyDeliveries),
           maxStorageGb: parseInt(form.maxStorageGb),
           commissionPercentage: parseInt(form.commissionPercentage),
-          stripeFeePercentage: parseInt(form.stripeFeePercentage),
+          canSendMessages: form.canSendMessages,
+          canReceiveInquiries: form.canReceiveInquiries,
+          canCreateOffers: form.canCreateOffers,
+          canCreateDeliveries: form.canCreateDeliveries,
+          canShowcaseWork: form.canShowcaseWork,
           hasAdvancedAnalytics: form.hasAdvancedAnalytics,
           hasPrioritizedSearch: form.hasPrioritizedSearch,
-          hasCustomLandingPage: form.hasCustomLandingPage,
-          hasApiAccess: form.hasApiAccess,
-          hasVippsPaymentLink: form.hasVippsPaymentLink,
-          hasCustomBranding: form.hasCustomBranding,
+          canHighlightProfile: form.canHighlightProfile,
+          canUseVideoGallery: form.canUseVideoGallery,
+          hasReviewBadge: form.hasReviewBadge,
+          hasMultipleCategories: form.hasMultipleCategories,
         }),
       });
 
@@ -282,8 +314,11 @@ export default function AdminSubscriptionsScreen({ route }: Props) {
                           <ThemedText style={[styles.featureBadgeText, { color: theme.accent }]}>
                             {[
                               tier.hasAdvancedAnalytics && "Analytics",
-                              tier.hasApiAccess && "API",
-                              tier.hasCustomBranding && "Branding",
+                              tier.hasPrioritizedSearch && "Søk",
+                              tier.canHighlightProfile && "Highlight",
+                              tier.canUseVideoGallery && "Video",
+                              tier.hasMultipleCategories && "Flere kategorier",
+                              tier.hasReviewBadge && "Badge",
                             ]
                               .filter(Boolean)
                               .join(", ")}
@@ -455,6 +490,48 @@ export default function AdminSubscriptionsScreen({ route }: Props) {
                 />
               </View>
               <View style={{ flex: 1 }}>
+                <ThemedText style={styles.label}>Maks produkter</ThemedText>
+                <TextInput
+                  style={[styles.input, { backgroundColor: theme.backgroundSecondary, color: theme.text, borderColor: theme.border }]}
+                  placeholder="5"
+                  placeholderTextColor={theme.textMuted}
+                  value={form.maxProducts}
+                  onChangeText={(text) => setForm({ ...form, maxProducts: text })}
+                  keyboardType="number-pad"
+                  editable={!saving}
+                />
+              </View>
+            </View>
+
+            <View style={{ flexDirection: "row", gap: Spacing.md }}>
+              <View style={{ flex: 1 }}>
+                <ThemedText style={styles.label}>Maks tilbud per mnd</ThemedText>
+                <TextInput
+                  style={[styles.input, { backgroundColor: theme.backgroundSecondary, color: theme.text, borderColor: theme.border }]}
+                  placeholder="10"
+                  placeholderTextColor={theme.textMuted}
+                  value={form.maxMonthlyOffers}
+                  onChangeText={(text) => setForm({ ...form, maxMonthlyOffers: text })}
+                  keyboardType="number-pad"
+                  editable={!saving}
+                />
+              </View>
+              <View style={{ flex: 1 }}>
+                <ThemedText style={styles.label}>Maks leveringer per mnd</ThemedText>
+                <TextInput
+                  style={[styles.input, { backgroundColor: theme.backgroundSecondary, color: theme.text, borderColor: theme.border }]}
+                  placeholder="5"
+                  placeholderTextColor={theme.textMuted}
+                  value={form.maxMonthlyDeliveries}
+                  onChangeText={(text) => setForm({ ...form, maxMonthlyDeliveries: text })}
+                  keyboardType="number-pad"
+                  editable={!saving}
+                />
+              </View>
+            </View>
+
+            <View style={{ flexDirection: "row", gap: Spacing.md }}>
+              <View style={{ flex: 1 }}>
                 <ThemedText style={styles.label}>Maks lagring (GB)</ThemedText>
                 <TextInput
                   style={[styles.input, { backgroundColor: theme.backgroundSecondary, color: theme.text, borderColor: theme.border }]}
@@ -466,17 +543,47 @@ export default function AdminSubscriptionsScreen({ route }: Props) {
                   editable={!saving}
                 />
               </View>
+              <View style={{ flex: 1 }} />
             </View>
 
-            <ThemedText style={[styles.sectionTitle, { marginTop: Spacing.md }]}>Funksjoner</ThemedText>
+            <ThemedText style={[styles.sectionTitle, { marginTop: Spacing.md }]}>Kjernefunksjoner</ThemedText>
+
+            {[
+              { key: "canSendMessages", label: "Send meldinger til par" },
+              { key: "canReceiveInquiries", label: "Motta henvendelser fra par" },
+              { key: "canCreateOffers", label: "Opprett tilbud" },
+              { key: "canCreateDeliveries", label: "Opprett deliveries" },
+              { key: "canShowcaseWork", label: "Vis inspirasjon/gallerier" },
+            ].map((feature) => (
+              <View
+                key={feature.key}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  paddingVertical: Spacing.sm,
+                  borderBottomWidth: 1,
+                  borderColor: theme.border,
+                }}
+              >
+                <ThemedText>{feature.label}</ThemedText>
+                <Switch
+                  value={form[feature.key as keyof typeof form] as boolean}
+                  onValueChange={(val) => setForm({ ...form, [feature.key]: val })}
+                  disabled={saving}
+                />
+              </View>
+            ))}
+
+            <ThemedText style={[styles.sectionTitle, { marginTop: Spacing.md }]}>Premiumfunksjoner</ThemedText>
 
             {[
               { key: "hasAdvancedAnalytics", label: "Avansert analyse" },
-              { key: "hasPrioritizedSearch", label: "Prioritert søk" },
-              { key: "hasCustomLandingPage", label: "Egendefinert landingsside" },
-              { key: "hasApiAccess", label: "API-tilgang" },
-              { key: "hasVippsPaymentLink", label: "Vipps betaling" },
-              { key: "hasCustomBranding", label: "Egendefinert branding" },
+              { key: "hasPrioritizedSearch", label: "Prioritert søk i katalog" },
+              { key: "canHighlightProfile", label: "Fremhevet profil" },
+              { key: "canUseVideoGallery", label: "Videogalleri" },
+              { key: "hasReviewBadge", label: "Anmeldelsesmerke" },
+              { key: "hasMultipleCategories", label: "Flere kategorier" },
             ].map((feature) => (
               <View
                 key={feature.key}
