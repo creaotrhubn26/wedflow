@@ -37,6 +37,17 @@ import VendorHelpScreen from "@/screens/VendorHelpScreen";
 import WhatsNewScreen from "@/screens/WhatsNewScreen";
 import DocumentationScreen from "@/screens/DocumentationScreen";
 import { useScreenOptions } from "@/hooks/useScreenOptions";
+import {
+  VenueDetailsScreen,
+  PhotographerDetailsScreen,
+  FloristDetailsScreen,
+  CateringDetailsScreen,
+  MusicDetailsScreen,
+  CakeDetailsScreen,
+  BeautyDetailsScreen,
+  TransportDetailsScreen,
+  PlannerDetailsScreen,
+} from "@/screens/vendor-details";
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -46,6 +57,16 @@ export type RootStackParamList = {
   VendorProfile: undefined;
   VendorRegistration: undefined;
   VendorPayment: undefined;
+  // Vendor detail screens
+  VenueDetails: undefined;
+  PhotographerDetails: undefined;
+  FloristDetails: undefined;
+  CateringDetails: undefined;
+  MusicDetails: undefined;
+  CakeDetails: undefined;
+  BeautyDetails: undefined;
+  TransportDetails: undefined;
+  PlannerDetails: undefined;
   DeliveryCreate: { delivery?: any };
   InspirationCreate: undefined;
   ProductCreate: { product?: any };
@@ -169,6 +190,79 @@ export default function RootStackNavigator() {
           <Stack.Screen
             name="VendorProfile"
             component={VendorProfileScreen}
+            options={{
+              headerShown: false,
+              presentation: "modal",
+            }}
+          />
+          {/* Vendor Category Detail Screens */}
+          <Stack.Screen
+            name="VenueDetails"
+            component={VenueDetailsScreen}
+            options={{
+              headerShown: false,
+              presentation: "modal",
+            }}
+          />
+          <Stack.Screen
+            name="PhotographerDetails"
+            component={PhotographerDetailsScreen}
+            options={{
+              headerShown: false,
+              presentation: "modal",
+            }}
+          />
+          <Stack.Screen
+            name="FloristDetails"
+            component={FloristDetailsScreen}
+            options={{
+              headerShown: false,
+              presentation: "modal",
+            }}
+          />
+          <Stack.Screen
+            name="CateringDetails"
+            component={CateringDetailsScreen}
+            options={{
+              headerShown: false,
+              presentation: "modal",
+            }}
+          />
+          <Stack.Screen
+            name="MusicDetails"
+            component={MusicDetailsScreen}
+            options={{
+              headerShown: false,
+              presentation: "modal",
+            }}
+          />
+          <Stack.Screen
+            name="CakeDetails"
+            component={CakeDetailsScreen}
+            options={{
+              headerShown: false,
+              presentation: "modal",
+            }}
+          />
+          <Stack.Screen
+            name="BeautyDetails"
+            component={BeautyDetailsScreen}
+            options={{
+              headerShown: false,
+              presentation: "modal",
+            }}
+          />
+          <Stack.Screen
+            name="TransportDetails"
+            component={TransportDetailsScreen}
+            options={{
+              headerShown: false,
+              presentation: "modal",
+            }}
+          />
+          <Stack.Screen
+            name="PlannerDetails"
+            component={PlannerDetailsScreen}
             options={{
               headerShown: false,
               presentation: "modal",

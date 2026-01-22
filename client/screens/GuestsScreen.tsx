@@ -505,7 +505,40 @@ export default function GuestsScreen() {
         </View>
       </View>
 
-      <View style={styles.filterRow}>
+      {/* Smart matching CTA - show when there are guests */}
+      {guests.length > 0 && (
+        <Animated.View entering={FadeInDown.delay(100).duration(300)}>
+          <Pressable
+            onPress={() => {
+              // Navigate to VendorMatching with guest count
+              const rootNav = navigation.getParent()?.getParent();
+              if (rootNav) {
+                (rootNav as any).navigate("Planning", {
+                  screen: "VendorMatching",
+                  params: { guestCount: confirmedCount > 0 ? confirmedCount : guests.length },
+                });
+              }
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            }}
+            style={[styles.matchingCard, { backgroundColor: theme.backgroundDefault, borderColor: Colors.dark.accent + "30" }]}
+          >
+            <View style={[styles.matchingIconCircle, { backgroundColor: Colors.dark.accent + "15" }]}>
+              <Feather name="zap" size={18} color={Colors.dark.accent} />
+            </View>
+            <View style={styles.matchingContent}>
+              <ThemedText style={[styles.matchingTitle, { color: theme.text }]}>
+                Finn leverandører for {confirmedCount > 0 ? confirmedCount : guests.length} gjester
+              </ThemedText>
+              <ThemedText style={[styles.matchingSubtitle, { color: theme.textSecondary }]}>
+                Lokale, catering, fotograf, kake og mer
+              </ThemedText>
+            </View>
+            <Feather name="chevron-right" size={18} color={Colors.dark.accent} />
+          </Pressable>
+        </Animated.View>
+      )}
+
+      <View style={styles.filterRow}>>
         {[
           { value: "all", label: "Alle" },
           { value: "hasInvite", label: "Har invitasjon" },
@@ -1063,6 +1096,33 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: 12,
+  },
+  matchingCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: Spacing.md,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    marginBottom: Spacing.lg,
+    gap: Spacing.md,
+  },
+  matchingIconCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  matchingContent: {
+    flex: 1,
+  },
+  matchingTitle: {
+    fontSize: 15,
+    fontWeight: "600",
+  },
+  matchingSubtitle: {
+    fontSize: 12,
+    marginTop: 2,
   },
   actionButtons: {
     flexDirection: "row",

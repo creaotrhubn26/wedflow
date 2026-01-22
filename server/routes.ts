@@ -5,7 +5,7 @@ import crypto from "node:crypto";
 import { db } from "./db";
 import bcrypt from "bcryptjs";
 import { registerSubscriptionRoutes } from "./subscription-routes";
-import { vendors, vendorCategories, vendorRegistrationSchema, vendorSessions, deliveries, deliveryItems, createDeliverySchema, inspirationCategories, inspirations, inspirationMedia, createInspirationSchema, vendorFeatures, vendorInspirationCategories, inspirationInquiries, createInquirySchema, coupleProfiles, coupleSessions, conversations, messages, coupleLoginSchema, sendMessageSchema, reminders, createReminderSchema, vendorProducts, createVendorProductSchema, vendorOffers, vendorOfferItems, createOfferSchema, appSettings, speeches, createSpeechSchema, messageReminders, scheduleEvents, coordinatorInvitations, guestInvitations, createGuestInvitationSchema, coupleVendorContracts, notifications, activityLogs, weddingTables, weddingGuests, insertWeddingGuestSchema, updateWeddingGuestSchema, tableGuestAssignments, appFeedback, vendorReviews, vendorReviewResponses, checklistTasks, createChecklistTaskSchema, adminConversations, adminMessages, sendAdminMessageSchema, faqItems, insertFaqItemSchema, updateFaqItemSchema, insertAppSettingSchema, updateAppSettingSchema, whatsNewItems, insertWhatsNewSchema, updateWhatsNewSchema, videoGuides, insertVideoGuideSchema, updateVideoGuideSchema, vendorSubscriptions, subscriptionTiers } from "@shared/schema";
+import { vendors, vendorCategories, vendorRegistrationSchema, vendorSessions, deliveries, deliveryItems, createDeliverySchema, inspirationCategories, inspirations, inspirationMedia, createInspirationSchema, vendorFeatures, vendorInspirationCategories, inspirationInquiries, createInquirySchema, coupleProfiles, coupleSessions, conversations, messages, coupleLoginSchema, sendMessageSchema, reminders, createReminderSchema, vendorProducts, createVendorProductSchema, vendorOffers, vendorOfferItems, createOfferSchema, appSettings, speeches, createSpeechSchema, messageReminders, scheduleEvents, coordinatorInvitations, guestInvitations, createGuestInvitationSchema, coupleVendorContracts, notifications, activityLogs, weddingTables, weddingGuests, insertWeddingGuestSchema, updateWeddingGuestSchema, tableGuestAssignments, appFeedback, vendorReviews, vendorReviewResponses, checklistTasks, createChecklistTaskSchema, adminConversations, adminMessages, sendAdminMessageSchema, faqItems, insertFaqItemSchema, updateFaqItemSchema, insertAppSettingSchema, updateAppSettingSchema, whatsNewItems, insertWhatsNewSchema, updateWhatsNewSchema, videoGuides, insertVideoGuideSchema, updateVideoGuideSchema, vendorSubscriptions, subscriptionTiers, vendorCategoryDetails } from "@shared/schema";
 import { eq, and, desc, sql, inArray } from "drizzle-orm";
 
 function generateAccessCode(): string {
@@ -725,6 +725,89 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Smart vendor matching endpoint for couples
+  app.get("/api/vendors/matching", async (req: Request, res: Response) => {
+    try {
+      const { category, guestCount, location } = req.query;
+      const guestCountNum = guestCount ? parseInt(guestCount as string) : undefined;
+
+      // Fetch approved vendors with their category details
+      const approvedVendors = await db.select({
+        id: vendors.id,
+        businessName: vendors.businessName,
+        categoryId: vendors.categoryId,
+        description: vendors.description,
+        location: vendors.location,
+        phone: vendors.phone,
+        website: vendors.website,
+        priceRange: vendors.priceRange,
+        imageUrl: vendors.imageUrl,
+      }).from(vendors).where(eq(vendors.status, "approved"));
+
+      // Filter by category if specified
+      let filtered = category 
+        ? approvedVendors.filter(v => v.categoryId === category)
+        : approvedVendors;
+
+      // Fetch category details for capacity matching
+      const vendorIds = filtered.map(v => v.id);
+      let categoryDetails: any[] = [];
+      if (vendorIds.length > 0) {
+        categoryDetails = await db.select().from(vendorCategoryDetails)
+          .where(inArray(vendorCategoryDetails.vendorId, vendorIds));
+      }
+
+      // Map category details to vendors
+      const vendorsWithDetails = filtered.map(vendor => {
+        const details = categoryDetails.find(d => d.vendorId === vendor.id) || {};
+        return {
+          ...vendor,
+          venueCapacityMin: details.venueCapacityMin,
+          venueCapacityMax: details.venueCapacityMax,
+          cateringMinGuests: details.cateringMinGuests,
+          cateringMaxGuests: details.cateringMaxGuests,
+          venueType: details.venueType,
+          venueLocation: details.venueLocation,
+        };
+      });
+
+      // Filter by capacity if guest count is specified and category supports it
+      let result = vendorsWithDetails;
+      if (guestCountNum && category === "venue") {
+        result = result.filter(v => {
+          // Include vendors without capacity info (show all), or those that fit
+          if (!v.venueCapacityMin && !v.venueCapacityMax) return true;
+          if (v.venueCapacityMax && guestCountNum > v.venueCapacityMax) return false;
+          // Allow some flexibility - include if close to min
+          if (v.venueCapacityMin && guestCountNum < v.venueCapacityMin * 0.7) return false;
+          return true;
+        });
+      }
+      if (guestCountNum && category === "catering") {
+        result = result.filter(v => {
+          if (!v.cateringMinGuests && !v.cateringMaxGuests) return true;
+          if (v.cateringMaxGuests && guestCountNum > v.cateringMaxGuests) return false;
+          if (v.cateringMinGuests && guestCountNum < v.cateringMinGuests * 0.7) return false;
+          return true;
+        });
+      }
+
+      // Filter by location if specified
+      if (location && typeof location === "string") {
+        const locationLower = location.toLowerCase();
+        result = result.filter(v => 
+          v.location?.toLowerCase().includes(locationLower) ||
+          v.venueLocation?.toLowerCase().includes(locationLower)
+        );
+      }
+
+      res.json(result);
+    } catch (error) {
+      console.error("Error fetching matching vendors:", error);
+      res.status(500).json({ error: "Kunne ikke hente matchende leverandører" });
+    }
+  });
+
   const checkAdminAuth = (req: Request, res: Response): boolean => {
     const adminSecret = process.env.ADMIN_SECRET;
     if (!adminSecret) {
@@ -1058,6 +1141,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating vendor profile:", error);
       res.status(500).json({ error: "Kunne ikke oppdatere profil" });
+    }
+  });
+
+  // Get vendor category-specific details
+  app.get("/api/vendor/category-details", async (req: Request, res: Response) => {
+    const vendorId = await checkVendorAuth(req, res);
+    if (!vendorId) return;
+
+    try {
+      const [details] = await db.select()
+        .from(vendorCategoryDetails)
+        .where(eq(vendorCategoryDetails.vendorId, vendorId));
+
+      // Also get vendor's category for context
+      const [vendor] = await db.select({
+        categoryId: vendors.categoryId,
+      }).from(vendors).where(eq(vendors.id, vendorId));
+
+      let categoryName = null;
+      if (vendor?.categoryId) {
+        const [cat] = await db.select().from(vendorCategories).where(eq(vendorCategories.id, vendor.categoryId));
+        categoryName = cat?.name || null;
+      }
+
+      res.json({
+        details: details || null,
+        categoryName,
+      });
+    } catch (error) {
+      console.error("Error fetching category details:", error);
+      res.status(500).json({ error: "Kunne ikke hente kategori-detaljer" });
+    }
+  });
+
+  // Update vendor category-specific details
+  app.patch("/api/vendor/category-details", async (req: Request, res: Response) => {
+    const vendorId = await checkVendorAuth(req, res);
+    if (!vendorId) return;
+
+    try {
+      const updateData = { ...req.body, updatedAt: new Date() };
+      delete updateData.id;
+      delete updateData.vendorId;
+      delete updateData.createdAt;
+
+      // Check if details exist
+      const [existing] = await db.select()
+        .from(vendorCategoryDetails)
+        .where(eq(vendorCategoryDetails.vendorId, vendorId));
+
+      if (existing) {
+        const [updated] = await db.update(vendorCategoryDetails)
+          .set(updateData)
+          .where(eq(vendorCategoryDetails.vendorId, vendorId))
+          .returning();
+        res.json(updated);
+      } else {
+        const [created] = await db.insert(vendorCategoryDetails)
+          .values({
+            vendorId,
+            ...updateData,
+          })
+          .returning();
+        res.json(created);
+      }
+    } catch (error) {
+      console.error("Error updating category details:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere kategori-detaljer" });
     }
   });
 
@@ -6013,6 +6164,107 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching couple schedule for vendor:", error);
       res.status(500).json({ error: "Kunne ikke hente program" });
+    }
+  });
+
+  // Vendor sends schedule change suggestion to couple
+  app.post("/api/vendor/schedule-suggestions", async (req: Request, res: Response) => {
+    const vendorId = await checkVendorAuth(req, res);
+    if (!vendorId) return;
+
+    try {
+      const { coupleId, type, eventId, suggestedTime, suggestedTitle, message } = req.body;
+
+      if (!coupleId || !message) {
+        return res.status(400).json({ error: "Mangler påkrevde felter" });
+      }
+
+      // Verify vendor has contract with this couple
+      const [contract] = await db.select()
+        .from(coupleVendorContracts)
+        .where(and(
+          eq(coupleVendorContracts.coupleId, coupleId),
+          eq(coupleVendorContracts.vendorId, vendorId),
+          eq(coupleVendorContracts.status, "active")
+        ));
+
+      if (!contract) {
+        return res.status(403).json({ error: "Ingen aktiv avtale med dette brudeparet" });
+      }
+
+      // Get vendor name
+      const [vendor] = await db.select({ businessName: vendors.businessName })
+        .from(vendors)
+        .where(eq(vendors.id, vendorId));
+
+      // Create notification for couple
+      const payload: any = {
+        type,
+        eventId,
+        suggestedTime,
+        suggestedTitle,
+        message,
+        vendorId,
+      };
+
+      await db.insert(notifications).values({
+        recipientType: "couple",
+        recipientId: coupleId,
+        type: "schedule_suggestion",
+        title: "Forslag til programendring",
+        body: `${vendor?.businessName || 'En leverandør'} foreslår en endring: ${message.substring(0, 100)}${message.length > 100 ? '...' : ''}`,
+        actorType: "vendor",
+        actorId: vendorId,
+        payload: JSON.stringify(payload),
+      });
+
+      // Log activity
+      await db.insert(activityLogs).values({
+        coupleId,
+        actorType: "vendor",
+        actorId: vendorId,
+        actorName: vendor?.businessName || "Leverandør",
+        action: "schedule_suggestion",
+        description: `Foreslo endring: ${message.substring(0, 50)}${message.length > 50 ? '...' : ''}`,
+      });
+
+      res.json({ success: true, message: "Forslag sendt til brudeparet" });
+    } catch (error) {
+      console.error("Error sending schedule suggestion:", error);
+      res.status(500).json({ error: "Kunne ikke sende forslag" });
+    }
+  });
+
+  // Get vendor's active contracts with couples (for schedule access)
+  app.get("/api/vendor/couple-contracts", async (req: Request, res: Response) => {
+    const vendorId = await checkVendorAuth(req, res);
+    if (!vendorId) return;
+
+    try {
+      const contracts = await db.select({
+        id: coupleVendorContracts.id,
+        coupleId: coupleVendorContracts.coupleId,
+        vendorRole: coupleVendorContracts.vendorRole,
+        status: coupleVendorContracts.status,
+        canViewSchedule: coupleVendorContracts.canViewSchedule,
+        canViewSpeeches: coupleVendorContracts.canViewSpeeches,
+        canViewTableSeating: coupleVendorContracts.canViewTableSeating,
+        createdAt: coupleVendorContracts.createdAt,
+        coupleName: coupleProfiles.displayName,
+        weddingDate: coupleProfiles.weddingDate,
+      })
+        .from(coupleVendorContracts)
+        .innerJoin(coupleProfiles, eq(coupleVendorContracts.coupleId, coupleProfiles.id))
+        .where(and(
+          eq(coupleVendorContracts.vendorId, vendorId),
+          eq(coupleVendorContracts.status, "active")
+        ))
+        .orderBy(desc(coupleVendorContracts.createdAt));
+
+      res.json(contracts);
+    } catch (error) {
+      console.error("Error fetching vendor couple contracts:", error);
+      res.status(500).json({ error: "Kunne ikke hente avtaler" });
     }
   });
 

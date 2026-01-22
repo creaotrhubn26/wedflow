@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   Alert,
   ScrollView,
+  Switch,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
@@ -17,7 +18,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ThemedText } from "@/components/ThemedText";
 import { KeyboardAwareScrollViewCompat } from "@/components/KeyboardAwareScrollViewCompat";
 import { useTheme } from "@/hooks/useTheme";
-import { Spacing, BorderRadius } from "@/constants/theme";
+import { Spacing, BorderRadius, Colors } from "@/constants/theme";
 import { apiRequest, getApiUrl } from "@/lib/query-client";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
@@ -39,6 +40,76 @@ interface VendorProfile {
   category: { id: string; name: string } | null;
 }
 
+interface CategoryDetails {
+  // General fields
+  yearsExperience?: number | null;
+  weddingsCompleted?: number | null;
+  insuranceVerified?: boolean | null;
+  contractIncluded?: boolean | null;
+  depositRequired?: boolean | null;
+  depositPercentage?: number | null;
+  cancellationPolicy?: string | null;
+  languages?: string | null;
+  // Venue specific
+  venueCapacityMin?: number | null;
+  venueCapacityMax?: number | null;
+  venueHasAccommodation?: boolean | null;
+  venueAccommodationCapacity?: number | null;
+  venueHasParking?: boolean | null;
+  venueParkingSpaces?: number | null;
+  venueHasCatering?: boolean | null;
+  venueOutdoorArea?: boolean | null;
+  venueAccessibility?: boolean | null;
+  venueAlcoholLicense?: boolean | null;
+  // Photographer specific
+  photoDeliveryDays?: number | null;
+  photoStyleTags?: string | null;
+  photoIncludesRaw?: boolean | null;
+  photoIncludesAlbum?: boolean | null;
+  photoSecondShooter?: boolean | null;
+  photoDroneAvailable?: boolean | null;
+  photoTravelIncluded?: boolean | null;
+  photoTravelRadius?: number | null;
+  // Florist specific
+  floristDeliveryAvailable?: boolean | null;
+  floristSetupIncluded?: boolean | null;
+  floristRentalAvailable?: boolean | null;
+  floristSeasonalFlowers?: boolean | null;
+  floristPreservationService?: boolean | null;
+  // Catering specific
+  cateringMinGuests?: number | null;
+  cateringMaxGuests?: number | null;
+  cateringStaffIncluded?: boolean | null;
+  cateringEquipmentIncluded?: boolean | null;
+  cateringTastingAvailable?: boolean | null;
+  cateringAlcoholService?: boolean | null;
+  // Music specific
+  musicEquipmentIncluded?: boolean | null;
+  musicLightingIncluded?: boolean | null;
+  musicMcServices?: boolean | null;
+  musicPlaylistCustom?: boolean | null;
+  musicLivePerformance?: boolean | null;
+  // Cake specific
+  cakeDeliveryIncluded?: boolean | null;
+  cakeTastingAvailable?: boolean | null;
+  cakeDessertsAvailable?: boolean | null;
+  // Hair & Makeup specific
+  beautyTrialIncluded?: boolean | null;
+  beautyBridalParty?: boolean | null;
+  beautyOnLocation?: boolean | null;
+  beautyLashesAvailable?: boolean | null;
+  // Transport specific
+  transportCapacity?: number | null;
+  transportDecorationIncluded?: boolean | null;
+  transportChampagneIncluded?: boolean | null;
+  // Planner specific
+  plannerFullService?: boolean | null;
+  plannerPartialService?: boolean | null;
+  plannerDayOfCoordination?: boolean | null;
+  plannerVendorNetwork?: boolean | null;
+  plannerBudgetManagement?: boolean | null;
+}
+
 interface Props {
   navigation: NativeStackNavigationProp<any>;
 }
@@ -57,6 +128,10 @@ export default function VendorProfileScreen({ navigation }: Props) {
   const [priceRange, setPriceRange] = useState("");
   const [googleReviewUrl, setGoogleReviewUrl] = useState("");
   const [sessionToken, setSessionToken] = useState<string | null>(null);
+  
+  // Category-specific details state
+  const [categoryDetails, setCategoryDetails] = useState<CategoryDetails>({});
+  const [activeSection, setActiveSection] = useState<"basic" | "category" | "general">("basic");
 
   useEffect(() => {
     loadSession();
@@ -87,6 +162,22 @@ export default function VendorProfileScreen({ navigation }: Props) {
     enabled: !!sessionToken,
   });
 
+  // Fetch category-specific details
+  const { data: categoryDetailsData } = useQuery<{ details: CategoryDetails | null; categoryName: string | null }>({
+    queryKey: ["/api/vendor/category-details"],
+    queryFn: async () => {
+      if (!sessionToken) throw new Error("Ikke innlogget");
+      const response = await fetch(new URL("/api/vendor/category-details", getApiUrl()).toString(), {
+        headers: {
+          Authorization: `Bearer ${sessionToken}`,
+        },
+      });
+      if (!response.ok) throw new Error("Kunne ikke hente kategori-detaljer");
+      return response.json();
+    },
+    enabled: !!sessionToken,
+  });
+
   // Pre-fill form when profile loads
   useEffect(() => {
     if (profile) {
@@ -100,6 +191,13 @@ export default function VendorProfileScreen({ navigation }: Props) {
       setGoogleReviewUrl(profile.googleReviewUrl || "");
     }
   }, [profile]);
+
+  // Pre-fill category details when loaded
+  useEffect(() => {
+    if (categoryDetailsData?.details) {
+      setCategoryDetails(categoryDetailsData.details);
+    }
+  }, [categoryDetailsData]);
 
   const saveMutation = useMutation({
     mutationFn: async () => {
@@ -149,6 +247,37 @@ export default function VendorProfileScreen({ navigation }: Props) {
     },
   });
 
+  // Save category details
+  const saveCategoryDetailsMutation = useMutation({
+    mutationFn: async () => {
+      if (!sessionToken) throw new Error("Ikke innlogget");
+      
+      const response = await fetch(new URL("/api/vendor/category-details", getApiUrl()).toString(), {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionToken}`,
+        },
+        body: JSON.stringify(categoryDetails),
+      });
+      
+      if (!response.ok) {
+        const error = await response.json();
+        throw new Error(error.message || "Kunne ikke oppdatere detaljer");
+      }
+      return response.json();
+    },
+    onSuccess: () => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      queryClient.invalidateQueries({ queryKey: ["/api/vendor/category-details"] });
+      Alert.alert("Lagret", "Kategori-detaljene dine er oppdatert");
+    },
+    onError: (error: Error) => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert("Feil", error.message);
+    },
+  });
+
   const handleSave = () => {
     if (!businessName.trim()) {
       Alert.alert("Ugyldig", "Bedriftsnavn er påkrevd");
@@ -156,6 +285,650 @@ export default function VendorProfileScreen({ navigation }: Props) {
     }
     saveMutation.mutate();
   };
+
+  const handleSaveCategoryDetails = () => {
+    saveCategoryDetailsMutation.mutate();
+  };
+
+  const updateCategoryDetail = (key: keyof CategoryDetails, value: any) => {
+    setCategoryDetails(prev => ({ ...prev, [key]: value }));
+  };
+
+  // Helper to render category-specific fields based on vendor category
+  const getCategoryName = () => profile?.category?.name || categoryDetailsData?.categoryName || "";
+
+  // Navigate to detailed category screen
+  const navigateToCategoryDetails = () => {
+    const category = getCategoryName();
+    const screenMap: Record<string, string> = {
+      "Venue": "VenueDetails",
+      "Fotograf": "PhotographerDetails",
+      "Videograf": "PhotographerDetails",
+      "Blomster": "FloristDetails",
+      "Catering": "CateringDetails",
+      "Musikk": "MusicDetails",
+      "DJ": "MusicDetails",
+      "Kake": "CakeDetails",
+      "Hår & Makeup": "BeautyDetails",
+      "Transport": "TransportDetails",
+      "Planlegger": "PlannerDetails",
+      "Koordinator": "PlannerDetails",
+    };
+    const screenName = screenMap[category];
+    if (screenName) {
+      navigation.navigate(screenName as any);
+    }
+  };
+
+  const hasCategoryDetailsScreen = () => {
+    const category = getCategoryName();
+    return ["Venue", "Fotograf", "Videograf", "Blomster", "Catering", "Musikk", "DJ", "Kake", "Hår & Makeup", "Transport", "Planlegger", "Koordinator"].includes(category);
+  };
+
+  const renderCategoryFields = () => {
+    const category = getCategoryName();
+    
+    switch (category) {
+      case "Venue":
+        return (
+          <>
+            <View style={styles.inputGroup}>
+              <ThemedText style={[styles.inputLabel, { color: theme.textSecondary }]}>Kapasitet (min gjester)</ThemedText>
+              <TextInput
+                style={[styles.input, { backgroundColor: theme.backgroundRoot, color: theme.text, borderColor: theme.border }]}
+                value={categoryDetails.venueCapacityMin?.toString() || ""}
+                onChangeText={(v) => updateCategoryDetail("venueCapacityMin", v ? parseInt(v) : null)}
+                placeholder="F.eks. 20"
+                placeholderTextColor={theme.textMuted}
+                keyboardType="number-pad"
+              />
+            </View>
+            <View style={styles.inputGroup}>
+              <ThemedText style={[styles.inputLabel, { color: theme.textSecondary }]}>Kapasitet (maks gjester)</ThemedText>
+              <TextInput
+                style={[styles.input, { backgroundColor: theme.backgroundRoot, color: theme.text, borderColor: theme.border }]}
+                value={categoryDetails.venueCapacityMax?.toString() || ""}
+                onChangeText={(v) => updateCategoryDetail("venueCapacityMax", v ? parseInt(v) : null)}
+                placeholder="F.eks. 150"
+                placeholderTextColor={theme.textMuted}
+                keyboardType="number-pad"
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Overnatting tilgjengelig</ThemedText>
+              <Switch
+                value={categoryDetails.venueHasAccommodation || false}
+                onValueChange={(v) => updateCategoryDetail("venueHasAccommodation", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.venueHasAccommodation ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+            {categoryDetails.venueHasAccommodation && (
+              <View style={styles.inputGroup}>
+                <ThemedText style={[styles.inputLabel, { color: theme.textSecondary }]}>Antall sengeplasser</ThemedText>
+                <TextInput
+                  style={[styles.input, { backgroundColor: theme.backgroundRoot, color: theme.text, borderColor: theme.border }]}
+                  value={categoryDetails.venueAccommodationCapacity?.toString() || ""}
+                  onChangeText={(v) => updateCategoryDetail("venueAccommodationCapacity", v ? parseInt(v) : null)}
+                  placeholder="F.eks. 50"
+                  placeholderTextColor={theme.textMuted}
+                  keyboardType="number-pad"
+                />
+              </View>
+            )}
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Parkering</ThemedText>
+              <Switch
+                value={categoryDetails.venueHasParking || false}
+                onValueChange={(v) => updateCategoryDetail("venueHasParking", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.venueHasParking ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+            {categoryDetails.venueHasParking && (
+              <View style={styles.inputGroup}>
+                <ThemedText style={[styles.inputLabel, { color: theme.textSecondary }]}>Antall p-plasser</ThemedText>
+                <TextInput
+                  style={[styles.input, { backgroundColor: theme.backgroundRoot, color: theme.text, borderColor: theme.border }]}
+                  value={categoryDetails.venueParkingSpaces?.toString() || ""}
+                  onChangeText={(v) => updateCategoryDetail("venueParkingSpaces", v ? parseInt(v) : null)}
+                  placeholder="F.eks. 30"
+                  placeholderTextColor={theme.textMuted}
+                  keyboardType="number-pad"
+                />
+              </View>
+            )}
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Catering inkludert</ThemedText>
+              <Switch
+                value={categoryDetails.venueHasCatering || false}
+                onValueChange={(v) => updateCategoryDetail("venueHasCatering", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.venueHasCatering ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Utendørs område</ThemedText>
+              <Switch
+                value={categoryDetails.venueOutdoorArea || false}
+                onValueChange={(v) => updateCategoryDetail("venueOutdoorArea", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.venueOutdoorArea ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Universell utforming</ThemedText>
+              <Switch
+                value={categoryDetails.venueAccessibility || false}
+                onValueChange={(v) => updateCategoryDetail("venueAccessibility", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.venueAccessibility ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Skjenkebevilling</ThemedText>
+              <Switch
+                value={categoryDetails.venueAlcoholLicense || false}
+                onValueChange={(v) => updateCategoryDetail("venueAlcoholLicense", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.venueAlcoholLicense ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+          </>
+        );
+      
+      case "Fotograf":
+      case "Videograf":
+        return (
+          <>
+            <View style={styles.inputGroup}>
+              <ThemedText style={[styles.inputLabel, { color: theme.textSecondary }]}>Leveringstid (dager)</ThemedText>
+              <TextInput
+                style={[styles.input, { backgroundColor: theme.backgroundRoot, color: theme.text, borderColor: theme.border }]}
+                value={categoryDetails.photoDeliveryDays?.toString() || ""}
+                onChangeText={(v) => updateCategoryDetail("photoDeliveryDays", v ? parseInt(v) : null)}
+                placeholder="F.eks. 30"
+                placeholderTextColor={theme.textMuted}
+                keyboardType="number-pad"
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>RAW-filer inkludert</ThemedText>
+              <Switch
+                value={categoryDetails.photoIncludesRaw || false}
+                onValueChange={(v) => updateCategoryDetail("photoIncludesRaw", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.photoIncludesRaw ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Album inkludert</ThemedText>
+              <Switch
+                value={categoryDetails.photoIncludesAlbum || false}
+                onValueChange={(v) => updateCategoryDetail("photoIncludesAlbum", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.photoIncludesAlbum ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Second shooter tilgjengelig</ThemedText>
+              <Switch
+                value={categoryDetails.photoSecondShooter || false}
+                onValueChange={(v) => updateCategoryDetail("photoSecondShooter", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.photoSecondShooter ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Dronefoto/-video</ThemedText>
+              <Switch
+                value={categoryDetails.photoDroneAvailable || false}
+                onValueChange={(v) => updateCategoryDetail("photoDroneAvailable", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.photoDroneAvailable ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Reise inkludert</ThemedText>
+              <Switch
+                value={categoryDetails.photoTravelIncluded || false}
+                onValueChange={(v) => updateCategoryDetail("photoTravelIncluded", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.photoTravelIncluded ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+            {!categoryDetails.photoTravelIncluded && (
+              <View style={styles.inputGroup}>
+                <ThemedText style={[styles.inputLabel, { color: theme.textSecondary }]}>Reiseradius (km) uten tillegg</ThemedText>
+                <TextInput
+                  style={[styles.input, { backgroundColor: theme.backgroundRoot, color: theme.text, borderColor: theme.border }]}
+                  value={categoryDetails.photoTravelRadius?.toString() || ""}
+                  onChangeText={(v) => updateCategoryDetail("photoTravelRadius", v ? parseInt(v) : null)}
+                  placeholder="F.eks. 50"
+                  placeholderTextColor={theme.textMuted}
+                  keyboardType="number-pad"
+                />
+              </View>
+            )}
+          </>
+        );
+      
+      case "Blomster":
+        return (
+          <>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Levering inkludert</ThemedText>
+              <Switch
+                value={categoryDetails.floristDeliveryAvailable || false}
+                onValueChange={(v) => updateCategoryDetail("floristDeliveryAvailable", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.floristDeliveryAvailable ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Oppsett inkludert</ThemedText>
+              <Switch
+                value={categoryDetails.floristSetupIncluded || false}
+                onValueChange={(v) => updateCategoryDetail("floristSetupIncluded", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.floristSetupIncluded ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Utleie av vaser/dekor</ThemedText>
+              <Switch
+                value={categoryDetails.floristRentalAvailable || false}
+                onValueChange={(v) => updateCategoryDetail("floristRentalAvailable", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.floristRentalAvailable ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Sesongbaserte blomster</ThemedText>
+              <Switch
+                value={categoryDetails.floristSeasonalFlowers || false}
+                onValueChange={(v) => updateCategoryDetail("floristSeasonalFlowers", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.floristSeasonalFlowers ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Bukettpreservering</ThemedText>
+              <Switch
+                value={categoryDetails.floristPreservationService || false}
+                onValueChange={(v) => updateCategoryDetail("floristPreservationService", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.floristPreservationService ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+          </>
+        );
+      
+      case "Catering":
+        return (
+          <>
+            <View style={styles.inputGroup}>
+              <ThemedText style={[styles.inputLabel, { color: theme.textSecondary }]}>Minimum antall gjester</ThemedText>
+              <TextInput
+                style={[styles.input, { backgroundColor: theme.backgroundRoot, color: theme.text, borderColor: theme.border }]}
+                value={categoryDetails.cateringMinGuests?.toString() || ""}
+                onChangeText={(v) => updateCategoryDetail("cateringMinGuests", v ? parseInt(v) : null)}
+                placeholder="F.eks. 30"
+                placeholderTextColor={theme.textMuted}
+                keyboardType="number-pad"
+              />
+            </View>
+            <View style={styles.inputGroup}>
+              <ThemedText style={[styles.inputLabel, { color: theme.textSecondary }]}>Maksimum antall gjester</ThemedText>
+              <TextInput
+                style={[styles.input, { backgroundColor: theme.backgroundRoot, color: theme.text, borderColor: theme.border }]}
+                value={categoryDetails.cateringMaxGuests?.toString() || ""}
+                onChangeText={(v) => updateCategoryDetail("cateringMaxGuests", v ? parseInt(v) : null)}
+                placeholder="F.eks. 200"
+                placeholderTextColor={theme.textMuted}
+                keyboardType="number-pad"
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Serveringspersonale inkludert</ThemedText>
+              <Switch
+                value={categoryDetails.cateringStaffIncluded || false}
+                onValueChange={(v) => updateCategoryDetail("cateringStaffIncluded", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.cateringStaffIncluded ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Utstyr inkludert</ThemedText>
+              <Switch
+                value={categoryDetails.cateringEquipmentIncluded || false}
+                onValueChange={(v) => updateCategoryDetail("cateringEquipmentIncluded", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.cateringEquipmentIncluded ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Smaksprøver tilgjengelig</ThemedText>
+              <Switch
+                value={categoryDetails.cateringTastingAvailable || false}
+                onValueChange={(v) => updateCategoryDetail("cateringTastingAvailable", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.cateringTastingAvailable ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Drikkeservering</ThemedText>
+              <Switch
+                value={categoryDetails.cateringAlcoholService || false}
+                onValueChange={(v) => updateCategoryDetail("cateringAlcoholService", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.cateringAlcoholService ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+          </>
+        );
+      
+      case "Musikk":
+        return (
+          <>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Lydutstyr inkludert</ThemedText>
+              <Switch
+                value={categoryDetails.musicEquipmentIncluded || false}
+                onValueChange={(v) => updateCategoryDetail("musicEquipmentIncluded", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.musicEquipmentIncluded ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Lyseffekter inkludert</ThemedText>
+              <Switch
+                value={categoryDetails.musicLightingIncluded || false}
+                onValueChange={(v) => updateCategoryDetail("musicLightingIncluded", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.musicLightingIncluded ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Seremoni­mester/konferansier</ThemedText>
+              <Switch
+                value={categoryDetails.musicMcServices || false}
+                onValueChange={(v) => updateCategoryDetail("musicMcServices", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.musicMcServices ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Tilpasset spilleliste</ThemedText>
+              <Switch
+                value={categoryDetails.musicPlaylistCustom || false}
+                onValueChange={(v) => updateCategoryDetail("musicPlaylistCustom", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.musicPlaylistCustom ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Live-opptreden</ThemedText>
+              <Switch
+                value={categoryDetails.musicLivePerformance || false}
+                onValueChange={(v) => updateCategoryDetail("musicLivePerformance", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.musicLivePerformance ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+          </>
+        );
+      
+      case "Kake":
+        return (
+          <>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Levering inkludert</ThemedText>
+              <Switch
+                value={categoryDetails.cakeDeliveryIncluded || false}
+                onValueChange={(v) => updateCategoryDetail("cakeDeliveryIncluded", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.cakeDeliveryIncluded ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Smaksprøver tilgjengelig</ThemedText>
+              <Switch
+                value={categoryDetails.cakeTastingAvailable || false}
+                onValueChange={(v) => updateCategoryDetail("cakeTastingAvailable", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.cakeTastingAvailable ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Dessertbord tilgjengelig</ThemedText>
+              <Switch
+                value={categoryDetails.cakeDessertsAvailable || false}
+                onValueChange={(v) => updateCategoryDetail("cakeDessertsAvailable", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.cakeDessertsAvailable ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+          </>
+        );
+      
+      case "Hår & Makeup":
+        return (
+          <>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Prøvetime inkludert</ThemedText>
+              <Switch
+                value={categoryDetails.beautyTrialIncluded || false}
+                onValueChange={(v) => updateCategoryDetail("beautyTrialIncluded", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.beautyTrialIncluded ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Brudefølge-tjenester</ThemedText>
+              <Switch
+                value={categoryDetails.beautyBridalParty || false}
+                onValueChange={(v) => updateCategoryDetail("beautyBridalParty", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.beautyBridalParty ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Kommer til lokalet</ThemedText>
+              <Switch
+                value={categoryDetails.beautyOnLocation || false}
+                onValueChange={(v) => updateCategoryDetail("beautyOnLocation", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.beautyOnLocation ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Vipper tilgjengelig</ThemedText>
+              <Switch
+                value={categoryDetails.beautyLashesAvailable || false}
+                onValueChange={(v) => updateCategoryDetail("beautyLashesAvailable", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.beautyLashesAvailable ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+          </>
+        );
+      
+      case "Transport":
+        return (
+          <>
+            <View style={styles.inputGroup}>
+              <ThemedText style={[styles.inputLabel, { color: theme.textSecondary }]}>Kapasitet (personer)</ThemedText>
+              <TextInput
+                style={[styles.input, { backgroundColor: theme.backgroundRoot, color: theme.text, borderColor: theme.border }]}
+                value={categoryDetails.transportCapacity?.toString() || ""}
+                onChangeText={(v) => updateCategoryDetail("transportCapacity", v ? parseInt(v) : null)}
+                placeholder="F.eks. 8"
+                placeholderTextColor={theme.textMuted}
+                keyboardType="number-pad"
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Dekorasjon inkludert</ThemedText>
+              <Switch
+                value={categoryDetails.transportDecorationIncluded || false}
+                onValueChange={(v) => updateCategoryDetail("transportDecorationIncluded", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.transportDecorationIncluded ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Champagne inkludert</ThemedText>
+              <Switch
+                value={categoryDetails.transportChampagneIncluded || false}
+                onValueChange={(v) => updateCategoryDetail("transportChampagneIncluded", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.transportChampagneIncluded ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+          </>
+        );
+      
+      case "Planlegger":
+        return (
+          <>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Full planlegging</ThemedText>
+              <Switch
+                value={categoryDetails.plannerFullService || false}
+                onValueChange={(v) => updateCategoryDetail("plannerFullService", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.plannerFullService ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Delvis planlegging</ThemedText>
+              <Switch
+                value={categoryDetails.plannerPartialService || false}
+                onValueChange={(v) => updateCategoryDetail("plannerPartialService", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.plannerPartialService ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Dagskoordinering</ThemedText>
+              <Switch
+                value={categoryDetails.plannerDayOfCoordination || false}
+                onValueChange={(v) => updateCategoryDetail("plannerDayOfCoordination", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.plannerDayOfCoordination ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Leverandørnettverk</ThemedText>
+              <Switch
+                value={categoryDetails.plannerVendorNetwork || false}
+                onValueChange={(v) => updateCategoryDetail("plannerVendorNetwork", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.plannerVendorNetwork ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+            <View style={styles.switchRow}>
+              <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Budsjettstyring</ThemedText>
+              <Switch
+                value={categoryDetails.plannerBudgetManagement || false}
+                onValueChange={(v) => updateCategoryDetail("plannerBudgetManagement", v)}
+                trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+                thumbColor={categoryDetails.plannerBudgetManagement ? Colors.dark.accent : theme.backgroundSecondary}
+              />
+            </View>
+          </>
+        );
+      
+      default:
+        return (
+          <ThemedText style={[styles.noCategoryText, { color: theme.textSecondary }]}>
+            Ingen spesifikke felter for denne kategorien ennå.
+          </ThemedText>
+        );
+    }
+  };
+
+  // Render general business details (applicable to all categories)
+  const renderGeneralFields = () => (
+    <>
+      <View style={styles.inputGroup}>
+        <ThemedText style={[styles.inputLabel, { color: theme.textSecondary }]}>Antall års erfaring</ThemedText>
+        <TextInput
+          style={[styles.input, { backgroundColor: theme.backgroundRoot, color: theme.text, borderColor: theme.border }]}
+          value={categoryDetails.yearsExperience?.toString() || ""}
+          onChangeText={(v) => updateCategoryDetail("yearsExperience", v ? parseInt(v) : null)}
+          placeholder="F.eks. 10"
+          placeholderTextColor={theme.textMuted}
+          keyboardType="number-pad"
+        />
+      </View>
+      <View style={styles.inputGroup}>
+        <ThemedText style={[styles.inputLabel, { color: theme.textSecondary }]}>Antall bryllup gjennomført</ThemedText>
+        <TextInput
+          style={[styles.input, { backgroundColor: theme.backgroundRoot, color: theme.text, borderColor: theme.border }]}
+          value={categoryDetails.weddingsCompleted?.toString() || ""}
+          onChangeText={(v) => updateCategoryDetail("weddingsCompleted", v ? parseInt(v) : null)}
+          placeholder="F.eks. 200"
+          placeholderTextColor={theme.textMuted}
+          keyboardType="number-pad"
+        />
+      </View>
+      <View style={styles.switchRow}>
+        <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Forsikring verifisert</ThemedText>
+        <Switch
+          value={categoryDetails.insuranceVerified || false}
+          onValueChange={(v) => updateCategoryDetail("insuranceVerified", v)}
+          trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+          thumbColor={categoryDetails.insuranceVerified ? Colors.dark.accent : theme.backgroundSecondary}
+        />
+      </View>
+      <View style={styles.switchRow}>
+        <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Kontrakt inkludert</ThemedText>
+        <Switch
+          value={categoryDetails.contractIncluded || false}
+          onValueChange={(v) => updateCategoryDetail("contractIncluded", v)}
+          trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+          thumbColor={categoryDetails.contractIncluded ? Colors.dark.accent : theme.backgroundSecondary}
+        />
+      </View>
+      <View style={styles.switchRow}>
+        <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Depositum påkrevd</ThemedText>
+        <Switch
+          value={categoryDetails.depositRequired || false}
+          onValueChange={(v) => updateCategoryDetail("depositRequired", v)}
+          trackColor={{ false: theme.border, true: Colors.dark.accent + "60" }}
+          thumbColor={categoryDetails.depositRequired ? Colors.dark.accent : theme.backgroundSecondary}
+        />
+      </View>
+      {categoryDetails.depositRequired && (
+        <View style={styles.inputGroup}>
+          <ThemedText style={[styles.inputLabel, { color: theme.textSecondary }]}>Depositum (%)</ThemedText>
+          <TextInput
+            style={[styles.input, { backgroundColor: theme.backgroundRoot, color: theme.text, borderColor: theme.border }]}
+            value={categoryDetails.depositPercentage?.toString() || ""}
+            onChangeText={(v) => updateCategoryDetail("depositPercentage", v ? parseInt(v) : null)}
+            placeholder="F.eks. 30"
+            placeholderTextColor={theme.textMuted}
+            keyboardType="number-pad"
+          />
+        </View>
+      )}
+      <View style={styles.inputGroup}>
+        <ThemedText style={[styles.inputLabel, { color: theme.textSecondary }]}>Avbestillingsvilkår</ThemedText>
+        <TextInput
+          style={[styles.textArea, { backgroundColor: theme.backgroundRoot, color: theme.text, borderColor: theme.border }]}
+          value={categoryDetails.cancellationPolicy || ""}
+          onChangeText={(v) => updateCategoryDetail("cancellationPolicy", v || null)}
+          placeholder="Beskriv dine avbestillingsvilkår..."
+          placeholderTextColor={theme.textMuted}
+          multiline
+          numberOfLines={3}
+          textAlignVertical="top"
+        />
+      </View>
+    </>
+  );
 
   const isValid = businessName.trim().length >= 2;
 
@@ -398,6 +1171,113 @@ export default function VendorProfileScreen({ navigation }: Props) {
             </>
           )}
         </Pressable>
+
+        {/* General Business Details */}
+        <View style={[styles.formCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border, marginTop: Spacing.xl }]}>
+          <View style={styles.sectionHeader}>
+            <View style={[styles.sectionIconCircle, { backgroundColor: theme.accent + "15" }]}>
+              <Feather name="award" size={16} color={theme.accent} />
+            </View>
+            <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>Generell forretningsinformasjon</ThemedText>
+          </View>
+
+          {renderGeneralFields()}
+        </View>
+
+        {/* Category-Specific Details */}
+        {profile.category && (
+          <View style={[styles.formCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
+            <View style={styles.sectionHeader}>
+              <View style={[styles.sectionIconCircle, { backgroundColor: theme.accent + "15" }]}>
+                <Feather 
+                  name={
+                    getCategoryName() === "Venue" ? "home" :
+                    getCategoryName() === "Fotograf" || getCategoryName() === "Videograf" ? "camera" :
+                    getCategoryName() === "Blomster" ? "sun" :
+                    getCategoryName() === "Catering" ? "coffee" :
+                    getCategoryName() === "Musikk" ? "music" :
+                    getCategoryName() === "Kake" ? "gift" :
+                    getCategoryName() === "Hår & Makeup" ? "scissors" :
+                    getCategoryName() === "Transport" ? "truck" :
+                    getCategoryName() === "Planlegger" ? "clipboard" :
+                    "settings"
+                  }
+                  size={16} 
+                  color={theme.accent} 
+                />
+              </View>
+              <View style={{ flex: 1, flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
+                  {getCategoryName()}-detaljer
+                </ThemedText>
+                {hasCategoryDetailsScreen() && (
+                  <Pressable
+                    onPress={navigateToCategoryDetails}
+                    style={({ pressed }) => [
+                      styles.detailsLinkBtn,
+                      { backgroundColor: theme.accent + "15", borderColor: theme.accent },
+                      pressed && { opacity: 0.8 }
+                    ]}
+                  >
+                    <ThemedText style={[styles.detailsLinkText, { color: theme.accent }]}>Alle detaljer</ThemedText>
+                    <Feather name="arrow-right" size={14} color={theme.accent} />
+                  </Pressable>
+                )}
+              </View>
+            </View>
+
+            {renderCategoryFields()}
+          </View>
+        )}
+
+        {/* Advanced Category Details - Navigate to full screen */}
+        {profile.category && hasCategoryDetailsScreen() && (
+          <Pressable
+            onPress={navigateToCategoryDetails}
+            style={({ pressed }) => [
+              styles.advancedDetailsCard,
+              { backgroundColor: theme.backgroundDefault, borderColor: theme.accent + "40" },
+              pressed && { opacity: 0.9 }
+            ]}
+          >
+            <View style={styles.advancedDetailsContent}>
+              <View style={[styles.advancedDetailsIcon, { backgroundColor: theme.accent + "15" }]}>
+                <Feather name="sliders" size={20} color={theme.accent} />
+              </View>
+              <View style={styles.advancedDetailsText}>
+                <ThemedText style={[styles.advancedDetailsTitle, { color: theme.text }]}>
+                  Utvidede {getCategoryName().toLowerCase()}-innstillinger
+                </ThemedText>
+                <ThemedText style={[styles.advancedDetailsSubtitle, { color: theme.textSecondary }]}>
+                  Bordoppsett, fasiliteter, kapasitet og mer
+                </ThemedText>
+              </View>
+            </View>
+            <Feather name="chevron-right" size={20} color={theme.accent} />
+          </Pressable>
+        )}
+
+        {/* Save Category Details Button */}
+        <Pressable
+          onPress={handleSaveCategoryDetails}
+          disabled={saveCategoryDetailsMutation.isPending}
+          style={({ pressed }) => [
+            styles.submitBtn,
+            { backgroundColor: theme.accent },
+            pressed && { opacity: 0.9, transform: [{ scale: 0.98 }] },
+          ]}
+        >
+          {saveCategoryDetailsMutation.isPending ? (
+            <ActivityIndicator color="#FFFFFF" />
+          ) : (
+            <>
+              <View style={styles.submitBtnIcon}>
+                <Feather name="save" size={16} color="#FFFFFF" />
+              </View>
+              <ThemedText style={styles.submitBtnText}>Lagre kategori-detaljer</ThemedText>
+            </>
+          )}
+        </Pressable>
       </KeyboardAwareScrollViewCompat>
     </View>
   );
@@ -560,5 +1440,73 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#FFFFFF",
     letterSpacing: 0.2,
+  },
+  switchRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: Spacing.sm,
+    marginBottom: Spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: "rgba(255,255,255,0.06)",
+  },
+  switchLabel: {
+    fontSize: 15,
+    fontWeight: "500",
+    flex: 1,
+    marginRight: Spacing.md,
+  },
+  noCategoryText: {
+    fontSize: 14,
+    fontStyle: "italic",
+    textAlign: "center",
+    paddingVertical: Spacing.lg,
+  },
+  detailsLinkBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.xs,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    borderRadius: BorderRadius.full,
+    borderWidth: 1,
+  },
+  detailsLinkText: {
+    fontSize: 13,
+    fontWeight: "600",
+  },
+  advancedDetailsCard: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: Spacing.lg,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1.5,
+    marginBottom: Spacing.md,
+    borderStyle: "dashed" as any,
+  },
+  advancedDetailsContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.md,
+    flex: 1,
+  },
+  advancedDetailsIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  advancedDetailsText: {
+    flex: 1,
+  },
+  advancedDetailsTitle: {
+    fontSize: 15,
+    fontWeight: "600",
+    marginBottom: 2,
+  },
+  advancedDetailsSubtitle: {
+    fontSize: 13,
   },
 });

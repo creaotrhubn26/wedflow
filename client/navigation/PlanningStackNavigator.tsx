@@ -7,6 +7,7 @@ import ImportantPeopleScreen from "@/screens/ImportantPeopleScreen";
 import BudgetScreen from "@/screens/BudgetScreen";
 import AITimeScreen from "@/screens/AITimeScreen";
 import VendorsScreen from "@/screens/VendorsScreen";
+import VendorMatchingScreen from "@/screens/VendorMatchingScreen";
 import TimelineScreen from "@/screens/TimelineScreen";
 import StressTrackerScreen from "@/screens/StressTrackerScreen";
 import BudgetScenariosScreen from "@/screens/BudgetScenariosScreen";
@@ -37,6 +38,7 @@ export type PlanningStackParamList = {
   Budget: undefined;
   AITime: undefined;
   Vendors: undefined;
+  VendorMatching: { category?: string; guestCount?: number };
   Timeline: undefined;
   StressTracker: undefined;
   BudgetScenarios: undefined;
@@ -104,6 +106,11 @@ export default function PlanningStackNavigator() {
         name="Vendors"
         component={VendorsScreen}
         options={{ title: "Leverandører" }}
+      />
+      <Stack.Screen
+        name="VendorMatching"
+        component={VendorMatchingScreen}
+        options={{ title: "Finn leverandør" }}
       />
       <Stack.Screen
         name="Timeline"

@@ -82,7 +82,7 @@ interface Inspiration {
   category: InspirationCategory | null;
 }
 
-type TabType = "deliveries" | "inspirations" | "messages" | "products" | "offers" | "reviews";
+type TabType = "deliveries" | "inspirations" | "messages" | "products" | "offers" | "reviews" | "couples";
 
 interface Conversation {
   id: string;
@@ -154,6 +154,19 @@ interface VendorContract {
   reviewReminderSentAt: string | null;
   coupleName: string;
   hasReview: boolean;
+}
+
+interface CoupleContract {
+  id: string;
+  coupleId: string;
+  coupleName: string;
+  weddingDate: string | null;
+  vendorRole: string | null;
+  status: string;
+  canViewSchedule: boolean;
+  canViewSpeeches: boolean;
+  canViewTableSeating: boolean;
+  createdAt: string;
 }
 
 interface Props {
@@ -386,6 +399,22 @@ export default function VendorDashboardScreen({ navigation }: Props) {
     enabled: !!session?.sessionToken,
   });
 
+  // Query for couple contracts with schedule access
+  const { data: coupleContractsData = [], refetch: refetchCoupleContracts } = useQuery<CoupleContract[]>({
+    queryKey: ["/api/vendor/couple-contracts"],
+    queryFn: async () => {
+      if (!session?.sessionToken) return [];
+      const response = await fetch(new URL("/api/vendor/couple-contracts", getApiUrl()).toString(), {
+        headers: {
+          Authorization: `Bearer ${session.sessionToken}`,
+        },
+      });
+      if (!response.ok) throw new Error("Kunne ikke hente brudepar");
+      return response.json();
+    },
+    enabled: !!session?.sessionToken,
+  });
+
   const completedWithoutReview = contractsData.filter(c => c.status === "completed" && !c.hasReview);
 
   const sendReminderMutation = useMutation({
@@ -478,11 +507,13 @@ export default function VendorDashboardScreen({ navigation }: Props) {
       await refetchOffers();
     } else if (activeTab === "reviews") {
       await Promise.all([refetchReviews(), refetchContracts()]);
+    } else if (activeTab === "couples") {
+      await refetchCoupleContracts();
     } else {
       await refetchConversations();
     }
     setIsRefreshing(false);
-  }, [activeTab, refetchDeliveries, refetchInspirations, refetchConversations, refetchProducts, refetchOffers, refetchReviews, refetchContracts]);
+  }, [activeTab, refetchDeliveries, refetchInspirations, refetchConversations, refetchProducts, refetchOffers, refetchReviews, refetchContracts, refetchCoupleContracts]);
 
   const handleLogout = async () => {
     const performLogout = async () => {
@@ -1195,6 +1226,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
           { key: "inspirations" as TabType, icon: "image" as const, label: "Showcase" },
           { key: "products" as TabType, icon: "shopping-bag" as const, label: "Produkter" },
           { key: "offers" as TabType, icon: "file-text" as const, label: "Tilbud" },
+          { key: "couples" as TabType, icon: "users" as const, label: "Brudepar" },
           { key: "messages" as TabType, icon: "message-circle" as const, label: "Meldinger", badge: totalUnread },
           { key: "reviews" as TabType, icon: "star" as const, label: "Anmeldelser", badge: reviewsData.length },
         ].map((tab) => {
@@ -1242,7 +1274,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
       </ScrollView>
 
 
-      {activeTab !== "messages" && activeTab !== "reviews" ? (
+      {activeTab !== "messages" && activeTab !== "reviews" && activeTab !== "couples" ? (
         <View style={styles.createBtnContainer}>
           <Pressable
             onPress={() => {
@@ -1644,6 +1676,127 @@ export default function VendorDashboardScreen({ navigation }: Props) {
               </ThemedText>
               <ThemedText style={[styles.emptySubtext, { color: theme.textSecondary }]}>
                 Når par anmelder dine tjenester, vil de vises her
+              </ThemedText>
+            </View>
+          )}
+        />
+      ) : activeTab === "couples" ? (
+        <FlatList
+          style={{ zIndex: 1, flex: 1 }}
+          data={coupleContractsData}
+          renderItem={({ item, index }) => {
+            const weddingDateFormatted = item.weddingDate 
+              ? new Date(item.weddingDate).toLocaleDateString("nb-NO", { day: "numeric", month: "short", year: "numeric" })
+              : null;
+            return (
+              <Animated.View entering={FadeInDown.delay(index * 50).duration(300)}>
+                <View style={[styles.deliveryCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
+                  <View style={styles.cardHeader}>
+                    <View style={styles.cardTitleRow}>
+                      <View style={[styles.coupleAvatar, { backgroundColor: theme.accent + "20" }]}>
+                        <Feather name="heart" size={18} color={theme.accent} />
+                      </View>
+                      <View style={{ flex: 1, marginLeft: Spacing.sm }}>
+                        <ThemedText style={styles.cardTitle}>{item.coupleName}</ThemedText>
+                        {weddingDateFormatted && (
+                          <ThemedText style={[styles.coupleDate, { color: theme.textSecondary }]}>
+                            <Feather name="calendar" size={12} color={theme.textSecondary} /> {weddingDateFormatted}
+                          </ThemedText>
+                        )}
+                      </View>
+                    </View>
+                    {item.vendorRole && (
+                      <View style={[styles.statusBadge, { backgroundColor: theme.accent + "20" }]}>
+                        <ThemedText style={[styles.statusText, { color: theme.accent }]}>
+                          {item.vendorRole}
+                        </ThemedText>
+                      </View>
+                    )}
+                  </View>
+                  <View style={styles.accessBadges}>
+                    {item.canViewSchedule && (
+                      <Pressable
+                        onPress={() => {
+                          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                          navigation.navigate("VendorCoupleSchedule", { 
+                            coupleId: item.coupleId, 
+                            coupleName: item.coupleName 
+                          });
+                        }}
+                        style={[styles.accessBadge, { backgroundColor: "#4CAF50" + "20", borderColor: "#4CAF50" }]}
+                      >
+                        <Feather name="calendar" size={14} color="#4CAF50" />
+                        <ThemedText style={[styles.accessBadgeText, { color: "#4CAF50" }]}>
+                          Program
+                        </ThemedText>
+                        <Feather name="chevron-right" size={14} color="#4CAF50" />
+                      </Pressable>
+                    )}
+                    {item.canViewSpeeches && (
+                      <View style={[styles.accessBadge, { backgroundColor: "#2196F3" + "20", borderColor: "#2196F3" }]}>
+                        <Feather name="mic" size={14} color="#2196F3" />
+                        <ThemedText style={[styles.accessBadgeText, { color: "#2196F3" }]}>
+                          Taler
+                        </ThemedText>
+                      </View>
+                    )}
+                    {item.canViewTableSeating && (
+                      <View style={[styles.accessBadge, { backgroundColor: "#9C27B0" + "20", borderColor: "#9C27B0" }]}>
+                        <Feather name="grid" size={14} color="#9C27B0" />
+                        <ThemedText style={[styles.accessBadgeText, { color: "#9C27B0" }]}>
+                          Bordplassering
+                        </ThemedText>
+                      </View>
+                    )}
+                    {!item.canViewSchedule && !item.canViewSpeeches && !item.canViewTableSeating && (
+                      <View style={[styles.accessBadge, { backgroundColor: theme.backgroundSecondary, borderColor: theme.border }]}>
+                        <Feather name="lock" size={14} color={theme.textMuted} />
+                        <ThemedText style={[styles.accessBadgeText, { color: theme.textMuted }]}>
+                          Ingen tilgang gitt ennå
+                        </ThemedText>
+                      </View>
+                    )}
+                  </View>
+                </View>
+              </Animated.View>
+            );
+          }}
+          keyExtractor={(item) => item.id}
+          contentContainerStyle={{
+            paddingHorizontal: Spacing.lg,
+            paddingBottom: insets.bottom + Spacing.xl,
+          }}
+          ItemSeparatorComponent={() => <View style={{ height: Spacing.md }} />}
+          refreshControl={
+            <RefreshControl
+              refreshing={isRefreshing}
+              onRefresh={handleRefresh}
+              tintColor={theme.accent}
+            />
+          }
+          ListHeaderComponent={() => (
+            <View style={[styles.coupleInfoCard, { backgroundColor: theme.accent + "10", borderColor: theme.accent }]}>
+              <Feather name="info" size={18} color={theme.accent} />
+              <View style={{ flex: 1, marginLeft: Spacing.sm }}>
+                <ThemedText style={[styles.coupleInfoTitle, { color: theme.accent }]}>
+                  Brudepar med tilgang
+                </ThemedText>
+                <ThemedText style={[styles.coupleInfoText, { color: theme.textSecondary }]}>
+                  Her ser du brudepar som har gitt deg tilgang til deres planlegging. Trykk på "Program" for å se tidslinjen og foreslå endringer.
+                </ThemedText>
+              </View>
+            </View>
+          )}
+          ListEmptyComponent={() => (
+            <View style={styles.emptyContainer}>
+              <View style={[styles.emptyIconContainer, { backgroundColor: theme.accent + "15" }]}>
+                <Feather name="users" size={32} color={theme.accent} />
+              </View>
+              <ThemedText style={[styles.emptyText, { color: theme.text }]}>
+                Ingen brudepar ennå
+              </ThemedText>
+              <ThemedText style={[styles.emptySubtext, { color: theme.textSecondary }]}>
+                Når brudepar aksepterer dine tilbud og gir deg tilgang, vil de vises her
               </ThemedText>
             </View>
           )}
@@ -2637,5 +2790,54 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 2,
     fontWeight: "500",
+  },
+  // Couples tab styles
+  coupleAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  coupleDate: {
+    fontSize: 12,
+    marginTop: 2,
+  },
+  accessBadges: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    paddingBottom: Spacing.md,
+  },
+  accessBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.sm,
+    borderWidth: 1,
+    gap: 4,
+  },
+  accessBadgeText: {
+    fontSize: 12,
+    fontWeight: "500",
+  },
+  coupleInfoCard: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    padding: Spacing.md,
+    marginBottom: Spacing.lg,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+  },
+  coupleInfoTitle: {
+    fontSize: 14,
+    fontWeight: "600",
+    marginBottom: 4,
+  },
+  coupleInfoText: {
+    fontSize: 13,
+    lineHeight: 18,
   },
 });

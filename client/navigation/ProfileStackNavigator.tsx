@@ -6,6 +6,7 @@ import PhotoPlanScreen from "@/screens/PhotoPlanScreen";
 import SettingsScreen from "@/screens/SettingsScreen";
 import VendorLoginScreen from "@/screens/VendorLoginScreen";
 import VendorDashboardScreen from "@/screens/VendorDashboardScreen";
+import VendorCoupleScheduleScreen from "@/screens/VendorCoupleScheduleScreen";
 import DeliveryCreateScreen from "@/screens/DeliveryCreateScreen";
 import InspirationCreateScreen from "@/screens/InspirationCreateScreen";
 import VendorRegistrationScreen from "@/screens/VendorRegistrationScreen";
@@ -34,6 +35,7 @@ export type ProfileStackParamList = {
   OfferCreate: { offer?: any } | undefined;
   VendorRegistration: undefined;
   VendorChat: { conversationId: string; coupleName: string };
+  VendorCoupleSchedule: { coupleId: string; coupleName: string };
   VendorProfile: undefined;
   NotificationSettings: undefined;
   About: undefined;
@@ -127,6 +129,13 @@ export default function ProfileStackNavigator() {
         options={({ route }) => ({
           title: route.params.coupleName,
           headerBackVisible: false,
+        })}
+      />
+      <Stack.Screen
+        name="VendorCoupleSchedule"
+        component={VendorCoupleScheduleScreen}
+        options={({ route }) => ({
+          title: `Program – ${route.params.coupleName}`,
         })}
       />
       <Stack.Screen
