@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import {
   StyleSheet,
   View,
@@ -7,6 +7,7 @@ import {
   ActivityIndicator,
   Alert,
   RefreshControl,
+  TextInput,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
@@ -37,6 +38,8 @@ export default function AdminVendorChatsScreen({ route, navigation }: Props) {
   const headerHeight = useHeaderHeight();
 
   const [conversations, setConversations] = useState<AdminConvWithVendor[]>([]);
+  const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState<"all" | "unread" | "recent">("all");
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);
@@ -120,11 +123,72 @@ export default function AdminVendorChatsScreen({ route, navigation }: Props) {
     };
   }, [adminKey]);
 
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    let list = conversations.filter((c) => {
+      const hay = `${c.vendor?.businessName || ""} ${c.vendor?.email || ""}`.toLowerCase();
+      return q ? hay.includes(q) : true;
+    });
+    if (filter === "unread") {
+      list = list.filter((c) => (c.conv.adminUnreadCount || 0) > 0);
+    } else if (filter === "recent") {
+      const cutoff = Date.now() - 1000 * 60 * 60 * 24 * 2; // 48t
+      list = list.filter((c) => new Date(c.conv.lastMessageAt).getTime() >= cutoff);
+    }
+    // always sort by lastMessageAt desc
+    list = [...list].sort((a, b) => new Date(b.conv.lastMessageAt).getTime() - new Date(a.conv.lastMessageAt).getTime());
+    return list;
+  }, [conversations, search, filter]);
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.backgroundRoot }]} edges={["top", "bottom"]}>
       <View style={styles.header}>
         <ThemedText style={styles.title}>Wedflow Support - Leverandører</ThemedText>
         <ThemedText style={styles.subtitle}>Meldinger fra leverandører</ThemedText>
+        <View style={styles.toolsRow}>
+          <View style={[styles.searchBox, { borderColor: theme.border, backgroundColor: theme.backgroundSecondary }]}>
+            <Feather name="search" size={16} color={theme.textMuted} />
+            <TextInput
+              style={[styles.searchInput, { color: theme.text }]}
+              placeholder="Søk på navn eller e-post"
+              placeholderTextColor={theme.textMuted}
+              value={search}
+              onChangeText={setSearch}
+              autoCorrect={false}
+              autoCapitalize="none"
+            />
+            {search.length > 0 && (
+              <Pressable onPress={() => setSearch("")}> 
+                <Feather name="x" size={16} color={theme.textMuted} />
+              </Pressable>
+            )}
+          </View>
+          <View style={styles.filtersRow}>
+            {(
+              [
+                { key: "all", label: "Alle" },
+                { key: "unread", label: "Ulest" },
+                { key: "recent", label: "Siste 48t" },
+              ] as const
+            ).map((f) => (
+              <Pressable
+                key={f.key}
+                style={[
+                  styles.filterChip,
+                  {
+                    backgroundColor: filter === f.key ? theme.accent : theme.backgroundSecondary,
+                    borderColor: filter === f.key ? theme.accent : theme.border,
+                  },
+                ]}
+                onPress={() => setFilter(f.key)}
+              >
+                <ThemedText style={[styles.filterText, { color: filter === f.key ? "#FFFFFF" : theme.textSecondary }]}>
+                  {f.label}
+                </ThemedText>
+              </Pressable>
+            ))}
+          </View>
+        </View>
       </View>
 
       {loading && <ActivityIndicator style={{ marginTop: Spacing.lg }} color={theme.accent} />}
@@ -136,7 +200,7 @@ export default function AdminVendorChatsScreen({ route, navigation }: Props) {
       )}
       {!loading && (
         <FlatList
-          data={conversations}
+          data={filtered}
           keyExtractor={(c) => c.conv.id}
           contentContainerStyle={{ padding: Spacing.md }}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); fetchConversations(false); }} />}
@@ -166,11 +230,14 @@ export default function AdminVendorChatsScreen({ route, navigation }: Props) {
                     Sist: {new Date(item.conv.lastMessageAt).toLocaleString()}
                   </ThemedText>
                 </View>
-                {item.conv.adminUnreadCount > 0 && (
-                  <View style={[styles.badge, { backgroundColor: theme.accent }]}>
-                    <ThemedText style={styles.badgeText}>{item.conv.adminUnreadCount}</ThemedText>
-                  </View>
-                )}
+                <View style={styles.trail}>
+                  {item.conv.adminUnreadCount > 0 && (
+                    <View style={[styles.badge, { backgroundColor: theme.accent }]}> 
+                      <ThemedText style={styles.badgeText}>{item.conv.adminUnreadCount}</ThemedText>
+                    </View>
+                  )}
+                  <Feather name="chevron-right" size={18} color={theme.textMuted} />
+                </View>
               </View>
             </Pressable>
           )}
@@ -185,6 +252,12 @@ const styles = StyleSheet.create({
   header: { paddingHorizontal: Spacing.md, paddingTop: Spacing.md, paddingBottom: Spacing.md },
   title: { fontSize: 20, fontWeight: "700" },
   subtitle: { fontSize: 12, opacity: 0.6, marginTop: 2 },
+  toolsRow: { marginTop: Spacing.md, gap: Spacing.sm },
+  searchBox: { flexDirection: "row", alignItems: "center", gap: 8, paddingHorizontal: 10, borderWidth: 1, borderRadius: BorderRadius.md, height: 40 },
+  searchInput: { flex: 1, paddingVertical: 8 },
+  filtersRow: { flexDirection: "row", gap: 8, marginTop: Spacing.sm },
+  filterChip: { paddingHorizontal: 12, height: 32, borderRadius: 16, alignItems: "center", justifyContent: "center", borderWidth: 1 },
+  filterText: { fontSize: 12, fontWeight: "600" },
   emptyState: { flex: 1, alignItems: "center", justifyContent: "center" },
   emptyText: { fontSize: 14, marginTop: Spacing.md },
   card: { borderWidth: 1, borderRadius: BorderRadius.md, padding: Spacing.md, marginBottom: Spacing.sm },
@@ -193,6 +266,7 @@ const styles = StyleSheet.create({
   vendorName: { fontSize: 16, fontWeight: "600", marginBottom: Spacing.xs },
   vendorEmail: { fontSize: 13, marginBottom: Spacing.xs },
   lastMessage: { fontSize: 12 },
+  trail: { flexDirection: "row", alignItems: "center", gap: 8 },
   badge: { minWidth: 28, height: 28, borderRadius: 14, alignItems: "center", justifyContent: "center" },
   badgeText: { fontSize: 12, fontWeight: "700", color: "#FFFFFF" },
 });

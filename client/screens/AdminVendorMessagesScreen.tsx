@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useMemo } from "react";
 import {
   StyleSheet,
   View,
@@ -9,6 +9,7 @@ import {
   Alert,
   RefreshControl,
 } from "react-native";
+import * as Clipboard from "expo-clipboard";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
@@ -49,6 +50,28 @@ export default function AdminVendorMessagesScreen({ route, navigation }: Props) 
   const wsRef = useRef<WebSocket | null>(null);
   const wsTypingTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [vendorTypingWs, setVendorTypingWs] = useState(false);
+  const listRef = useRef<FlatList<any> | null>(null);
+
+  const items = useMemo(() => {
+    // Build a list with date separators
+    const out: Array<{ type: "sep"; id: string; label: string } | { type: "msg"; id: string; m: AdminMessage }> = [];
+    let lastDay = "";
+    for (const m of messages) {
+      const d = new Date(m.createdAt);
+      const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+      if (key !== lastDay) {
+        const now = new Date();
+        const dayOnly = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+        const todayOnly = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const diffDays = Math.round((todayOnly.getTime() - dayOnly.getTime()) / (1000 * 60 * 60 * 24));
+        const label = diffDays === 0 ? "I dag" : diffDays === 1 ? "I går" : d.toLocaleDateString();
+        out.push({ type: "sep", id: `sep-${key}`, label });
+        lastDay = key;
+      }
+      out.push({ type: "msg", id: m.id, m });
+    }
+    return out;
+  }, [messages]);
 
   const fetchMessages = async (showSpinner = true) => {
     try {
@@ -113,6 +136,13 @@ export default function AdminVendorMessagesScreen({ route, navigation }: Props) 
     fetchMessages();
   }, [conversationId]);
 
+  useEffect(() => {
+    // Auto-scroll to bottom when new content arrives
+    requestAnimationFrame(() => {
+      listRef.current?.scrollToEnd({ animated: true });
+    });
+  }, [items.length]);
+
   // WS subscribe for live updates
   useEffect(() => {
     if (!adminKey || !conversationId) return;
@@ -164,26 +194,45 @@ export default function AdminVendorMessagesScreen({ route, navigation }: Props) 
       {loading && <ActivityIndicator style={{ marginTop: Spacing.lg }} color={theme.accent} />}
       {!loading && (
         <FlatList
-          data={messages}
-          keyExtractor={(m) => m.id}
+          ref={listRef as any}
+          data={items}
+          keyExtractor={(it) => it.id}
           contentContainerStyle={{ padding: Spacing.md, paddingTop: 0 }}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); fetchMessages(false); }} />}
-          renderItem={({ item }) => (
-            <View
-              style={[
-                styles.bubble,
-                item.senderType === "vendor"
-                  ? [styles.vendorBubble, { backgroundColor: theme.backgroundSecondary }]
-                  : [styles.adminBubble, { backgroundColor: theme.accent + "20" }],
-              ]}
-            >
-              <ThemedText style={[styles.senderLabel, { color: item.senderType === "admin" ? theme.accent : theme.textSecondary }]}>
-                {item.senderType === "admin" ? "Du (Admin)" : "Leverandør"}
-              </ThemedText>
-              <ThemedText style={styles.body}>{item.body}</ThemedText>
-              <ThemedText style={styles.meta}>{new Date(item.createdAt).toLocaleString()}</ThemedText>
-            </View>
-          )}
+          renderItem={({ item }) => {
+            if (item.type === "sep") {
+              return (
+                <View style={styles.sepWrap}>
+                  <View style={styles.sepLine} />
+                  <ThemedText style={styles.sepText}>{item.label}</ThemedText>
+                  <View style={styles.sepLine} />
+                </View>
+              );
+            }
+            const m = item.m;
+            return (
+              <Pressable
+                onLongPress={async () => {
+                  try {
+                    await Clipboard.setStringAsync(m.body);
+                    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                  } catch {}
+                }}
+                style={[
+                  styles.bubble,
+                  m.senderType === "vendor"
+                    ? [styles.vendorBubble, { backgroundColor: theme.backgroundSecondary }]
+                    : [styles.adminBubble, { backgroundColor: theme.accent + "20" }],
+                ]}
+              >
+                <ThemedText style={[styles.senderLabel, { color: m.senderType === "admin" ? theme.accent : theme.textSecondary }]}>
+                  {m.senderType === "admin" ? "Du (Admin)" : "Leverandør"}
+                </ThemedText>
+                <ThemedText style={styles.body}>{m.body}</ThemedText>
+                <ThemedText style={styles.meta}>{new Date(m.createdAt).toLocaleString()}</ThemedText>
+              </Pressable>
+            );
+          }}
         />
       )}
 
@@ -192,6 +241,22 @@ export default function AdminVendorMessagesScreen({ route, navigation }: Props) 
           <ThemedText style={{ fontSize: 12, color: theme.textMuted }}>Leverandør skriver…</ThemedText>
         </View>
       )}
+
+      <View style={[styles.quickRow]}> 
+        {[
+          "Takk for meldingen! Vi ser på saken.",
+          "Kan du dele skjermbilde og flere detaljer?",
+          "Vi er på saken – kommer tilbake snart.",
+        ].map((t) => (
+          <Pressable
+            key={t}
+            onPress={() => setReplyText((prev) => (prev ? prev + " " + t : t))}
+            style={[styles.quickChip, { backgroundColor: theme.backgroundSecondary, borderColor: theme.border }]}
+          >
+            <ThemedText style={styles.quickText}> {t} </ThemedText>
+          </Pressable>
+        ))}
+      </View>
 
       <View style={[styles.inputBar, { backgroundColor: theme.backgroundSecondary }]}>
         <TextInput
@@ -226,6 +291,12 @@ const styles = StyleSheet.create({
   senderLabel: { fontSize: 11, fontWeight: "600", marginBottom: Spacing.xs },
   body: { fontSize: 14, lineHeight: 20 },
   meta: { fontSize: 11, opacity: 0.6, marginTop: 4 },
+  sepWrap: { flexDirection: "row", alignItems: "center", gap: 8, marginVertical: Spacing.sm, paddingHorizontal: Spacing.md },
+  sepLine: { flex: 1, height: 1, opacity: 0.3, backgroundColor: "#888" },
+  sepText: { fontSize: 11, opacity: 0.7 },
+  quickRow: { flexDirection: "row", flexWrap: "wrap", gap: 8, paddingHorizontal: Spacing.md, paddingBottom: Spacing.sm },
+  quickChip: { borderWidth: 1, borderRadius: 16, paddingHorizontal: 10, paddingVertical: 6 },
+  quickText: { fontSize: 12 },
   inputBar: { flexDirection: "row", alignItems: "flex-end", padding: Spacing.sm, gap: Spacing.sm },
   input: { flex: 1, maxHeight: 100, borderRadius: BorderRadius.md, paddingHorizontal: Spacing.md, paddingVertical: Spacing.sm, backgroundColor: "#2D2D2D" },
   sendBtn: { height: 44, width: 44, borderRadius: 22, alignItems: "center", justifyContent: "center" },
