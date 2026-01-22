@@ -25,14 +25,20 @@ export default function VideoGuidesScreen() {
   const [selectedGuide, setSelectedGuide] = useState<VideoGuide | null>(null);
   const [category, setCategory] = useState<string>("all");
 
-  const { data: guides = [], isLoading } = useQuery<VideoGuide[]>({
+  const { data: guides = [], isLoading, error } = useQuery<VideoGuide[], Error>({
     queryKey: ["video-guides"],
     queryFn: async () => {
       const url = new URL("/api/video-guides", getApiUrl());
       const res = await fetch(url);
-      if (!res.ok) throw new Error("Kunne ikke hente videoguider");
-      return res.json();
+      if (!res.ok) {
+        throw new Error(`API error: ${res.status} ${res.statusText}`);
+      }
+      const data = await res.json();
+      return Array.isArray(data) ? data : [];
     },
+    retry: 2,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
   });
 
   const categories = useMemo(() => {
@@ -66,6 +72,18 @@ export default function VideoGuidesScreen() {
       </View>
 
       {isLoading && <ActivityIndicator style={{ marginTop: Spacing.lg }} color={theme.accent} />}
+
+      {error && (
+        <View style={[styles.errorContainer, { backgroundColor: theme.backgroundSecondary }]}>
+          <Feather name="alert-circle" size={24} color="#FF6B6B" />
+          <ThemedText style={[styles.errorText, { color: theme.text }]}>
+            Kunne ikke laste videoguider
+          </ThemedText>
+          <ThemedText style={[styles.errorSubtext, { color: theme.textSecondary }]}>
+            {error.message}
+          </ThemedText>
+        </View>
+      )}
 
       {!isLoading && guides.length === 0 && (
         <View style={styles.emptyState}>
@@ -198,6 +216,9 @@ const styles = StyleSheet.create({
   categoryChipText: { fontSize: 12, fontWeight: "600" },
   emptyState: { flex: 1, alignItems: "center", justifyContent: "center" },
   emptyText: { fontSize: 14, marginTop: Spacing.md },
+  errorContainer: { marginTop: Spacing.lg, marginHorizontal: Spacing.md, padding: Spacing.md, borderRadius: BorderRadius.md, alignItems: "center", gap: Spacing.sm },
+  errorText: { fontSize: 14, fontWeight: "600", textAlign: "center" },
+  errorSubtext: { fontSize: 12, textAlign: "center" },
   card: {
     borderRadius: BorderRadius.md,
     borderWidth: 1,

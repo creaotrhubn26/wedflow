@@ -7023,6 +7023,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // ===== VIDEO GUIDES ROUTES =====
 
   // Get active video guides by category (public)
+  app.get("/api/video-guides", async (req: Request, res: Response) => {
+    try {
+      const guides = await db
+        .select()
+        .from(videoGuides)
+        .where(eq(videoGuides.isActive, true))
+        .orderBy(videoGuides.sortOrder);
+
+      res.json(guides);
+    } catch (error) {
+      console.error("Error fetching video guides:", error);
+      res.status(500).json({ error: "Kunne ikke hente videoguider" });
+    }
+  });
+
   app.get("/api/video-guides/:category", async (req: Request, res: Response) => {
     try {
       const { category } = req.params;

@@ -59,14 +59,18 @@ export default function AdminVendorMessagesScreen({ route, navigation }: Props) 
   const [vendorTypingWs, setVendorTypingWs] = useState(false);
   const listRef = useRef<FlatList<any> | null>(null);
 
-  const { data: videoGuides = [] } = useQuery<VideoGuide[]>({
+  const { data: videoGuides = [] } = useQuery<VideoGuide[], Error>({
     queryKey: ["video-guides"],
     queryFn: async () => {
       const url = new URL("/api/video-guides", getApiUrl());
       const res = await fetch(url);
       if (!res.ok) throw new Error("Kunne ikke hente videoguider");
-      return res.json();
+      const data = await res.json();
+      return Array.isArray(data) ? data : [];
     },
+    retry: 2,
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 
   const items = useMemo(() => {
