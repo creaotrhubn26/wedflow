@@ -6,6 +6,8 @@ import {
   ScrollView,
   Alert,
   ActivityIndicator,
+  FlatList,
+  TextInput,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
@@ -13,6 +15,7 @@ import { Feather } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import * as Haptics from "expo-haptics";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
@@ -27,6 +30,13 @@ interface PreviewMode {
   color: string;
 }
 
+interface PreviewUser {
+  id: string;
+  name: string;
+  email: string;
+  category?: string;
+}
+
 export default function AdminPreviewScreen({ route }: any) {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
@@ -36,30 +46,32 @@ export default function AdminPreviewScreen({ route }: any) {
 
   const [selectedMode, setSelectedMode] = useState<"couple" | "vendor" | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [testData, setTestData] = useState<any>(null);
+  const [users, setUsers] = useState<PreviewUser[]>([]);
+  const [selectedUser, setSelectedUser] = useState<PreviewUser | null>(null);
+  const [searchText, setSearchText] = useState("");
 
   const previewModes: PreviewMode[] = [
     {
       type: "couple",
       label: "Brudepar-visning",
-      description: "Se appen slik brudepar ser den. Inkludert søking etter leverandører, inspirasjon, planlegging og sjekklister.",
+      description: "Se appen slik brudepar ser den. Velg et brudepar og se nøyaktig det de ser.",
       icon: "heart",
       color: "#FF6B9D",
     },
     {
       type: "vendor",
       label: "Leverandør-visning",
-      description: "Se appen slik leverandører ser den. Inkludert dashboard, profil, meldinger, tilbud og deliveries.",
+      description: "Se appen slik leverandører ser den. Velg en leverandør og test deres dashboard.",
       icon: "briefcase",
       color: "#4A90E2",
     },
   ];
 
-  const handleLoadPreview = async (mode: "couple" | "vendor") => {
+  const loadUsers = async (mode: "couple" | "vendor") => {
     setIsLoading(true);
     try {
       const url = new URL(
-        `/api/admin/preview/${mode}`,
+        `/api/admin/preview/${mode}/users`,
         process.env.EXPO_PUBLIC_API_URL || "http://localhost:5000"
       );
 
@@ -68,24 +80,20 @@ export default function AdminPreviewScreen({ route }: any) {
       });
 
       if (!response.ok) {
-        throw new Error(`Kunne ikke laste ${mode}-visning`);
+        throw new Error(`Kunne ikke hente ${mode}-liste`);
       }
 
       const data = await response.json();
-      setTestData(data);
+      setUsers(data.users || []);
       setSelectedMode(mode);
+      setSelectedUser(null);
+      setSearchText("");
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-
-      Alert.alert(
-        `${mode === "couple" ? "Brudepar" : "Leverandør"}-visning`,
-        `Du ser nå appen fra ${mode === "couple" ? "brudepar" : "leverandør"}-perspektivet. All data og funksjonalitet er begrenset til hva denne rollen kan se og gjøre.`,
-        [{ text: "OK" }]
-      );
     } catch (error) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       Alert.alert(
         "Feil",
-        "Kunne ikke laste preview-visning. Sjekk at serveren er konfigurert riktig."
+        `Kunne ikke laste ${mode}-liste. Sjekk at det finnes data i systemet.`
       );
       console.error(error);
     } finally {
@@ -93,46 +101,68 @@ export default function AdminPreviewScreen({ route }: any) {
     }
   };
 
-  const handleEnterPreview = (mode: "couple" | "vendor") => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    Alert.alert(
-      "Gå inn i preview-modus",
-      `Du vil nå navigere til ${mode === "couple" ? "brudepar" : "leverandør"}-siden. Du kan gå tilbake til admin ved å logg ut.\n\nVil du fortsette?`,
-      [
-        { text: "Avbryt", onPress: () => {}, style: "cancel" },
-        {
-          text: "Fortsett",
-          onPress: async () => {
-            setIsLoading(true);
-            try {
-              // Store preview mode temporarily
-              const params = mode === "couple" ? {} : {};
-              
-              // Navigate to the appropriate screen
-              if (mode === "couple") {
-                // @ts-ignore
-                navigation.reset({
-                  index: 0,
-                  routes: [{ name: "Main" }],
-                });
-              } else {
-                // @ts-ignore
-                navigation.reset({
-                  index: 0,
-                  routes: [{ name: "VendorDashboard" }],
-                });
-              }
-            } catch (error) {
-              Alert.alert("Feil", "Kunne ikke gå inn i preview-modus");
-              console.error(error);
-            } finally {
-              setIsLoading(false);
-            }
-          },
+  const handleEnterAsUser = async (user: PreviewUser) => {
+    if (!selectedMode) return;
+
+    setIsLoading(true);
+    try {
+      const url = new URL(
+        `/api/admin/preview/${selectedMode}/impersonate`,
+        process.env.EXPO_PUBLIC_API_URL || "http://localhost:5000"
+      );
+
+      const response = await fetch(url.toString(), {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${adminKey}`,
+          "Content-Type": "application/json",
         },
-      ]
-    );
+        body: JSON.stringify({ userId: user.id }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Kunne ikke logge inn som denne brukeren");
+      }
+
+      const data = await response.json();
+      const { sessionToken } = data;
+
+      // Store the impersonation session
+      await AsyncStorage.setItem("preview_session_token", sessionToken);
+      await AsyncStorage.setItem("preview_admin_key", adminKey);
+      await AsyncStorage.setItem("preview_mode", selectedMode);
+      await AsyncStorage.setItem("preview_user_id", user.id);
+
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+
+      // Navigate to the appropriate screen
+      if (selectedMode === "couple") {
+        // @ts-ignore
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "Main" }],
+        });
+      } else {
+        // @ts-ignore
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "VendorDashboard" }],
+        });
+      }
+    } catch (error) {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert("Feil", "Kunne ikke logge inn som denne brukeren");
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  const filteredUsers = users.filter(
+    (user) =>
+      user.name.toLowerCase().includes(searchText.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchText.toLowerCase())
+  );
 
   return (
     <ScrollView
@@ -143,130 +173,213 @@ export default function AdminPreviewScreen({ route }: any) {
         paddingHorizontal: Spacing.lg,
       }}
     >
-      <View style={{ marginBottom: Spacing.xl }}>
-        <ThemedText style={styles.title}>Preview-modus</ThemedText>
-        <ThemedText style={[styles.subtitle, { color: theme.textSecondary }]}>
-          Se appen fra brudepar eller leverandør-perspektivet for å forstå brukeropplevelsen og administrere innhold bedre.
-        </ThemedText>
-      </View>
+      {!selectedMode ? (
+        // Mode selection view
+        <>
+          <View style={{ marginBottom: Spacing.xl }}>
+            <ThemedText style={styles.title}>Preview-modus</ThemedText>
+            <ThemedText style={[styles.subtitle, { color: theme.textSecondary }]}>
+              Velg en rolle for å se og teste appen fra det perspektivet.
+            </ThemedText>
+          </View>
 
-      {previewModes.map((mode) => (
-        <View
-          key={mode.type}
-          style={[
-            styles.modeCard,
-            {
-              backgroundColor: theme.backgroundDefault,
-              borderColor: selectedMode === mode.type ? mode.color : theme.border,
-              borderWidth: selectedMode === mode.type ? 2 : 1,
-            },
-          ]}
-        >
-          <View style={styles.modeCardContent}>
-            <View
+          {previewModes.map((mode) => (
+            <Pressable
+              key={mode.type}
               style={[
-                styles.modeIcon,
-                { backgroundColor: mode.color + "20" },
+                styles.modeCard,
+                {
+                  backgroundColor: theme.backgroundDefault,
+                  borderColor: theme.border,
+                },
               ]}
+              onPress={() => loadUsers(mode.type)}
             >
-              <Feather name={mode.icon} size={28} color={mode.color} />
-            </View>
+              <View style={styles.modeCardContent}>
+                <View
+                  style={[
+                    styles.modeIcon,
+                    { backgroundColor: mode.color + "20" },
+                  ]}
+                >
+                  <Feather name={mode.icon} size={28} color={mode.color} />
+                </View>
 
-            <View style={{ flex: 1 }}>
-              <ThemedText style={styles.modeLabel}>{mode.label}</ThemedText>
+                <View style={{ flex: 1 }}>
+                  <ThemedText style={styles.modeLabel}>{mode.label}</ThemedText>
+                  <ThemedText
+                    style={[
+                      styles.modeDescription,
+                      { color: theme.textSecondary },
+                    ]}
+                  >
+                    {mode.description}
+                  </ThemedText>
+                </View>
+
+                <Feather name="chevron-right" size={20} color={theme.textMuted} />
+              </View>
+            </Pressable>
+          ))}
+
+          <View style={[styles.infoBox, { backgroundColor: Colors.dark.accent + "10", borderColor: Colors.dark.accent }]}>
+            <Feather name="alert-circle" size={18} color={Colors.dark.accent} />
+            <View style={{ flex: 1, marginLeft: Spacing.md }}>
+              <ThemedText style={[styles.infoBoxTitle, { color: Colors.dark.accent }]}>
+                Du vil se alt som brukeren ser
+              </ThemedText>
               <ThemedText
                 style={[
-                  styles.modeDescription,
-                  { color: theme.textSecondary },
+                  styles.infoBoxText,
+                  { color: Colors.dark.accent, opacity: 0.8 },
                 ]}
               >
-                {mode.description}
+                Når du velger en bruker, vil du bli logget inn som dem. Du vil se alle deres data, innstillinger og funksjoner eksakt som de ser det.
               </ThemedText>
             </View>
           </View>
-
-          <View style={styles.actionButtons}>
+        </>
+      ) : (
+        // User selection view
+        <>
+          <View style={{ marginBottom: Spacing.lg }}>
             <Pressable
-              style={[
-                styles.infoButton,
-                { backgroundColor: theme.backgroundSecondary },
-              ]}
-              onPress={() => handleLoadPreview(mode.type)}
+              onPress={() => {
+                setSelectedMode(null);
+                setUsers([]);
+                setSelectedUser(null);
+              }}
+              style={styles.backButton}
             >
-              {isLoading ? (
-                <ActivityIndicator color={theme.text} size="small" />
-              ) : (
-                <>
-                  <Feather name="info" size={16} color={theme.text} />
-                  <ThemedText style={styles.infoButtonText}>
-                    Last data
-                  </ThemedText>
-                </>
-              )}
-            </Pressable>
-
-            <Pressable
-              style={[styles.enterButton, { backgroundColor: mode.color }]}
-              onPress={() => handleEnterPreview(mode.type)}
-            >
-              <Feather name="arrow-right" size={18} color="#FFF" />
-              <ThemedText style={styles.enterButtonText}>
-                Gå inn
+              <Feather name="chevron-left" size={20} color={Colors.dark.accent} />
+              <ThemedText style={{ color: Colors.dark.accent, fontWeight: "600" }}>
+                Tilbake
               </ThemedText>
             </Pressable>
           </View>
-        </View>
-      ))}
 
-      <View style={[styles.infoBox, { backgroundColor: Colors.dark.accent + "10", borderColor: Colors.dark.accent }]}>
-        <Feather name="alert-circle" size={18} color={Colors.dark.accent} />
-        <View style={{ flex: 1, marginLeft: Spacing.md }}>
-          <ThemedText style={[styles.infoBoxTitle, { color: Colors.dark.accent }]}>
-            Tips for testing
-          </ThemedText>
-          <ThemedText
+          <View style={{ marginBottom: Spacing.lg }}>
+            <ThemedText style={styles.subtitle}>
+              Velg {selectedMode === "couple" ? "brudepar" : "leverandør"}:
+            </ThemedText>
+          </View>
+
+          <TextInput
             style={[
-              styles.infoBoxText,
-              { color: Colors.dark.accent, opacity: 0.8 },
+              styles.searchInput,
+              {
+                backgroundColor: theme.backgroundSecondary,
+                color: theme.text,
+                borderColor: theme.border,
+              },
+            ]}
+            placeholder={`Søk etter ${selectedMode === "couple" ? "brudepar" : "leverandør"}...`}
+            placeholderTextColor={theme.textMuted}
+            value={searchText}
+            onChangeText={setSearchText}
+          />
+
+          {isLoading ? (
+            <View style={styles.centerContainer}>
+              <ActivityIndicator color={Colors.dark.accent} size="large" />
+            </View>
+          ) : filteredUsers.length === 0 ? (
+            <View style={styles.emptyContainer}>
+              <Feather name="inbox" size={48} color={theme.textMuted} />
+              <ThemedText style={[styles.emptyText, { color: theme.textSecondary }]}>
+                {users.length === 0
+                  ? `Ingen ${selectedMode === "couple" ? "brudepar" : "leverandører"} funnet`
+                  : "Ingen resultater på søket"}
+              </ThemedText>
+            </View>
+          ) : (
+            <FlatList
+              scrollEnabled={false}
+              data={filteredUsers}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <Pressable
+                  onPress={() => handleEnterAsUser(item)}
+                  disabled={isLoading}
+                  style={[
+                    styles.userCard,
+                    {
+                      backgroundColor: theme.backgroundDefault,
+                      borderColor: theme.border,
+                      opacity: isLoading ? 0.5 : 1,
+                    },
+                  ]}
+                >
+                  <View
+                    style={[
+                      styles.userAvatar,
+                      {
+                        backgroundColor:
+                          selectedMode === "couple"
+                            ? "#FF6B9D" + "30"
+                            : "#4A90E2" + "30",
+                      },
+                    ]}
+                  >
+                    <Feather
+                      name={selectedMode === "couple" ? "heart" : "briefcase"}
+                      size={20}
+                      color={selectedMode === "couple" ? "#FF6B9D" : "#4A90E2"}
+                    />
+                  </View>
+
+                  <View style={{ flex: 1 }}>
+                    <ThemedText style={styles.userName}>{item.name}</ThemedText>
+                    <ThemedText
+                      style={[
+                        styles.userEmail,
+                        { color: theme.textSecondary },
+                      ]}
+                    >
+                      {item.email}
+                    </ThemedText>
+                    {item.category && (
+                      <ThemedText
+                        style={[
+                          styles.userCategory,
+                          { color: theme.textSecondary },
+                        ]}
+                      >
+                        {item.category}
+                      </ThemedText>
+                    )}
+                  </View>
+
+                  <Feather
+                    name="arrow-right"
+                    size={18}
+                    color={Colors.dark.accent}
+                  />
+                </Pressable>
+              )}
+            />
+          )}
+
+          <View
+            style={[
+              styles.infoBox,
+              { backgroundColor: Colors.dark.accent + "10", borderColor: Colors.dark.accent, marginTop: Spacing.lg },
             ]}
           >
-            • Bruk "Last data" for å se eksempeldata for denne rollen
-            • Bruk "Gå inn" for å navigere til full visning av appen
-            • Logg ut når som helst for å returnere til admin-dashbordet
-          </ThemedText>
-        </View>
-      </View>
-
-      <View style={[styles.useCaseBox, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-        <ThemedText style={styles.useCaseTitle}>Brukstilfeller:</ThemedText>
-        <View style={styles.useCaseList}>
-          <UseCaseItem 
-            icon="check-circle"
-            text="Teste nye funksjoner fra bruker-perspektivet"
-            theme={theme}
-          />
-          <UseCaseItem 
-            icon="check-circle"
-            text="Reprodusere bruker-rapporterte feil"
-            theme={theme}
-          />
-          <UseCaseItem 
-            icon="check-circle"
-            text="Verifisere at innholdfiltre og tillatelser fungerer riktig"
-            theme={theme}
-          />
-          <UseCaseItem 
-            icon="check-circle"
-            text="Gjennomgå brukeropplevelse før lansering"
-            theme={theme}
-          />
-          <UseCaseItem 
-            icon="check-circle"
-            text="Teste betalingsflyt og abonnementsfunksjonalitet"
-            theme={theme}
-          />
-        </View>
-      </View>
+            <Feather name="info" size={18} color={Colors.dark.accent} />
+            <View style={{ flex: 1, marginLeft: Spacing.md }}>
+              <ThemedText
+                style={[
+                  styles.infoBoxText,
+                  { color: Colors.dark.accent, opacity: 0.8 },
+                ]}
+              >
+                Når du velger en bruker, blir du logget inn som dem. Du kan logg ut når som helst for å returnere til admin.
+              </ThemedText>
+            </View>
+          </View>
+        </>
+      )}
     </ScrollView>
   );
 }
@@ -297,6 +410,7 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 14,
     lineHeight: 20,
+    fontWeight: "500",
   },
   modeCard: {
     borderRadius: BorderRadius.md,
@@ -306,8 +420,7 @@ const styles = StyleSheet.create({
   },
   modeCardContent: {
     flexDirection: "row",
-    alignItems: "flex-start",
-    marginBottom: Spacing.md,
+    alignItems: "center",
   },
   modeIcon: {
     width: 56,
@@ -327,43 +440,66 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 18,
   },
-  actionButtons: {
+  backButton: {
     flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.sm,
+  },
+  searchInput: {
+    height: 44,
+    borderWidth: 1,
+    borderRadius: BorderRadius.sm,
+    paddingHorizontal: Spacing.md,
+    fontSize: 14,
+    marginBottom: Spacing.lg,
+  },
+  centerContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: Spacing.xl * 2,
+  },
+  emptyContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: Spacing.xl * 2,
     gap: Spacing.md,
   },
-  infoButton: {
-    flex: 1,
+  emptyText: {
+    fontSize: 14,
+  },
+  userCard: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: Spacing.md,
-    borderRadius: BorderRadius.sm,
-    gap: Spacing.sm,
+    padding: Spacing.lg,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    marginBottom: Spacing.md,
   },
-  infoButtonText: {
-    fontSize: 14,
-    fontWeight: "500",
-  },
-  enterButton: {
-    flex: 1,
-    flexDirection: "row",
+  userAvatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: Spacing.md,
-    borderRadius: BorderRadius.sm,
-    gap: Spacing.sm,
+    marginRight: Spacing.lg,
   },
-  enterButtonText: {
-    fontSize: 14,
+  userName: {
+    fontSize: 15,
     fontWeight: "600",
-    color: "#FFF",
+    marginBottom: Spacing.xs,
+  },
+  userEmail: {
+    fontSize: 12,
+    marginBottom: Spacing.xs,
+  },
+  userCategory: {
+    fontSize: 11,
   },
   infoBox: {
     flexDirection: "row",
     padding: Spacing.lg,
     borderRadius: BorderRadius.md,
     borderWidth: 1,
-    marginBottom: Spacing.lg,
   },
   infoBoxTitle: {
     fontSize: 14,

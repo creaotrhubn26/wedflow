@@ -4038,93 +4038,125 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Admin Preview Routes - Allow admin to see the app from couple/vendor perspective
-  app.get("/api/admin/preview/couple", async (req: Request, res: Response) => {
+  app.get("/api/admin/preview/couple/users", async (req: Request, res: Response) => {
     if (!checkAdminAuth(req, res)) return;
     
     try {
-      // Get sample couple data
-      const coupleSample = await db.select()
-        .from(coupleProfiles)
-        .limit(1);
-      
-      // Get vendors to show
-      const vendorsSample = await db.select()
-        .from(vendors)
-        .where(eq(vendors.status, "approved"))
-        .limit(10);
-      
-      // Get inspirations
-      const inspirationsSample = await db.select()
-        .from(inspirations)
-        .where(eq(inspirations.status, "approved"))
-        .limit(10);
+      const coupleData = await db.select({
+        id: coupleProfiles.id,
+        name: coupleProfiles.partnerName,
+        email: coupleProfiles.email,
+      }).from(coupleProfiles).limit(50);
       
       res.json({
         role: "couple",
-        description: "Brudepar-visning",
-        context: {
-          sampleCouple: coupleSample[0] || null,
-          availableVendors: vendorsSample.length,
-          availableInspirations: inspirationsSample.length,
-        },
-        tips: [
-          "Du ser nå appen som et brudepar ville sett det",
-          "Du kan søke etter leverandører i din kategori",
-          "Du kan browsere inspirasjon fra andre bryllup",
-          "Du kan lage tilbud-forespørsler til leverandører",
-          "Du kan administrere sjekklister og planlegging",
-        ],
+        users: coupleData,
       });
     } catch (error) {
-      console.error("Error generating couple preview:", error);
-      res.status(500).json({ error: "Kunne ikke generere brudepar-preview" });
+      console.error("Error fetching couple list:", error);
+      res.status(500).json({ error: "Kunne ikke hente brudepar-liste" });
     }
   });
 
-  app.get("/api/admin/preview/vendor", async (req: Request, res: Response) => {
+  app.get("/api/admin/preview/vendor/users", async (req: Request, res: Response) => {
     if (!checkAdminAuth(req, res)) return;
     
     try {
-      // Get sample vendor data
-      const vendorSample = await db.select()
+      const vendorData = await db.select({
+        id: vendors.id,
+        name: vendors.companyName,
+        email: vendors.email,
+        category: vendors.category,
+      })
         .from(vendors)
         .where(eq(vendors.status, "approved"))
-        .limit(1);
-      
-      // Get vendor statistics
-      const [inspirationCount] = await db.select({ count: sql<number>`count(*)` })
-        .from(inspirations)
-        .where(vendorSample[0] ? eq(inspirations.vendorId, vendorSample[0].id) : sql`false`);
-      
-      const [offerCount] = await db.select({ count: sql<number>`count(*)` })
-        .from(vendorOffers)
-        .where(vendorSample[0] ? eq(vendorOffers.vendorId, vendorSample[0].id) : sql`false`);
-      
-      const [messageCount] = await db.select({ count: sql<number>`count(*)` })
-        .from(messages)
-        .where(vendorSample[0] ? eq(messages.vendorId, vendorSample[0].id) : sql`false`);
+        .limit(50);
       
       res.json({
         role: "vendor",
-        description: "Leverandør-visning",
-        context: {
-          sampleVendor: vendorSample[0] || null,
-          vendorInspirations: Number(inspirationCount?.count || 0),
-          vendorOffers: Number(offerCount?.count || 0),
-          vendorMessages: Number(messageCount?.count || 0),
-        },
-        tips: [
-          "Du ser nå appen som en leverandør ville sett det",
-          "Du kan oppdatere profilen og inspirasjon-galleriet",
-          "Du kan sende tilbud til interesserte brudepar",
-          "Du kan administrere produkter og priser",
-          "Du kan se meldinger og henvendelser fra par",
-          "Du kan se dine abonnement-funksjoner",
-        ],
+        users: vendorData,
       });
     } catch (error) {
-      console.error("Error generating vendor preview:", error);
-      res.status(500).json({ error: "Kunne ikke generere leverandør-preview" });
+      console.error("Error fetching vendor list:", error);
+      res.status(500).json({ error: "Kunne ikke hente leverandør-liste" });
+    }
+  });
+
+  // Impersonate endpoint - Creates a session token to use the app as a specific user
+  app.post("/api/admin/preview/couple/impersonate", async (req: Request, res: Response) => {
+    if (!checkAdminAuth(req, res)) return;
+    
+    try {
+      const { userId } = req.body;
+      if (!userId) {
+        return res.status(400).json({ error: "userId is required" });
+      }
+
+      const couple = await db.select()
+        .from(coupleProfiles)
+        .where(eq(coupleProfiles.id, userId))
+        .limit(1);
+
+      if (!couple || couple.length === 0) {
+        return res.status(404).json({ error: "Brudepar ikke funnet" });
+      }
+
+      // Generate a preview session token
+      const sessionToken = generateSessionToken();
+      
+      // Store in a temporary cache with expiration (24 hours)
+      COUPLE_SESSIONS.set(sessionToken, {
+        coupleId: userId,
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      });
+
+      res.json({
+        sessionToken,
+        coupleId: userId,
+        coupleData: couple[0],
+      });
+    } catch (error) {
+      console.error("Error impersonating couple:", error);
+      res.status(500).json({ error: "Kunne ikke logge inn som brudepar" });
+    }
+  });
+
+  app.post("/api/admin/preview/vendor/impersonate", async (req: Request, res: Response) => {
+    if (!checkAdminAuth(req, res)) return;
+    
+    try {
+      const { userId } = req.body;
+      if (!userId) {
+        return res.status(400).json({ error: "userId is required" });
+      }
+
+      const vendor = await db.select()
+        .from(vendors)
+        .where(eq(vendors.id, userId))
+        .limit(1);
+
+      if (!vendor || vendor.length === 0) {
+        return res.status(404).json({ error: "Leverandør ikke funnet" });
+      }
+
+      // Generate a preview session token
+      const sessionToken = generateSessionToken();
+      
+      // Store in a temporary cache with expiration (24 hours)
+      VENDOR_SESSIONS.set(sessionToken, {
+        vendorId: userId,
+        createdAt: new Date(),
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+      });
+
+      res.json({
+        sessionToken,
+        vendorId: userId,
+        vendorData: vendor[0],
+      });
+    } catch (error) {
+      console.error("Error impersonating vendor:", error);
+      res.status(500).json({ error: "Kunne ikke logge inn som leverandør" });
     }
   });
 

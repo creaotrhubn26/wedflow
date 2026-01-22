@@ -530,6 +530,11 @@ export default function VendorDashboardScreen({ navigation }: Props) {
         }
       }
       await AsyncStorage.removeItem(VENDOR_STORAGE_KEY);
+      // Clear preview session if in preview mode
+      await AsyncStorage.removeItem("preview_session_token");
+      await AsyncStorage.removeItem("preview_admin_key");
+      await AsyncStorage.removeItem("preview_mode");
+      await AsyncStorage.removeItem("preview_user_id");
       queryClient.clear();
       navigation.replace("VendorLogin");
     };

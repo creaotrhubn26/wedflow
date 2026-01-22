@@ -1,4 +1,5 @@
 import { QueryClient, QueryFunction } from "@tanstack/react-query";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 /**
  * Gets the base URL for the Express API server (e.g., "http://localhost:5000").
@@ -43,6 +44,38 @@ export function getApiUrl(): string {
   throw new Error("No API base URL configured (set EXPO_PUBLIC_API_URL or EXPO_PUBLIC_DOMAIN)");
 }
 
+/**
+ * Get the current auth token - either preview session token or regular session token
+ */
+export async function getAuthToken(): Promise<string | null> {
+  try {
+    // Check for preview session first
+    const previewToken = await AsyncStorage.getItem("preview_session_token");
+    if (previewToken) {
+      return previewToken;
+    }
+    
+    // Fall back to regular session token
+    const token = await AsyncStorage.getItem("session_token");
+    return token || null;
+  } catch (error) {
+    console.error("Error getting auth token:", error);
+    return null;
+  }
+}
+
+/**
+ * Check if we're in preview mode
+ */
+export async function isInPreviewMode(): Promise<boolean> {
+  try {
+    const previewMode = await AsyncStorage.getItem("preview_mode");
+    return !!previewMode;
+  } catch {
+    return false;
+  }
+}
+
 async function throwIfResNotOk(res: Response) {
   if (!res.ok) {
     const text = (await res.text()) || res.statusText;
@@ -57,10 +90,19 @@ export async function apiRequest(
 ): Promise<Response> {
   const baseUrl = getApiUrl();
   const url = new URL(route, baseUrl);
+  const token = await getAuthToken();
+
+  const headers: Record<string, string> = {};
+  if (data) {
+    headers["Content-Type"] = "application/json";
+  }
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
 
   const res = await fetch(url, {
     method,
-    headers: data ? { "Content-Type": "application/json" } : {},
+    headers,
     body: data ? JSON.stringify(data) : undefined,
     credentials: "include",
   });
@@ -77,9 +119,16 @@ export const getQueryFn: <T>(options: {
   async ({ queryKey }) => {
     const baseUrl = getApiUrl();
     const url = new URL(queryKey.join("/") as string, baseUrl);
+    const token = await getAuthToken();
+
+    const headers: Record<string, string> = {};
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
 
     const res = await fetch(url, {
       credentials: "include",
+      headers,
     });
 
     if (unauthorizedBehavior === "returnNull" && res.status === 401) {
