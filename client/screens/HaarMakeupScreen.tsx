@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -9,6 +9,7 @@ import {
   Modal,
   Image,
   RefreshControl,
+  ActivityIndicator,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
@@ -66,12 +67,41 @@ export default function HaarMakeupScreen() {
   const [refreshing, setRefreshing] = useState(false);
 
   // Query for hair/makeup data
-  const { data: hairMakeupData, isLoading: loading, refetch } = useQuery({
+  const { data: hairMakeupData, isLoading: loading, isError, error, refetch } = useQuery({
     queryKey: ["hair-makeup-data"],
     queryFn: getHairMakeupData,
   });
 
-  const appointments = hairMakeupData?.appointments ?? [];
+  // Saving state for buttons
+  const [isSavingAppointment, setIsSavingAppointment] = useState(false);
+  const [isSavingLook, setIsSavingLook] = useState(false);
+  const [isSavingBudget, setIsSavingBudget] = useState(false);
+
+  // Parse date string (DD.MM.YYYY or YYYY-MM-DD) to sortable format
+  const parseDate = (dateStr: string): Date => {
+    if (!dateStr) return new Date(0);
+    // Try DD.MM.YYYY format
+    const norMatch = dateStr.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+    if (norMatch) {
+      return new Date(parseInt(norMatch[3]), parseInt(norMatch[2]) - 1, parseInt(norMatch[1]));
+    }
+    // Try YYYY-MM-DD format
+    const isoMatch = dateStr.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (isoMatch) {
+      return new Date(parseInt(isoMatch[1]), parseInt(isoMatch[2]) - 1, parseInt(isoMatch[3]));
+    }
+    return new Date(dateStr);
+  };
+
+  // Sort appointments by date (upcoming first, then completed)
+  const rawAppointments = hairMakeupData?.appointments ?? [];
+  const appointments = [...rawAppointments].sort((a, b) => {
+    // Completed appointments go to the bottom
+    if (a.completed !== b.completed) return a.completed ? 1 : -1;
+    // Sort by date
+    return parseDate(a.date).getTime() - parseDate(b.date).getTime();
+  });
+
   const looks = hairMakeupData?.looks ?? [];
   const timeline = hairMakeupData?.timeline ?? {
     consultationBooked: false,
@@ -172,12 +202,37 @@ export default function HaarMakeupScreen() {
     setShowAppointmentModal(true);
   };
 
+  // Validate date format (DD.MM.YYYY or YYYY-MM-DD)
+  const isValidDate = (dateStr: string): boolean => {
+    if (!dateStr) return false;
+    const norFormat = /^\d{1,2}\.\d{1,2}\.\d{4}$/;
+    const isoFormat = /^\d{4}-\d{2}-\d{2}$/;
+    return norFormat.test(dateStr) || isoFormat.test(dateStr);
+  };
+
+  // Validate time format (HH:MM)
+  const isValidTime = (timeStr: string): boolean => {
+    if (!timeStr) return true; // Time is optional
+    return /^\d{1,2}:\d{2}$/.test(timeStr);
+  };
+
   const saveAppointment = async () => {
     if (!appointmentStylist.trim() || !appointmentDate.trim()) {
       Alert.alert("Feil", "Vennligst fyll inn stylist og dato");
       return;
     }
 
+    if (!isValidDate(appointmentDate)) {
+      Alert.alert("Ugyldig dato", "Bruk format DD.MM.ÅÅÅÅ (f.eks. 15.06.2026)");
+      return;
+    }
+
+    if (appointmentTime && !isValidTime(appointmentTime)) {
+      Alert.alert("Ugyldig klokkeslett", "Bruk format HH:MM (f.eks. 14:30)");
+      return;
+    }
+
+    setIsSavingAppointment(true);
     try {
       if (editingAppointment) {
         await updateAppointmentMutation.mutateAsync({
@@ -208,6 +263,8 @@ export default function HaarMakeupScreen() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch (e) {
       Alert.alert("Feil", "Kunne ikke lagre avtale");
+    } finally {
+      setIsSavingAppointment(false);
     }
   };
 
@@ -220,8 +277,22 @@ export default function HaarMakeupScreen() {
   };
 
   const handleDeleteAppointment = async (id: string) => {
-    await deleteAppointmentMutation.mutateAsync(id);
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    const appointment = appointments.find((a) => a.id === id);
+    Alert.alert(
+      "Slett avtale",
+      `Er du sikker på at du vil slette avtalen med ${appointment?.stylistName || 'denne stylisten'}?`,
+      [
+        { text: "Avbryt", style: "cancel" },
+        {
+          text: "Slett",
+          style: "destructive",
+          onPress: async () => {
+            await deleteAppointmentMutation.mutateAsync(id);
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          },
+        },
+      ]
+    );
   };
 
   // Look handlers
@@ -243,6 +314,17 @@ export default function HaarMakeupScreen() {
   };
 
   const pickImage = async () => {
+    // Request permissions first
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert(
+        "Tillatelse kreves",
+        "Vi trenger tilgang til bildebiblioteket for å velge bilder.",
+        [{ text: "OK" }]
+      );
+      return;
+    }
+
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -255,12 +337,18 @@ export default function HaarMakeupScreen() {
     }
   };
 
+  const removeImage = () => {
+    setLookImage(undefined);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  };
+
   const saveLook = async () => {
     if (!lookName.trim()) {
       Alert.alert("Feil", "Vennligst gi looket et navn");
       return;
     }
 
+    setIsSavingLook(true);
     try {
       if (editingLook) {
         await updateLookMutation.mutateAsync({
@@ -281,6 +369,8 @@ export default function HaarMakeupScreen() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch (e) {
       Alert.alert("Feil", "Kunne ikke lagre look");
+    } finally {
+      setIsSavingLook(false);
     }
   };
 
@@ -295,20 +385,52 @@ export default function HaarMakeupScreen() {
   const toggleLookSelected = async (id: string) => {
     const look = looks.find((l) => l.id === id);
     if (look) {
+      const willBeSelected = !look.isSelected;
+      
       // Unselect others first if selecting
-      if (!look.isSelected) {
-        for (const otherLook of looks.filter((l) => l.isSelected && l.id !== id)) {
-          await updateLookMutation.mutateAsync({ id: otherLook.id, data: { isSelected: false } });
-        }
+      if (willBeSelected) {
+        const othersToUnselect = looks.filter((l) => l.isSelected && l.id !== id);
+        await Promise.all(
+          othersToUnselect.map((l) => 
+            updateLookMutation.mutateAsync({ id: l.id, data: { isSelected: false } })
+          )
+        );
       }
-      await updateLookMutation.mutateAsync({ id, data: { isSelected: !look.isSelected } });
+      
+      await updateLookMutation.mutateAsync({ id, data: { isSelected: willBeSelected } });
+      
+      // Sync timeline.lookSelected with look selection state
+      if (timeline.lookSelected !== willBeSelected) {
+        await updateTimelineMutation.mutateAsync({ lookSelected: willBeSelected });
+      }
+      
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     }
   };
 
   const handleDeleteLook = async (id: string) => {
-    await deleteLookMutation.mutateAsync(id);
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    const look = looks.find((l) => l.id === id);
+    Alert.alert(
+      "Slett look",
+      `Er du sikker på at du vil slette "${look?.name || 'dette looket'}"?`,
+      [
+        { text: "Avbryt", style: "cancel" },
+        {
+          text: "Slett",
+          style: "destructive",
+          onPress: async () => {
+            await deleteLookMutation.mutateAsync(id);
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            // Close the look modal after deletion
+            setShowLookModal(false);
+            setEditingLook(null);
+            setLookName("");
+            setLookNotes("");
+            setLookImage(undefined);
+          },
+        },
+      ]
+    );
   };
 
   // Timeline handlers
@@ -326,9 +448,16 @@ export default function HaarMakeupScreen() {
 
   const saveBudget = async () => {
     const newBudget = parseInt(budgetInput, 10) || 0;
-    await updateTimelineMutation.mutateAsync({ budget: newBudget });
-    setShowBudgetModal(false);
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    setIsSavingBudget(true);
+    try {
+      await updateTimelineMutation.mutateAsync({ budget: newBudget });
+      setShowBudgetModal(false);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } catch (e) {
+      Alert.alert("Feil", "Kunne ikke lagre budsjett");
+    } finally {
+      setIsSavingBudget(false);
+    }
   };
 
   const formatCurrency = (amount: number) => {
@@ -454,12 +583,14 @@ export default function HaarMakeupScreen() {
                   onPress={() => toggleLookFavorite(look.id)}
                   style={styles.favoriteButton}
                 >
-                  <Feather
-                    name={look.isFavorite ? "heart" : "heart"}
-                    size={18}
-                    color={look.isFavorite ? Colors.light.error : theme.textSecondary}
-                    style={look.isFavorite ? { opacity: 1 } : { opacity: 0.5 }}
-                  />
+                  <View style={[styles.favoriteIconBg, look.isFavorite && { backgroundColor: Colors.light.error + '20' }]}>
+                    <Feather
+                      name="heart"
+                      size={18}
+                      color={look.isFavorite ? Colors.light.error : theme.textSecondary}
+                      fill={look.isFavorite ? Colors.light.error : 'transparent'}
+                    />
+                  </View>
                 </Pressable>
                 {look.isSelected && (
                   <View style={[styles.selectedBadge, { backgroundColor: theme.primary }]}>
@@ -491,7 +622,7 @@ export default function HaarMakeupScreen() {
       {/* Find Vendors Button */}
       <Pressable
         onPress={() => {
-          navigation.navigate("VendorMatching", { category: "beauty" });
+          navigation.navigate("VendorMatching", { category: "hair_makeup" });
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         }}
         style={[styles.findVendorsButton, { backgroundColor: theme.primary }]}
@@ -579,23 +710,55 @@ export default function HaarMakeupScreen() {
         contentContainerStyle={[styles.scrollContent, { paddingBottom: tabBarHeight + Spacing.xl }]}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.primary} />}
       >
-        {activeTab === "appointments" && renderAppointmentsTab()}
-        {activeTab === "looks" && renderLooksTab()}
-        {activeTab === "timeline" && renderTimelineTab()}
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={theme.primary} />
+            <ThemedText style={[styles.loadingText, { color: theme.textSecondary }]}>
+              Laster data...
+            </ThemedText>
+          </View>
+        ) : isError ? (
+          <View style={[styles.errorContainer, { backgroundColor: theme.backgroundDefault }]}>
+            <Feather name="alert-circle" size={48} color={Colors.light.error} />
+            <ThemedText style={[styles.errorText, { color: theme.text }]}>
+              Kunne ikke laste data
+            </ThemedText>
+            <ThemedText style={[styles.errorSubtext, { color: theme.textSecondary }]}>
+              {error instanceof Error ? error.message : 'En feil oppstod'}
+            </ThemedText>
+            <Pressable
+              onPress={() => refetch()}
+              style={[styles.retryButton, { backgroundColor: theme.primary }]}
+            >
+              <Feather name="refresh-cw" size={16} color="#fff" />
+              <ThemedText style={styles.retryButtonText}>Prøv igjen</ThemedText>
+            </Pressable>
+          </View>
+        ) : (
+          <>
+            {activeTab === "appointments" && renderAppointmentsTab()}
+            {activeTab === "looks" && renderLooksTab()}
+            {activeTab === "timeline" && renderTimelineTab()}
+          </>
+        )}
       </ScrollView>
 
       {/* Appointment Modal */}
       <Modal visible={showAppointmentModal} animationType="slide" presentationStyle="pageSheet">
         <View style={[styles.modalContainer, { backgroundColor: theme.background }]}>
           <View style={[styles.modalHeader, { borderBottomColor: theme.border }]}>
-            <Pressable onPress={() => setShowAppointmentModal(false)}>
+            <Pressable onPress={() => setShowAppointmentModal(false)} disabled={isSavingAppointment}>
               <ThemedText style={[styles.modalCancel, { color: theme.textSecondary }]}>Avbryt</ThemedText>
             </Pressable>
             <ThemedText style={styles.modalTitle}>
               {editingAppointment ? "Rediger avtale" : "Ny avtale"}
             </ThemedText>
-            <Pressable onPress={saveAppointment}>
-              <ThemedText style={[styles.modalSave, { color: theme.primary }]}>Lagre</ThemedText>
+            <Pressable onPress={saveAppointment} disabled={isSavingAppointment}>
+              {isSavingAppointment ? (
+                <ActivityIndicator size="small" color={theme.primary} />
+              ) : (
+                <ThemedText style={[styles.modalSave, { color: theme.primary }]}>Lagre</ThemedText>
+              )}
             </Pressable>
           </View>
 
@@ -710,14 +873,18 @@ export default function HaarMakeupScreen() {
       <Modal visible={showLookModal} animationType="slide" presentationStyle="pageSheet">
         <View style={[styles.modalContainer, { backgroundColor: theme.background }]}>
           <View style={[styles.modalHeader, { borderBottomColor: theme.border }]}>
-            <Pressable onPress={() => setShowLookModal(false)}>
+            <Pressable onPress={() => setShowLookModal(false)} disabled={isSavingLook}>
               <ThemedText style={[styles.modalCancel, { color: theme.textSecondary }]}>Avbryt</ThemedText>
             </Pressable>
             <ThemedText style={styles.modalTitle}>
               {editingLook ? "Rediger look" : "Nytt look"}
             </ThemedText>
-            <Pressable onPress={saveLook}>
-              <ThemedText style={[styles.modalSave, { color: theme.primary }]}>Lagre</ThemedText>
+            <Pressable onPress={saveLook} disabled={isSavingLook}>
+              {isSavingLook ? (
+                <ActivityIndicator size="small" color={theme.primary} />
+              ) : (
+                <ThemedText style={[styles.modalSave, { color: theme.primary }]}>Lagre</ThemedText>
+              )}
             </Pressable>
           </View>
 
@@ -770,6 +937,18 @@ export default function HaarMakeupScreen() {
                   </View>
                 )}
               </Pressable>
+              {lookImage && (
+                <View style={styles.imageActions}>
+                  <Pressable onPress={pickImage} style={[styles.imageActionButton, { backgroundColor: theme.backgroundDefault }]}>
+                    <Feather name="edit-2" size={16} color={theme.primary} />
+                    <ThemedText style={[styles.imageActionText, { color: theme.primary }]}>Bytt bilde</ThemedText>
+                  </Pressable>
+                  <Pressable onPress={removeImage} style={[styles.imageActionButton, { backgroundColor: Colors.light.error + '10' }]}>
+                    <Feather name="trash-2" size={16} color={Colors.light.error} />
+                    <ThemedText style={[styles.imageActionText, { color: Colors.light.error }]}>Fjern</ThemedText>
+                  </Pressable>
+                </View>
+              )}
             </View>
 
             <View style={styles.formGroup}>
@@ -789,7 +968,6 @@ export default function HaarMakeupScreen() {
               <Pressable
                 onPress={() => {
                   handleDeleteLook(editingLook.id);
-                  setShowLookModal(false);
                 }}
                 style={[styles.deleteButton, { backgroundColor: Colors.light.error + '20', borderColor: Colors.light.error, borderWidth: 1, borderRadius: 8, padding: 12, alignItems: 'center' }]}
               >
@@ -812,12 +990,27 @@ export default function HaarMakeupScreen() {
               placeholder="0"
               placeholderTextColor={theme.textSecondary}
               keyboardType="numeric"
+              editable={!isSavingBudget}
             />
             <View style={styles.budgetModalButtons}>
-              <Pressable onPress={() => setShowBudgetModal(false)} style={[styles.budgetModalButton, { borderColor: theme.border, borderWidth: 1, borderRadius: 8, padding: 12, alignItems: 'center' }]}>
+              <Pressable 
+                onPress={() => setShowBudgetModal(false)} 
+                style={[styles.budgetModalButton, { borderColor: theme.border, borderWidth: 1, borderRadius: 8, padding: 12, alignItems: 'center' }]}
+                disabled={isSavingBudget}
+              >
                 <ThemedText>Avbryt</ThemedText>
               </Pressable>
-              <Button onPress={saveBudget} style={styles.budgetModalButton}>Lagre</Button>
+              <Pressable 
+                onPress={saveBudget} 
+                style={[styles.budgetModalButton, styles.budgetSaveButton, { backgroundColor: theme.primary }]}
+                disabled={isSavingBudget}
+              >
+                {isSavingBudget ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <ThemedText style={styles.budgetSaveText}>Lagre</ThemedText>
+                )}
+              </Pressable>
             </View>
           </View>
         </View>
@@ -1190,6 +1383,83 @@ const styles = StyleSheet.create({
   },
   budgetModalButton: {
     flex: 1,
+  },
+  budgetSaveButton: {
+    borderRadius: 8,
+    padding: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  budgetSaveText: {
+    color: '#fff',
+    fontWeight: '600',
+    fontSize: 16,
+  },
+  // Loading & Error states
+  loadingContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: Spacing.xl * 2,
+    gap: Spacing.md,
+  },
+  loadingText: {
+    fontSize: 14,
+  },
+  errorContainer: {
+    padding: Spacing.xl,
+    borderRadius: BorderRadius.lg,
+    alignItems: 'center',
+    gap: Spacing.md,
+    marginTop: Spacing.lg,
+  },
+  errorText: {
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  errorSubtext: {
+    fontSize: 14,
+    textAlign: 'center',
+  },
+  retryButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.sm,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+    borderRadius: BorderRadius.md,
+    marginTop: Spacing.sm,
+  },
+  retryButtonText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  // Image actions
+  imageActions: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+    marginTop: Spacing.sm,
+  },
+  imageActionButton: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.xs,
+    paddingVertical: Spacing.sm,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.md,
+  },
+  imageActionText: {
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  // Favorite icon background
+  favoriteIconBg: {
+    padding: 6,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255,255,255,0.9)',
   },
   // Find vendors button
   findVendorsButton: {
