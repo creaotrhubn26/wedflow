@@ -68,7 +68,25 @@ type RouteParams = {
   VendorMatching: {
     category?: string;
     guestCount?: number;
+    cuisineTypes?: string[];
   };
+};
+
+// Cuisine types for matching (shared with CateringScreen)
+const CUISINE_TYPES_MAP: Record<string, string[]> = {
+  norwegian: ["norsk", "skandinavisk", "norwegian"],
+  indian: ["indisk", "indian"],
+  pakistani: ["pakistansk", "pakistani"],
+  "middle-eastern": ["midtøsten", "middle eastern", "arabisk", "libanesisk"],
+  mediterranean: ["middelhavet", "mediterranean", "gresk", "tyrkisk"],
+  asian: ["asiatisk", "asian", "kinesisk", "japansk", "thai"],
+  african: ["afrikansk", "african", "etiopisk"],
+  mexican: ["meksikansk", "mexican", "latin"],
+  italian: ["italiensk", "italian", "pasta"],
+  french: ["fransk", "french"],
+  american: ["amerikansk", "american", "bbq", "grill"],
+  fusion: ["fusion", "moderne"],
+  mixed: ["blandet", "mixed", "variert"],
 };
 
 export default function VendorMatchingScreen() {
@@ -79,9 +97,11 @@ export default function VendorMatchingScreen() {
   
   const initialCategory = route.params?.category || null;
   const initialGuestCount = route.params?.guestCount || null;
+  const initialCuisineTypes = route.params?.cuisineTypes || [];
   
   const [selectedCategory, setSelectedCategory] = useState<string | null>(initialCategory);
   const [sessionToken, setSessionToken] = useState<string | null>(null);
+  const [selectedCuisines, setSelectedCuisines] = useState<string[]>(initialCuisineTypes);
   const [preferences, setPreferences] = useState<WeddingPreferences>({
     guestCount: initialGuestCount,
     weddingDate: null,
@@ -144,12 +164,13 @@ export default function VendorMatchingScreen() {
 
   // Fetch vendors that match the category
   const { data: vendors = [], isLoading } = useQuery<VendorMatch[]>({
-    queryKey: ["/api/vendors/matching", selectedCategory, preferences.guestCount],
+    queryKey: ["/api/vendors/matching", selectedCategory, preferences.guestCount, selectedCuisines],
     queryFn: async () => {
       const params = new URLSearchParams();
       if (selectedCategory) params.append("category", selectedCategory);
       if (preferences.guestCount) params.append("guestCount", preferences.guestCount.toString());
       if (preferences.location) params.append("location", preferences.location);
+      if (selectedCuisines.length > 0) params.append("cuisineTypes", selectedCuisines.join(","));
       
       const response = await fetch(
         new URL(`/api/vendors/matching?${params.toString()}`, getApiUrl()).toString()
@@ -187,6 +208,32 @@ export default function VendorMatchingScreen() {
             score += 30;
             reasons.push(`Kan servere ${preferences.guestCount} gjester`);
           }
+        }
+      }
+      
+      // Check cuisine match for catering
+      if (selectedCategory === "catering" && selectedCuisines.length > 0 && vendor.description) {
+        const descLower = vendor.description.toLowerCase();
+        const nameLower = (vendor.businessName || "").toLowerCase();
+        let cuisineMatches = 0;
+        const matchedCuisineLabels: string[] = [];
+        
+        for (const cuisineKey of selectedCuisines) {
+          const searchTerms = CUISINE_TYPES_MAP[cuisineKey] || [cuisineKey];
+          const hasMatch = searchTerms.some(term => 
+            descLower.includes(term) || nameLower.includes(term)
+          );
+          if (hasMatch) {
+            cuisineMatches++;
+            // Get the display label
+            const label = cuisineKey.replace("-", " ").replace(/^\w/, c => c.toUpperCase());
+            matchedCuisineLabels.push(label);
+          }
+        }
+        
+        if (cuisineMatches > 0) {
+          score += cuisineMatches * 20; // 20 points per cuisine match
+          reasons.push(`Tilbyr ${matchedCuisineLabels.join(", ")} mat`);
         }
       }
       

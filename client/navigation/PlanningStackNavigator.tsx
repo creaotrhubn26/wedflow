@@ -22,12 +22,19 @@ import MessagesScreen from "@/screens/MessagesScreen";
 import CoupleLoginScreen from "@/screens/CoupleLoginScreen";
 import ChatScreen from "@/screens/ChatScreen";
 import CoupleOffersScreen from "@/screens/CoupleOffersScreen";
+import CoupleContractsScreen from "@/screens/CoupleContractsScreen";
 import CoordinatorSharingScreen from "@/screens/CoordinatorSharingScreen";
 import CoordinatorTimelineScreen from "@/screens/CoordinatorTimelineScreen";
 import SpeechListScreen from "@/screens/SpeechListScreen";
 import VendorReviewsScreen from "@/screens/VendorReviewsScreen";
 import FeedbackScreen from "@/screens/FeedbackScreen";
 import VendorDetailScreen from "@/screens/VendorDetailScreen";
+import BrudekjoleScreen from "@/screens/BrudekjoleScreen";
+import { HaarMakeupScreen } from "@/screens/HaarMakeupScreen";
+import { TransportScreen } from "@/screens/TransportScreen";
+import { BlomsterScreen } from "@/screens/BlomsterScreen";
+import { CateringScreen } from "@/screens/CateringScreen";
+import { KakeScreen } from "@/screens/KakeScreen";
 import { HeaderTitle } from "@/components/HeaderTitle";
 import { useScreenOptions } from "@/hooks/useScreenOptions";
 
@@ -38,7 +45,7 @@ export type PlanningStackParamList = {
   Budget: undefined;
   AITime: undefined;
   Vendors: undefined;
-  VendorMatching: { category?: string; guestCount?: number };
+  VendorMatching: { category?: string; guestCount?: number; cuisineTypes?: string[] };
   Timeline: undefined;
   StressTracker: undefined;
   BudgetScenarios: undefined;
@@ -53,11 +60,18 @@ export type PlanningStackParamList = {
   CoupleLogin: undefined;
   Chat: { conversationId: string; vendorName: string };
   CoupleOffers: undefined;
+  CoupleContracts: undefined;
   CoordinatorSharing: undefined;
   CoordinatorTimeline: undefined;
   SpeechList: undefined;
   VendorReviews: undefined;
   Feedback: undefined;
+  Brudekjole: undefined;
+  HaarMakeup: undefined;
+  Transport: undefined;
+  Blomster: undefined;
+  Catering: undefined;
+  Kake: undefined;
   VendorDetail: {
     vendorId: string;
     vendorName: string;
@@ -186,6 +200,11 @@ export default function PlanningStackNavigator() {
         options={{ title: "Tilbud" }}
       />
       <Stack.Screen
+        name="CoupleContracts"
+        component={CoupleContractsScreen}
+        options={{ title: "Avtaler" }}
+      />
+      <Stack.Screen
         name="CoordinatorSharing"
         component={CoordinatorSharingScreen}
         options={{ title: "Del med koordinatorer" }}
@@ -209,6 +228,36 @@ export default function PlanningStackNavigator() {
         name="Feedback"
         component={FeedbackScreen}
         options={{ title: "Tilbakemelding" }}
+      />
+      <Stack.Screen
+        name="Brudekjole"
+        component={BrudekjoleScreen}
+        options={{ title: "Brudekjole" }}
+      />
+      <Stack.Screen
+        name="HaarMakeup"
+        component={HaarMakeupScreen}
+        options={{ title: "Hår & Makeup" }}
+      />
+      <Stack.Screen
+        name="Transport"
+        component={TransportScreen}
+        options={{ title: "Transport" }}
+      />
+      <Stack.Screen
+        name="Blomster"
+        component={BlomsterScreen}
+        options={{ title: "Blomster" }}
+      />
+      <Stack.Screen
+        name="Catering"
+        component={CateringScreen}
+        options={{ title: "Catering" }}
+      />
+      <Stack.Screen
+        name="Kake"
+        component={KakeScreen}
+        options={{ title: "Bryllupskake" }}
       />
       <Stack.Screen
         name="VendorDetail"

@@ -66,7 +66,7 @@ export default function SplashScreen() {
     lineScale.value = withDelay(
       1200,
       withTiming(1, {
-        duration: 800,
+        duration: 1200,
         easing: Easing.bezier(0.25, 0.1, 0.25, 1),
       })
     );
@@ -75,7 +75,7 @@ export default function SplashScreen() {
     subtitleOpacity.value = withDelay(
       2000,
       withTiming(1, {
-        duration: 800,
+        duration: 1200,
         easing: Easing.bezier(0.25, 0.1, 0.25, 1),
       })
     );
@@ -83,7 +83,7 @@ export default function SplashScreen() {
     subtitleTranslateY.value = withDelay(
       2000,
       withTiming(0, {
-        duration: 800,
+        duration: 1200,
         easing: Easing.bezier(0.25, 0.1, 0.25, 1),
       })
     );
@@ -92,7 +92,7 @@ export default function SplashScreen() {
     contentScale.value = withDelay(
       3000,
       withTiming(1.08, {
-        duration: 3500,
+        duration: 4500,
         easing: Easing.bezier(0.22, 1, 0.36, 1),
       })
     );

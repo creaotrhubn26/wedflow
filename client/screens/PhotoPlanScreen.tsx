@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -6,6 +6,7 @@ import {
   TextInput,
   Pressable,
   Alert,
+  RefreshControl,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
@@ -13,29 +14,23 @@ import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInRight } from "react-native-reanimated";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { ThemedText } from "@/components/ThemedText";
 import { Button } from "@/components/Button";
 import { SwipeableRow } from "@/components/SwipeableRow";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius, Colors } from "@/constants/theme";
-import { getPhotoShots, savePhotoShots, generateId } from "@/lib/storage";
-import { PhotoShot } from "@/lib/types";
+import {
+  getPhotoShots,
+  createPhotoShot,
+  updatePhotoShot,
+  deletePhotoShot,
+  seedDefaultPhotoShots,
+  PhotoShot,
+} from "@/lib/api-couple-data";
 
-const DEFAULT_SHOTS: PhotoShot[] = [
-  { id: "1", title: "Detaljer av brudekjolen", description: "Nærbilder av kjole og sko", completed: false, category: "details" },
-  { id: "2", title: "Bruden og forlover", description: "Før seremonien", completed: false, category: "portraits" },
-  { id: "3", title: "Brudgommen gjør seg klar", description: "Med bestmennene", completed: false, category: "portraits" },
-  { id: "4", title: "Brudens ankomst", description: "Ved kirken/lokalet", completed: false, category: "ceremony" },
-  { id: "5", title: "Seremonien", description: "Utveksling av løfter og ringer", completed: false, category: "ceremony" },
-  { id: "6", title: "Første kyss", description: "Det viktige øyeblikket", completed: false, category: "ceremony" },
-  { id: "7", title: "Gruppebilde med familie", description: "Begge familier samlet", completed: false, category: "group" },
-  { id: "8", title: "Brudeparet alene", description: "Romantiske portretter", completed: false, category: "portraits" },
-  { id: "9", title: "Middagen starter", description: "Første dans og taler", completed: false, category: "reception" },
-  { id: "10", title: "Kaken skjæres", description: "Bryllupskaken", completed: false, category: "reception" },
-];
-
-const CATEGORY_LABELS: Record<PhotoShot["category"], string> = {
+const CATEGORY_LABELS: Record<string, string> = {
   ceremony: "Seremoni",
   portraits: "Portretter",
   group: "Gruppebilde",
@@ -43,7 +38,7 @@ const CATEGORY_LABELS: Record<PhotoShot["category"], string> = {
   reception: "Mottakelse",
 };
 
-const CATEGORY_ICONS: Record<PhotoShot["category"], keyof typeof Feather.glyphMap> = {
+const CATEGORY_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
   ceremony: "heart",
   portraits: "user",
   group: "users",
@@ -56,40 +51,63 @@ export default function PhotoPlanScreen() {
   const headerHeight = useHeaderHeight();
   const tabBarHeight = useBottomTabBarHeight();
   const { theme } = useTheme();
+  const queryClient = useQueryClient();
 
-  const [shots, setShots] = useState<PhotoShot[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Query for photo shots
+  const { data: shotsData, isLoading: loading, refetch } = useQuery({
+    queryKey: ["photo-shots"],
+    queryFn: async () => {
+      const shots = await getPhotoShots();
+      // If no shots exist, seed with defaults
+      if (shots.length === 0) {
+        await seedDefaultPhotoShots();
+        return getPhotoShots();
+      }
+      return shots;
+    },
+  });
+
+  const shots = shotsData ?? [];
+
+  // Refresh handler
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  }, [refetch]);
+
+  // Mutations
+  const createMutation = useMutation({
+    mutationFn: createPhotoShot,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["photo-shots"] }),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<PhotoShot> }) => updatePhotoShot(id, data),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["photo-shots"] }),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: deletePhotoShot,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["photo-shots"] }),
+  });
+
   const [showForm, setShowForm] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<PhotoShot["category"]>("portraits");
+  const [selectedCategory, setSelectedCategory] = useState<string>("portraits");
   const [editingShot, setEditingShot] = useState<PhotoShot | null>(null);
-
-  const loadData = useCallback(async () => {
-    const data = await getPhotoShots();
-    if (data.length === 0) {
-      await savePhotoShots(DEFAULT_SHOTS);
-      setShots(DEFAULT_SHOTS);
-    } else {
-      setShots(data);
-    }
-    setLoading(false);
-  }, []);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
 
   const completedCount = shots.filter((s) => s.completed).length;
   const progress = shots.length > 0 ? (completedCount / shots.length) * 100 : 0;
 
   const handleToggleComplete = async (id: string) => {
-    const updatedShots = shots.map((s) =>
-      s.id === id ? { ...s, completed: !s.completed } : s
-    );
-    setShots(updatedShots);
-    await savePhotoShots(updatedShots);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    const shot = shots.find((s) => s.id === id);
+    if (shot) {
+      await updateMutation.mutateAsync({ id, data: { completed: !shot.completed } });
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
   };
 
   const handleAddShot = async () => {
@@ -98,33 +116,29 @@ export default function PhotoPlanScreen() {
       return;
     }
 
-    let updatedShots: PhotoShot[];
-    
-    if (editingShot) {
-      updatedShots = shots.map((s) =>
-        s.id === editingShot.id
-          ? { ...s, title: newTitle.trim(), description: newDescription.trim(), category: selectedCategory }
-          : s
-      );
-    } else {
-      const newShot: PhotoShot = {
-        id: generateId(),
-        title: newTitle.trim(),
-        description: newDescription.trim(),
-        completed: false,
-        category: selectedCategory,
-      };
-      updatedShots = [...shots, newShot];
+    try {
+      if (editingShot) {
+        await updateMutation.mutateAsync({
+          id: editingShot.id,
+          data: { title: newTitle.trim(), description: newDescription.trim() || null, category: selectedCategory },
+        });
+      } else {
+        await createMutation.mutateAsync({
+          title: newTitle.trim(),
+          description: newDescription.trim() || null,
+          completed: false,
+          category: selectedCategory,
+        });
+      }
+
+      setNewTitle("");
+      setNewDescription("");
+      setEditingShot(null);
+      setShowForm(false);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } catch (e) {
+      Alert.alert("Feil", "Kunne ikke lagre bildet");
     }
-
-    setShots(updatedShots);
-    await savePhotoShots(updatedShots);
-
-    setNewTitle("");
-    setNewDescription("");
-    setEditingShot(null);
-    setShowForm(false);
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   };
 
   const handleEditShot = (shot: PhotoShot) => {
@@ -142,10 +156,12 @@ export default function PhotoPlanScreen() {
         text: "Slett",
         style: "destructive",
         onPress: async () => {
-          const updatedShots = shots.filter((s) => s.id !== id);
-          setShots(updatedShots);
-          await savePhotoShots(updatedShots);
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+          try {
+            await deleteMutation.mutateAsync(id);
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+          } catch (e) {
+            Alert.alert("Feil", "Kunne ikke slette bildet");
+          }
         },
       },
     ]);
@@ -157,7 +173,7 @@ export default function PhotoPlanScreen() {
     }
     acc[shot.category].push(shot);
     return acc;
-  }, {} as Record<PhotoShot["category"], PhotoShot[]>);
+  }, {} as Record<string, PhotoShot[]>);
 
   if (loading) {
     return (
@@ -182,6 +198,7 @@ export default function PhotoPlanScreen() {
         paddingHorizontal: Spacing.lg,
       }}
       scrollIndicatorInsets={{ bottom: insets.bottom }}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.dark.accent} />}
     >
       <View style={[styles.progressCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
         <View style={styles.progressHeader}>

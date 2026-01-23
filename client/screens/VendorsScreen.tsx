@@ -24,22 +24,6 @@ import { Spacing, BorderRadius, Colors } from "@/constants/theme";
 import { Vendor } from "@/lib/types";
 import { PlanningStackParamList } from "@/navigation/PlanningStackNavigator";
 
-interface ApiVendor {
-  id: string;
-  businessName: string;
-  categoryId: string | null;
-  categoryName?: string;
-  description: string | null;
-  location: string | null;
-  phone: string | null;
-  website: string | null;
-  priceRange: string | null;
-  imageUrl: string | null;
-  isFeatured: boolean;
-  isPrioritized: boolean;
-  hasReviewBadge: boolean;
-}
-
 const SCANDINAVIAN_VENDORS: Vendor[] = [
   { id: "1", name: "Nordic Moments", categoryId: null, categoryName: "Fotograf", location: "Oslo", country: "Norway", rating: 4.9, priceRange: "25 000 - 40 000 kr", description: "Naturlig lys og tidløse øyeblikk", saved: false, isFeatured: false, isPrioritized: false, hasReviewBadge: false },
   { id: "2", name: "Stockholm Wedding Films", categoryId: null, categoryName: "Videograf", location: "Stockholm", country: "Sweden", rating: 4.8, priceRange: "30 000 - 50 000 kr", description: "Cinematiske bryllupsfilmer", saved: false, isFeatured: false, isPrioritized: false, hasReviewBadge: false },
@@ -73,6 +57,7 @@ interface ApiVendor {
   id: string;
   businessName: string;
   categoryId: string | null;
+  categoryName?: string;
   description: string | null;
   location: string | null;
   phone: string | null;
@@ -111,9 +96,9 @@ export default function VendorsScreen() {
       phone: v.phone,
       website: v.website,
       imageUrl: v.imageUrl,
-      isFeatured: v.isFeatured,
-      isPrioritized: v.isPrioritized,
-      hasReviewBadge: v.hasReviewBadge,
+      isFeatured: v.isFeatured ?? false,
+      isPrioritized: v.isPrioritized ?? false,
+      hasReviewBadge: v.hasReviewBadge ?? false,
       saved: false,
     })),
   ];

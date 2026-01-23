@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -6,6 +6,7 @@ import {
   TextInput,
   Pressable,
   Alert,
+  RefreshControl,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
@@ -14,14 +15,23 @@ import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
 import { renderIcon } from "@/lib/custom-icons";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { ThemedText } from "@/components/ThemedText";
 import { Button } from "@/components/Button";
 import { SwipeableRow } from "@/components/SwipeableRow";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius, Colors } from "@/constants/theme";
-import { getBudgetItems, saveBudgetItems, getTotalBudget, saveTotalBudget, generateId } from "@/lib/storage";
-import { BudgetItem } from "@/lib/types";
+import {
+  getBudgetSettings,
+  updateBudgetSettings,
+  getBudgetItems,
+  createBudgetItem,
+  updateBudgetItem,
+  deleteBudgetItem,
+  BudgetItem,
+} from "@/lib/api-couple-data";
+import { generateId } from "@/lib/storage";
 
 const useFieldValidation = () => {
   const [touched, setTouched] = useState<Record<string, boolean>>({});
@@ -94,43 +104,65 @@ export default function BudgetScreen() {
   const tabBarHeight = useBottomTabBarHeight();
   const { theme } = useTheme();
   const { touched, errors, handleBlur, getFieldStyle, resetValidation } = useFieldValidation();
+  const queryClient = useQueryClient();
 
-  const [items, setItems] = useState<BudgetItem[]>([]);
-  const [totalBudget, setTotalBudget] = useState(300000);
-  const [loading, setLoading] = useState(true);
+  // Query for budget settings
+  const { data: budgetSettings, isLoading: loadingSettings } = useQuery({
+    queryKey: ["budget-settings"],
+    queryFn: getBudgetSettings,
+  });
+
+  // Query for budget items
+  const { data: budgetItemsData, isLoading: loadingItems, refetch } = useQuery({
+    queryKey: ["budget-items"],
+    queryFn: getBudgetItems,
+  });
+
+  const items = budgetItemsData ?? [];
+  const totalBudget = budgetSettings?.totalBudget ?? 300000;
+  const loading = loadingSettings || loadingItems;
+
+  // State for refreshing
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await refetch();
+    await queryClient.invalidateQueries({ queryKey: ["budget-settings"] });
+    setRefreshing(false);
+  }, [refetch, queryClient]);
+
+  // Mutations
+  const updateSettingsMutation = useMutation({
+    mutationFn: updateBudgetSettings,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["budget-settings"] }),
+  });
+
+  const createItemMutation = useMutation({
+    mutationFn: createBudgetItem,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["budget-items"] }),
+  });
+
+  const updateItemMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<BudgetItem> }) => updateBudgetItem(id, data),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["budget-items"] }),
+  });
+
+  const deleteItemMutation = useMutation({
+    mutationFn: deleteBudgetItem,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["budget-items"] }),
+  });
+
   const [showForm, setShowForm] = useState(false);
   const [newName, setNewName] = useState("");
   const [newCost, setNewCost] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("other");
   const [editingBudget, setEditingBudget] = useState(false);
-  const [budgetInput, setBudgetInput] = useState("");
+  const [budgetInput, setBudgetInput] = useState(totalBudget.toString());
   const [editingItem, setEditingItem] = useState<BudgetItem | null>(null);
 
-  const loadData = useCallback(async () => {
-    const [itemsData, budgetData] = await Promise.all([
-      getBudgetItems(),
-      getTotalBudget(),
-    ]);
-
-    if (itemsData.length === 0) {
-      await saveBudgetItems(DEFAULT_ITEMS);
-      setItems(DEFAULT_ITEMS);
-    } else {
-      setItems(itemsData);
-    }
-
-    setTotalBudget(budgetData);
-    setBudgetInput(budgetData.toString());
-    setLoading(false);
-  }, []);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
-
-  const totalEstimated = items.reduce((sum, item) => sum + item.estimatedCost, 0);
-  const totalActual = items.reduce((sum, item) => sum + item.actualCost, 0);
-  const totalPaid = items.filter((i) => i.paid).reduce((sum, item) => sum + item.actualCost, 0);
+  const totalEstimated = items.reduce((sum, item) => sum + (item.estimatedCost || 0), 0);
+  const totalActual = items.reduce((sum, item) => sum + (item.actualCost || 0), 0);
+  const totalPaid = items.filter((i) => i.paid).reduce((sum, item) => sum + (item.actualCost || 0), 0);
   const remaining = totalBudget - totalEstimated;
 
   const handleAddItem = async () => {
@@ -139,51 +171,46 @@ export default function BudgetScreen() {
       return;
     }
 
-    let updatedItems: BudgetItem[];
+    try {
+      if (editingItem) {
+        await updateItemMutation.mutateAsync({
+          id: editingItem.id,
+          data: { name: newName.trim(), estimatedCost: parseInt(newCost) || 0, category: selectedCategory },
+        });
+      } else {
+        await createItemMutation.mutateAsync({
+          category: selectedCategory,
+          name: newName.trim(),
+          estimatedCost: parseInt(newCost) || 0,
+          actualCost: 0,
+          paid: false,
+        });
+      }
 
-    if (editingItem) {
-      updatedItems = items.map((item) =>
-        item.id === editingItem.id
-          ? { ...item, name: newName.trim(), estimatedCost: parseInt(newCost) || 0, category: selectedCategory }
-          : item
-      );
-    } else {
-      const newItem: BudgetItem = {
-        id: generateId(),
-        category: selectedCategory,
-        name: newName.trim(),
-        estimatedCost: parseInt(newCost) || 0,
-        actualCost: 0,
-        paid: false,
-      };
-      updatedItems = [...items, newItem];
+      setNewName("");
+      setNewCost("");
+      setEditingItem(null);
+      setShowForm(false);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } catch (e) {
+      Alert.alert("Feil", "Kunne ikke lagre utgift");
     }
-
-    setItems(updatedItems);
-    await saveBudgetItems(updatedItems);
-
-    setNewName("");
-    setNewCost("");
-    setEditingItem(null);
-    setShowForm(false);
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   };
 
   const handleEditItem = (item: BudgetItem) => {
     setEditingItem(item);
     setNewName(item.name);
-    setNewCost(item.estimatedCost.toString());
+    setNewCost((item.estimatedCost || 0).toString());
     setSelectedCategory(item.category);
     setShowForm(true);
   };
 
   const handleTogglePaid = async (id: string) => {
-    const updatedItems = items.map((item) =>
-      item.id === id ? { ...item, paid: !item.paid } : item
-    );
-    setItems(updatedItems);
-    await saveBudgetItems(updatedItems);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    const item = items.find((i) => i.id === id);
+    if (item) {
+      await updateItemMutation.mutateAsync({ id, data: { paid: !item.paid } });
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    }
   };
 
   const handleDeleteItem = async (id: string) => {
@@ -193,9 +220,7 @@ export default function BudgetScreen() {
         text: "Slett",
         style: "destructive",
         onPress: async () => {
-          const updatedItems = items.filter((i) => i.id !== id);
-          setItems(updatedItems);
-          await saveBudgetItems(updatedItems);
+          await deleteItemMutation.mutateAsync(id);
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         },
       },
@@ -203,11 +228,14 @@ export default function BudgetScreen() {
   };
 
   const handleSaveBudget = async () => {
-    const newBudget = parseInt(budgetInput) || 300000;
-    setTotalBudget(newBudget);
-    await saveTotalBudget(newBudget);
-    setEditingBudget(false);
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    try {
+      const newBudget = parseInt(budgetInput) || 300000;
+      await updateSettingsMutation.mutateAsync({ totalBudget: newBudget });
+      setEditingBudget(false);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } catch (e) {
+      Alert.alert("Feil", "Kunne ikke lagre budsjett");
+    }
   };
 
   const formatCurrency = (amount: number) => {
@@ -243,6 +271,7 @@ export default function BudgetScreen() {
         paddingHorizontal: Spacing.lg,
       }}
       scrollIndicatorInsets={{ bottom: insets.bottom }}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.dark.accent} />}
     >
       <Animated.View entering={FadeInDown.delay(100).duration(400)}>
         <View style={[styles.summaryCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>

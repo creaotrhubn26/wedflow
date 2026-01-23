@@ -19,19 +19,47 @@ __export(schema_exports, {
   checklistTasks: () => checklistTasks,
   conversations: () => conversations,
   coordinatorInvitations: () => coordinatorInvitations,
+  coupleBudgetItems: () => coupleBudgetItems,
+  coupleBudgetSettings: () => coupleBudgetSettings,
+  coupleCakeDesigns: () => coupleCakeDesigns,
+  coupleCakeTastings: () => coupleCakeTastings,
+  coupleCakeTimeline: () => coupleCakeTimeline,
+  coupleCateringDietaryNeeds: () => coupleCateringDietaryNeeds,
+  coupleCateringMenu: () => coupleCateringMenu,
+  coupleCateringTastings: () => coupleCateringTastings,
+  coupleCateringTimeline: () => coupleCateringTimeline,
+  coupleDressAppointments: () => coupleDressAppointments,
+  coupleDressFavorites: () => coupleDressFavorites,
+  coupleDressTimeline: () => coupleDressTimeline,
+  coupleFlowerAppointments: () => coupleFlowerAppointments,
+  coupleFlowerSelections: () => coupleFlowerSelections,
+  coupleFlowerTimeline: () => coupleFlowerTimeline,
+  coupleHairMakeupAppointments: () => coupleHairMakeupAppointments,
+  coupleHairMakeupLooks: () => coupleHairMakeupLooks,
+  coupleHairMakeupTimeline: () => coupleHairMakeupTimeline,
+  coupleImportantPeople: () => coupleImportantPeople,
   coupleLoginSchema: () => coupleLoginSchema,
+  couplePhotoShots: () => couplePhotoShots,
   coupleProfiles: () => coupleProfiles,
   coupleSessions: () => coupleSessions,
+  coupleTransportBookings: () => coupleTransportBookings,
+  coupleTransportTimeline: () => coupleTransportTimeline,
   coupleVendorContracts: () => coupleVendorContracts,
+  createBudgetItemSchema: () => createBudgetItemSchema,
   createChecklistTaskSchema: () => createChecklistTaskSchema,
   createCoordinatorInvitationSchema: () => createCoordinatorInvitationSchema,
   createDeliverySchema: () => createDeliverySchema,
+  createDressAppointmentSchema: () => createDressAppointmentSchema,
+  createDressFavoriteSchema: () => createDressFavoriteSchema,
   createGuestInvitationSchema: () => createGuestInvitationSchema,
+  createImportantPersonSchema: () => createImportantPersonSchema,
   createInquirySchema: () => createInquirySchema,
   createInspirationSchema: () => createInspirationSchema,
   createOfferSchema: () => createOfferSchema,
+  createPhotoShotSchema: () => createPhotoShotSchema,
   createReminderSchema: () => createReminderSchema,
   createSpeechSchema: () => createSpeechSchema,
+  createVendorAvailabilitySchema: () => createVendorAvailabilitySchema,
   createVendorProductSchema: () => createVendorProductSchema,
   deliveries: () => deliveries,
   deliveryItems: () => deliveryItems,
@@ -57,6 +85,7 @@ __export(schema_exports, {
   insertSubscriptionTierSchema: () => insertSubscriptionTierSchema,
   insertTableSeatingInvitationSchema: () => insertTableSeatingInvitationSchema,
   insertUserSchema: () => insertUserSchema,
+  insertVendorAvailabilitySchema: () => insertVendorAvailabilitySchema,
   insertVendorCategorySchema: () => insertVendorCategorySchema,
   insertVendorOfferItemSchema: () => insertVendorOfferItemSchema,
   insertVendorOfferSchema: () => insertVendorOfferSchema,
@@ -93,6 +122,7 @@ __export(schema_exports, {
   updateWeddingGuestSchema: () => updateWeddingGuestSchema,
   updateWhatsNewSchema: () => updateWhatsNewSchema,
   users: () => users,
+  vendorAvailability: () => vendorAvailability,
   vendorCategories: () => vendorCategories,
   vendorCategoryDetails: () => vendorCategoryDetails,
   vendorFeatures: () => vendorFeatures,
@@ -114,10 +144,10 @@ __export(schema_exports, {
   whatsNewItems: () => whatsNewItems
 });
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, timestamp, integer, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, timestamp, integer, boolean, date, index, uniqueIndex } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
-var users, insertUserSchema, vendorCategories, vendors, vendorSessions, insertVendorCategorySchema, insertVendorSchema, vendorRegistrationSchema, vendorFeatures, vendorInspirationCategories, vendorCategoryDetails, deliveries, deliveryItems, insertDeliverySchema, insertDeliveryItemSchema, createDeliverySchema, inspirationCategories, inspirations, inspirationMedia, insertInspirationCategorySchema, insertInspirationSchema, insertInspirationMediaSchema, createInspirationSchema, inspirationInquiries, createInquirySchema, checklistTasks, insertChecklistTaskSchema, createChecklistTaskSchema, coupleProfiles, coupleSessions, conversations, messages, adminConversations, adminMessages, sendAdminMessageSchema, insertCoupleProfileSchema, coupleLoginSchema, sendMessageSchema, reminders, insertReminderSchema, createReminderSchema, vendorProducts, insertVendorProductSchema, createVendorProductSchema, vendorOffers, vendorOfferItems, insertVendorOfferSchema, insertVendorOfferItemSchema, createOfferSchema, speeches, insertSpeechSchema, createSpeechSchema, messageReminders, appSettings, insertAppSettingSchema, updateAppSettingSchema, whatsNewItems, insertWhatsNewSchema, updateWhatsNewSchema, scheduleEvents, insertScheduleEventSchema, coordinatorInvitations, insertCoordinatorInvitationSchema, createCoordinatorInvitationSchema, guestInvitations, insertGuestInvitationSchema, createGuestInvitationSchema, coupleVendorContracts, insertCoupleVendorContractSchema, notifications, insertNotificationSchema, activityLogs, weddingGuests, insertWeddingGuestSchema, updateWeddingGuestSchema, weddingTables, insertWeddingTableSchema, tableGuestAssignments, tableSeatingInvitations, insertTableSeatingInvitationSchema, appFeedback, insertAppFeedbackSchema, vendorReviews, insertVendorReviewSchema, vendorReviewResponses, insertVendorReviewResponseSchema, faqItems, insertFaqItemSchema, updateFaqItemSchema, videoGuides, insertVideoGuideSchema, updateVideoGuideSchema, subscriptionTiers, vendorSubscriptions, vendorUsageMetrics, vendorPayments, insertSubscriptionTierSchema, updateSubscriptionTierSchema, insertVendorSubscriptionSchema, insertVendorUsageSchema, insertVendorPaymentSchema;
+var users, insertUserSchema, vendorCategories, vendors, vendorSessions, insertVendorCategorySchema, insertVendorSchema, vendorRegistrationSchema, vendorFeatures, vendorInspirationCategories, vendorCategoryDetails, deliveries, deliveryItems, insertDeliverySchema, insertDeliveryItemSchema, createDeliverySchema, inspirationCategories, inspirations, inspirationMedia, insertInspirationCategorySchema, insertInspirationSchema, insertInspirationMediaSchema, createInspirationSchema, inspirationInquiries, createInquirySchema, checklistTasks, insertChecklistTaskSchema, createChecklistTaskSchema, coupleProfiles, coupleSessions, coupleBudgetItems, coupleBudgetSettings, coupleDressAppointments, coupleDressFavorites, coupleDressTimeline, coupleImportantPeople, couplePhotoShots, createBudgetItemSchema, createDressAppointmentSchema, createDressFavoriteSchema, createImportantPersonSchema, createPhotoShotSchema, conversations, messages, adminConversations, adminMessages, sendAdminMessageSchema, insertCoupleProfileSchema, coupleLoginSchema, sendMessageSchema, reminders, insertReminderSchema, createReminderSchema, vendorProducts, vendorAvailability, insertVendorAvailabilitySchema, insertVendorProductSchema, createVendorProductSchema, createVendorAvailabilitySchema, vendorOffers, vendorOfferItems, insertVendorOfferSchema, insertVendorOfferItemSchema, createOfferSchema, speeches, insertSpeechSchema, createSpeechSchema, messageReminders, appSettings, insertAppSettingSchema, updateAppSettingSchema, whatsNewItems, insertWhatsNewSchema, updateWhatsNewSchema, scheduleEvents, insertScheduleEventSchema, coordinatorInvitations, insertCoordinatorInvitationSchema, createCoordinatorInvitationSchema, guestInvitations, insertGuestInvitationSchema, createGuestInvitationSchema, coupleVendorContracts, insertCoupleVendorContractSchema, notifications, insertNotificationSchema, activityLogs, weddingGuests, insertWeddingGuestSchema, updateWeddingGuestSchema, weddingTables, insertWeddingTableSchema, tableGuestAssignments, tableSeatingInvitations, insertTableSeatingInvitationSchema, appFeedback, insertAppFeedbackSchema, vendorReviews, insertVendorReviewSchema, vendorReviewResponses, insertVendorReviewResponseSchema, faqItems, insertFaqItemSchema, updateFaqItemSchema, videoGuides, insertVideoGuideSchema, updateVideoGuideSchema, subscriptionTiers, vendorSubscriptions, vendorUsageMetrics, vendorPayments, insertSubscriptionTierSchema, updateSubscriptionTierSchema, insertVendorSubscriptionSchema, insertVendorUsageSchema, insertVendorPaymentSchema, coupleHairMakeupAppointments, coupleHairMakeupLooks, coupleHairMakeupTimeline, coupleTransportBookings, coupleTransportTimeline, coupleFlowerAppointments, coupleFlowerSelections, coupleFlowerTimeline, coupleCateringTastings, coupleCateringMenu, coupleCateringDietaryNeeds, coupleCateringTimeline, coupleCakeTastings, coupleCakeDesigns, coupleCakeTimeline;
 var init_schema = __esm({
   "shared/schema.ts"() {
     "use strict";
@@ -404,6 +434,133 @@ var init_schema = __esm({
       expiresAt: timestamp("expires_at").notNull(),
       createdAt: timestamp("created_at").defaultNow()
     });
+    coupleBudgetItems = pgTable("couple_budget_items", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      category: text("category").notNull(),
+      label: text("label").notNull(),
+      estimatedCost: integer("estimated_cost").notNull().default(0),
+      actualCost: integer("actual_cost"),
+      isPaid: boolean("is_paid").notNull().default(false),
+      notes: text("notes"),
+      sortOrder: integer("sort_order").default(0),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    coupleBudgetSettings = pgTable("couple_budget_settings", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }).unique(),
+      totalBudget: integer("total_budget").notNull().default(0),
+      currency: text("currency").notNull().default("NOK"),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    coupleDressAppointments = pgTable("couple_dress_appointments", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      shopName: text("shop_name").notNull(),
+      date: text("date").notNull(),
+      time: text("time"),
+      notes: text("notes"),
+      completed: boolean("completed").notNull().default(false),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    coupleDressFavorites = pgTable("couple_dress_favorites", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      name: text("name").notNull(),
+      designer: text("designer"),
+      shop: text("shop"),
+      price: integer("price").default(0),
+      imageUrl: text("image_url"),
+      notes: text("notes"),
+      isFavorite: boolean("is_favorite").notNull().default(false),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    coupleDressTimeline = pgTable("couple_dress_timeline", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }).unique(),
+      ordered: boolean("ordered").notNull().default(false),
+      orderedDate: text("ordered_date"),
+      firstFitting: boolean("first_fitting").notNull().default(false),
+      firstFittingDate: text("first_fitting_date"),
+      alterations: boolean("alterations").notNull().default(false),
+      alterationsDate: text("alterations_date"),
+      finalFitting: boolean("final_fitting").notNull().default(false),
+      finalFittingDate: text("final_fitting_date"),
+      pickup: boolean("pickup").notNull().default(false),
+      pickupDate: text("pickup_date"),
+      budget: integer("budget").default(0),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    coupleImportantPeople = pgTable("couple_important_people", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      name: text("name").notNull(),
+      role: text("role").notNull(),
+      // 'bestman', 'maidofhonor', 'groomsman', 'bridesmaid', 'toastmaster', 'other'
+      phone: text("phone"),
+      email: text("email"),
+      notes: text("notes"),
+      sortOrder: integer("sort_order").default(0),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    couplePhotoShots = pgTable("couple_photo_shots", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      title: text("title").notNull(),
+      description: text("description"),
+      category: text("category").notNull(),
+      // 'ceremony', 'portraits', 'group', 'details', 'reception'
+      completed: boolean("completed").notNull().default(false),
+      sortOrder: integer("sort_order").default(0),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    createBudgetItemSchema = z.object({
+      category: z.string().min(1),
+      label: z.string().min(1),
+      estimatedCost: z.number().int().min(0),
+      actualCost: z.number().int().min(0).optional(),
+      isPaid: z.boolean().optional(),
+      notes: z.string().optional(),
+      sortOrder: z.number().int().optional()
+    });
+    createDressAppointmentSchema = z.object({
+      shopName: z.string().min(1),
+      date: z.string().min(1),
+      time: z.string().optional(),
+      notes: z.string().optional(),
+      completed: z.boolean().optional()
+    });
+    createDressFavoriteSchema = z.object({
+      name: z.string().min(1),
+      designer: z.string().optional(),
+      shop: z.string().optional(),
+      price: z.number().int().min(0).optional(),
+      imageUrl: z.string().optional(),
+      notes: z.string().optional(),
+      isFavorite: z.boolean().optional()
+    });
+    createImportantPersonSchema = z.object({
+      name: z.string().min(1),
+      role: z.enum(["bestman", "maidofhonor", "groomsman", "bridesmaid", "toastmaster", "other"]),
+      phone: z.string().optional(),
+      email: z.string().email().optional().or(z.literal("")),
+      notes: z.string().optional(),
+      sortOrder: z.number().int().optional()
+    });
+    createPhotoShotSchema = z.object({
+      title: z.string().min(1),
+      description: z.string().optional(),
+      category: z.enum(["ceremony", "portraits", "group", "details", "reception"]),
+      completed: z.boolean().optional(),
+      sortOrder: z.number().int().optional()
+    });
     conversations = pgTable("conversations", {
       id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
       coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
@@ -527,8 +684,45 @@ var init_schema = __esm({
       imageUrl: text("image_url"),
       isArchived: boolean("is_archived").default(false),
       sortOrder: integer("sort_order").default(0),
+      // Inventory tracking fields
+      trackInventory: boolean("track_inventory").default(false),
+      availableQuantity: integer("available_quantity"),
+      reservedQuantity: integer("reserved_quantity").default(0),
+      bookingBuffer: integer("booking_buffer").default(0),
       createdAt: timestamp("created_at").defaultNow(),
       updatedAt: timestamp("updated_at").defaultNow()
+    });
+    vendorAvailability = pgTable(
+      "vendor_availability",
+      {
+        id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+        vendorId: varchar("vendor_id").notNull().references(() => vendors.id, { onDelete: "cascade" }),
+        date: date("date").notNull(),
+        name: text("name"),
+        // optional label like "Summer vacation" or "Smith wedding"
+        status: text("status").notNull().default("available"),
+        // 'available', 'blocked', 'limited'
+        maxBookings: integer("max_bookings"),
+        // null means unlimited
+        notes: text("notes"),
+        createdAt: timestamp("created_at").defaultNow(),
+        updatedAt: timestamp("updated_at").defaultNow()
+      },
+      (table) => ({
+        vendorDateIdx: uniqueIndex("idx_vendor_availability_vendor_date").on(
+          table.vendorId,
+          table.date
+        ),
+        vendorIdx: index("idx_vendor_availability_vendor").on(table.vendorId),
+        dateIdx: index("idx_vendor_availability_date").on(table.date)
+      })
+    );
+    insertVendorAvailabilitySchema = createInsertSchema(
+      vendorAvailability
+    ).omit({
+      id: true,
+      createdAt: true,
+      updatedAt: true
     });
     insertVendorProductSchema = createInsertSchema(vendorProducts).omit({
       id: true,
@@ -545,7 +739,19 @@ var init_schema = __esm({
       minQuantity: z.number().min(1).default(1),
       categoryTag: z.string().optional(),
       imageUrl: z.string().url("Ugyldig URL").optional().or(z.literal("")),
-      sortOrder: z.number().default(0)
+      sortOrder: z.number().default(0),
+      trackInventory: z.boolean().default(false),
+      availableQuantity: z.number().int().optional(),
+      reservedQuantity: z.number().int().min(0).default(0),
+      bookingBuffer: z.number().int().min(0).default(0)
+    });
+    createVendorAvailabilitySchema = z.object({
+      vendorId: z.string().uuid("Ugyldig vendor ID"),
+      date: z.string().date("Ugyldig dato"),
+      name: z.string().max(100).optional(),
+      status: z.enum(["available", "blocked", "limited"]).default("available"),
+      maxBookings: z.number().int().positive().optional(),
+      notes: z.string().optional()
     });
     vendorOffers = pgTable("vendor_offers", {
       id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -1223,6 +1429,230 @@ var init_schema = __esm({
       createdAt: true,
       updatedAt: true
     });
+    coupleHairMakeupAppointments = pgTable("couple_hair_makeup_appointments", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      stylistName: text("stylist_name").notNull(),
+      serviceType: text("service_type").notNull(),
+      // "hair", "makeup", "both"
+      appointmentType: text("appointment_type").notNull(),
+      // "consultation", "trial", "wedding_day"
+      date: text("date").notNull(),
+      time: text("time"),
+      location: text("location"),
+      notes: text("notes"),
+      completed: boolean("completed").default(false),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    coupleHairMakeupLooks = pgTable("couple_hair_makeup_looks", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      name: text("name").notNull(),
+      lookType: text("look_type").notNull(),
+      // "hair", "makeup", "full_look"
+      imageUrl: text("image_url"),
+      notes: text("notes"),
+      isFavorite: boolean("is_favorite").default(false),
+      isSelected: boolean("is_selected").default(false),
+      // the chosen look
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    coupleHairMakeupTimeline = pgTable("couple_hair_makeup_timeline", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }).unique(),
+      consultationBooked: boolean("consultation_booked").default(false),
+      consultationDate: text("consultation_date"),
+      trialBooked: boolean("trial_booked").default(false),
+      trialDate: text("trial_date"),
+      lookSelected: boolean("look_selected").default(false),
+      lookSelectedDate: text("look_selected_date"),
+      weddingDayBooked: boolean("wedding_day_booked").default(false),
+      budget: integer("budget").default(0),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    coupleTransportBookings = pgTable("couple_transport_bookings", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      vehicleType: text("vehicle_type").notNull(),
+      // "bride_car", "groom_car", "guest_shuttle", "getaway_car"
+      providerName: text("provider_name"),
+      vehicleDescription: text("vehicle_description"),
+      pickupTime: text("pickup_time"),
+      pickupLocation: text("pickup_location"),
+      dropoffTime: text("dropoff_time"),
+      dropoffLocation: text("dropoff_location"),
+      driverName: text("driver_name"),
+      driverPhone: text("driver_phone"),
+      price: integer("price").default(0),
+      notes: text("notes"),
+      confirmed: boolean("confirmed").default(false),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    coupleTransportTimeline = pgTable("couple_transport_timeline", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }).unique(),
+      brideCarBooked: boolean("bride_car_booked").default(false),
+      groomCarBooked: boolean("groom_car_booked").default(false),
+      guestShuttleBooked: boolean("guest_shuttle_booked").default(false),
+      getawayCarBooked: boolean("getaway_car_booked").default(false),
+      allConfirmed: boolean("all_confirmed").default(false),
+      budget: integer("budget").default(0),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    coupleFlowerAppointments = pgTable("couple_flower_appointments", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      floristName: text("florist_name").notNull(),
+      appointmentType: text("appointment_type").notNull(),
+      // "consultation", "mockup", "delivery_planning"
+      date: text("date").notNull(),
+      time: text("time"),
+      location: text("location"),
+      notes: text("notes"),
+      completed: boolean("completed").default(false),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    coupleFlowerSelections = pgTable("couple_flower_selections", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      itemType: text("item_type").notNull(),
+      // "bridal_bouquet", "bridesmaid_bouquet", "boutonniere", "centerpiece", "ceremony_flowers", "other"
+      name: text("name").notNull(),
+      description: text("description"),
+      imageUrl: text("image_url"),
+      quantity: integer("quantity").default(1),
+      estimatedPrice: integer("estimated_price").default(0),
+      isConfirmed: boolean("is_confirmed").default(false),
+      notes: text("notes"),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    coupleFlowerTimeline = pgTable("couple_flower_timeline", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }).unique(),
+      floristSelected: boolean("florist_selected").default(false),
+      floristSelectedDate: text("florist_selected_date"),
+      consultationDone: boolean("consultation_done").default(false),
+      consultationDate: text("consultation_date"),
+      mockupApproved: boolean("mockup_approved").default(false),
+      mockupApprovedDate: text("mockup_approved_date"),
+      deliveryConfirmed: boolean("delivery_confirmed").default(false),
+      budget: integer("budget").default(0),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    coupleCateringTastings = pgTable("couple_catering_tastings", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      catererName: text("caterer_name").notNull(),
+      date: text("date").notNull(),
+      time: text("time"),
+      location: text("location"),
+      notes: text("notes"),
+      rating: integer("rating"),
+      // 1-5 stars
+      completed: boolean("completed").default(false),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    coupleCateringMenu = pgTable("couple_catering_menu", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      courseType: text("course_type").notNull(),
+      // "appetizer", "main", "dessert", "drinks", "late_night"
+      dishName: text("dish_name").notNull(),
+      description: text("description"),
+      isVegetarian: boolean("is_vegetarian").default(false),
+      isVegan: boolean("is_vegan").default(false),
+      isGlutenFree: boolean("is_gluten_free").default(false),
+      isSelected: boolean("is_selected").default(false),
+      pricePerPerson: integer("price_per_person").default(0),
+      notes: text("notes"),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    coupleCateringDietaryNeeds = pgTable("couple_catering_dietary_needs", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      guestName: text("guest_name").notNull(),
+      dietaryType: text("dietary_type").notNull(),
+      // "vegetarian", "vegan", "gluten_free", "nut_allergy", "lactose_intolerant", "halal", "kosher", "other"
+      notes: text("notes"),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    coupleCateringTimeline = pgTable("couple_catering_timeline", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }).unique(),
+      catererSelected: boolean("caterer_selected").default(false),
+      catererSelectedDate: text("caterer_selected_date"),
+      tastingCompleted: boolean("tasting_completed").default(false),
+      tastingDate: text("tasting_date"),
+      menuFinalized: boolean("menu_finalized").default(false),
+      menuFinalizedDate: text("menu_finalized_date"),
+      guestCountConfirmed: boolean("guest_count_confirmed").default(false),
+      guestCount: integer("guest_count").default(0),
+      budget: integer("budget").default(0),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    coupleCakeTastings = pgTable("couple_cake_tastings", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      bakeryName: text("bakery_name").notNull(),
+      date: text("date").notNull(),
+      time: text("time"),
+      location: text("location"),
+      flavorsToTry: text("flavors_to_try"),
+      // comma-separated
+      notes: text("notes"),
+      rating: integer("rating"),
+      // 1-5 stars
+      completed: boolean("completed").default(false),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    coupleCakeDesigns = pgTable("couple_cake_designs", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      name: text("name").notNull(),
+      imageUrl: text("image_url"),
+      tiers: integer("tiers").default(3),
+      flavor: text("flavor"),
+      filling: text("filling"),
+      frosting: text("frosting"),
+      // "buttercream", "fondant", "naked", "ganache"
+      style: text("style"),
+      // "classic", "modern", "rustic", "floral", "minimalist"
+      estimatedPrice: integer("estimated_price").default(0),
+      estimatedServings: integer("estimated_servings"),
+      isFavorite: boolean("is_favorite").default(false),
+      isSelected: boolean("is_selected").default(false),
+      notes: text("notes"),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    coupleCakeTimeline = pgTable("couple_cake_timeline", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }).unique(),
+      bakerySelected: boolean("bakery_selected").default(false),
+      bakerySelectedDate: text("bakery_selected_date"),
+      tastingCompleted: boolean("tasting_completed").default(false),
+      tastingDate: text("tasting_date"),
+      designFinalized: boolean("design_finalized").default(false),
+      designFinalizedDate: text("design_finalized_date"),
+      depositPaid: boolean("deposit_paid").default(false),
+      deliveryConfirmed: boolean("delivery_confirmed").default(false),
+      budget: integer("budget").default(0),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
   }
 });
 
@@ -1535,12 +1965,17 @@ function registerSubscriptionRoutes(app2) {
         return res.json({ hasAccess: false, reason: "Tier ikke funnet" });
       }
       const featureAccess = {
+        send_messages: tier.canSendMessages,
+        receive_inquiries: tier.canReceiveInquiries,
+        create_offers: tier.canCreateOffers,
+        create_deliveries: tier.canCreateDeliveries,
+        showcase_work: tier.canShowcaseWork,
         advanced_analytics: tier.hasAdvancedAnalytics,
         prioritized_search: tier.hasPrioritizedSearch,
-        custom_landing_page: tier.hasCustomLandingPage,
-        api_access: tier.hasApiAccess,
-        vipps_payment_link: tier.hasVippsPaymentLink,
-        custom_branding: tier.hasCustomBranding
+        highlight_profile: tier.canHighlightProfile,
+        video_gallery: tier.canUseVideoGallery,
+        review_badge: tier.hasReviewBadge,
+        multiple_categories: tier.hasMultipleCategories
       };
       const hasAccess = featureAccess[feature] ?? false;
       res.json({ hasAccess, feature, tier: tier.name });
@@ -1561,7 +1996,9 @@ function registerSubscriptionRoutes(app2) {
       const usage = await getCurrentMonthUsage(vendorId);
       const limits = {
         maxInspirationPhotos: tier?.maxInspirationPhotos ?? 10,
-        maxMonthlyVideoMinutes: tier?.maxMonthlyVideoMinutes ?? 0,
+        maxProducts: tier?.maxProducts ?? 5,
+        maxMonthlyOffers: tier?.maxMonthlyOffers ?? 10,
+        maxMonthlyDeliveries: tier?.maxMonthlyDeliveries ?? 5,
         maxStorageGb: tier?.maxStorageGb ?? 5
       };
       const usage_data = {
@@ -1576,10 +2013,9 @@ function registerSubscriptionRoutes(app2) {
           0,
           (limits.maxInspirationPhotos === -1 ? 999999 : limits.maxInspirationPhotos) - (usage_data.inspirationPhotosUploaded ?? 0)
         ),
-        videoMinutes: Math.max(
-          0,
-          limits.maxMonthlyVideoMinutes - (usage_data.videoMinutesUsed ?? 0)
-        ),
+        products: Math.max(0, limits.maxProducts),
+        offers: Math.max(0, limits.maxMonthlyOffers),
+        deliveries: Math.max(0, limits.maxMonthlyDeliveries),
         storageGb: Math.max(
           0,
           limits.maxStorageGb - (usage_data.storageUsedGb ?? 0)
@@ -1671,6 +2107,27 @@ function registerSubscriptionRoutes(app2) {
     } catch (error) {
       console.error("Error updating tier:", error);
       res.status(400).json({ error: error.message || "Kunne ikke oppdatere abonnement" });
+    }
+  });
+  app2.delete("/api/admin/subscription/tiers/:id", async (req, res) => {
+    const authHeader = req.headers.authorization;
+    const adminKey = authHeader?.split(" ")[1];
+    if (adminKey !== process.env.ADMIN_SECRET) {
+      return res.status(401).json({ error: "Ikke autorisert" });
+    }
+    try {
+      const { id } = req.params;
+      const [vendorsUsing] = await db.select({ count: sql2`count(*)` }).from(vendorSubscriptions).where(eq(vendorSubscriptions.tierId, id));
+      if (vendorsUsing && vendorsUsing.count > 0) {
+        return res.status(400).json({
+          error: "Kan ikke slette denne tieren fordi den er i bruk av leverand\xF8rer"
+        });
+      }
+      await db.delete(subscriptionTiers).where(eq(subscriptionTiers.id, id));
+      res.json({ success: true, message: "Abonnementstier slettet" });
+    } catch (error) {
+      console.error("Error deleting tier:", error);
+      res.status(400).json({ error: error.message || "Kunne ikke slette abonnement" });
     }
   });
   app2.get("/api/admin/subscription/vendors", async (req, res) => {
@@ -1896,7 +2353,7 @@ function registerSubscriptionRoutes(app2) {
 
 // server/routes.ts
 init_schema();
-import { eq as eq2, and as and2, desc, sql as sql3, inArray } from "drizzle-orm";
+import { eq as eq2, and as and2, desc, sql as sql3, inArray, or, gte, lte } from "drizzle-orm";
 function generateAccessCode() {
   return crypto2.randomBytes(8).toString("hex").toUpperCase();
 }
@@ -1925,15 +2382,25 @@ function verifyPassword(password, hash) {
 }
 var DEFAULT_CATEGORIES = [
   { name: "Fotograf", icon: "camera", description: "Bryllupsfotografer" },
-  { name: "Videograf", icon: "video", description: "Bryllupsvideofilmer" },
+  { name: "Videograf", icon: "film", description: "Bryllupsvideofilmer" },
   { name: "Blomster", icon: "flower", description: "Blomsterdekorat\xF8rer" },
-  { name: "Catering", icon: "utensils", description: "Mat og drikke" },
+  { name: "Catering", icon: "coffee", description: "Mat og drikke" },
   { name: "Musikk", icon: "music", description: "Band, DJ og musikere" },
-  { name: "Venue", icon: "home", description: "Bryllupslokaler" },
+  { name: "Venue", icon: "venue", description: "Bryllupslokaler" },
   { name: "Kake", icon: "cake", description: "Bryllupskaker" },
   { name: "Planlegger", icon: "clipboard", description: "Bryllupsplanleggere" },
   { name: "H\xE5r & Makeup", icon: "scissors", description: "Styling og sminke" },
-  { name: "Transport", icon: "car", description: "Bryllupstransport" }
+  { name: "Transport", icon: "car", description: "Bryllupstransport" },
+  { name: "Invitasjoner", icon: "mail", description: "Invitasjoner og trykkeri" },
+  { name: "Underholdning", icon: "sparkles", description: "Artister og show" },
+  { name: "Dekorasjon", icon: "star", description: "Dekorasjon og pynt" },
+  { name: "Konfektyrer", icon: "gift", description: "Sjokolade og godteri" },
+  { name: "Bar & Drikke", icon: "cocktail", description: "Bartjenester og drikke" },
+  { name: "Fotoboks", icon: "aperture", description: "Fotoboks og moro" },
+  { name: "Ringer", icon: "diamond", description: "Vielsesringer og smykker" },
+  { name: "Drakt & Dress", icon: "suit", description: "Brudgom antrekk" },
+  { name: "Overnatting", icon: "bed", description: "Hotell og overnatting" },
+  { name: "Husdyr", icon: "heart", description: "Kj\xE6ledyr p\xE5 bryllupet" }
 ];
 var DEFAULT_INSPIRATION_CATEGORIES = [
   { name: "Brudekjoler", icon: "heart", sortOrder: 1 },
@@ -2159,8 +2626,8 @@ async function registerRoutes(app2) {
   });
   app2.get("/api/subscription/tiers", async (_req, res) => {
     try {
-      const { subscriptionTiers: subscriptionTiers3 } = await Promise.resolve().then(() => (init_schema(), schema_exports));
-      const tiers = await db.select().from(subscriptionTiers3).where(eq2(subscriptionTiers3.isActive, true)).orderBy(subscriptionTiers3.sortOrder);
+      const { subscriptionTiers: subscriptionTiers2 } = await Promise.resolve().then(() => (init_schema(), schema_exports));
+      const tiers = await db.select().from(subscriptionTiers2).where(eq2(subscriptionTiers2.isActive, true)).orderBy(subscriptionTiers2.sortOrder);
       res.json(tiers);
     } catch (error) {
       console.error("Error fetching subscription tiers:", error);
@@ -2216,7 +2683,7 @@ async function registerRoutes(app2) {
   app2.post("/api/admin/subscriptions/send-trial-reminders", async (req, res) => {
     if (!checkAdminAuth(req, res)) return;
     try {
-      const { vendorSubscriptions: vendorSubscriptions2, subscriptionTiers: subscriptionTiers3 } = await Promise.resolve().then(() => (init_schema(), schema_exports));
+      const { vendorSubscriptions: vendorSubscriptions2, subscriptionTiers: subscriptionTiers2 } = await Promise.resolve().then(() => (init_schema(), schema_exports));
       const now = /* @__PURE__ */ new Date();
       const reminderDays = [7, 3, 1];
       let sentCount = 0;
@@ -2226,9 +2693,9 @@ async function registerRoutes(app2) {
         const endOfDay = new Date(targetDate.setHours(23, 59, 59, 999));
         const expiringTrials = await db.select({
           subscription: vendorSubscriptions2,
-          tier: subscriptionTiers3,
+          tier: subscriptionTiers2,
           vendor: vendors
-        }).from(vendorSubscriptions2).innerJoin(subscriptionTiers3, eq2(vendorSubscriptions2.tierId, subscriptionTiers3.id)).innerJoin(vendors, eq2(vendorSubscriptions2.vendorId, vendors.id)).where(
+        }).from(vendorSubscriptions2).innerJoin(subscriptionTiers2, eq2(vendorSubscriptions2.tierId, subscriptionTiers2.id)).innerJoin(vendors, eq2(vendorSubscriptions2.vendorId, vendors.id)).where(
           and2(
             eq2(vendorSubscriptions2.status, "trialing"),
             sql3`${vendorSubscriptions2.currentPeriodEnd}::date = ${startOfDay}::date`
@@ -2454,20 +2921,53 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
   app2.get("/api/vendors", async (req, res) => {
     try {
       const categoryId = req.query.categoryId;
-      let query = db.select({
+      const vendorsWithSubs = await db.select({
         id: vendors.id,
         businessName: vendors.businessName,
         categoryId: vendors.categoryId,
+        categoryName: vendorCategories.name,
         description: vendors.description,
         location: vendors.location,
         phone: vendors.phone,
         website: vendors.website,
         priceRange: vendors.priceRange,
-        imageUrl: vendors.imageUrl
-      }).from(vendors).where(eq2(vendors.status, "approved"));
-      const approvedVendors = await query;
-      const filtered = categoryId ? approvedVendors.filter((v) => v.categoryId === categoryId) : approvedVendors;
-      res.json(filtered);
+        imageUrl: vendors.imageUrl,
+        subscriptionId: vendorSubscriptions.id,
+        tierId: vendorSubscriptions.tierId,
+        hasPrioritizedSearch: subscriptionTiers.hasPrioritizedSearch,
+        canHighlightProfile: subscriptionTiers.canHighlightProfile,
+        hasReviewBadge: subscriptionTiers.hasReviewBadge
+      }).from(vendors).leftJoin(vendorCategories, eq2(vendorCategories.id, vendors.categoryId)).leftJoin(
+        vendorSubscriptions,
+        and2(
+          eq2(vendorSubscriptions.vendorId, vendors.id),
+          eq2(vendorSubscriptions.status, "active")
+        )
+      ).leftJoin(subscriptionTiers, eq2(subscriptionTiers.id, vendorSubscriptions.tierId)).where(eq2(vendors.status, "approved"));
+      let filtered = categoryId ? vendorsWithSubs.filter((v) => v.categoryId === categoryId) : vendorsWithSubs;
+      filtered.sort((a, b) => {
+        if (a.canHighlightProfile && !b.canHighlightProfile) return -1;
+        if (!a.canHighlightProfile && b.canHighlightProfile) return 1;
+        if (a.hasPrioritizedSearch && !b.hasPrioritizedSearch) return -1;
+        if (!a.hasPrioritizedSearch && b.hasPrioritizedSearch) return 1;
+        return (a.businessName || "").localeCompare(b.businessName || "");
+      });
+      const response = filtered.map((v) => ({
+        id: v.id,
+        businessName: v.businessName,
+        categoryId: v.categoryId,
+        categoryName: v.categoryName,
+        description: v.description,
+        location: v.location,
+        phone: v.phone,
+        website: v.website,
+        priceRange: v.priceRange,
+        imageUrl: v.imageUrl,
+        isFeatured: v.canHighlightProfile || false,
+        isPrioritized: v.hasPrioritizedSearch || false,
+        hasReviewBadge: v.hasReviewBadge || false
+      }));
+      res.json(response);
     } catch (error) {
       console.error("Error fetching vendors:", error);
       res.status(500).json({ error: "Kunne ikke hente leverand\xF8rer" });
@@ -2475,9 +2975,10 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
   });
   app2.get("/api/vendors/matching", async (req, res) => {
     try {
-      const { category, guestCount, location } = req.query;
+      const { category, guestCount, location, cuisineTypes } = req.query;
       const guestCountNum = guestCount ? parseInt(guestCount) : void 0;
-      const approvedVendors = await db.select({
+      const requestedCuisines = cuisineTypes && typeof cuisineTypes === "string" ? cuisineTypes.split(",").map((c) => c.trim().toLowerCase()) : [];
+      const vendorsWithSubs = await db.select({
         id: vendors.id,
         businessName: vendors.businessName,
         categoryId: vendors.categoryId,
@@ -2486,9 +2987,18 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
         phone: vendors.phone,
         website: vendors.website,
         priceRange: vendors.priceRange,
-        imageUrl: vendors.imageUrl
-      }).from(vendors).where(eq2(vendors.status, "approved"));
-      let filtered = category ? approvedVendors.filter((v) => v.categoryId === category) : approvedVendors;
+        imageUrl: vendors.imageUrl,
+        hasPrioritizedSearch: subscriptionTiers.hasPrioritizedSearch,
+        canHighlightProfile: subscriptionTiers.canHighlightProfile,
+        hasReviewBadge: subscriptionTiers.hasReviewBadge
+      }).from(vendors).leftJoin(
+        vendorSubscriptions,
+        and2(
+          eq2(vendorSubscriptions.vendorId, vendors.id),
+          eq2(vendorSubscriptions.status, "active")
+        )
+      ).leftJoin(subscriptionTiers, eq2(subscriptionTiers.id, vendorSubscriptions.tierId)).where(eq2(vendors.status, "approved"));
+      let filtered = category ? vendorsWithSubs.filter((v) => v.categoryId === category) : vendorsWithSubs;
       const vendorIds = filtered.map((v) => v.id);
       let categoryDetails = [];
       if (vendorIds.length > 0) {
@@ -2529,7 +3039,23 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
           (v) => v.location?.toLowerCase().includes(locationLower) || v.venueLocation?.toLowerCase().includes(locationLower)
         );
       }
-      res.json(result);
+      let cateringDetailsMap = {};
+      if (category === "catering" && requestedCuisines.length > 0) {
+      }
+      result.sort((a, b) => {
+        if (a.canHighlightProfile && !b.canHighlightProfile) return -1;
+        if (!a.canHighlightProfile && b.canHighlightProfile) return 1;
+        if (a.hasPrioritizedSearch && !b.hasPrioritizedSearch) return -1;
+        if (!a.hasPrioritizedSearch && b.hasPrioritizedSearch) return 1;
+        return (a.businessName || "").localeCompare(b.businessName || "");
+      });
+      const response = result.map((v) => ({
+        ...v,
+        isFeatured: v.canHighlightProfile || false,
+        isPrioritized: v.hasPrioritizedSearch || false,
+        hasReviewBadge: v.hasReviewBadge || false
+      }));
+      res.json(response);
     } catch (error) {
       console.error("Error fetching matching vendors:", error);
       res.status(500).json({ error: "Kunne ikke hente matchende leverand\xF8rer" });
@@ -2725,7 +3251,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
     try {
-      const { vendorSubscriptions: vendorSubscriptions2, subscriptionTiers: subscriptionTiers3 } = await Promise.resolve().then(() => (init_schema(), schema_exports));
+      const { vendorSubscriptions: vendorSubscriptions2, subscriptionTiers: subscriptionTiers2 } = await Promise.resolve().then(() => (init_schema(), schema_exports));
       const [subscription] = await db.select({
         id: vendorSubscriptions2.id,
         status: vendorSubscriptions2.status,
@@ -2733,12 +3259,12 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
         currentPeriodEnd: vendorSubscriptions2.currentPeriodEnd,
         autoRenew: vendorSubscriptions2.autoRenew,
         tier: {
-          id: subscriptionTiers3.id,
-          name: subscriptionTiers3.name,
-          displayName: subscriptionTiers3.displayName,
-          priceNok: subscriptionTiers3.priceNok
+          id: subscriptionTiers2.id,
+          name: subscriptionTiers2.name,
+          displayName: subscriptionTiers2.displayName,
+          priceNok: subscriptionTiers2.priceNok
         }
-      }).from(vendorSubscriptions2).innerJoin(subscriptionTiers3, eq2(vendorSubscriptions2.tierId, subscriptionTiers3.id)).where(eq2(vendorSubscriptions2.vendorId, vendorId)).limit(1);
+      }).from(vendorSubscriptions2).innerJoin(subscriptionTiers2, eq2(vendorSubscriptions2.tierId, subscriptionTiers2.id)).where(eq2(vendorSubscriptions2.vendorId, vendorId)).limit(1);
       if (!subscription) {
         return res.json({ hasSubscription: false });
       }
@@ -2767,6 +3293,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
   app2.patch("/api/vendor/profile", async (req, res) => {
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
+    if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const { businessName, organizationNumber, description, location, phone, website, priceRange, googleReviewUrl } = req.body;
       if (!businessName || businessName.trim().length < 2) {
@@ -2814,6 +3341,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
   app2.patch("/api/vendor/category-details", async (req, res) => {
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
+    if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const updateData = { ...req.body, updatedAt: /* @__PURE__ */ new Date() };
       delete updateData.id;
@@ -2877,13 +3405,13 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
       }).returning();
       await Promise.all(
         items.map(
-          (item, index) => db.insert(deliveryItems).values({
+          (item, index2) => db.insert(deliveryItems).values({
             deliveryId: newDelivery.id,
             type: item.type,
             label: item.label,
             url: item.url,
             description: item.description || null,
-            sortOrder: index
+            sortOrder: index2
           })
         )
       );
@@ -2900,6 +3428,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
   app2.patch("/api/vendor/deliveries/:id", async (req, res) => {
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
+    if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const { id } = req.params;
       const { items, ...deliveryData } = req.body;
@@ -2923,13 +3452,13 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
         await db.delete(deliveryItems).where(eq2(deliveryItems.deliveryId, id));
         await Promise.all(
           items.map(
-            (item, index) => db.insert(deliveryItems).values({
+            (item, index2) => db.insert(deliveryItems).values({
               deliveryId: id,
               type: item.type,
               label: item.label,
               url: item.url,
               description: item.description || null,
-              sortOrder: index
+              sortOrder: index2
             })
           )
         );
@@ -2947,6 +3476,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
   app2.delete("/api/vendor/deliveries/:id", async (req, res) => {
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
+    if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const { id } = req.params;
       const [existing] = await db.select().from(deliveries).where(and2(
@@ -3077,12 +3607,12 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
       }).returning();
       await Promise.all(
         media.map(
-          (item, index) => db.insert(inspirationMedia).values({
+          (item, index2) => db.insert(inspirationMedia).values({
             inspirationId: newInspiration.id,
             type: item.type,
             url: item.url,
             caption: item.caption || null,
-            sortOrder: index
+            sortOrder: index2
           })
         )
       );
@@ -3099,6 +3629,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
   app2.patch("/api/vendor/inspirations/:id", async (req, res) => {
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
+    if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const { id } = req.params;
       const { media, ...inspirationData } = req.body;
@@ -3132,12 +3663,12 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
         await db.delete(inspirationMedia).where(eq2(inspirationMedia.inspirationId, id));
         await Promise.all(
           media.map(
-            (item, index) => db.insert(inspirationMedia).values({
+            (item, index2) => db.insert(inspirationMedia).values({
               inspirationId: id,
               type: item.type,
               url: item.url,
               caption: item.caption || null,
-              sortOrder: index
+              sortOrder: index2
             })
           )
         );
@@ -3155,6 +3686,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
   app2.delete("/api/vendor/inspirations/:id", async (req, res) => {
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
+    if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const { id } = req.params;
       const [existing] = await db.select().from(inspirations).where(and2(
@@ -3400,6 +3932,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
   app2.patch("/api/vendor/inquiries/:id/status", async (req, res) => {
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
+    if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const { id } = req.params;
       const { status } = req.body;
@@ -3694,6 +4227,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
   app2.post("/api/vendor/messages", async (req, res) => {
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
+    if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const { conversationId, body, attachmentUrl, attachmentType } = req.body;
       if (!conversationId || !body && !attachmentUrl) {
@@ -3759,6 +4293,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
   app2.post("/api/vendor/admin/messages", async (req, res) => {
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
+    if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const { body, attachmentUrl, attachmentType } = req.body;
       const parse = sendAdminMessageSchema.safeParse({ body, attachmentUrl, attachmentType });
@@ -3908,6 +4443,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
   app2.post("/api/vendor/conversations/:id/typing", async (req, res) => {
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
+    if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const { id } = req.params;
       const [conv] = await db.select().from(conversations).where(eq2(conversations.id, id));
@@ -3983,6 +4519,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
   app2.delete("/api/vendor/messages/:id", async (req, res) => {
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
+    if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const { id } = req.params;
       const [msg] = await db.select().from(messages).where(eq2(messages.id, id));
@@ -4003,6 +4540,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
   app2.patch("/api/vendor/messages/:id", async (req, res) => {
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
+    if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const { id } = req.params;
       const { body } = req.body;
@@ -4033,6 +4571,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
   app2.delete("/api/vendor/conversations/:id", async (req, res) => {
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
+    if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const { id } = req.params;
       const [conv] = await db.select().from(conversations).where(eq2(conversations.id, id));
@@ -4353,6 +4892,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
   app2.post("/api/vendor/conversations/:id/schedule-reminder", async (req, res) => {
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
+    if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const { id } = req.params;
       const { reminderType, scheduledFor } = req.body;
@@ -4422,6 +4962,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
   app2.delete("/api/vendor/message-reminders/:id", async (req, res) => {
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
+    if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const { id } = req.params;
       const [deleted] = await db.update(messageReminders).set({ status: "cancelled" }).where(and2(
@@ -4478,6 +5019,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
   app2.patch("/api/vendor/products/:id", async (req, res) => {
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
+    if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const { id } = req.params;
       const updates = req.body;
@@ -4498,6 +5040,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
   app2.delete("/api/vendor/products/:id", async (req, res) => {
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
+    if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const { id } = req.params;
       const [archived] = await db.update(vendorProducts).set({ isArchived: true, updatedAt: /* @__PURE__ */ new Date() }).where(and2(
@@ -4511,6 +5054,173 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     } catch (error) {
       console.error("Error deleting vendor product:", error);
       res.status(500).json({ error: "Kunne ikke slette produkt" });
+    }
+  });
+  app2.get("/api/vendor/availability", async (req, res) => {
+    const vendorId = await checkVendorAuth2(req, res);
+    if (!vendorId) return;
+    try {
+      const { startDate, endDate } = req.query;
+      let query = db.select().from(vendorAvailability).where(eq2(vendorAvailability.vendorId, vendorId));
+      if (startDate && endDate) {
+        query = db.select().from(vendorAvailability).where(and2(
+          eq2(vendorAvailability.vendorId, vendorId),
+          gte(vendorAvailability.date, startDate),
+          lte(vendorAvailability.date, endDate)
+        ));
+      }
+      const availability = await query.orderBy(vendorAvailability.date);
+      res.json(availability);
+    } catch (error) {
+      console.error("Error fetching vendor availability:", error);
+      res.status(500).json({ error: "Kunne ikke hente tilgjengelighet" });
+    }
+  });
+  app2.post("/api/vendor/availability", async (req, res) => {
+    const vendorId = await checkVendorAuth2(req, res);
+    if (!vendorId) return;
+    try {
+      const validatedData = createVendorAvailabilitySchema.parse(req.body);
+      const [existing] = await db.select().from(vendorAvailability).where(and2(
+        eq2(vendorAvailability.vendorId, vendorId),
+        eq2(vendorAvailability.date, validatedData.date)
+      ));
+      if (existing) {
+        const [updated] = await db.update(vendorAvailability).set({
+          name: validatedData.name,
+          status: validatedData.status,
+          maxBookings: validatedData.maxBookings,
+          notes: validatedData.notes,
+          updatedAt: /* @__PURE__ */ new Date()
+        }).where(eq2(vendorAvailability.id, existing.id)).returning();
+        res.json(updated);
+      } else {
+        const [created] = await db.insert(vendorAvailability).values({
+          vendorId,
+          date: validatedData.date,
+          name: validatedData.name,
+          status: validatedData.status || "available",
+          maxBookings: validatedData.maxBookings,
+          notes: validatedData.notes
+        }).returning();
+        res.status(201).json(created);
+      }
+    } catch (error) {
+      console.error("Error creating vendor availability:", error);
+      res.status(500).json({ error: "Kunne ikke opprette tilgjengelighet" });
+    }
+  });
+  app2.post("/api/vendor/availability/bulk", async (req, res) => {
+    const vendorId = await checkVendorAuth2(req, res);
+    if (!vendorId) return;
+    try {
+      const { dates, status, maxBookings, name, notes } = req.body;
+      if (!Array.isArray(dates) || dates.length === 0) {
+        return res.status(400).json({ error: "M\xE5 oppgi minst \xE9n dato" });
+      }
+      if (!["available", "blocked", "limited"].includes(status)) {
+        return res.status(400).json({ error: "Ugyldig status" });
+      }
+      const results = await Promise.all(
+        dates.map(async (date2) => {
+          const [existing] = await db.select().from(vendorAvailability).where(and2(
+            eq2(vendorAvailability.vendorId, vendorId),
+            eq2(vendorAvailability.date, date2)
+          ));
+          if (existing) {
+            const [updated] = await db.update(vendorAvailability).set({ status, maxBookings, name, notes, updatedAt: /* @__PURE__ */ new Date() }).where(eq2(vendorAvailability.id, existing.id)).returning();
+            return updated;
+          } else {
+            const [created] = await db.insert(vendorAvailability).values({ vendorId, date: date2, status, maxBookings, name, notes }).returning();
+            return created;
+          }
+        })
+      );
+      res.json(results);
+    } catch (error) {
+      console.error("Error bulk updating vendor availability:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere tilgjengelighet" });
+    }
+  });
+  app2.delete("/api/vendor/availability/:id", async (req, res) => {
+    const vendorId = await checkVendorAuth2(req, res);
+    if (!vendorId) return;
+    try {
+      const { id } = req.params;
+      const [existing] = await db.select().from(vendorAvailability).where(and2(
+        eq2(vendorAvailability.id, id),
+        eq2(vendorAvailability.vendorId, vendorId)
+      ));
+      if (!existing) {
+        return res.status(404).json({ error: "Tilgjengelighet ikke funnet" });
+      }
+      await db.delete(vendorAvailability).where(eq2(vendorAvailability.id, id));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting vendor availability:", error);
+      res.status(500).json({ error: "Kunne ikke slette tilgjengelighet" });
+    }
+  });
+  app2.delete("/api/vendor/availability/date/:date", async (req, res) => {
+    const vendorId = await checkVendorAuth2(req, res);
+    if (!vendorId) return;
+    try {
+      const { date: date2 } = req.params;
+      await db.delete(vendorAvailability).where(and2(
+        eq2(vendorAvailability.vendorId, vendorId),
+        eq2(vendorAvailability.date, date2)
+      ));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting vendor availability by date:", error);
+      res.status(500).json({ error: "Kunne ikke slette tilgjengelighet" });
+    }
+  });
+  app2.get("/api/vendor/availability/:date/bookings", async (req, res) => {
+    const vendorId = await checkVendorAuth2(req, res);
+    if (!vendorId) return;
+    try {
+      const { date: date2 } = req.params;
+      const acceptedOffers = await db.select({
+        offer: vendorOffers,
+        weddingDate: coupleProfiles.weddingDate
+      }).from(vendorOffers).leftJoin(coupleProfiles, eq2(vendorOffers.coupleId, coupleProfiles.id)).where(and2(
+        eq2(vendorOffers.vendorId, vendorId),
+        eq2(vendorOffers.status, "accepted"),
+        eq2(coupleProfiles.weddingDate, date2)
+      ));
+      res.json({
+        date: date2,
+        acceptedBookings: acceptedOffers.length
+      });
+    } catch (error) {
+      console.error("Error fetching bookings for date:", error);
+      res.status(500).json({ error: "Kunne ikke hente bookinger" });
+    }
+  });
+  app2.get("/api/vendors/:vendorId/availability", async (req, res) => {
+    try {
+      const { vendorId } = req.params;
+      const { date: date2 } = req.query;
+      if (!date2) {
+        return res.status(400).json({ error: "M\xE5 oppgi dato" });
+      }
+      const [availability] = await db.select().from(vendorAvailability).where(and2(
+        eq2(vendorAvailability.vendorId, vendorId),
+        eq2(vendorAvailability.date, date2)
+      ));
+      if (!availability) {
+        res.json({ status: "available", isAvailable: true });
+      } else {
+        res.json({
+          status: availability.status,
+          isAvailable: availability.status !== "blocked",
+          maxBookings: availability.maxBookings
+        });
+      }
+    } catch (error) {
+      console.error("Error checking vendor availability:", error);
+      res.status(500).json({ error: "Kunne ikke sjekke tilgjengelighet" });
     }
   });
   app2.get("/api/vendor/offers", async (req, res) => {
@@ -4543,6 +5253,69 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const validatedData = createOfferSchema.parse(req.body);
+      const [couple] = await db.select().from(coupleProfiles).where(eq2(coupleProfiles.id, validatedData.coupleId));
+      if (!couple) {
+        return res.status(404).json({ error: "Par ikke funnet" });
+      }
+      const targetWeddingDate = couple.weddingDate;
+      if (targetWeddingDate) {
+        const [availability] = await db.select().from(vendorAvailability).where(and2(
+          eq2(vendorAvailability.vendorId, vendorId),
+          eq2(vendorAvailability.date, targetWeddingDate)
+        ));
+        if (availability?.status === "blocked") {
+          return res.status(400).json({
+            error: `Du er ikke tilgjengelig p\xE5 ${new Date(targetWeddingDate).toLocaleDateString("nb-NO")}`,
+            code: "VENDOR_BLOCKED"
+          });
+        }
+        if (availability?.maxBookings !== null && availability?.maxBookings !== void 0) {
+          const [existingBookings] = await db.select({ count: sql3`count(*)` }).from(vendorOffers).innerJoin(coupleProfiles, eq2(vendorOffers.coupleId, coupleProfiles.id)).where(and2(
+            eq2(vendorOffers.vendorId, vendorId),
+            eq2(coupleProfiles.weddingDate, targetWeddingDate),
+            eq2(vendorOffers.status, "accepted")
+          ));
+          if (existingBookings && existingBookings.count >= availability.maxBookings) {
+            return res.status(400).json({
+              error: `Maksimalt antall bookinger (${availability.maxBookings}) for ${new Date(targetWeddingDate).toLocaleDateString("nb-NO")} er n\xE5dd`,
+              code: "MAX_BOOKINGS_REACHED"
+            });
+          }
+        }
+      }
+      const inventoryErrors = [];
+      for (const item of validatedData.items) {
+        if (!item.productId) continue;
+        const [product] = await db.select().from(vendorProducts).where(eq2(vendorProducts.id, item.productId));
+        if (!product || !product.trackInventory) continue;
+        let reservedForDate = 0;
+        if (targetWeddingDate) {
+          const existingOffers = await db.select({
+            quantity: vendorOfferItems.quantity
+          }).from(vendorOfferItems).innerJoin(vendorOffers, eq2(vendorOfferItems.offerId, vendorOffers.id)).innerJoin(coupleProfiles, eq2(vendorOffers.coupleId, coupleProfiles.id)).where(and2(
+            eq2(vendorOfferItems.productId, item.productId),
+            eq2(coupleProfiles.weddingDate, targetWeddingDate),
+            or(
+              eq2(vendorOffers.status, "pending"),
+              eq2(vendorOffers.status, "accepted")
+            )
+          ));
+          reservedForDate = existingOffers.reduce((sum, o) => sum + (o.quantity || 0), 0);
+        }
+        const availableQuantity = (product.availableQuantity || 0) - reservedForDate - (product.bookingBuffer || 0);
+        if (item.quantity > availableQuantity) {
+          inventoryErrors.push(
+            `"${product.title}": Kun ${availableQuantity} tilgjengelig${targetWeddingDate ? ` for ${new Date(targetWeddingDate).toLocaleDateString("nb-NO")}` : ""}, forespurt ${item.quantity}`
+          );
+        }
+      }
+      if (inventoryErrors.length > 0) {
+        return res.status(400).json({
+          error: "Ikke nok tilgjengelig lager",
+          details: inventoryErrors,
+          code: "INSUFFICIENT_INVENTORY"
+        });
+      }
       const totalAmount = validatedData.items.reduce(
         (sum, item) => sum + item.quantity * item.unitPrice,
         0
@@ -4557,7 +5330,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
         validUntil: validatedData.validUntil ? new Date(validatedData.validUntil) : null
       }).returning();
       const items = await Promise.all(
-        validatedData.items.map(async (item, index) => {
+        validatedData.items.map(async (item, index2) => {
           const [offerItem] = await db.insert(vendorOfferItems).values({
             offerId: offer.id,
             productId: item.productId || null,
@@ -4566,7 +5339,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
             quantity: item.quantity,
             unitPrice: item.unitPrice,
             lineTotal: item.quantity * item.unitPrice,
-            sortOrder: index
+            sortOrder: index2
           }).returning();
           return offerItem;
         })
@@ -4593,6 +5366,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
   app2.patch("/api/vendor/offers/:id", async (req, res) => {
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
+    if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const { id } = req.params;
       const updates = req.body;
@@ -4613,6 +5387,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
   app2.delete("/api/vendor/offers/:id", async (req, res) => {
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
+    if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const { id } = req.params;
       const [existing] = await db.select().from(vendorOffers).where(and2(
@@ -4663,17 +5438,61 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       };
       if (response === "accept") {
         updates.acceptedAt = /* @__PURE__ */ new Date();
+        try {
+          await db.transaction(async (tx) => {
+            const offerItems = await tx.select().from(vendorOfferItems).where(eq2(vendorOfferItems.offerId, id));
+            for (const item of offerItems) {
+              if (!item.productId) continue;
+              const [product] = await tx.select().from(vendorProducts).where(eq2(vendorProducts.id, item.productId));
+              if (product?.trackInventory && product.availableQuantity !== null) {
+                if (product.availableQuantity < (item.quantity || 0)) {
+                  throw new Error(`Ikke nok p\xE5 lager av "${product.title}". Tilgjengelig: ${product.availableQuantity}, \xD8nsket: ${item.quantity}`);
+                }
+                const newQuantity = product.availableQuantity - (item.quantity || 0);
+                await tx.update(vendorProducts).set({
+                  availableQuantity: newQuantity,
+                  updatedAt: /* @__PURE__ */ new Date()
+                }).where(eq2(vendorProducts.id, item.productId));
+              }
+            }
+            await tx.insert(coupleVendorContracts).values({
+              coupleId,
+              vendorId: offer.vendorId,
+              offerId: offer.id,
+              status: "active"
+            });
+            await tx.update(vendorOffers).set(updates).where(eq2(vendorOffers.id, id));
+          });
+        } catch (txError) {
+          console.error("Transaction error accepting offer:", txError);
+          return res.status(400).json({
+            error: txError.message || "Kunne ikke akseptere tilbud - lagerstatus endret"
+          });
+        }
+        const [updated2] = await db.select().from(vendorOffers).where(eq2(vendorOffers.id, id));
+        if (offer.conversationId) {
+          await db.insert(messages).values({
+            conversationId: offer.conversationId,
+            senderType: "couple",
+            senderId: coupleId,
+            body: `\u2705 Tilbud "${offer.title}" er akseptert`
+          });
+          await db.update(conversations).set({
+            lastMessageAt: /* @__PURE__ */ new Date(),
+            vendorUnreadCount: 1
+          }).where(eq2(conversations.id, offer.conversationId));
+        }
+        return res.json(updated2);
       } else {
         updates.declinedAt = /* @__PURE__ */ new Date();
       }
       const [updated] = await db.update(vendorOffers).set(updates).where(eq2(vendorOffers.id, id)).returning();
       if (offer.conversationId) {
-        const statusText = response === "accept" ? "akseptert" : "avsl\xE5tt";
         await db.insert(messages).values({
           conversationId: offer.conversationId,
           senderType: "couple",
           senderId: coupleId,
-          body: `\u2705 Tilbud "${offer.title}" er ${statusText}`
+          body: `\u2705 Tilbud "${offer.title}" er avsl\xE5tt`
         });
         await db.update(conversations).set({
           lastMessageAt: /* @__PURE__ */ new Date(),
@@ -4824,12 +5643,17 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     try {
       const coupleData = await db.select({
         id: coupleProfiles.id,
-        name: coupleProfiles.partnerName,
+        name: coupleProfiles.displayName,
         email: coupleProfiles.email
       }).from(coupleProfiles).limit(50);
+      const mappedUsers = coupleData.map((user) => ({
+        id: user.id,
+        name: user.name || "Ukjent brudepar",
+        email: user.email
+      }));
       res.json({
         role: "couple",
-        users: coupleData
+        users: mappedUsers
       });
     } catch (error) {
       console.error("Error fetching couple list:", error);
@@ -4841,13 +5665,19 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     try {
       const vendorData = await db.select({
         id: vendors.id,
-        name: vendors.companyName,
+        name: vendors.businessName,
         email: vendors.email,
-        category: vendors.category
+        categoryId: vendors.categoryId
       }).from(vendors).where(eq2(vendors.status, "approved")).limit(50);
+      const mappedUsers = vendorData.map((user) => ({
+        id: user.id,
+        name: user.name || "Ukjent leverand\xF8r",
+        email: user.email,
+        categoryId: user.categoryId
+      }));
       res.json({
         role: "vendor",
-        users: vendorData
+        users: mappedUsers
       });
     } catch (error) {
       console.error("Error fetching vendor list:", error);
@@ -6270,6 +7100,49 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     try {
       const { id } = req.params;
       const { notifyOnScheduleChanges, notifyOnSpeechChanges, canViewSchedule, canViewSpeeches, status } = req.body;
+      const [currentContract] = await db.select().from(coupleVendorContracts).where(and2(
+        eq2(coupleVendorContracts.id, id),
+        eq2(coupleVendorContracts.coupleId, coupleId)
+      ));
+      if (!currentContract) {
+        return res.status(404).json({ error: "Avtale ikke funnet" });
+      }
+      if (status === "cancelled" && currentContract.status !== "cancelled") {
+        try {
+          await db.transaction(async (tx) => {
+            if (currentContract.offerId) {
+              const offerItems = await tx.select().from(vendorOfferItems).where(eq2(vendorOfferItems.offerId, currentContract.offerId));
+              for (const item of offerItems) {
+                if (!item.productId) continue;
+                const [product] = await tx.select().from(vendorProducts).where(eq2(vendorProducts.id, item.productId));
+                if (product?.trackInventory && product.availableQuantity !== null) {
+                  const restoredQuantity = product.availableQuantity + (item.quantity || 0);
+                  await tx.update(vendorProducts).set({
+                    availableQuantity: restoredQuantity,
+                    updatedAt: /* @__PURE__ */ new Date()
+                  }).where(eq2(vendorProducts.id, item.productId));
+                }
+              }
+            }
+            await tx.update(coupleVendorContracts).set({
+              notifyOnScheduleChanges,
+              notifyOnSpeechChanges,
+              canViewSchedule,
+              canViewSpeeches,
+              status,
+              updatedAt: /* @__PURE__ */ new Date()
+            }).where(and2(
+              eq2(coupleVendorContracts.id, id),
+              eq2(coupleVendorContracts.coupleId, coupleId)
+            ));
+          });
+          const [updated2] = await db.select().from(coupleVendorContracts).where(eq2(coupleVendorContracts.id, id));
+          return res.json(updated2);
+        } catch (txError) {
+          console.error("Transaction error cancelling contract:", txError);
+          return res.status(500).json({ error: "Kunne ikke kansellere avtale" });
+        }
+      }
       const [updated] = await db.update(coupleVendorContracts).set({
         notifyOnScheduleChanges,
         notifyOnSpeechChanges,
@@ -6281,9 +7154,6 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         eq2(coupleVendorContracts.id, id),
         eq2(coupleVendorContracts.coupleId, coupleId)
       )).returning();
-      if (!updated) {
-        return res.status(404).json({ error: "Avtale ikke funnet" });
-      }
       res.json(updated);
     } catch (error) {
       console.error("Error updating vendor contract:", error);
@@ -6445,7 +7315,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         actorId: vendorId,
         actorName: vendor?.businessName || "Leverand\xF8r",
         action: "schedule_suggestion",
-        description: `Foreslo endring: ${message.substring(0, 50)}${message.length > 50 ? "..." : ""}`
+        entityType: "schedule_suggestion",
+        entityId: vendorId,
+        newValue: JSON.stringify({ message: message.substring(0, 100) })
       });
       res.json({ success: true, message: "Forslag sendt til brudeparet" });
     } catch (error) {
@@ -6702,6 +7574,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
   app2.post("/api/vendor/reviews/:reviewId/response", async (req, res) => {
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
+    if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const { reviewId } = req.params;
       const { body } = req.body;
@@ -6760,6 +7633,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
   app2.post("/api/vendor/contracts/:contractId/review-reminder", async (req, res) => {
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
+    if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const { contractId } = req.params;
       const [contract] = await db.select().from(coupleVendorContracts).where(and2(
@@ -6803,6 +7677,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
   app2.patch("/api/vendor/google-review-url", async (req, res) => {
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
+    if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const { googleReviewUrl } = req.body;
       if (googleReviewUrl && !googleReviewUrl.includes("google.com")) {
@@ -6839,6 +7714,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
   app2.post("/api/vendor/feedback", async (req, res) => {
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
+    if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const { category, subject, message } = req.body;
       if (!category || !subject || !message) {
@@ -6930,6 +7806,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
   app2.patch("/api/vendor/contracts/:id/complete", async (req, res) => {
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
+    if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const { id } = req.params;
       const [contract] = await db.select().from(coupleVendorContracts).where(and2(
@@ -7195,6 +8072,1017 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     } catch (error) {
       console.error("Error seeding checklist:", error);
       res.status(500).json({ error: "Kunne ikke opprette standardsjekkliste" });
+    }
+  });
+  app2.get("/api/couple/budget/settings", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [settings] = await db.select().from(coupleBudgetSettings).where(eq2(coupleBudgetSettings.coupleId, coupleId));
+      res.json(settings || { totalBudget: 0, currency: "NOK" });
+    } catch (error) {
+      console.error("Error fetching budget settings:", error);
+      res.status(500).json({ error: "Kunne ikke hente budsjettinnstillinger" });
+    }
+  });
+  app2.put("/api/couple/budget/settings", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { totalBudget, currency } = req.body;
+      const [existing] = await db.select().from(coupleBudgetSettings).where(eq2(coupleBudgetSettings.coupleId, coupleId));
+      if (existing) {
+        const [updated] = await db.update(coupleBudgetSettings).set({ totalBudget, currency, updatedAt: /* @__PURE__ */ new Date() }).where(eq2(coupleBudgetSettings.coupleId, coupleId)).returning();
+        res.json(updated);
+      } else {
+        const [created] = await db.insert(coupleBudgetSettings).values({
+          coupleId,
+          totalBudget,
+          currency: currency || "NOK"
+        }).returning();
+        res.json(created);
+      }
+    } catch (error) {
+      console.error("Error updating budget settings:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere budsjettinnstillinger" });
+    }
+  });
+  app2.get("/api/couple/budget/items", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const items = await db.select().from(coupleBudgetItems).where(eq2(coupleBudgetItems.coupleId, coupleId)).orderBy(coupleBudgetItems.sortOrder, coupleBudgetItems.createdAt);
+      res.json(items);
+    } catch (error) {
+      console.error("Error fetching budget items:", error);
+      res.status(500).json({ error: "Kunne ikke hente budsjettlinjer" });
+    }
+  });
+  app2.post("/api/couple/budget/items", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const parsed = createBudgetItemSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ error: "Ugyldig data", details: parsed.error.flatten() });
+      }
+      const [item] = await db.insert(coupleBudgetItems).values({
+        coupleId,
+        ...parsed.data
+      }).returning();
+      res.json(item);
+    } catch (error) {
+      console.error("Error creating budget item:", error);
+      res.status(500).json({ error: "Kunne ikke opprette budsjettlinje" });
+    }
+  });
+  app2.patch("/api/couple/budget/items/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      const { category, label, estimatedCost, actualCost, isPaid, notes, sortOrder } = req.body;
+      const [existing] = await db.select().from(coupleBudgetItems).where(and2(eq2(coupleBudgetItems.id, id), eq2(coupleBudgetItems.coupleId, coupleId)));
+      if (!existing) {
+        return res.status(404).json({ error: "Fant ikke budsjettlinje" });
+      }
+      const updateData = { updatedAt: /* @__PURE__ */ new Date() };
+      if (category !== void 0) updateData.category = category;
+      if (label !== void 0) updateData.label = label;
+      if (estimatedCost !== void 0) updateData.estimatedCost = estimatedCost;
+      if (actualCost !== void 0) updateData.actualCost = actualCost;
+      if (isPaid !== void 0) updateData.isPaid = isPaid;
+      if (notes !== void 0) updateData.notes = notes;
+      if (sortOrder !== void 0) updateData.sortOrder = sortOrder;
+      const [updated] = await db.update(coupleBudgetItems).set(updateData).where(eq2(coupleBudgetItems.id, id)).returning();
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating budget item:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere budsjettlinje" });
+    }
+  });
+  app2.delete("/api/couple/budget/items/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      await db.delete(coupleBudgetItems).where(and2(eq2(coupleBudgetItems.id, id), eq2(coupleBudgetItems.coupleId, coupleId)));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting budget item:", error);
+      res.status(500).json({ error: "Kunne ikke slette budsjettlinje" });
+    }
+  });
+  app2.get("/api/couple/dress", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [appointments, favorites, timeline] = await Promise.all([
+        db.select().from(coupleDressAppointments).where(eq2(coupleDressAppointments.coupleId, coupleId)).orderBy(coupleDressAppointments.date),
+        db.select().from(coupleDressFavorites).where(eq2(coupleDressFavorites.coupleId, coupleId)).orderBy(coupleDressFavorites.createdAt),
+        db.select().from(coupleDressTimeline).where(eq2(coupleDressTimeline.coupleId, coupleId))
+      ]);
+      res.json({
+        appointments,
+        favorites,
+        timeline: timeline[0] || null
+      });
+    } catch (error) {
+      console.error("Error fetching dress data:", error);
+      res.status(500).json({ error: "Kunne ikke hente kjoledata" });
+    }
+  });
+  app2.post("/api/couple/dress/appointments", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const parsed = createDressAppointmentSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ error: "Ugyldig data", details: parsed.error.flatten() });
+      }
+      const [appointment] = await db.insert(coupleDressAppointments).values({
+        coupleId,
+        ...parsed.data
+      }).returning();
+      res.json(appointment);
+    } catch (error) {
+      console.error("Error creating dress appointment:", error);
+      res.status(500).json({ error: "Kunne ikke opprette avtale" });
+    }
+  });
+  app2.patch("/api/couple/dress/appointments/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      const { shopName, date: date2, time, notes, completed } = req.body;
+      const updateData = { updatedAt: /* @__PURE__ */ new Date() };
+      if (shopName !== void 0) updateData.shopName = shopName;
+      if (date2 !== void 0) updateData.date = date2;
+      if (time !== void 0) updateData.time = time;
+      if (notes !== void 0) updateData.notes = notes;
+      if (completed !== void 0) updateData.completed = completed;
+      const [updated] = await db.update(coupleDressAppointments).set(updateData).where(and2(eq2(coupleDressAppointments.id, id), eq2(coupleDressAppointments.coupleId, coupleId))).returning();
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating dress appointment:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere avtale" });
+    }
+  });
+  app2.delete("/api/couple/dress/appointments/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      await db.delete(coupleDressAppointments).where(and2(eq2(coupleDressAppointments.id, id), eq2(coupleDressAppointments.coupleId, coupleId)));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting dress appointment:", error);
+      res.status(500).json({ error: "Kunne ikke slette avtale" });
+    }
+  });
+  app2.post("/api/couple/dress/favorites", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const parsed = createDressFavoriteSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ error: "Ugyldig data", details: parsed.error.flatten() });
+      }
+      const [favorite] = await db.insert(coupleDressFavorites).values({
+        coupleId,
+        ...parsed.data
+      }).returning();
+      res.json(favorite);
+    } catch (error) {
+      console.error("Error creating dress favorite:", error);
+      res.status(500).json({ error: "Kunne ikke lagre kjole" });
+    }
+  });
+  app2.patch("/api/couple/dress/favorites/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      const { name, designer, shop, price, imageUrl, notes, isFavorite } = req.body;
+      const updateData = { updatedAt: /* @__PURE__ */ new Date() };
+      if (name !== void 0) updateData.name = name;
+      if (designer !== void 0) updateData.designer = designer;
+      if (shop !== void 0) updateData.shop = shop;
+      if (price !== void 0) updateData.price = price;
+      if (imageUrl !== void 0) updateData.imageUrl = imageUrl;
+      if (notes !== void 0) updateData.notes = notes;
+      if (isFavorite !== void 0) updateData.isFavorite = isFavorite;
+      const [updated] = await db.update(coupleDressFavorites).set(updateData).where(and2(eq2(coupleDressFavorites.id, id), eq2(coupleDressFavorites.coupleId, coupleId))).returning();
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating dress favorite:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere kjole" });
+    }
+  });
+  app2.delete("/api/couple/dress/favorites/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      await db.delete(coupleDressFavorites).where(and2(eq2(coupleDressFavorites.id, id), eq2(coupleDressFavorites.coupleId, coupleId)));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting dress favorite:", error);
+      res.status(500).json({ error: "Kunne ikke slette kjole" });
+    }
+  });
+  app2.put("/api/couple/dress/timeline", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { ordered, orderedDate, firstFitting, firstFittingDate, alterations, alterationsDate, finalFitting, finalFittingDate, pickup, pickupDate, budget } = req.body;
+      const [existing] = await db.select().from(coupleDressTimeline).where(eq2(coupleDressTimeline.coupleId, coupleId));
+      const timelineData = {
+        ordered: ordered ?? false,
+        orderedDate: orderedDate || null,
+        firstFitting: firstFitting ?? false,
+        firstFittingDate: firstFittingDate || null,
+        alterations: alterations ?? false,
+        alterationsDate: alterationsDate || null,
+        finalFitting: finalFitting ?? false,
+        finalFittingDate: finalFittingDate || null,
+        pickup: pickup ?? false,
+        pickupDate: pickupDate || null,
+        budget: budget ?? 0,
+        updatedAt: /* @__PURE__ */ new Date()
+      };
+      if (existing) {
+        const [updated] = await db.update(coupleDressTimeline).set(timelineData).where(eq2(coupleDressTimeline.coupleId, coupleId)).returning();
+        res.json(updated);
+      } else {
+        const [created] = await db.insert(coupleDressTimeline).values({
+          coupleId,
+          ...timelineData
+        }).returning();
+        res.json(created);
+      }
+    } catch (error) {
+      console.error("Error updating dress timeline:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere tidslinje" });
+    }
+  });
+  app2.get("/api/couple/important-people", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const people = await db.select().from(coupleImportantPeople).where(eq2(coupleImportantPeople.coupleId, coupleId)).orderBy(coupleImportantPeople.sortOrder, coupleImportantPeople.createdAt);
+      res.json(people);
+    } catch (error) {
+      console.error("Error fetching important people:", error);
+      res.status(500).json({ error: "Kunne ikke hente viktige personer" });
+    }
+  });
+  app2.post("/api/couple/important-people", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const parsed = createImportantPersonSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ error: "Ugyldig data", details: parsed.error.flatten() });
+      }
+      const [person] = await db.insert(coupleImportantPeople).values({
+        coupleId,
+        ...parsed.data
+      }).returning();
+      res.json(person);
+    } catch (error) {
+      console.error("Error creating important person:", error);
+      res.status(500).json({ error: "Kunne ikke legge til person" });
+    }
+  });
+  app2.patch("/api/couple/important-people/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      const { name, role, phone, email, notes, sortOrder } = req.body;
+      const updateData = { updatedAt: /* @__PURE__ */ new Date() };
+      if (name !== void 0) updateData.name = name;
+      if (role !== void 0) updateData.role = role;
+      if (phone !== void 0) updateData.phone = phone;
+      if (email !== void 0) updateData.email = email;
+      if (notes !== void 0) updateData.notes = notes;
+      if (sortOrder !== void 0) updateData.sortOrder = sortOrder;
+      const [updated] = await db.update(coupleImportantPeople).set(updateData).where(and2(eq2(coupleImportantPeople.id, id), eq2(coupleImportantPeople.coupleId, coupleId))).returning();
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating important person:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere person" });
+    }
+  });
+  app2.delete("/api/couple/important-people/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      await db.delete(coupleImportantPeople).where(and2(eq2(coupleImportantPeople.id, id), eq2(coupleImportantPeople.coupleId, coupleId)));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting important person:", error);
+      res.status(500).json({ error: "Kunne ikke slette person" });
+    }
+  });
+  app2.get("/api/couple/photo-shots", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const shots = await db.select().from(couplePhotoShots).where(eq2(couplePhotoShots.coupleId, coupleId)).orderBy(couplePhotoShots.sortOrder, couplePhotoShots.createdAt);
+      res.json(shots);
+    } catch (error) {
+      console.error("Error fetching photo shots:", error);
+      res.status(500).json({ error: "Kunne ikke hente fotoliste" });
+    }
+  });
+  app2.post("/api/couple/photo-shots", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const parsed = createPhotoShotSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ error: "Ugyldig data", details: parsed.error.flatten() });
+      }
+      const [shot] = await db.insert(couplePhotoShots).values({
+        coupleId,
+        ...parsed.data
+      }).returning();
+      res.json(shot);
+    } catch (error) {
+      console.error("Error creating photo shot:", error);
+      res.status(500).json({ error: "Kunne ikke legge til bilde" });
+    }
+  });
+  app2.patch("/api/couple/photo-shots/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      const { title, description, category, completed, sortOrder } = req.body;
+      const updateData = { updatedAt: /* @__PURE__ */ new Date() };
+      if (title !== void 0) updateData.title = title;
+      if (description !== void 0) updateData.description = description;
+      if (category !== void 0) updateData.category = category;
+      if (completed !== void 0) updateData.completed = completed;
+      if (sortOrder !== void 0) updateData.sortOrder = sortOrder;
+      const [updated] = await db.update(couplePhotoShots).set(updateData).where(and2(eq2(couplePhotoShots.id, id), eq2(couplePhotoShots.coupleId, coupleId))).returning();
+      res.json(updated);
+    } catch (error) {
+      console.error("Error updating photo shot:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere bilde" });
+    }
+  });
+  app2.delete("/api/couple/photo-shots/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      await db.delete(couplePhotoShots).where(and2(eq2(couplePhotoShots.id, id), eq2(couplePhotoShots.coupleId, coupleId)));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting photo shot:", error);
+      res.status(500).json({ error: "Kunne ikke slette bilde" });
+    }
+  });
+  app2.post("/api/couple/photo-shots/seed-defaults", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const existing = await db.select().from(couplePhotoShots).where(eq2(couplePhotoShots.coupleId, coupleId));
+      if (existing.length > 0) {
+        return res.status(400).json({ error: "Fotoliste finnes allerede" });
+      }
+      const DEFAULT_SHOTS = [
+        { title: "Detaljer av brudekjolen", description: "N\xE6rbilder av kjole og sko", category: "details", sortOrder: 1 },
+        { title: "Bruden og forlover", description: "F\xF8r seremonien", category: "portraits", sortOrder: 2 },
+        { title: "Brudgommen gj\xF8r seg klar", description: "Med bestmennene", category: "portraits", sortOrder: 3 },
+        { title: "Brudens ankomst", description: "Ved kirken/lokalet", category: "ceremony", sortOrder: 4 },
+        { title: "Seremonien", description: "Utveksling av l\xF8fter og ringer", category: "ceremony", sortOrder: 5 },
+        { title: "F\xF8rste kyss", description: "Det viktige \xF8yeblikket", category: "ceremony", sortOrder: 6 },
+        { title: "Gruppebilde med familie", description: "Begge familier samlet", category: "group", sortOrder: 7 },
+        { title: "Brudeparet alene", description: "Romantiske portretter", category: "portraits", sortOrder: 8 },
+        { title: "Middagen starter", description: "F\xF8rste dans og taler", category: "reception", sortOrder: 9 },
+        { title: "Kaken skj\xE6res", description: "Bryllupskaken", category: "reception", sortOrder: 10 }
+      ];
+      const shots = await db.insert(couplePhotoShots).values(
+        DEFAULT_SHOTS.map((shot) => ({
+          coupleId,
+          ...shot
+        }))
+      ).returning();
+      res.json(shots);
+    } catch (error) {
+      console.error("Error seeding photo shots:", error);
+      res.status(500).json({ error: "Kunne ikke opprette standardfotoliste" });
+    }
+  });
+  app2.get("/api/couple/hair-makeup", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [appointments, looks, timelineRows] = await Promise.all([
+        db.select().from(coupleHairMakeupAppointments).where(eq2(coupleHairMakeupAppointments.coupleId, coupleId)).orderBy(coupleHairMakeupAppointments.date),
+        db.select().from(coupleHairMakeupLooks).where(eq2(coupleHairMakeupLooks.coupleId, coupleId)),
+        db.select().from(coupleHairMakeupTimeline).where(eq2(coupleHairMakeupTimeline.coupleId, coupleId))
+      ]);
+      const timeline = timelineRows[0] || {
+        consultationBooked: false,
+        trialBooked: false,
+        lookSelected: false,
+        weddingDayBooked: false,
+        budget: 0
+      };
+      res.json({ appointments, looks, timeline });
+    } catch (error) {
+      console.error("Error fetching hair/makeup data:", error);
+      res.status(500).json({ error: "Kunne ikke hente h\xE5r/makeup data" });
+    }
+  });
+  app2.post("/api/couple/hair-makeup/appointments", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { stylistName, serviceType, appointmentType, date: date2, time, location, notes } = req.body;
+      const [appointment] = await db.insert(coupleHairMakeupAppointments).values({
+        coupleId,
+        stylistName,
+        serviceType,
+        appointmentType,
+        date: date2,
+        time,
+        location,
+        notes
+      }).returning();
+      res.json(appointment);
+    } catch (error) {
+      console.error("Error creating appointment:", error);
+      res.status(500).json({ error: "Kunne ikke opprette avtale" });
+    }
+  });
+  app2.patch("/api/couple/hair-makeup/appointments/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      const [appointment] = await db.update(coupleHairMakeupAppointments).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and2(eq2(coupleHairMakeupAppointments.id, id), eq2(coupleHairMakeupAppointments.coupleId, coupleId))).returning();
+      res.json(appointment);
+    } catch (error) {
+      console.error("Error updating appointment:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere avtale" });
+    }
+  });
+  app2.delete("/api/couple/hair-makeup/appointments/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      await db.delete(coupleHairMakeupAppointments).where(and2(eq2(coupleHairMakeupAppointments.id, id), eq2(coupleHairMakeupAppointments.coupleId, coupleId)));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting appointment:", error);
+      res.status(500).json({ error: "Kunne ikke slette avtale" });
+    }
+  });
+  app2.post("/api/couple/hair-makeup/looks", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { name, lookType, imageUrl, notes, isFavorite } = req.body;
+      const [look] = await db.insert(coupleHairMakeupLooks).values({
+        coupleId,
+        name,
+        lookType,
+        imageUrl,
+        notes,
+        isFavorite
+      }).returning();
+      res.json(look);
+    } catch (error) {
+      console.error("Error creating look:", error);
+      res.status(500).json({ error: "Kunne ikke opprette look" });
+    }
+  });
+  app2.patch("/api/couple/hair-makeup/looks/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      const [look] = await db.update(coupleHairMakeupLooks).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and2(eq2(coupleHairMakeupLooks.id, id), eq2(coupleHairMakeupLooks.coupleId, coupleId))).returning();
+      res.json(look);
+    } catch (error) {
+      console.error("Error updating look:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere look" });
+    }
+  });
+  app2.delete("/api/couple/hair-makeup/looks/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      await db.delete(coupleHairMakeupLooks).where(and2(eq2(coupleHairMakeupLooks.id, id), eq2(coupleHairMakeupLooks.coupleId, coupleId)));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting look:", error);
+      res.status(500).json({ error: "Kunne ikke slette look" });
+    }
+  });
+  app2.put("/api/couple/hair-makeup/timeline", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const existing = await db.select().from(coupleHairMakeupTimeline).where(eq2(coupleHairMakeupTimeline.coupleId, coupleId));
+      if (existing.length > 0) {
+        const [timeline] = await db.update(coupleHairMakeupTimeline).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(eq2(coupleHairMakeupTimeline.coupleId, coupleId)).returning();
+        res.json(timeline);
+      } else {
+        const [timeline] = await db.insert(coupleHairMakeupTimeline).values({
+          coupleId,
+          ...req.body
+        }).returning();
+        res.json(timeline);
+      }
+    } catch (error) {
+      console.error("Error updating timeline:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere tidslinje" });
+    }
+  });
+  app2.get("/api/couple/transport", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [bookings, timelineRows] = await Promise.all([
+        db.select().from(coupleTransportBookings).where(eq2(coupleTransportBookings.coupleId, coupleId)),
+        db.select().from(coupleTransportTimeline).where(eq2(coupleTransportTimeline.coupleId, coupleId))
+      ]);
+      const timeline = timelineRows[0] || {
+        brideCarBooked: false,
+        groomCarBooked: false,
+        guestShuttleBooked: false,
+        getawayCarBooked: false,
+        allConfirmed: false,
+        budget: 0
+      };
+      res.json({ bookings, timeline });
+    } catch (error) {
+      console.error("Error fetching transport data:", error);
+      res.status(500).json({ error: "Kunne ikke hente transport data" });
+    }
+  });
+  app2.post("/api/couple/transport/bookings", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [booking] = await db.insert(coupleTransportBookings).values({
+        coupleId,
+        ...req.body
+      }).returning();
+      res.json(booking);
+    } catch (error) {
+      console.error("Error creating booking:", error);
+      res.status(500).json({ error: "Kunne ikke opprette bestilling" });
+    }
+  });
+  app2.patch("/api/couple/transport/bookings/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      const [booking] = await db.update(coupleTransportBookings).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and2(eq2(coupleTransportBookings.id, id), eq2(coupleTransportBookings.coupleId, coupleId))).returning();
+      res.json(booking);
+    } catch (error) {
+      console.error("Error updating booking:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere bestilling" });
+    }
+  });
+  app2.delete("/api/couple/transport/bookings/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      await db.delete(coupleTransportBookings).where(and2(eq2(coupleTransportBookings.id, id), eq2(coupleTransportBookings.coupleId, coupleId)));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting booking:", error);
+      res.status(500).json({ error: "Kunne ikke slette bestilling" });
+    }
+  });
+  app2.put("/api/couple/transport/timeline", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const existing = await db.select().from(coupleTransportTimeline).where(eq2(coupleTransportTimeline.coupleId, coupleId));
+      if (existing.length > 0) {
+        const [timeline] = await db.update(coupleTransportTimeline).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(eq2(coupleTransportTimeline.coupleId, coupleId)).returning();
+        res.json(timeline);
+      } else {
+        const [timeline] = await db.insert(coupleTransportTimeline).values({
+          coupleId,
+          ...req.body
+        }).returning();
+        res.json(timeline);
+      }
+    } catch (error) {
+      console.error("Error updating timeline:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere tidslinje" });
+    }
+  });
+  app2.get("/api/couple/flowers", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [appointments, selections, timelineRows] = await Promise.all([
+        db.select().from(coupleFlowerAppointments).where(eq2(coupleFlowerAppointments.coupleId, coupleId)).orderBy(coupleFlowerAppointments.date),
+        db.select().from(coupleFlowerSelections).where(eq2(coupleFlowerSelections.coupleId, coupleId)),
+        db.select().from(coupleFlowerTimeline).where(eq2(coupleFlowerTimeline.coupleId, coupleId))
+      ]);
+      const timeline = timelineRows[0] || {
+        floristSelected: false,
+        consultationDone: false,
+        mockupApproved: false,
+        deliveryConfirmed: false,
+        budget: 0
+      };
+      res.json({ appointments, selections, timeline });
+    } catch (error) {
+      console.error("Error fetching flower data:", error);
+      res.status(500).json({ error: "Kunne ikke hente blomster data" });
+    }
+  });
+  app2.post("/api/couple/flowers/appointments", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [appointment] = await db.insert(coupleFlowerAppointments).values({
+        coupleId,
+        ...req.body
+      }).returning();
+      res.json(appointment);
+    } catch (error) {
+      console.error("Error creating appointment:", error);
+      res.status(500).json({ error: "Kunne ikke opprette avtale" });
+    }
+  });
+  app2.patch("/api/couple/flowers/appointments/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      const [appointment] = await db.update(coupleFlowerAppointments).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and2(eq2(coupleFlowerAppointments.id, id), eq2(coupleFlowerAppointments.coupleId, coupleId))).returning();
+      res.json(appointment);
+    } catch (error) {
+      console.error("Error updating appointment:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere avtale" });
+    }
+  });
+  app2.delete("/api/couple/flowers/appointments/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      await db.delete(coupleFlowerAppointments).where(and2(eq2(coupleFlowerAppointments.id, id), eq2(coupleFlowerAppointments.coupleId, coupleId)));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting appointment:", error);
+      res.status(500).json({ error: "Kunne ikke slette avtale" });
+    }
+  });
+  app2.post("/api/couple/flowers/selections", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [selection] = await db.insert(coupleFlowerSelections).values({
+        coupleId,
+        ...req.body
+      }).returning();
+      res.json(selection);
+    } catch (error) {
+      console.error("Error creating selection:", error);
+      res.status(500).json({ error: "Kunne ikke opprette valg" });
+    }
+  });
+  app2.patch("/api/couple/flowers/selections/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      const [selection] = await db.update(coupleFlowerSelections).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and2(eq2(coupleFlowerSelections.id, id), eq2(coupleFlowerSelections.coupleId, coupleId))).returning();
+      res.json(selection);
+    } catch (error) {
+      console.error("Error updating selection:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere valg" });
+    }
+  });
+  app2.delete("/api/couple/flowers/selections/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      await db.delete(coupleFlowerSelections).where(and2(eq2(coupleFlowerSelections.id, id), eq2(coupleFlowerSelections.coupleId, coupleId)));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting selection:", error);
+      res.status(500).json({ error: "Kunne ikke slette valg" });
+    }
+  });
+  app2.put("/api/couple/flowers/timeline", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const existing = await db.select().from(coupleFlowerTimeline).where(eq2(coupleFlowerTimeline.coupleId, coupleId));
+      if (existing.length > 0) {
+        const [timeline] = await db.update(coupleFlowerTimeline).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(eq2(coupleFlowerTimeline.coupleId, coupleId)).returning();
+        res.json(timeline);
+      } else {
+        const [timeline] = await db.insert(coupleFlowerTimeline).values({
+          coupleId,
+          ...req.body
+        }).returning();
+        res.json(timeline);
+      }
+    } catch (error) {
+      console.error("Error updating timeline:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere tidslinje" });
+    }
+  });
+  app2.get("/api/couple/catering", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [tastings, menu, dietaryNeeds, timelineRows] = await Promise.all([
+        db.select().from(coupleCateringTastings).where(eq2(coupleCateringTastings.coupleId, coupleId)).orderBy(coupleCateringTastings.date),
+        db.select().from(coupleCateringMenu).where(eq2(coupleCateringMenu.coupleId, coupleId)),
+        db.select().from(coupleCateringDietaryNeeds).where(eq2(coupleCateringDietaryNeeds.coupleId, coupleId)),
+        db.select().from(coupleCateringTimeline).where(eq2(coupleCateringTimeline.coupleId, coupleId))
+      ]);
+      const timeline = timelineRows[0] || {
+        catererSelected: false,
+        tastingCompleted: false,
+        menuFinalized: false,
+        guestCountConfirmed: false,
+        guestCount: 0,
+        budget: 0
+      };
+      res.json({ tastings, menu, dietaryNeeds, timeline });
+    } catch (error) {
+      console.error("Error fetching catering data:", error);
+      res.status(500).json({ error: "Kunne ikke hente catering data" });
+    }
+  });
+  app2.post("/api/couple/catering/tastings", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [tasting] = await db.insert(coupleCateringTastings).values({
+        coupleId,
+        ...req.body
+      }).returning();
+      res.json(tasting);
+    } catch (error) {
+      console.error("Error creating tasting:", error);
+      res.status(500).json({ error: "Kunne ikke opprette smakspr\xF8ve" });
+    }
+  });
+  app2.patch("/api/couple/catering/tastings/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      const [tasting] = await db.update(coupleCateringTastings).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and2(eq2(coupleCateringTastings.id, id), eq2(coupleCateringTastings.coupleId, coupleId))).returning();
+      res.json(tasting);
+    } catch (error) {
+      console.error("Error updating tasting:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere smakspr\xF8ve" });
+    }
+  });
+  app2.delete("/api/couple/catering/tastings/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      await db.delete(coupleCateringTastings).where(and2(eq2(coupleCateringTastings.id, id), eq2(coupleCateringTastings.coupleId, coupleId)));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting tasting:", error);
+      res.status(500).json({ error: "Kunne ikke slette smakspr\xF8ve" });
+    }
+  });
+  app2.post("/api/couple/catering/menu", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [menuItem] = await db.insert(coupleCateringMenu).values({
+        coupleId,
+        ...req.body
+      }).returning();
+      res.json(menuItem);
+    } catch (error) {
+      console.error("Error creating menu item:", error);
+      res.status(500).json({ error: "Kunne ikke opprette rett" });
+    }
+  });
+  app2.patch("/api/couple/catering/menu/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      const [menuItem] = await db.update(coupleCateringMenu).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and2(eq2(coupleCateringMenu.id, id), eq2(coupleCateringMenu.coupleId, coupleId))).returning();
+      res.json(menuItem);
+    } catch (error) {
+      console.error("Error updating menu item:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere rett" });
+    }
+  });
+  app2.delete("/api/couple/catering/menu/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      await db.delete(coupleCateringMenu).where(and2(eq2(coupleCateringMenu.id, id), eq2(coupleCateringMenu.coupleId, coupleId)));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting menu item:", error);
+      res.status(500).json({ error: "Kunne ikke slette rett" });
+    }
+  });
+  app2.post("/api/couple/catering/dietary", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [need] = await db.insert(coupleCateringDietaryNeeds).values({
+        coupleId,
+        ...req.body
+      }).returning();
+      res.json(need);
+    } catch (error) {
+      console.error("Error creating dietary need:", error);
+      res.status(500).json({ error: "Kunne ikke opprette kostbehov" });
+    }
+  });
+  app2.patch("/api/couple/catering/dietary/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      const [need] = await db.update(coupleCateringDietaryNeeds).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and2(eq2(coupleCateringDietaryNeeds.id, id), eq2(coupleCateringDietaryNeeds.coupleId, coupleId))).returning();
+      res.json(need);
+    } catch (error) {
+      console.error("Error updating dietary need:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere kostbehov" });
+    }
+  });
+  app2.delete("/api/couple/catering/dietary/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      await db.delete(coupleCateringDietaryNeeds).where(and2(eq2(coupleCateringDietaryNeeds.id, id), eq2(coupleCateringDietaryNeeds.coupleId, coupleId)));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting dietary need:", error);
+      res.status(500).json({ error: "Kunne ikke slette kostbehov" });
+    }
+  });
+  app2.put("/api/couple/catering/timeline", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const existing = await db.select().from(coupleCateringTimeline).where(eq2(coupleCateringTimeline.coupleId, coupleId));
+      if (existing.length > 0) {
+        const [timeline] = await db.update(coupleCateringTimeline).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(eq2(coupleCateringTimeline.coupleId, coupleId)).returning();
+        res.json(timeline);
+      } else {
+        const [timeline] = await db.insert(coupleCateringTimeline).values({
+          coupleId,
+          ...req.body
+        }).returning();
+        res.json(timeline);
+      }
+    } catch (error) {
+      console.error("Error updating timeline:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere tidslinje" });
+    }
+  });
+  app2.get("/api/couple/cake", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [tastings, designs, timelineRows] = await Promise.all([
+        db.select().from(coupleCakeTastings).where(eq2(coupleCakeTastings.coupleId, coupleId)).orderBy(coupleCakeTastings.date),
+        db.select().from(coupleCakeDesigns).where(eq2(coupleCakeDesigns.coupleId, coupleId)),
+        db.select().from(coupleCakeTimeline).where(eq2(coupleCakeTimeline.coupleId, coupleId))
+      ]);
+      const timeline = timelineRows[0] || {
+        bakerySelected: false,
+        tastingCompleted: false,
+        designFinalized: false,
+        depositPaid: false,
+        deliveryConfirmed: false,
+        budget: 0
+      };
+      res.json({ tastings, designs, timeline });
+    } catch (error) {
+      console.error("Error fetching cake data:", error);
+      res.status(500).json({ error: "Kunne ikke hente kake data" });
+    }
+  });
+  app2.post("/api/couple/cake/tastings", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [tasting] = await db.insert(coupleCakeTastings).values({
+        coupleId,
+        ...req.body
+      }).returning();
+      res.json(tasting);
+    } catch (error) {
+      console.error("Error creating tasting:", error);
+      res.status(500).json({ error: "Kunne ikke opprette smakspr\xF8ve" });
+    }
+  });
+  app2.patch("/api/couple/cake/tastings/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      const [tasting] = await db.update(coupleCakeTastings).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and2(eq2(coupleCakeTastings.id, id), eq2(coupleCakeTastings.coupleId, coupleId))).returning();
+      res.json(tasting);
+    } catch (error) {
+      console.error("Error updating tasting:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere smakspr\xF8ve" });
+    }
+  });
+  app2.delete("/api/couple/cake/tastings/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      await db.delete(coupleCakeTastings).where(and2(eq2(coupleCakeTastings.id, id), eq2(coupleCakeTastings.coupleId, coupleId)));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting tasting:", error);
+      res.status(500).json({ error: "Kunne ikke slette smakspr\xF8ve" });
+    }
+  });
+  app2.post("/api/couple/cake/designs", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [design] = await db.insert(coupleCakeDesigns).values({
+        coupleId,
+        ...req.body
+      }).returning();
+      res.json(design);
+    } catch (error) {
+      console.error("Error creating design:", error);
+      res.status(500).json({ error: "Kunne ikke opprette design" });
+    }
+  });
+  app2.patch("/api/couple/cake/designs/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      const [design] = await db.update(coupleCakeDesigns).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and2(eq2(coupleCakeDesigns.id, id), eq2(coupleCakeDesigns.coupleId, coupleId))).returning();
+      res.json(design);
+    } catch (error) {
+      console.error("Error updating design:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere design" });
+    }
+  });
+  app2.delete("/api/couple/cake/designs/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      await db.delete(coupleCakeDesigns).where(and2(eq2(coupleCakeDesigns.id, id), eq2(coupleCakeDesigns.coupleId, coupleId)));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting design:", error);
+      res.status(500).json({ error: "Kunne ikke slette design" });
+    }
+  });
+  app2.put("/api/couple/cake/timeline", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const existing = await db.select().from(coupleCakeTimeline).where(eq2(coupleCakeTimeline.coupleId, coupleId));
+      if (existing.length > 0) {
+        const [timeline] = await db.update(coupleCakeTimeline).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(eq2(coupleCakeTimeline.coupleId, coupleId)).returning();
+        res.json(timeline);
+      } else {
+        const [timeline] = await db.insert(coupleCakeTimeline).values({
+          coupleId,
+          ...req.body
+        }).returning();
+        res.json(timeline);
+      }
+    } catch (error) {
+      console.error("Error updating timeline:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere tidslinje" });
     }
   });
   app2.get("/api/faq/:category", async (req, res) => {

@@ -60,11 +60,13 @@ interface ActionItemProps {
   subtitle?: string;
   theme: any;
   onPress: () => void;
+  color?: string;
 }
 
-function ActionItem({ icon, label, subtitle, theme, onPress }: ActionItemProps) {
+function ActionItem({ icon, label, subtitle, theme, onPress, color }: ActionItemProps) {
   const scale = useSharedValue(1);
   const animatedStyle = useAnimatedStyle(() => ({ transform: [{ scale: scale.value }] }));
+  const iconColor = color || Colors.dark.accent;
 
   return (
     <Pressable
@@ -77,7 +79,7 @@ function ActionItem({ icon, label, subtitle, theme, onPress }: ActionItemProps) 
     >
       <Animated.View style={[styles.actionItem, { backgroundColor: theme.backgroundDefault }, animatedStyle]}>
         <View style={styles.actionIcon}>
-          <Feather name={icon} size={20} color={Colors.dark.accent} />
+          <Feather name={icon} size={20} color={iconColor} />
         </View>
         <View style={styles.actionContent}>
           <ThemedText style={styles.actionLabel}>{label}</ThemedText>
@@ -235,6 +237,33 @@ export default function PlanningScreen() {
       </Animated.View>
 
       <Animated.View entering={FadeInDown.delay(350).duration(400)}>
+        <ThemedText style={styles.sectionTitle}>Antrekk & Styling</ThemedText>
+        <View style={[styles.sectionCard, { backgroundColor: theme.backgroundDefault }]}>
+          <ActionItem icon="heart" label="Brudekjole" subtitle="Prøvinger og favoritter" theme={theme} onPress={() => navigation.navigate("Brudekjole")} color="#BA68C8" />
+          <View style={[styles.divider, { backgroundColor: theme.border }]} />
+          <ActionItem icon="scissors" label="Hår & Makeup" subtitle="Avtaler og looks" theme={theme} onPress={() => navigation.navigate("HaarMakeup")} color="#E91E63" />
+        </View>
+      </Animated.View>
+
+      <Animated.View entering={FadeInDown.delay(375).duration(400)}>
+        <ThemedText style={styles.sectionTitle}>Mat & Servering</ThemedText>
+        <View style={[styles.sectionCard, { backgroundColor: theme.backgroundDefault }]}>
+          <ActionItem icon="coffee" label="Catering" subtitle="Menyer og smaksprøver" theme={theme} onPress={() => navigation.navigate("Catering")} color="#FF9800" />
+          <View style={[styles.divider, { backgroundColor: theme.border }]} />
+          <ActionItem icon="gift" label="Bryllupskake" subtitle="Design og smaker" theme={theme} onPress={() => navigation.navigate("Kake")} color="#F06292" />
+        </View>
+      </Animated.View>
+
+      <Animated.View entering={FadeInDown.delay(385).duration(400)}>
+        <ThemedText style={styles.sectionTitle}>Dekor & Logistikk</ThemedText>
+        <View style={[styles.sectionCard, { backgroundColor: theme.backgroundDefault }]}>
+          <ActionItem icon="sun" label="Blomster" subtitle="Florist og arrangementer" theme={theme} onPress={() => navigation.navigate("Blomster")} color="#4CAF50" />
+          <View style={[styles.divider, { backgroundColor: theme.border }]} />
+          <ActionItem icon="truck" label="Transport" subtitle="Biler og sjåfører" theme={theme} onPress={() => navigation.navigate("Transport")} color="#607D8B" />
+        </View>
+      </Animated.View>
+
+      <Animated.View entering={FadeInDown.delay(450).duration(400)}>
         <ThemedText style={styles.sectionTitle}>Økonomi</ThemedText>
         <View style={[styles.sectionCard, { backgroundColor: theme.backgroundDefault }]}>
           <ActionItem icon="dollar-sign" label="Budsjett" subtitle={`${budgetPercent}% brukt`} theme={theme} onPress={() => navigation.navigate("Budget")} />
@@ -247,7 +276,7 @@ export default function PlanningScreen() {
         </View>
       </Animated.View>
 
-      <Animated.View entering={FadeInDown.delay(450).duration(400)}>
+      <Animated.View entering={FadeInDown.delay(500).duration(400)}>
         <ThemedText style={styles.sectionTitle}>Team</ThemedText>
         <View style={[styles.sectionCard, { backgroundColor: theme.backgroundDefault }]}>
           <ActionItem icon="users" label="Viktige personer" subtitle="Forlovere, toastmaster" theme={theme} onPress={() => navigation.navigate("ImportantPeople")} />
@@ -256,12 +285,14 @@ export default function PlanningScreen() {
           <View style={[styles.divider, { backgroundColor: theme.border }]} />
           <ActionItem icon="file-text" label="Tilbud" subtitle="Se pristilbud fra leverandører" theme={theme} onPress={() => navigation.navigate("CoupleOffers")} />
           <View style={[styles.divider, { backgroundColor: theme.border }]} />
+          <ActionItem icon="check-square" label="Avtaler" subtitle="Dine aktive leverandøravtaler" theme={theme} onPress={() => navigation.navigate("CoupleContracts")} />
+          <View style={[styles.divider, { backgroundColor: theme.border }]} />
           <ActionItem icon="gift" label="Hent leveranse" subtitle="Bilder/video fra fotograf" theme={theme} onPress={() => navigation.navigate("DeliveryAccess")} />
         </View>
       </Animated.View>
 
       {schedule.length > 0 ? (
-        <Animated.View entering={FadeInDown.delay(550).duration(400)}>
+        <Animated.View entering={FadeInDown.delay(600).duration(400)}>
           <Pressable onPress={() => navigation.navigate("Schedule")}>
             <View style={[styles.schedulePreview, { backgroundColor: theme.backgroundDefault }]}>
               <View style={styles.scheduleHeader}>

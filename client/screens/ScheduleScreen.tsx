@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -7,6 +7,7 @@ import {
   Pressable,
   Alert,
   Image,
+  RefreshControl,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
@@ -23,13 +24,22 @@ import Animated, {
   runOnJS,
 } from "react-native-reanimated";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { ThemedText } from "@/components/ThemedText";
 import { Button } from "@/components/Button";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius, Colors } from "@/constants/theme";
-import { getSchedule, saveSchedule, generateId, getWeddingDetails, getSpeeches } from "@/lib/storage";
-import { ScheduleEvent, Speech } from "@/lib/types";
+import { getWeddingDetails, getSpeeches } from "@/lib/storage";
+import { useSession } from "@/hooks/useSession";
+import {
+  getScheduleEvents,
+  createScheduleEvent,
+  updateScheduleEvent,
+  deleteScheduleEvent,
+} from "@/lib/api-schedule-events";
+import type { ScheduleEvent } from "@shared/schema";
+import { Speech } from "@/lib/types";
 
 const emptyScheduleImage = require("../../assets/images/empty-schedule.png");
 
@@ -143,43 +153,78 @@ export default function ScheduleScreen() {
   const tabBarHeight = useBottomTabBarHeight();
   const navigation = useNavigation<any>();
   const { theme } = useTheme();
+  const { session } = useSession();
+  const queryClient = useQueryClient();
 
-  const [events, setEvents] = useState<ScheduleEvent[]>([]);
+  // Query for schedule events from server
+  const { data: eventsData, isLoading: loadingEvents, refetch } = useQuery({
+    queryKey: ["schedule-events"],
+    queryFn: () => session?.token ? getScheduleEvents(session.token) : Promise.resolve([]),
+    enabled: !!session?.token,
+  });
+
+  const events = eventsData ?? [];
   const [speeches, setSpeeches] = useState<Speech[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loadingOther, setLoadingOther] = useState(true);
+  const loading = loadingEvents || loadingOther;
+
+  // Mutations
+  const createMutation = useMutation({
+    mutationFn: (data: { time: string; title: string; icon?: string }) =>
+      createScheduleEvent(session!.token!, data),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["schedule-events"] }),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<ScheduleEvent> }) =>
+      updateScheduleEvent(session!.token!, id, data),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["schedule-events"] }),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id: string) => deleteScheduleEvent(session!.token!, id),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["schedule-events"] }),
+  });
+
+  // Refresh handler
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  }, [refetch]);
+
   const [showForm, setShowForm] = useState(false);
   const [editingEvent, setEditingEvent] = useState<ScheduleEvent | null>(null);
   const [newTime, setNewTime] = useState("");
   const [newTitle, setNewTitle] = useState("");
-  const [selectedIcon, setSelectedIcon] = useState<ScheduleEvent["icon"]>("heart");
+  const [selectedIcon, setSelectedIcon] = useState<string>("heart");
   const [weddingDate, setWeddingDate] = useState("");
   const [showSpeeches, setShowSpeeches] = useState(true);
 
-  const loadData = useCallback(async () => {
-    const [data, wedding, speechData] = await Promise.all([
-      getSchedule(),
-      getWeddingDetails(),
-      getSpeeches(),
-    ]);
-    setEvents(data);
-    setSpeeches(speechData);
-    if (wedding) {
-      const date = new Date(wedding.weddingDate);
-      setWeddingDate(
-        date.toLocaleDateString("nb-NO", {
-          weekday: "long",
-          day: "numeric",
-          month: "long",
-          year: "numeric",
-        })
-      );
+  // Load other data (speeches, wedding date) on mount
+  React.useEffect(() => {
+    async function loadOtherData() {
+      const [wedding, speechData] = await Promise.all([
+        getWeddingDetails(),
+        getSpeeches(),
+      ]);
+      setSpeeches(speechData);
+      if (wedding) {
+        const date = new Date(wedding.weddingDate);
+        setWeddingDate(
+          date.toLocaleDateString("nb-NO", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          })
+        );
+      }
+      setLoadingOther(false);
     }
-    setLoading(false);
+    loadOtherData();
   }, []);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
 
   const handleAddEvent = async () => {
     if (!newTime.trim() || !newTitle.trim()) {
@@ -187,42 +232,36 @@ export default function ScheduleScreen() {
       return;
     }
 
-    let updatedEvents: ScheduleEvent[];
-    
-    if (editingEvent) {
-      updatedEvents = events.map((e) =>
-        e.id === editingEvent.id
-          ? { ...e, time: newTime.trim(), title: newTitle.trim(), icon: selectedIcon }
-          : e
-      ).sort((a, b) => a.time.localeCompare(b.time));
-    } else {
-      const newEvent: ScheduleEvent = {
-        id: generateId(),
-        time: newTime.trim(),
-        title: newTitle.trim(),
-        icon: selectedIcon,
-      };
-      updatedEvents = [...events, newEvent].sort((a, b) =>
-        a.time.localeCompare(b.time)
-      );
-    }
-    
-    setEvents(updatedEvents);
-    await saveSchedule(updatedEvents);
+    try {
+      if (editingEvent) {
+        await updateMutation.mutateAsync({
+          id: editingEvent.id.toString(),
+          data: { time: newTime.trim(), title: newTitle.trim(), icon: selectedIcon },
+        });
+      } else {
+        await createMutation.mutateAsync({
+          time: newTime.trim(),
+          title: newTitle.trim(),
+          icon: selectedIcon,
+        });
+      }
 
-    setNewTime("");
-    setNewTitle("");
-    setSelectedIcon("heart");
-    setEditingEvent(null);
-    setShowForm(false);
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      setNewTime("");
+      setNewTitle("");
+      setSelectedIcon("heart");
+      setEditingEvent(null);
+      setShowForm(false);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } catch (e) {
+      Alert.alert("Feil", "Kunne ikke lagre hendelse");
+    }
   };
 
   const handleEditEvent = (event: ScheduleEvent) => {
     setEditingEvent(event);
     setNewTime(event.time);
     setNewTitle(event.title);
-    setSelectedIcon(event.icon);
+    setSelectedIcon(event.icon || "heart");
     setShowForm(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
@@ -234,10 +273,12 @@ export default function ScheduleScreen() {
         text: "Slett",
         style: "destructive",
         onPress: async () => {
-          const updatedEvents = events.filter((e) => e.id !== id);
-          setEvents(updatedEvents);
-          await saveSchedule(updatedEvents);
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+          try {
+            await deleteMutation.mutateAsync(id);
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+          } catch (e) {
+            Alert.alert("Feil", "Kunne ikke slette hendelse");
+          }
         },
       },
     ]);
@@ -269,6 +310,7 @@ export default function ScheduleScreen() {
         flexGrow: 1,
       }}
       scrollIndicatorInsets={{ bottom: insets.bottom }}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.dark.accent} />}
     >
       {weddingDate ? (
         <ThemedText

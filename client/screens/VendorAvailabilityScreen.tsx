@@ -37,6 +37,7 @@ interface VendorAvailability {
   id: string;
   vendorId: string;
   date: string;
+  name: string | null;
   status: "available" | "blocked" | "limited";
   maxBookings: number | null;
   notes: string | null;
@@ -62,8 +63,14 @@ export default function VendorAvailabilityScreen({ navigation }: Props) {
   const [showEditModal, setShowEditModal] = useState(false);
   const [editStatus, setEditStatus] = useState<"available" | "blocked" | "limited">("available");
   const [editMaxBookings, setEditMaxBookings] = useState("");
+  const [editName, setEditName] = useState("");
   const [editNotes, setEditNotes] = useState("");
   const [isRefreshing, setIsRefreshing] = useState(false);
+  
+  // Multi-select state
+  const [isMultiSelectMode, setIsMultiSelectMode] = useState(false);
+  const [selectedDates, setSelectedDates] = useState<Set<string>>(new Set());
+  const [showBulkModal, setShowBulkModal] = useState(false);
 
   const { data: availability = [], isLoading } = useQuery<VendorAvailability[]>({
     queryKey: ["vendor-availability"],
@@ -152,7 +159,7 @@ export default function VendorAvailabilityScreen({ navigation }: Props) {
       if (!session) throw new Error("Not authenticated");
       const { sessionToken } = JSON.parse(session);
       
-      const res = await fetch(`${getApiUrl()}/api/vendor/availability/${date}`, {
+      const res = await fetch(`${getApiUrl()}/api/vendor/availability/date/${date}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${sessionToken}` },
       });
@@ -165,6 +172,44 @@ export default function VendorAvailabilityScreen({ navigation }: Props) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       setShowEditModal(false);
       setSelectedDate(null);
+    },
+  });
+
+  // Bulk save mutation for multiple dates
+  const bulkSaveAvailabilityMutation = useMutation({
+    mutationFn: async (data: { dates: string[]; status: string; maxBookings: number | null; notes: string | null }) => {
+      const session = await AsyncStorage.getItem(VENDOR_STORAGE_KEY);
+      if (!session) throw new Error("Not authenticated");
+      const { sessionToken } = JSON.parse(session);
+      
+      const res = await fetch(`${getApiUrl()}/api/vendor/availability/bulk`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${sessionToken}`,
+        },
+        body: JSON.stringify(data),
+      });
+      
+      if (!res.ok) {
+        const error = await res.json();
+        throw new Error(error.error || "Failed to save availability");
+      }
+      
+      return res.json();
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["vendor-availability"] });
+      queryClient.invalidateQueries({ queryKey: ["vendor-bookings-by-date"] });
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      setShowBulkModal(false);
+      setSelectedDates(new Set());
+      setIsMultiSelectMode(false);
+      Alert.alert("Suksess", `${variables.dates.length} datoer oppdatert`);
+    },
+    onError: (error: Error) => {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      Alert.alert("Feil", error.message);
     },
   });
 
@@ -229,8 +274,65 @@ export default function VendorAvailabilityScreen({ navigation }: Props) {
     setSelectedDate(dateStr);
     setEditStatus(existing?.status || "available");
     setEditMaxBookings(existing?.maxBookings?.toString() || "");
+    setEditName(existing?.name || "");
     setEditNotes(existing?.notes || "");
     setShowEditModal(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  };
+
+  const toggleDateSelection = (date: Date) => {
+    const dateStr = date.toISOString().split("T")[0];
+    const newSelected = new Set(selectedDates);
+    if (newSelected.has(dateStr)) {
+      newSelected.delete(dateStr);
+    } else {
+      newSelected.add(dateStr);
+    }
+    setSelectedDates(newSelected);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  };
+
+  const openBulkEditModal = () => {
+    if (selectedDates.size === 0) {
+      Alert.alert("Ingen datoer valgt", "Velg minst én dato for å fortsette");
+      return;
+    }
+    setEditStatus("blocked");
+    setEditMaxBookings("");
+    setEditName("");
+    setEditNotes("");
+    setShowBulkModal(true);
+  };
+
+  const handleBulkSave = () => {
+    if (selectedDates.size === 0) return;
+    
+    if (editStatus === "limited" && !editMaxBookings) {
+      Alert.alert("Feil", "Angi maksimalt antall bookinger for begrenset tilgjengelighet");
+      return;
+    }
+    
+    bulkSaveAvailabilityMutation.mutate({
+      dates: Array.from(selectedDates),
+      status: editStatus,
+      maxBookings: editStatus === "limited" && editMaxBookings ? parseInt(editMaxBookings) : null,
+      name: editName.trim() || null,
+      notes: editNotes.trim() || null,
+    });
+  };
+
+  const exitMultiSelectMode = () => {
+    setIsMultiSelectMode(false);
+    setSelectedDates(new Set());
+  };
+
+  const selectAllDatesInMonth = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const dates = getCalendarDays()
+      .filter(date => date && date >= today)
+      .map(date => date!.toISOString().split("T")[0]);
+    setSelectedDates(new Set(dates));
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
   };
 
@@ -246,6 +348,7 @@ export default function VendorAvailabilityScreen({ navigation }: Props) {
       date: selectedDate,
       status: editStatus,
       maxBookings: editStatus === "limited" && editMaxBookings ? parseInt(editMaxBookings) : null,
+      name: editName.trim() || null,
       notes: editNotes.trim() || null,
     });
   };
@@ -313,33 +416,58 @@ export default function VendorAvailabilityScreen({ navigation }: Props) {
       borderColor = "#4CAF50";
     }
 
+    const dateStr = date.toISOString().split("T")[0];
+    const isSelected = selectedDates.has(dateStr);
+
     return (
       <Pressable
         key={date.toISOString()}
-        onPress={() => !past && openEditModal(date)}
+        onPress={() => {
+          if (past) return;
+          if (isMultiSelectMode) {
+            toggleDateSelection(date);
+          } else {
+            openEditModal(date);
+          }
+        }}
+        onLongPress={() => {
+          if (past) return;
+          if (!isMultiSelectMode) {
+            setIsMultiSelectMode(true);
+            toggleDateSelection(date);
+          }
+        }}
         disabled={past}
         style={({ pressed }) => [
           styles.dayCell,
           { backgroundColor: bgColor, borderColor },
           pressed && !past && { opacity: 0.7 },
           past && { opacity: 0.4 },
+          isSelected && styles.selectedDay,
+          isSelected && { borderColor: Colors.dark.accent, borderWidth: 2 },
         ]}
       >
         <ThemedText style={[styles.dayNumber, past && { color: theme.textMuted }]}>
           {date.getDate()}
         </ThemedText>
         
-        {statusIcon && !past && (
+        {isSelected && (
+          <View style={styles.selectedCheckmark}>
+            <Feather name="check" size={10} color="#FFFFFF" />
+          </View>
+        )}
+        
+        {statusIcon && !past && !isSelected && (
           <Feather name={statusIcon} size={12} color={statusColor} style={styles.statusIcon} />
         )}
         
-        {bookingCount > 0 && (
+        {bookingCount > 0 && !isSelected && (
           <View style={[styles.bookingBadge, { backgroundColor: "#4CAF50" }]}>
             <ThemedText style={styles.bookingCount}>{bookingCount}</ThemedText>
           </View>
         )}
         
-        {availability?.status === "limited" && availability.maxBookings && (
+        {availability?.status === "limited" && availability.maxBookings && !isSelected && (
           <ThemedText style={[styles.limitText, { color: statusColor }]}>
             Max {availability.maxBookings}
           </ThemedText>
@@ -393,6 +521,46 @@ export default function VendorAvailabilityScreen({ navigation }: Props) {
             <ThemedText style={styles.legendText}>Begrenset kapasitet</ThemedText>
           </View>
         </View>
+
+        {/* Multi-select controls */}
+        {isMultiSelectMode ? (
+          <View style={[styles.multiSelectBar, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
+            <View style={styles.multiSelectInfo}>
+              <Feather name="check-square" size={20} color={Colors.dark.accent} />
+              <ThemedText style={styles.multiSelectText}>
+                {selectedDates.size} dato{selectedDates.size !== 1 ? "er" : ""} valgt
+              </ThemedText>
+            </View>
+            <View style={styles.multiSelectActions}>
+              <Pressable
+                onPress={selectAllDatesInMonth}
+                style={[styles.multiSelectBtn, { borderColor: theme.border }]}
+              >
+                <ThemedText style={[styles.multiSelectBtnText, { color: theme.text }]}>Velg alle</ThemedText>
+              </Pressable>
+              <Pressable
+                onPress={openBulkEditModal}
+                disabled={selectedDates.size === 0}
+                style={[styles.multiSelectBtn, { backgroundColor: Colors.dark.accent, opacity: selectedDates.size === 0 ? 0.5 : 1 }]}
+              >
+                <ThemedText style={[styles.multiSelectBtnText, { color: "#1A1A1A" }]}>Rediger</ThemedText>
+              </Pressable>
+              <Pressable onPress={exitMultiSelectMode} style={styles.cancelMultiBtn}>
+                <Feather name="x" size={20} color={theme.textMuted} />
+              </Pressable>
+            </View>
+          </View>
+        ) : (
+          <Pressable
+            onPress={() => setIsMultiSelectMode(true)}
+            style={[styles.enableMultiSelectBtn, { borderColor: theme.border }]}
+          >
+            <Feather name="check-square" size={18} color={Colors.dark.accent} />
+            <ThemedText style={[styles.enableMultiSelectText, { color: theme.text }]}>
+              Velg flere datoer
+            </ThemedText>
+          </Pressable>
+        )}
 
         {/* Month Navigation */}
         <View style={styles.monthNav}>
@@ -468,6 +636,19 @@ export default function VendorAvailabilityScreen({ navigation }: Props) {
             </View>
 
             <View style={styles.modalBody}>
+              <ThemedText style={[styles.label, { color: theme.textSecondary }]}>Navn (valgfritt)</ThemedText>
+              <TextInput
+                style={[
+                  styles.input,
+                  { backgroundColor: theme.backgroundRoot, color: theme.text, borderColor: theme.border },
+                ]}
+                value={editName}
+                onChangeText={setEditName}
+                placeholder="F.eks. 'Hansen bryllup' eller 'Opptatt'"
+                placeholderTextColor={theme.textMuted}
+                maxLength={100}
+              />
+
               <ThemedText style={[styles.label, { color: theme.textSecondary }]}>Status</ThemedText>
               <View style={styles.statusButtons}>
                 {[
@@ -577,6 +758,152 @@ export default function VendorAvailabilityScreen({ navigation }: Props) {
               >
                 <ThemedText style={[styles.actionBtnText, { color: "#FFFFFF" }]}>
                   {saveAvailabilityMutation.isPending ? "Lagrer..." : "Lagre"}
+                </ThemedText>
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
+      {/* Bulk Edit Modal */}
+      <Modal visible={showBulkModal} animationType="slide" transparent>
+        <View style={styles.modalOverlay}>
+          <View style={[styles.modalContent, { backgroundColor: theme.backgroundDefault }]}>
+            <View style={styles.modalHeader}>
+              <ThemedText type="h3">
+                Rediger {selectedDates.size} dato{selectedDates.size !== 1 ? "er" : ""}
+              </ThemedText>
+              <Pressable onPress={() => setShowBulkModal(false)}>
+                <Feather name="x" size={24} color={theme.text} />
+              </Pressable>
+            </View>
+
+            <View style={styles.modalBody}>
+              {/* Show selected dates preview */}
+              <View style={[styles.selectedDatesPreview, { backgroundColor: theme.backgroundRoot, borderColor: theme.border }]}>
+                <ThemedText style={[styles.selectedDatesLabel, { color: theme.textSecondary }]}>
+                  Valgte datoer:
+                </ThemedText>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                  {Array.from(selectedDates).sort().map(dateStr => (
+                    <View key={dateStr} style={[styles.selectedDateChip, { backgroundColor: Colors.dark.accent + "20" }]}>
+                      <ThemedText style={[styles.selectedDateChipText, { color: Colors.dark.accent }]}>
+                        {new Date(dateStr).toLocaleDateString("nb-NO", { day: "numeric", month: "short" })}
+                      </ThemedText>
+                    </View>
+                  ))}
+                </ScrollView>
+              </View>
+
+              <ThemedText style={[styles.label, { color: theme.textSecondary }]}>Navn (valgfritt)</ThemedText>
+              <TextInput
+                style={[
+                  styles.input,
+                  { backgroundColor: theme.backgroundRoot, color: theme.text, borderColor: theme.border },
+                ]}
+                value={editName}
+                onChangeText={setEditName}
+                placeholder="F.eks. 'Privat booking' eller 'Reservert'"
+                placeholderTextColor={theme.textMuted}
+                maxLength={100}
+              />
+
+              <ThemedText style={[styles.label, { color: theme.textSecondary }]}>Status</ThemedText>
+              <View style={styles.statusButtons}>
+                {[
+                  { value: "available", label: "Tilgjengelig", icon: "check-circle", color: "#4CAF50" },
+                  { value: "blocked", label: "Blokkert", icon: "x-circle", color: "#EF5350" },
+                  { value: "limited", label: "Begrenset", icon: "alert-circle", color: "#FF9800" },
+                ].map(option => (
+                  <Pressable
+                    key={option.value}
+                    onPress={() => {
+                      setEditStatus(option.value as any);
+                      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    }}
+                    style={[
+                      styles.statusButton,
+                      { borderColor: editStatus === option.value ? option.color : theme.border },
+                      editStatus === option.value && { backgroundColor: option.color + "15" },
+                    ]}
+                  >
+                    <Feather 
+                      name={option.icon as any} 
+                      size={20} 
+                      color={editStatus === option.value ? option.color : theme.textMuted} 
+                    />
+                    <ThemedText 
+                      style={[
+                        styles.statusButtonText,
+                        { color: editStatus === option.value ? option.color : theme.text }
+                      ]}
+                    >
+                      {option.label}
+                    </ThemedText>
+                  </Pressable>
+                ))}
+              </View>
+
+              {editStatus === "limited" && (
+                <>
+                  <ThemedText style={[styles.label, { color: theme.textSecondary }]}>
+                    Maks antall bookinger
+                  </ThemedText>
+                  <TextInput
+                    style={[
+                      styles.input,
+                      { backgroundColor: theme.backgroundRoot, color: theme.text, borderColor: theme.border },
+                    ]}
+                    value={editMaxBookings}
+                    onChangeText={setEditMaxBookings}
+                    keyboardType="number-pad"
+                    placeholder="F.eks. 2"
+                    placeholderTextColor={theme.textMuted}
+                  />
+                </>
+              )}
+
+              <ThemedText style={[styles.label, { color: theme.textSecondary }]}>
+                Notater (valgfritt)
+              </ThemedText>
+              <TextInput
+                style={[
+                  styles.input,
+                  styles.notesInput,
+                  { backgroundColor: theme.backgroundRoot, color: theme.text, borderColor: theme.border },
+                ]}
+                value={editNotes}
+                onChangeText={setEditNotes}
+                multiline
+                numberOfLines={3}
+                placeholder="F.eks. 'Ferie' eller 'Fullt booket'"
+                placeholderTextColor={theme.textMuted}
+              />
+            </View>
+
+            <View style={styles.modalActions}>
+              <Pressable
+                onPress={() => setShowBulkModal(false)}
+                style={({ pressed }) => [
+                  styles.actionBtn,
+                  styles.deleteBtn,
+                  { borderColor: theme.border },
+                  pressed && { opacity: 0.7 },
+                ]}
+              >
+                <ThemedText style={[styles.actionBtnText, { color: theme.text }]}>Avbryt</ThemedText>
+              </Pressable>
+              <Pressable
+                onPress={handleBulkSave}
+                disabled={bulkSaveAvailabilityMutation.isPending}
+                style={({ pressed }) => [
+                  styles.actionBtn,
+                  styles.saveBtn,
+                  { backgroundColor: theme.accent },
+                  pressed && { opacity: 0.7 },
+                ]}
+              >
+                <ThemedText style={[styles.actionBtnText, { color: "#FFFFFF" }]}>
+                  {bulkSaveAvailabilityMutation.isPending ? "Lagrer..." : `Lagre ${selectedDates.size} datoer`}
                 </ThemedText>
               </Pressable>
             </View>
@@ -794,6 +1121,93 @@ const styles = StyleSheet.create({
   saveBtn: {},
   actionBtnText: {
     fontSize: 15,
+    fontWeight: "600",
+  },
+  // Multi-select styles
+  selectedDay: {
+    backgroundColor: Colors.dark.accent + "20",
+  },
+  selectedCheckmark: {
+    position: "absolute",
+    top: 2,
+    right: 2,
+    width: 16,
+    height: 16,
+    borderRadius: 8,
+    backgroundColor: Colors.dark.accent,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  multiSelectBar: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: Spacing.md,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    marginBottom: Spacing.lg,
+  },
+  multiSelectInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.sm,
+  },
+  multiSelectText: {
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  multiSelectActions: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.sm,
+  },
+  multiSelectBtn: {
+    paddingVertical: Spacing.xs,
+    paddingHorizontal: Spacing.md,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+  },
+  multiSelectBtnText: {
+    fontSize: 13,
+    fontWeight: "600",
+  },
+  cancelMultiBtn: {
+    padding: Spacing.xs,
+  },
+  enableMultiSelectBtn: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: Spacing.sm,
+    paddingVertical: Spacing.md,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    borderStyle: "dashed",
+    marginBottom: Spacing.lg,
+  },
+  enableMultiSelectText: {
+    fontSize: 14,
+    fontWeight: "500",
+  },
+  selectedDatesPreview: {
+    padding: Spacing.md,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    marginBottom: Spacing.md,
+  },
+  selectedDatesLabel: {
+    fontSize: 12,
+    fontWeight: "600",
+    marginBottom: Spacing.sm,
+  },
+  selectedDateChip: {
+    paddingVertical: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
+    borderRadius: BorderRadius.sm,
+    marginRight: Spacing.xs,
+  },
+  selectedDateChipText: {
+    fontSize: 12,
     fontWeight: "600",
   },
 });

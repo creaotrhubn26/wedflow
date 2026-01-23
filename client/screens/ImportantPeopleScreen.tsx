@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import {
   ScrollView,
   StyleSheet,
@@ -6,6 +6,7 @@ import {
   TextInput,
   Pressable,
   Alert,
+  RefreshControl,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
@@ -13,14 +14,20 @@ import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInRight } from "react-native-reanimated";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { ThemedText } from "@/components/ThemedText";
 import { Button } from "@/components/Button";
 import { SwipeableRow } from "@/components/SwipeableRow";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius, Colors } from "@/constants/theme";
-import { getImportantPeople, saveImportantPeople, generateId } from "@/lib/storage";
-import { ImportantPerson } from "@/lib/types";
+import {
+  getImportantPeople,
+  createImportantPerson,
+  updateImportantPerson,
+  deleteImportantPerson,
+  ImportantPerson,
+} from "@/lib/api-couple-data";
 
 const ROLE_SUGGESTIONS = [
   "Toastmaster",
@@ -40,24 +47,45 @@ export default function ImportantPeopleScreen() {
   const headerHeight = useHeaderHeight();
   const tabBarHeight = useBottomTabBarHeight();
   const { theme } = useTheme();
+  const queryClient = useQueryClient();
 
-  const [people, setPeople] = useState<ImportantPerson[]>([]);
-  const [loading, setLoading] = useState(true);
+  // Query for important people
+  const { data: peopleData, isLoading: loading, refetch } = useQuery({
+    queryKey: ["important-people"],
+    queryFn: getImportantPeople,
+  });
+
+  const people = peopleData ?? [];
+
+  // Refresh handler
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  }, [refetch]);
+
+  // Mutations
+  const createMutation = useMutation({
+    mutationFn: createImportantPerson,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["important-people"] }),
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<ImportantPerson> }) => updateImportantPerson(id, data),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["important-people"] }),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteImportantPerson,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["important-people"] }),
+  });
+
   const [showForm, setShowForm] = useState(false);
   const [newName, setNewName] = useState("");
   const [newRole, setNewRole] = useState("");
   const [newPhone, setNewPhone] = useState("");
   const [editingPerson, setEditingPerson] = useState<ImportantPerson | null>(null);
-
-  const loadData = useCallback(async () => {
-    const data = await getImportantPeople();
-    setPeople(data);
-    setLoading(false);
-  }, []);
-
-  useEffect(() => {
-    loadData();
-  }, [loadData]);
 
   const handleAddPerson = async () => {
     if (!newName.trim() || !newRole.trim()) {
@@ -65,33 +93,29 @@ export default function ImportantPeopleScreen() {
       return;
     }
 
-    let updatedPeople: ImportantPerson[];
+    try {
+      if (editingPerson) {
+        await updateMutation.mutateAsync({
+          id: editingPerson.id,
+          data: { name: newName.trim(), role: newRole.trim(), phone: newPhone.trim() || null },
+        });
+      } else {
+        await createMutation.mutateAsync({
+          name: newName.trim(),
+          role: newRole.trim(),
+          phone: newPhone.trim() || null,
+        });
+      }
 
-    if (editingPerson) {
-      updatedPeople = people.map((p) =>
-        p.id === editingPerson.id
-          ? { ...p, name: newName.trim(), role: newRole.trim(), phone: newPhone.trim() || undefined }
-          : p
-      );
-    } else {
-      const newPerson: ImportantPerson = {
-        id: generateId(),
-        name: newName.trim(),
-        role: newRole.trim(),
-        phone: newPhone.trim() || undefined,
-      };
-      updatedPeople = [...people, newPerson];
+      setNewName("");
+      setNewRole("");
+      setNewPhone("");
+      setEditingPerson(null);
+      setShowForm(false);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } catch (e) {
+      Alert.alert("Feil", "Kunne ikke lagre person");
     }
-
-    setPeople(updatedPeople);
-    await saveImportantPeople(updatedPeople);
-
-    setNewName("");
-    setNewRole("");
-    setNewPhone("");
-    setEditingPerson(null);
-    setShowForm(false);
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
   };
 
   const handleEditPerson = (person: ImportantPerson) => {
@@ -109,10 +133,12 @@ export default function ImportantPeopleScreen() {
         text: "Slett",
         style: "destructive",
         onPress: async () => {
-          const updatedPeople = people.filter((p) => p.id !== id);
-          setPeople(updatedPeople);
-          await saveImportantPeople(updatedPeople);
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+          try {
+            await deleteMutation.mutateAsync(id);
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+          } catch (e) {
+            Alert.alert("Feil", "Kunne ikke slette person");
+          }
         },
       },
     ]);
@@ -141,6 +167,7 @@ export default function ImportantPeopleScreen() {
         paddingHorizontal: Spacing.lg,
       }}
       scrollIndicatorInsets={{ bottom: insets.bottom }}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.dark.accent} />}
     >
       {people.length === 0 && !showForm ? (
         <View style={styles.emptyState}>

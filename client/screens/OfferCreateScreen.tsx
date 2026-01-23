@@ -31,6 +31,17 @@ interface VendorProduct {
   title: string;
   unitPrice: number;
   unitType: string;
+  trackInventory?: boolean;
+  availableQuantity?: number;
+  reservedQuantity?: number;
+  bookingBuffer?: number;
+}
+
+interface VendorAvailabilityStatus {
+  status: "available" | "blocked" | "limited";
+  isAvailable: boolean;
+  maxBookings?: number | null;
+  currentBookings?: number;
 }
 
 interface Contact {
@@ -125,6 +136,45 @@ export default function OfferCreateScreen() {
       if (!response.ok) throw new Error("Kunne ikke hente produkter");
       return response.json();
     },
+  });
+
+  // Check vendor availability for the couple's wedding date
+  const weddingDate = selectedContact?.couple.weddingDate || editingOffer?.couple?.weddingDate;
+  const { data: vendorAvailability } = useQuery<VendorAvailabilityStatus>({
+    queryKey: ["/api/vendor/availability/check", weddingDate],
+    queryFn: async () => {
+      if (!weddingDate) return { status: "available", isAvailable: true };
+      const sessionData = await AsyncStorage.getItem(VENDOR_STORAGE_KEY);
+      if (!sessionData) throw new Error("Ikke innlogget");
+      const session = JSON.parse(sessionData);
+      
+      // Check self availability for the wedding date
+      const availRes = await fetch(
+        new URL(`/api/vendor/availability?startDate=${weddingDate}&endDate=${weddingDate}`, getApiUrl()).toString(),
+        { headers: { Authorization: `Bearer ${session.sessionToken}` } }
+      );
+      if (!availRes.ok) return { status: "available", isAvailable: true };
+      const availData = await availRes.json();
+      const dateAvail = availData.find((a: any) => a.date === weddingDate);
+      
+      // Also get booking count for the date
+      const bookingsRes = await fetch(
+        new URL(`/api/vendor/availability/${weddingDate}/bookings`, getApiUrl()).toString(),
+        { headers: { Authorization: `Bearer ${session.sessionToken}` } }
+      );
+      const bookingsData = bookingsRes.ok ? await bookingsRes.json() : { acceptedBookings: 0 };
+      
+      if (dateAvail) {
+        return {
+          status: dateAvail.status,
+          isAvailable: dateAvail.status !== "blocked",
+          maxBookings: dateAvail.maxBookings,
+          currentBookings: bookingsData.acceptedBookings,
+        };
+      }
+      return { status: "available", isAvailable: true, currentBookings: bookingsData.acceptedBookings };
+    },
+    enabled: !!weddingDate,
   });
 
   const saveMutation = useMutation({
@@ -456,6 +506,32 @@ export default function OfferCreateScreen() {
                   <Feather name="calendar" size={14} color={Colors.dark.accent} />
                   <ThemedText style={[styles.dateInfoText, { color: Colors.dark.accent }]}>
                     Bryllup: {new Date(selectedContact.couple.weddingDate).toLocaleDateString("nb-NO", { day: "numeric", month: "long", year: "numeric" })}
+                  </ThemedText>
+                </View>
+              )}
+              
+              {/* Availability warnings */}
+              {vendorAvailability && !vendorAvailability.isAvailable && (
+                <View style={[styles.availabilityWarning, { backgroundColor: "#F44336" + "15", borderColor: "#F44336" }]}>
+                  <Feather name="x-circle" size={16} color="#F44336" />
+                  <ThemedText style={[styles.availabilityWarningText, { color: "#F44336" }]}>
+                    Du er blokkert på denne datoen. Tilbud kan ikke aksepteres.
+                  </ThemedText>
+                </View>
+              )}
+              {vendorAvailability && vendorAvailability.status === "limited" && vendorAvailability.maxBookings && (
+                <View style={[styles.availabilityWarning, { backgroundColor: "#FF9800" + "15", borderColor: "#FF9800" }]}>
+                  <Feather name="alert-circle" size={16} color="#FF9800" />
+                  <ThemedText style={[styles.availabilityWarningText, { color: "#FF9800" }]}>
+                    Begrenset kapasitet: {vendorAvailability.currentBookings || 0}/{vendorAvailability.maxBookings} bookinger
+                  </ThemedText>
+                </View>
+              )}
+              {vendorAvailability && vendorAvailability.currentBookings && vendorAvailability.currentBookings > 0 && vendorAvailability.status === "available" && (
+                <View style={[styles.availabilityInfo, { backgroundColor: "#4CAF50" + "15", borderColor: "#4CAF50" }]}>
+                  <Feather name="check-circle" size={16} color="#4CAF50" />
+                  <ThemedText style={[styles.availabilityInfoText, { color: "#4CAF50" }]}>
+                    {vendorAvailability.currentBookings} eksisterende booking(er) på denne datoen
                   </ThemedText>
                 </View>
               )}
@@ -882,5 +958,31 @@ const styles = StyleSheet.create({
   dateInfoText: {
     fontSize: 12,
     fontWeight: "600",
+  },
+  availabilityWarning: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.sm,
+    padding: Spacing.sm,
+    borderRadius: BorderRadius.sm,
+    borderWidth: 1,
+    marginTop: Spacing.sm,
+  },
+  availabilityWarningText: {
+    fontSize: 13,
+    flex: 1,
+  },
+  availabilityInfo: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.sm,
+    padding: Spacing.sm,
+    borderRadius: BorderRadius.sm,
+    borderWidth: 1,
+    marginTop: Spacing.sm,
+  },
+  availabilityInfoText: {
+    fontSize: 13,
+    flex: 1,
   },
 });
