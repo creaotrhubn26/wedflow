@@ -8,8 +8,8 @@ import {
   Alert,
   Modal,
   RefreshControl,
+  ActivityIndicator,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
@@ -53,7 +53,6 @@ const TIMELINE_STEPS = [
 ];
 
 export default function TransportScreen() {
-  const insets = useSafeAreaInsets();
   const tabBarHeight = useBottomTabBarHeight();
   const { theme } = useTheme();
   const navigation = useNavigation<NavigationProp>();
@@ -63,10 +62,14 @@ export default function TransportScreen() {
   const [refreshing, setRefreshing] = useState(false);
 
   // Query for transport data
-  const { data: transportData, isLoading: loading, refetch } = useQuery({
+  const { data: transportData, isLoading: loading, isError, error, refetch } = useQuery({
     queryKey: ["transport-data"],
     queryFn: getTransportData,
   });
+
+  // Saving states
+  const [isSavingBooking, setIsSavingBooking] = useState(false);
+  const [isSavingBudget, setIsSavingBudget] = useState(false);
 
   const bookings = transportData?.bookings ?? [];
   const timeline = transportData?.timeline ?? {
@@ -158,12 +161,38 @@ export default function TransportScreen() {
     setShowBookingModal(true);
   };
 
+  // Time validation helper
+  const isValidTime = (time: string): boolean => {
+    if (!time) return true; // Empty is ok (optional)
+    const timeRegex = /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/;
+    return timeRegex.test(time);
+  };
+
+  // Parse price safely (strip non-numeric)
+  const parsePrice = (priceStr: string): number | undefined => {
+    if (!priceStr) return undefined;
+    const cleaned = priceStr.replace(/[^\d]/g, '');
+    const num = parseInt(cleaned, 10);
+    return isNaN(num) ? undefined : num;
+  };
+
   const saveBooking = async () => {
     if (!bookingVehicleType.trim()) {
       Alert.alert("Feil", "Vennligst velg type kjøretøy");
       return;
     }
 
+    if (bookingPickupTime && !isValidTime(bookingPickupTime)) {
+      Alert.alert("Ugyldig tid", "Bruk format HH:MM (f.eks. 14:30)");
+      return;
+    }
+
+    if (bookingDropoffTime && !isValidTime(bookingDropoffTime)) {
+      Alert.alert("Ugyldig tid", "Bruk format HH:MM (f.eks. 16:00)");
+      return;
+    }
+
+    setIsSavingBooking(true);
     try {
       const data = {
         vehicleType: bookingVehicleType,
@@ -175,9 +204,9 @@ export default function TransportScreen() {
         dropoffLocation: bookingDropoffLocation,
         driverName: bookingDriverName,
         driverPhone: bookingDriverPhone,
-        price: bookingPrice ? parseInt(bookingPrice, 10) : undefined,
+        price: parsePrice(bookingPrice),
         notes: bookingNotes,
-        confirmed: false,
+        confirmed: editingBooking?.confirmed ?? false,
       };
 
       if (editingBooking) {
@@ -192,20 +221,48 @@ export default function TransportScreen() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     } catch (e) {
       Alert.alert("Feil", "Kunne ikke lagre booking");
+    } finally {
+      setIsSavingBooking(false);
     }
   };
 
   const toggleBookingConfirmed = async (id: string) => {
     const booking = bookings.find((b) => b.id === id);
     if (booking) {
-      await updateBookingMutation.mutateAsync({ id, data: { confirmed: !booking.confirmed } });
+      const newConfirmed = !booking.confirmed;
+      await updateBookingMutation.mutateAsync({ id, data: { confirmed: newConfirmed } });
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+      // Auto-sync allConfirmed: check if all bookings are now confirmed
+      const updatedBookings = bookings.map(b => b.id === id ? { ...b, confirmed: newConfirmed } : b);
+      const allAreConfirmed = updatedBookings.length > 0 && updatedBookings.every(b => b.confirmed);
+      if (allAreConfirmed !== timeline.allConfirmed) {
+        await updateTimelineMutation.mutateAsync({ allConfirmed: allAreConfirmed });
+      }
     }
   };
 
-  const handleDeleteBooking = async (id: string) => {
-    await deleteBookingMutation.mutateAsync(id);
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+  const handleDeleteBooking = (id: string) => {
+    const booking = bookings.find(b => b.id === id);
+    Alert.alert(
+      "Slett booking",
+      `Er du sikker på at du vil slette ${booking ? getVehicleLabel(booking.vehicleType) : 'denne bookingen'}?`,
+      [
+        { text: "Avbryt", style: "cancel" },
+        {
+          text: "Slett",
+          style: "destructive",
+          onPress: async () => {
+            await deleteBookingMutation.mutateAsync(id);
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            // Close modal if open
+            if (showBookingModal && editingBooking?.id === id) {
+              setShowBookingModal(false);
+            }
+          },
+        },
+      ]
+    );
   };
 
   // Timeline handlers
@@ -222,10 +279,15 @@ export default function TransportScreen() {
   };
 
   const saveBudget = async () => {
-    const newBudget = parseInt(budgetInput, 10) || 0;
-    await updateTimelineMutation.mutateAsync({ budget: newBudget });
-    setShowBudgetModal(false);
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    const newBudget = parseInt(budgetInput.replace(/[^\d]/g, ''), 10) || 0;
+    setIsSavingBudget(true);
+    try {
+      await updateTimelineMutation.mutateAsync({ budget: newBudget });
+      setShowBudgetModal(false);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } finally {
+      setIsSavingBudget(false);
+    }
   };
 
   const formatCurrency = (amount: number) => {
@@ -245,6 +307,29 @@ export default function TransportScreen() {
   const completedSteps = TIMELINE_STEPS.filter((step) => timeline[step.key as keyof TransportTimeline]).length;
   const progressPercentage = (completedSteps / TIMELINE_STEPS.length) * 100;
 
+  // Calculate budget vs bookings sum
+  const bookingsSum = bookings.reduce((sum, b) => sum + (b.price || 0), 0);
+  const budgetDifference = budget - bookingsSum;
+
+  // Sort bookings: by vehicle type priority, then by pickup time
+  const vehicleTypePriority: Record<string, number> = {
+    bride: 1,
+    groom: 2,
+    getaway: 3,
+    shuttle: 4,
+    other: 5,
+  };
+  const sortedBookings = [...bookings].sort((a, b) => {
+    // Unconfirmed first
+    if (a.confirmed !== b.confirmed) return a.confirmed ? 1 : -1;
+    // Then by vehicle type
+    const aPriority = vehicleTypePriority[a.vehicleType] ?? 99;
+    const bPriority = vehicleTypePriority[b.vehicleType] ?? 99;
+    if (aPriority !== bPriority) return aPriority - bPriority;
+    // Then by pickup time
+    return (a.pickupTime || '').localeCompare(b.pickupTime || '');
+  });
+
   const renderBookingsTab = () => (
     <View style={styles.tabContent}>
       <View style={styles.sectionHeader}>
@@ -263,9 +348,19 @@ export default function TransportScreen() {
           <ThemedText style={[styles.emptySubtext, { color: theme.textSecondary }]}>
             Legg til transport for bryllupsdagen
           </ThemedText>
+          <Pressable
+            style={[styles.emptyStateCta, { backgroundColor: theme.primary }]}
+            onPress={() => {
+              openBookingModal();
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            }}
+          >
+            <Feather name="plus" size={16} color="#fff" />
+            <ThemedText style={styles.emptyStateCtaText}>Legg til booking</ThemedText>
+          </Pressable>
         </View>
       ) : (
-        bookings.map((booking, index) => (
+        sortedBookings.map((booking, index) => (
           <Animated.View key={booking.id} entering={FadeInDown.delay(index * 50)}>
             <SwipeableRow onDelete={() => handleDeleteBooking(booking.id)}>
               <Pressable
@@ -321,7 +416,7 @@ export default function TransportScreen() {
 
   const renderTimelineTab = () => (
     <View style={styles.tabContent}>
-      {/* Budget Card */}
+      {/* Budget Card with comparison */}
       <Pressable onPress={openBudgetModal} style={[styles.budgetCard, { backgroundColor: theme.backgroundDefault }]}>
         <View style={styles.budgetHeader}>
           <ThemedText style={styles.budgetLabel}>Budsjett for Transport</ThemedText>
@@ -330,6 +425,26 @@ export default function TransportScreen() {
         <ThemedText style={[styles.budgetAmount, { color: theme.primary }]}>
           {formatCurrency(budget)}
         </ThemedText>
+        {bookings.length > 0 && (
+          <View style={styles.budgetComparison}>
+            <View style={styles.budgetComparisonRow}>
+              <ThemedText style={[styles.budgetComparisonLabel, { color: theme.textSecondary }]}>
+                Sum bookinger:
+              </ThemedText>
+              <ThemedText style={[styles.budgetComparisonValue, { color: theme.text }]}>
+                {formatCurrency(bookingsSum)}
+              </ThemedText>
+            </View>
+            <View style={styles.budgetComparisonRow}>
+              <ThemedText style={[styles.budgetComparisonLabel, { color: theme.textSecondary }]}>
+                {budgetDifference >= 0 ? 'Tilgjengelig:' : 'Over budsjett:'}
+              </ThemedText>
+              <ThemedText style={[styles.budgetComparisonValue, { color: budgetDifference >= 0 ? Colors.light.success : Colors.light.error }]}>
+                {budgetDifference >= 0 ? formatCurrency(budgetDifference) : formatCurrency(Math.abs(budgetDifference))}
+              </ThemedText>
+            </View>
+          </View>
+        )}
       </Pressable>
 
       {/* Find Vendors Button */}
@@ -422,22 +537,49 @@ export default function TransportScreen() {
         contentContainerStyle={[styles.scrollContent, { paddingBottom: tabBarHeight + Spacing.xl }]}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.primary} />}
       >
-        {activeTab === "bookings" && renderBookingsTab()}
-        {activeTab === "timeline" && renderTimelineTab()}
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={theme.primary} />
+            <ThemedText style={[styles.loadingText, { color: theme.textSecondary }]}>Laster data...</ThemedText>
+          </View>
+        ) : isError ? (
+          <View style={styles.errorContainer}>
+            <Feather name="alert-circle" size={48} color={Colors.light.error} />
+            <ThemedText style={styles.errorText}>Kunne ikke laste data</ThemedText>
+            <ThemedText style={[styles.errorSubtext, { color: theme.textSecondary }]}>
+              {error instanceof Error ? error.message : 'Ukjent feil'}
+            </ThemedText>
+            <Pressable
+              style={[styles.retryButton, { backgroundColor: theme.primary }]}
+              onPress={() => refetch()}
+            >
+              <ThemedText style={styles.retryButtonText}>Prøv igjen</ThemedText>
+            </Pressable>
+          </View>
+        ) : (
+          <>
+            {activeTab === "bookings" && renderBookingsTab()}
+            {activeTab === "timeline" && renderTimelineTab()}
+          </>
+        )}
       </ScrollView>
 
       {/* Booking Modal */}
       <Modal visible={showBookingModal} animationType="slide" presentationStyle="pageSheet">
         <View style={[styles.modalContainer, { backgroundColor: theme.background }]}>
           <View style={[styles.modalHeader, { borderBottomColor: theme.border }]}>
-            <Pressable onPress={() => setShowBookingModal(false)}>
-              <ThemedText style={[styles.modalCancel, { color: theme.textSecondary }]}>Avbryt</ThemedText>
+            <Pressable onPress={() => setShowBookingModal(false)} disabled={isSavingBooking}>
+              <ThemedText style={[styles.modalCancel, { color: theme.textSecondary, opacity: isSavingBooking ? 0.5 : 1 }]}>Avbryt</ThemedText>
             </Pressable>
             <ThemedText style={styles.modalTitle}>
               {editingBooking ? "Rediger booking" : "Ny booking"}
             </ThemedText>
-            <Pressable onPress={saveBooking}>
-              <ThemedText style={[styles.modalSave, { color: theme.primary }]}>Lagre</ThemedText>
+            <Pressable onPress={saveBooking} disabled={isSavingBooking}>
+              {isSavingBooking ? (
+                <ActivityIndicator size="small" color={theme.primary} />
+              ) : (
+                <ThemedText style={[styles.modalSave, { color: theme.primary }]}>Lagre</ThemedText>
+              )}
             </Pressable>
           </View>
 
@@ -591,10 +733,7 @@ export default function TransportScreen() {
 
             {editingBooking && (
               <Pressable
-                onPress={() => {
-                  handleDeleteBooking(editingBooking.id);
-                  setShowBookingModal(false);
-                }}
+                onPress={() => handleDeleteBooking(editingBooking.id)}
                 style={[styles.deleteButton, { backgroundColor: Colors.light.error + '20', borderColor: Colors.light.error, borderWidth: 1, borderRadius: 8, padding: 12, alignItems: 'center' }]}
               >
                 <ThemedText style={{ color: Colors.light.error }}>Slett booking</ThemedText>
@@ -616,12 +755,27 @@ export default function TransportScreen() {
               placeholder="0"
               placeholderTextColor={theme.textSecondary}
               keyboardType="numeric"
+              editable={!isSavingBudget}
             />
             <View style={styles.budgetModalButtons}>
-              <Pressable onPress={() => setShowBudgetModal(false)} style={[styles.budgetModalButton, { borderColor: theme.border, borderWidth: 1, borderRadius: 8, padding: 12, alignItems: 'center' }]}>
+              <Pressable 
+                onPress={() => setShowBudgetModal(false)} 
+                disabled={isSavingBudget}
+                style={[styles.budgetModalButton, { borderColor: theme.border, borderWidth: 1, borderRadius: 8, padding: 12, alignItems: 'center', opacity: isSavingBudget ? 0.5 : 1 }]}
+              >
                 <ThemedText>Avbryt</ThemedText>
               </Pressable>
-              <Button onPress={saveBudget} style={styles.budgetModalButton}>Lagre</Button>
+              <Pressable
+                onPress={saveBudget}
+                disabled={isSavingBudget}
+                style={[styles.saveButton, { backgroundColor: theme.primary, opacity: isSavingBudget ? 0.7 : 1 }]}
+              >
+                {isSavingBudget ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <ThemedText style={styles.saveButtonText}>Lagre</ThemedText>
+                )}
+              </Pressable>
             </View>
           </View>
         </View>
@@ -945,5 +1099,84 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     flex: 1,
     textAlign: "center",
+  },
+  // New styles for improvements
+  loadingContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 60,
+  },
+  loadingText: {
+    marginTop: Spacing.md,
+    fontSize: 14,
+  },
+  errorContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 60,
+    paddingHorizontal: Spacing.xl,
+  },
+  errorText: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginTop: Spacing.md,
+  },
+  errorSubtext: {
+    fontSize: 14,
+    marginTop: Spacing.xs,
+    textAlign: "center",
+  },
+  retryButton: {
+    marginTop: Spacing.md,
+    paddingHorizontal: 24,
+    paddingVertical: 10,
+    borderRadius: BorderRadius.md,
+  },
+  retryButtonText: {
+    color: "#fff",
+    fontWeight: "600",
+  },
+  emptyStateCta: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.sm,
+    marginTop: Spacing.md,
+    paddingHorizontal: Spacing.lg,
+    paddingVertical: Spacing.md,
+    borderRadius: BorderRadius.md,
+  },
+  emptyStateCtaText: {
+    color: "#fff",
+    fontWeight: "600",
+  },
+  budgetComparison: {
+    marginTop: Spacing.md,
+    paddingTop: Spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: "rgba(0,0,0,0.1)",
+  },
+  budgetComparisonRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: Spacing.xs,
+  },
+  budgetComparisonLabel: {
+    fontSize: 13,
+  },
+  budgetComparisonValue: {
+    fontSize: 13,
+    fontWeight: "600",
+  },
+  saveButton: {
+    flex: 1,
+    borderRadius: BorderRadius.md,
+    padding: Spacing.md,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  saveButtonText: {
+    color: "#fff",
+    fontSize: 15,
+    fontWeight: "600",
   },
 });
