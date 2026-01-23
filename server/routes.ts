@@ -4044,7 +4044,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const coupleData = await db.select({
         id: coupleProfiles.id,
-        name: coupleProfiles.partnerName,
+        name: coupleProfiles.displayName,
         email: coupleProfiles.email,
       }).from(coupleProfiles).limit(50);
       
