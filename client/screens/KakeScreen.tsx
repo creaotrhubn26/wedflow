@@ -10,7 +10,9 @@ import {
   RefreshControl,
   Image,
   Pressable,
+  ActivityIndicator,
 } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -23,6 +25,7 @@ import { ThemedText } from '../components/ThemedText';
 import { Button } from '../components/Button';
 import { SwipeableRow } from '../components/SwipeableRow';
 import { useTheme } from '../hooks/useTheme';
+import { Colors } from '../constants/theme';
 import { PlanningStackParamList } from '../navigation/PlanningStackNavigator';
 import {
   getCakeData,
@@ -100,8 +103,56 @@ export function KakeScreen() {
   const [designIsFavorite, setDesignIsFavorite] = useState(false);
   const [designIsSelected, setDesignIsSelected] = useState(false);
 
+  // Loading states
+  const [isSavingTasting, setIsSavingTasting] = useState(false);
+  const [isSavingDesign, setIsSavingDesign] = useState(false);
+  const [isSavingBudget, setIsSavingBudget] = useState(false);
+
+  // Budget modal state
+  const [showBudgetModal, setShowBudgetModal] = useState(false);
+  const [budgetInput, setBudgetInput] = useState('');
+
+  // Date parsing helper for sorting (handles YYYY-MM-DD and DD.MM.YYYY)
+  const parseDate = (dateStr: string | undefined): Date => {
+    if (!dateStr) return new Date(0);
+    // Try ISO format first (YYYY-MM-DD)
+    const isoDate = new Date(dateStr);
+    if (!isNaN(isoDate.getTime()) && dateStr.includes('-')) {
+      return isoDate;
+    }
+    // Try Norwegian format (DD.MM.YYYY)
+    const parts = dateStr.split('.');
+    if (parts.length === 3) {
+      const [day, month, year] = parts;
+      return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+    }
+    return new Date(0);
+  };
+
+  // Date format helper for display
+  const formatDate = (dateStr: string | undefined): string => {
+    if (!dateStr) return '';
+    const date = parseDate(dateStr);
+    if (isNaN(date.getTime()) || date.getTime() === 0) return dateStr;
+    return date.toLocaleDateString('nb-NO', { day: 'numeric', month: 'short', year: 'numeric' });
+  };
+
+  // Date validation helper
+  const isValidDate = (dateStr: string): boolean => {
+    if (!dateStr) return false;
+    // Check YYYY-MM-DD format
+    const isoRegex = /^\d{4}-\d{2}-\d{2}$/;
+    // Check DD.MM.YYYY format
+    const norRegex = /^\d{2}\.\d{2}\.\d{4}$/;
+    if (isoRegex.test(dateStr) || norRegex.test(dateStr)) {
+      const date = parseDate(dateStr);
+      return !isNaN(date.getTime()) && date.getTime() !== 0;
+    }
+    return false;
+  };
+
   // Fetch cake data
-  const { data: cakeData, isLoading, refetch } = useQuery({
+  const { data: cakeData, isLoading, isError, error, refetch } = useQuery({
     queryKey: ['couple-cake-data'],
     queryFn: getCakeData,
   });
@@ -237,7 +288,7 @@ export function KakeScreen() {
     setDesignModalVisible(true);
   };
 
-  const handleSaveTasting = () => {
+  const handleSaveTasting = async () => {
     if (!bakeryName.trim()) {
       Alert.alert('Feil', 'Vennligst fyll inn bakeri navn');
       return;
@@ -246,50 +297,81 @@ export function KakeScreen() {
       Alert.alert('Feil', 'Vennligst fyll inn dato');
       return;
     }
+    if (!isValidDate(tastingDate.trim())) {
+      Alert.alert('Ugyldig dato', 'Bruk format YYYY-MM-DD eller DD.MM.YYYY');
+      return;
+    }
 
-    const data = {
-      bakeryName: bakeryName.trim(),
-      date: tastingDate.trim(),
-      time: tastingTime.trim() || undefined,
-      location: tastingLocation.trim() || undefined,
-      flavorsToTry: flavorsToTry.trim() || undefined,
-      notes: tastingNotes.trim() || undefined,
-      rating: tastingRating || undefined,
-      completed: tastingCompleted,
-    };
+    setIsSavingTasting(true);
+    try {
+      const data = {
+        bakeryName: bakeryName.trim(),
+        date: tastingDate.trim(),
+        time: tastingTime.trim() || undefined,
+        location: tastingLocation.trim() || undefined,
+        flavorsToTry: flavorsToTry.trim() || undefined,
+        notes: tastingNotes.trim() || undefined,
+        rating: tastingRating || undefined,
+        completed: tastingCompleted,
+      };
 
-    if (editingTasting) {
-      updateTastingMutation.mutate({ id: editingTasting.id, data });
-    } else {
-      createTastingMutation.mutate(data);
+      if (editingTasting) {
+        await updateTastingMutation.mutateAsync({ id: editingTasting.id, data });
+      } else {
+        await createTastingMutation.mutateAsync(data);
+      }
+    } finally {
+      setIsSavingTasting(false);
     }
   };
 
-  const handleSaveDesign = () => {
+  const handleSaveDesign = async () => {
     if (!designName.trim()) {
       Alert.alert('Feil', 'Vennligst fyll inn design navn');
       return;
     }
 
-    const data = {
-      name: designName.trim(),
-      imageUrl: designImageUrl.trim() || undefined,
-      tiers: designTiers ? parseInt(designTiers) : undefined,
-      flavor: designFlavor.trim() || undefined,
-      filling: designFilling.trim() || undefined,
-      frosting: designFrosting.trim() || undefined,
-      style: designStyle || undefined,
-      estimatedPrice: designEstimatedPrice ? parseInt(designEstimatedPrice) : undefined,
-      estimatedServings: designEstimatedServings ? parseInt(designEstimatedServings) : undefined,
-      notes: designNotes.trim() || undefined,
-      isFavorite: designIsFavorite,
-      isSelected: designIsSelected,
-    };
+    setIsSavingDesign(true);
+    try {
+      // If selecting this design, unselect all others first
+      if (designIsSelected) {
+        const othersToUnselect = (cakeData?.designs || []).filter(
+          (d) => d.isSelected && d.id !== editingDesign?.id
+        );
+        await Promise.all(
+          othersToUnselect.map((d) =>
+            updateDesignMutation.mutateAsync({ id: d.id, data: { isSelected: false } })
+          )
+        );
+        
+        // Also update timeline.designFinalized when a design is selected
+        if (cakeData?.timeline && !cakeData.timeline.designFinalized) {
+          await updateTimelineMutation.mutateAsync({ designFinalized: true });
+        }
+      }
 
-    if (editingDesign) {
-      updateDesignMutation.mutate({ id: editingDesign.id, data });
-    } else {
-      createDesignMutation.mutate(data);
+      const data = {
+        name: designName.trim(),
+        imageUrl: designImageUrl.trim() || undefined,
+        tiers: designTiers ? parseInt(designTiers) : undefined,
+        flavor: designFlavor.trim() || undefined,
+        filling: designFilling.trim() || undefined,
+        frosting: designFrosting.trim() || undefined,
+        style: designStyle || undefined,
+        estimatedPrice: designEstimatedPrice ? parseInt(designEstimatedPrice) : undefined,
+        estimatedServings: designEstimatedServings ? parseInt(designEstimatedServings) : undefined,
+        notes: designNotes.trim() || undefined,
+        isFavorite: designIsFavorite,
+        isSelected: designIsSelected,
+      };
+
+      if (editingDesign) {
+        await updateDesignMutation.mutateAsync({ id: editingDesign.id, data });
+      } else {
+        await createDesignMutation.mutateAsync(data);
+      }
+    } finally {
+      setIsSavingDesign(false);
     }
   };
 
@@ -321,6 +403,43 @@ export function KakeScreen() {
     }
   };
 
+  // Budget handlers
+  const openBudgetModal = () => {
+    setBudgetInput(cakeData?.timeline?.budget?.toString() || '');
+    setShowBudgetModal(true);
+  };
+
+  const saveBudget = async () => {
+    const newBudget = parseInt(budgetInput, 10) || 0;
+    setIsSavingBudget(true);
+    try {
+      await updateTimelineMutation.mutateAsync({ budget: newBudget });
+      setShowBudgetModal(false);
+    } finally {
+      setIsSavingBudget(false);
+    }
+  };
+
+  // Image picker for design
+  const pickDesignImage = async () => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== 'granted') {
+      Alert.alert('Tillatelse kreves', 'Vi trenger tilgang til bildegalleriet for å velge bilder.');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.8,
+    });
+
+    if (!result.canceled && result.assets[0]) {
+      setDesignImageUrl(result.assets[0].uri);
+    }
+  };
+
   // Calculate summary stats
   const completedTastings = (cakeData?.tastings || []).filter((t) => t.completed).length;
   const totalTastings = (cakeData?.tastings || []).length;
@@ -329,6 +448,21 @@ export function KakeScreen() {
   const completedSteps = TIMELINE_STEPS.filter(
     (step) => cakeData?.timeline && cakeData.timeline[step.key]
   ).length;
+
+  // Sort tastings: upcoming first (by date), then completed
+  const sortedTastings = [...(cakeData?.tastings || [])].sort((a, b) => {
+    // Completed at bottom
+    if (a.completed !== b.completed) return a.completed ? 1 : -1;
+    // Sort by date (earliest first for upcoming)
+    return parseDate(a.date).getTime() - parseDate(b.date).getTime();
+  });
+
+  // Sort designs: selected first, then favorites, then by name
+  const sortedDesigns = [...(cakeData?.designs || [])].sort((a, b) => {
+    if (a.isSelected !== b.isSelected) return a.isSelected ? -1 : 1;
+    if (a.isFavorite !== b.isFavorite) return a.isFavorite ? -1 : 1;
+    return (a.name || '').localeCompare(b.name || '');
+  });
 
   const renderTastingsTab = () => (
     <View style={styles.tabContent}>
@@ -361,9 +495,19 @@ export function KakeScreen() {
           <ThemedText style={[styles.emptyStateSubtext, { color: theme.textSecondary }]}>
             Legg til smaksprøver hos ulike bakerier
           </ThemedText>
+          <TouchableOpacity
+            style={[styles.emptyStateCta, { backgroundColor: theme.primary }]}
+            onPress={() => {
+              setTastingModalVisible(true);
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            }}
+          >
+            <Feather name="plus" size={16} color="#fff" />
+            <ThemedText style={styles.emptyStateCtaText}>Legg til smaksprøve</ThemedText>
+          </TouchableOpacity>
         </View>
       ) : (
-        (cakeData?.tastings || []).map((tasting, index) => (
+        sortedTastings.map((tasting, index) => (
           <Animated.View key={tasting.id} entering={FadeInDown.delay(index * 50)}>
             <SwipeableRow
               onEdit={() => openEditTasting(tasting)}
@@ -392,7 +536,7 @@ export function KakeScreen() {
                           key={star}
                           name="star"
                           size={14}
-                          color={star <= tasting.rating! ? '#FFC107' : theme.border}
+                          color={star <= tasting.rating! ? Colors.light.warning : theme.border}
                           style={{ marginRight: 2 }}
                         />
                       ))}
@@ -412,7 +556,7 @@ export function KakeScreen() {
                 <View style={styles.cardRow}>
                   <Feather name="calendar" size={14} color={theme.textSecondary} />
                   <ThemedText style={[styles.cardSubtext, { color: theme.textSecondary }]}>
-                    {new Date(tasting.date).toLocaleDateString('nb-NO')}
+                    {formatDate(tasting.date)}
                     {tasting.time && ` kl. ${tasting.time}`}
                   </ThemedText>
                 </View>
@@ -467,9 +611,19 @@ export function KakeScreen() {
           <ThemedText style={[styles.emptyStateSubtext, { color: theme.textSecondary }]}>
             Lagre kake-inspirasjon og design
           </ThemedText>
+          <TouchableOpacity
+            style={[styles.emptyStateCta, { backgroundColor: theme.primary }]}
+            onPress={() => {
+              setDesignModalVisible(true);
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            }}
+          >
+            <Feather name="plus" size={16} color="#fff" />
+            <ThemedText style={styles.emptyStateCtaText}>Legg til design</ThemedText>
+          </TouchableOpacity>
         </View>
       ) : (
-        (cakeData?.designs || []).map((design, index) => (
+        sortedDesigns.map((design, index) => (
           <Animated.View key={design.id} entering={FadeInDown.delay(index * 50)}>
             <SwipeableRow
               onEdit={() => openEditDesign(design)}
@@ -484,7 +638,7 @@ export function KakeScreen() {
                   <View style={styles.cardTitleRow}>
                     <ThemedText style={styles.cardTitle}>{design.name}</ThemedText>
                     {design.isFavorite && (
-                      <Feather name="heart" size={16} color="#E91E63" style={{ marginLeft: 8 }} />
+                      <Feather name="heart" size={16} color={Colors.light.error} style={{ marginLeft: 8 }} />
                     )}
                     {design.isSelected && (
                       <View style={[styles.statusBadge, { backgroundColor: theme.primary + '20', marginLeft: 8 }]}>
@@ -580,7 +734,7 @@ export function KakeScreen() {
 
   const renderTimelineTab = () => (
     <View style={styles.tabContent}>
-      {/* Summary Card */}
+      {/* Summary Card with clickable budget */}
       <View style={[styles.summaryCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
         <View style={styles.summaryRow}>
           <View style={styles.summaryItem}>
@@ -591,32 +745,61 @@ export function KakeScreen() {
               {completedSteps}/{TIMELINE_STEPS.length}
             </ThemedText>
           </View>
-          {cakeData?.timeline?.budget ? (
-            <View style={styles.summaryItem}>
-              <ThemedText style={[styles.summaryLabel, { color: theme.textSecondary }]}>
-                Budsjett
-              </ThemedText>
+          <TouchableOpacity 
+            style={styles.summaryItem}
+            onPress={() => {
+              openBudgetModal();
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            }}
+          >
+            <ThemedText style={[styles.summaryLabel, { color: theme.textSecondary }]}>
+              Budsjett
+            </ThemedText>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
               <ThemedText style={[styles.summaryValue, { color: theme.primary }]}>
-                {cakeData.timeline.budget.toLocaleString('nb-NO')} kr
+                {cakeData?.timeline?.budget 
+                  ? `${cakeData.timeline.budget.toLocaleString('nb-NO')} kr`
+                  : 'Sett budsjett'}
               </ThemedText>
+              <Feather name="edit-2" size={12} color={theme.primary} />
             </View>
-          ) : null}
+          </TouchableOpacity>
         </View>
       </View>
 
-      {/* Find Vendors Button */}
-      <TouchableOpacity
-        onPress={() => {
-          navigation.navigate("VendorMatching", { category: "cake" });
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-        }}
-        style={[styles.findVendorsButton, { backgroundColor: theme.primary }]}
-        activeOpacity={0.7}
-      >
-        <Feather name="search" size={18} color="#FFFFFF" />
-        <ThemedText style={styles.findVendorsText}>Finn konditori</ThemedText>
-        <Feather name="arrow-right" size={18} color="#FFFFFF" />
-      </TouchableOpacity>
+      {/* Find Vendors Button - context aware */}
+      {cakeData?.timeline?.bakerySelected ? (
+        <View style={[styles.vendorSelectedCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
+          <View style={styles.vendorSelectedHeader}>
+            <Feather name="check-circle" size={18} color={theme.primary} />
+            <ThemedText style={[styles.vendorSelectedText, { color: theme.text }]}>
+              Bakeri valgt
+            </ThemedText>
+          </View>
+          <TouchableOpacity
+            onPress={() => {
+              navigation.navigate("VendorMatching", { category: "cake" });
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            }}
+            style={[styles.vendorChangeButton, { borderColor: theme.border }]}
+          >
+            <ThemedText style={{ color: theme.textSecondary }}>Endre / Se kontaktinfo</ThemedText>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <TouchableOpacity
+          onPress={() => {
+            navigation.navigate("VendorMatching", { category: "cake" });
+            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+          }}
+          style={[styles.findVendorsButton, { backgroundColor: theme.primary }]}
+          activeOpacity={0.7}
+        >
+          <Feather name="search" size={18} color="#FFFFFF" />
+          <ThemedText style={styles.findVendorsText}>Finn konditori</ThemedText>
+          <Feather name="arrow-right" size={18} color="#FFFFFF" />
+        </TouchableOpacity>
+      )}
 
       {/* Timeline Steps */}
       {TIMELINE_STEPS.map((step, index) => {
@@ -721,7 +904,22 @@ export function KakeScreen() {
       >
         {isLoading ? (
           <View style={styles.loadingContainer}>
-            <ThemedText style={{ color: theme.textSecondary }}>Laster...</ThemedText>
+            <ActivityIndicator size="large" color={theme.primary} />
+            <ThemedText style={[styles.loadingText, { color: theme.textSecondary }]}>Laster data...</ThemedText>
+          </View>
+        ) : isError ? (
+          <View style={styles.errorContainer}>
+            <Feather name="alert-circle" size={48} color={Colors.light.error} />
+            <ThemedText style={styles.errorText}>Kunne ikke laste data</ThemedText>
+            <ThemedText style={[styles.errorSubtext, { color: theme.textSecondary }]}>
+              {error instanceof Error ? error.message : 'Ukjent feil'}
+            </ThemedText>
+            <TouchableOpacity
+              style={[styles.retryButton, { backgroundColor: theme.primary }]}
+              onPress={() => refetch()}
+            >
+              <ThemedText style={styles.retryButtonText}>Prøv igjen</ThemedText>
+            </TouchableOpacity>
           </View>
         ) : (
           <>
@@ -826,11 +1024,12 @@ export function KakeScreen() {
                       setTastingRating(star);
                       Haptics.selectionAsync();
                     }}
+                    hitSlop={{ top: 10, bottom: 10, left: 5, right: 5 }}
                   >
                     <Feather
                       name="star"
                       size={28}
-                      color={star <= tastingRating ? '#FFC107' : theme.border}
+                      color={star <= tastingRating ? Colors.light.warning : theme.border}
                       style={{ marginRight: 8 }}
                     />
                   </TouchableOpacity>
@@ -875,16 +1074,24 @@ export function KakeScreen() {
             <View style={styles.modalActions}>
               <Pressable
                 onPress={closeTastingModal}
-                style={{ flex: 1, marginRight: 8, borderColor: theme.border, borderWidth: 1, borderRadius: 8, padding: 14, alignItems: 'center' }}
+                disabled={isSavingTasting}
+                style={{ flex: 1, marginRight: 8, borderColor: theme.border, borderWidth: 1, borderRadius: 8, padding: 14, alignItems: 'center', opacity: isSavingTasting ? 0.5 : 1 }}
               >
                 <ThemedText>Avbryt</ThemedText>
               </Pressable>
-              <Button
+              <Pressable
                 onPress={handleSaveTasting}
-                style={{ flex: 1 }}
+                disabled={isSavingTasting}
+                style={[styles.saveButton, { backgroundColor: theme.primary, opacity: isSavingTasting ? 0.7 : 1 }]}
               >
-                {editingTasting ? 'Lagre' : 'Legg til'}
-              </Button>
+                {isSavingTasting ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <ThemedText style={styles.saveButtonText}>
+                    {editingTasting ? 'Lagre' : 'Legg til'}
+                  </ThemedText>
+                )}
+              </Pressable>
             </View>
           </View>
         </View>
@@ -949,15 +1156,47 @@ export function KakeScreen() {
               </View>
 
               <ThemedText style={[styles.inputLabel, { color: theme.textSecondary }]}>
-                Bilde-URL
+                Bilde
               </ThemedText>
-              <TextInput
-                style={[styles.input, { backgroundColor: theme.background, color: theme.text, borderColor: theme.border }]}
-                value={designImageUrl}
-                onChangeText={setDesignImageUrl}
-                placeholder="https://..."
-                placeholderTextColor={theme.textSecondary}
-              />
+              {designImageUrl ? (
+                <View style={styles.imagePreviewContainer}>
+                  <Image source={{ uri: designImageUrl }} style={styles.imagePreview} />
+                  <View style={styles.imageActions}>
+                    <TouchableOpacity
+                      style={[styles.imageActionButton, { backgroundColor: theme.backgroundSecondary }]}
+                      onPress={pickDesignImage}
+                    >
+                      <Feather name="edit-2" size={14} color={theme.text} />
+                      <ThemedText style={[styles.imageActionText, { color: theme.text }]}>Endre</ThemedText>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      style={[styles.imageActionButton, { backgroundColor: Colors.light.error + '20' }]}
+                      onPress={() => setDesignImageUrl('')}
+                    >
+                      <Feather name="trash-2" size={14} color={Colors.light.error} />
+                      <ThemedText style={[styles.imageActionText, { color: Colors.light.error }]}>Fjern</ThemedText>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              ) : (
+                <View style={styles.imageInputRow}>
+                  <TouchableOpacity
+                    style={[styles.pickImageButton, { backgroundColor: theme.primary + '15', borderColor: theme.primary }]}
+                    onPress={pickDesignImage}
+                  >
+                    <Feather name="image" size={18} color={theme.primary} />
+                    <ThemedText style={{ color: theme.primary, fontWeight: '500' }}>Velg bilde</ThemedText>
+                  </TouchableOpacity>
+                  <ThemedText style={{ color: theme.textSecondary, marginVertical: 8 }}>eller</ThemedText>
+                  <TextInput
+                    style={[styles.input, { backgroundColor: theme.background, color: theme.text, borderColor: theme.border }]}
+                    value={designImageUrl}
+                    onChangeText={setDesignImageUrl}
+                    placeholder="Lim inn bilde-URL"
+                    placeholderTextColor={theme.textSecondary}
+                  />
+                </View>
+              )}
 
               <View style={styles.rowInputs}>
                 <View style={{ flex: 1, marginRight: 8 }}>
@@ -1052,13 +1291,14 @@ export function KakeScreen() {
                   setDesignIsFavorite(!designIsFavorite);
                   Haptics.selectionAsync();
                 }}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               >
                 <View
                   style={[
                     styles.checkbox,
                     {
-                      backgroundColor: designIsFavorite ? '#E91E63' : 'transparent',
-                      borderColor: designIsFavorite ? '#E91E63' : theme.border,
+                      backgroundColor: designIsFavorite ? Colors.light.error : 'transparent',
+                      borderColor: designIsFavorite ? Colors.light.error : theme.border,
                     },
                   ]}
                 >
@@ -1092,16 +1332,71 @@ export function KakeScreen() {
             <View style={styles.modalActions}>
               <Pressable
                 onPress={closeDesignModal}
-                style={{ flex: 1, marginRight: 8, borderColor: theme.border, borderWidth: 1, borderRadius: 8, padding: 14, alignItems: 'center' }}
+                disabled={isSavingDesign}
+                style={{ flex: 1, marginRight: 8, borderColor: theme.border, borderWidth: 1, borderRadius: 8, padding: 14, alignItems: 'center', opacity: isSavingDesign ? 0.5 : 1 }}
               >
                 <ThemedText>Avbryt</ThemedText>
               </Pressable>
-              <Button
+              <Pressable
                 onPress={handleSaveDesign}
-                style={{ flex: 1 }}
+                disabled={isSavingDesign}
+                style={[styles.saveButton, { backgroundColor: theme.primary, opacity: isSavingDesign ? 0.7 : 1 }]}
               >
-                {editingDesign ? 'Lagre' : 'Legg til'}
-              </Button>
+                {isSavingDesign ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <ThemedText style={styles.saveButtonText}>
+                    {editingDesign ? 'Lagre' : 'Legg til'}
+                  </ThemedText>
+                )}
+              </Pressable>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Budget Modal */}
+      <Modal visible={showBudgetModal} animationType="slide" transparent>
+        <View style={styles.modalOverlay}>
+          <View style={[styles.budgetModalContent, { backgroundColor: theme.backgroundDefault }]}>
+            <View style={styles.modalHeader}>
+              <ThemedText style={styles.modalTitle}>Budsjett for Bryllupskake</ThemedText>
+              <TouchableOpacity onPress={() => setShowBudgetModal(false)}>
+                <Feather name="x" size={24} color={theme.text} />
+              </TouchableOpacity>
+            </View>
+
+            <ThemedText style={[styles.inputLabel, { color: theme.textSecondary }]}>
+              Budsjett (NOK)
+            </ThemedText>
+            <TextInput
+              style={[styles.input, { backgroundColor: theme.background, color: theme.text, borderColor: theme.border }]}
+              value={budgetInput}
+              onChangeText={setBudgetInput}
+              placeholder="0"
+              placeholderTextColor={theme.textSecondary}
+              keyboardType="numeric"
+            />
+
+            <View style={[styles.modalActions, { marginTop: 20 }]}>
+              <Pressable
+                onPress={() => setShowBudgetModal(false)}
+                disabled={isSavingBudget}
+                style={{ flex: 1, marginRight: 8, borderColor: theme.border, borderWidth: 1, borderRadius: 8, padding: 14, alignItems: 'center', opacity: isSavingBudget ? 0.5 : 1 }}
+              >
+                <ThemedText>Avbryt</ThemedText>
+              </Pressable>
+              <Pressable
+                onPress={saveBudget}
+                disabled={isSavingBudget}
+                style={[styles.saveButton, { backgroundColor: theme.primary, opacity: isSavingBudget ? 0.7 : 1 }]}
+              >
+                {isSavingBudget ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <ThemedText style={styles.saveButtonText}>Lagre</ThemedText>
+                )}
+              </Pressable>
             </View>
           </View>
         </View>
@@ -1449,5 +1744,126 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     flex: 1,
     textAlign: 'center',
+  },
+  // New styles for improvements
+  saveButton: {
+    flex: 1,
+    borderRadius: 8,
+    padding: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  saveButtonText: {
+    color: '#fff',
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 14,
+  },
+  errorContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 60,
+    paddingHorizontal: 20,
+  },
+  errorText: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginTop: 16,
+  },
+  errorSubtext: {
+    fontSize: 14,
+    marginTop: 4,
+    textAlign: 'center',
+  },
+  retryButton: {
+    marginTop: 16,
+    paddingHorizontal: 24,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: '#fff',
+    fontWeight: '600',
+  },
+  emptyStateCta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 16,
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  emptyStateCtaText: {
+    color: '#fff',
+    fontWeight: '600',
+  },
+  vendorSelectedCard: {
+    borderRadius: 12,
+    borderWidth: 1,
+    padding: 16,
+    marginBottom: 16,
+  },
+  vendorSelectedHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 12,
+  },
+  vendorSelectedText: {
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  vendorChangeButton: {
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 12,
+    alignItems: 'center',
+  },
+  budgetModalContent: {
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    padding: 24,
+  },
+  imagePreviewContainer: {
+    marginTop: 8,
+  },
+  imagePreview: {
+    width: '100%',
+    height: 150,
+    borderRadius: 10,
+  },
+  imageActions: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 8,
+  },
+  imageActionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 6,
+  },
+  imageActionText: {
+    fontSize: 13,
+    fontWeight: '500',
+  },
+  imageInputRow: {
+    marginTop: 8,
+  },
+  pickImageButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    padding: 16,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderStyle: 'dashed',
   },
 });

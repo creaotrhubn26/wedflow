@@ -21,6 +21,7 @@ export const Colors = {
     backgroundElevated: "#F5F5F5",
     border: "#E8E8E8",
     success: "#4CAF50",
+    warning: "#FFC107",
     error: "#EF5350",
   },
   dark: {
@@ -40,6 +41,7 @@ export const Colors = {
     backgroundElevated: "#2D2D2D",
     border: "#3A3A3A",
     success: "#4CAF50",
+    warning: "#FFC107",
     error: "#EF5350",
   },
 };
