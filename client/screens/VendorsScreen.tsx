@@ -18,22 +18,39 @@ import Animated, { FadeInRight } from "react-native-reanimated";
 import { useQuery } from "@tanstack/react-query";
 
 import { ThemedText } from "@/components/ThemedText";
+import { CategoryIcon } from "@/components/CategoryIcon";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius, Colors } from "@/constants/theme";
 import { Vendor } from "@/lib/types";
 import { PlanningStackParamList } from "@/navigation/PlanningStackNavigator";
 
+interface ApiVendor {
+  id: string;
+  businessName: string;
+  categoryId: string | null;
+  categoryName?: string;
+  description: string | null;
+  location: string | null;
+  phone: string | null;
+  website: string | null;
+  priceRange: string | null;
+  imageUrl: string | null;
+  isFeatured: boolean;
+  isPrioritized: boolean;
+  hasReviewBadge: boolean;
+}
+
 const SCANDINAVIAN_VENDORS: Vendor[] = [
-  { id: "1", name: "Nordic Moments", category: "photographer", location: "Oslo", country: "Norway", rating: 4.9, priceRange: "25 000 - 40 000 kr", description: "Naturlig lys og tidløse øyeblikk", saved: false },
-  { id: "2", name: "Stockholm Wedding Films", category: "videographer", location: "Stockholm", country: "Sweden", rating: 4.8, priceRange: "30 000 - 50 000 kr", description: "Cinematiske bryllupsfilmer", saved: false },
-  { id: "3", name: "Copenhagen Beats", category: "dj", location: "København", country: "Denmark", rating: 4.7, priceRange: "12 000 - 20 000 kr", description: "Stemningsfull musikk hele kvelden", saved: false },
-  { id: "4", name: "Bergen Bryllupsfoto", category: "photographer", location: "Bergen", country: "Norway", rating: 4.9, priceRange: "20 000 - 35 000 kr", description: "Vestlandets mest ettertraktede", saved: false },
-  { id: "5", name: "Malmö Films", category: "videographer", location: "Malmö", country: "Sweden", rating: 4.6, priceRange: "25 000 - 45 000 kr", description: "Moderne og kreativt uttrykk", saved: false },
-  { id: "6", name: "Oslo DJ Collective", category: "dj", location: "Oslo", country: "Norway", rating: 4.8, priceRange: "15 000 - 25 000 kr", description: "Profesjonelle bryllups-DJs", saved: false },
-  { id: "7", name: "Trondheim Foto", category: "photographer", location: "Trondheim", country: "Norway", rating: 4.7, priceRange: "18 000 - 30 000 kr", description: "Autentiske bilder med sjel", saved: false },
-  { id: "8", name: "Danish Wedding Films", category: "videographer", location: "Aarhus", country: "Denmark", rating: 4.8, priceRange: "28 000 - 48 000 kr", description: "Fortellende bryllupsfilmer", saved: false },
-  { id: "9", name: "Blomster & Bryllup", category: "florist", location: "Oslo", country: "Norway", rating: 4.9, priceRange: "8 000 - 25 000 kr", description: "Vakre buketter og dekorasjoner", saved: false },
-  { id: "10", name: "Göteborg Events", category: "caterer", location: "Göteborg", country: "Sweden", rating: 4.7, priceRange: "500 - 1200 kr/person", description: "Nordisk gourmet-catering", saved: false },
+  { id: "1", name: "Nordic Moments", categoryId: null, categoryName: "Fotograf", location: "Oslo", country: "Norway", rating: 4.9, priceRange: "25 000 - 40 000 kr", description: "Naturlig lys og tidløse øyeblikk", saved: false, isFeatured: false, isPrioritized: false, hasReviewBadge: false },
+  { id: "2", name: "Stockholm Wedding Films", categoryId: null, categoryName: "Videograf", location: "Stockholm", country: "Sweden", rating: 4.8, priceRange: "30 000 - 50 000 kr", description: "Cinematiske bryllupsfilmer", saved: false, isFeatured: false, isPrioritized: false, hasReviewBadge: false },
+  { id: "3", name: "Copenhagen Beats", categoryId: null, categoryName: "Musikk", location: "København", country: "Denmark", rating: 4.7, priceRange: "12 000 - 20 000 kr", description: "Stemningsfull musikk hele kvelden", saved: false, isFeatured: false, isPrioritized: false, hasReviewBadge: false },
+  { id: "4", name: "Bergen Bryllupsfoto", categoryId: null, categoryName: "Fotograf", location: "Bergen", country: "Norway", rating: 4.9, priceRange: "20 000 - 35 000 kr", description: "Vestlandets mest ettertraktede", saved: false, isFeatured: false, isPrioritized: false, hasReviewBadge: false },
+  { id: "5", name: "Malmö Films", categoryId: null, categoryName: "Videograf", location: "Malmö", country: "Sweden", rating: 4.6, priceRange: "25 000 - 45 000 kr", description: "Moderne og kreativt uttrykk", saved: false, isFeatured: false, isPrioritized: false, hasReviewBadge: false },
+  { id: "6", name: "Oslo DJ Collective", categoryId: null, categoryName: "Musikk", location: "Oslo", country: "Norway", rating: 4.8, priceRange: "15 000 - 25 000 kr", description: "Profesjonelle bryllups-DJs", saved: false, isFeatured: false, isPrioritized: false, hasReviewBadge: false },
+  { id: "7", name: "Trondheim Foto", categoryId: null, categoryName: "Fotograf", location: "Trondheim", country: "Norway", rating: 4.7, priceRange: "18 000 - 30 000 kr", description: "Autentiske bilder med sjel", saved: false, isFeatured: false, isPrioritized: false, hasReviewBadge: false },
+  { id: "8", name: "Danish Wedding Films", categoryId: null, categoryName: "Videograf", location: "Aarhus", country: "Denmark", rating: 4.8, priceRange: "28 000 - 48 000 kr", description: "Fortellende bryllupsfilmer", saved: false, isFeatured: false, isPrioritized: false, hasReviewBadge: false },
+  { id: "9", name: "Blomster & Bryllup", categoryId: null, categoryName: "Blomster", location: "Oslo", country: "Norway", rating: 4.9, priceRange: "8 000 - 25 000 kr", description: "Vakre buketter og dekorasjoner", saved: false, isFeatured: false, isPrioritized: false, hasReviewBadge: false },
+  { id: "10", name: "Göteborg Events", categoryId: null, categoryName: "Catering", location: "Göteborg", country: "Sweden", rating: 4.7, priceRange: "500 - 1200 kr/person", description: "Nordisk gourmet-catering", saved: false, isFeatured: false, isPrioritized: false, hasReviewBadge: false },
 ];
 
 const CATEGORIES = [
@@ -64,6 +81,7 @@ interface ApiVendor {
   imageUrl: string | null;
   isFeatured?: boolean;
   isPrioritized?: boolean;
+  hasReviewBadge?: boolean;
 }
 
 export default function VendorsScreen() {
@@ -82,12 +100,20 @@ export default function VendorsScreen() {
     ...apiVendors.map((v) => ({
       id: v.id,
       name: v.businessName,
-      category: "photographer" as Vendor["category"],
+      businessName: v.businessName,
+      categoryId: v.categoryId,
+      categoryName: v.categoryName,
       location: v.location || "Norge",
       country: "Norway" as Vendor["country"],
       rating: 5.0,
       priceRange: v.priceRange || "",
       description: v.description || "",
+      phone: v.phone,
+      website: v.website,
+      imageUrl: v.imageUrl,
+      isFeatured: v.isFeatured,
+      isPrioritized: v.isPrioritized,
+      hasReviewBadge: v.hasReviewBadge,
       saved: false,
     })),
   ];
@@ -98,7 +124,7 @@ export default function VendorsScreen() {
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredVendors = allVendors.filter((v) => {
-    const matchesCategory = selectedCategory === "all" || v.category === selectedCategory;
+    const matchesCategory = selectedCategory === "all" || v.categoryName === selectedCategory;
     const matchesCountry = selectedCountry === "all" || v.country === selectedCountry;
     const matchesSearch = v.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       v.location.toLowerCase().includes(searchQuery.toLowerCase());
@@ -118,18 +144,6 @@ export default function VendorsScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
-  const getCategoryIcon = (category: Vendor["category"]): keyof typeof Feather.glyphMap => {
-    switch (category) {
-      case "photographer": return "camera";
-      case "videographer": return "video";
-      case "dj": return "music";
-      case "florist": return "sun";
-      case "caterer": return "coffee";
-      case "venue": return "home";
-      default: return "briefcase";
-    }
-  };
-
   const handleVendorPress = (vendor: Vendor) => {
     navigation.navigate("VendorDetail", {
       vendorId: vendor.id,
@@ -137,44 +151,74 @@ export default function VendorsScreen() {
       vendorDescription: vendor.description,
       vendorLocation: vendor.location,
       vendorPriceRange: vendor.priceRange,
-      vendorCategory: vendor.category,
+      vendorCategory: vendor.categoryName || "Ukjent",
     });
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
-  const renderVendorItem = ({ item, index }: { item: Vendor; index: number }) => (
-    <Animated.View entering={FadeInRight.delay(index * 50).duration(300)}>
-      <Pressable
-        style={[
-          styles.vendorCard,
-          { backgroundColor: theme.backgroundDefault, borderColor: theme.border },
-          (item as any).isFeatured && { borderColor: Colors.dark.accent, borderWidth: 2 },
-        ]}
-        onPress={() => handleVendorPress(item)}
-      >
-        <View style={[styles.vendorImage, { backgroundColor: theme.backgroundSecondary }]}>
-          <Feather name={getCategoryIcon(item.category)} size={24} color={Colors.dark.accent} />
-          {(item as any).isFeatured && (
-            <View style={[styles.featuredBadge, { backgroundColor: Colors.dark.accent }]}>
-              <Feather name="star" size={10} color="#FFFFFF" />
+  const renderVendorItem = ({ item, index }: { item: Vendor; index: number }) => {
+    // Map category name from API to icon name
+    const getIconName = (categoryName?: string): string => {
+      if (!categoryName) return "camera";
+      
+      const iconMap: Record<string, string> = {
+        "Fotograf": "camera",
+        "Videograf": "film",
+        "Blomster": "flower",
+        "Catering": "coffee",
+        "Musikk": "music",
+        "Venue": "venue",
+        "Kake": "cake",
+        "Planlegger": "clipboard",
+        "Hår & Makeup": "scissors",
+        "Transport": "car",
+        "Invitasjoner": "mail",
+        "Underholdning": "sparkles",
+        "Dekorasjon": "star",
+        "Konfektyrer": "gift",
+        "Bar & Drikke": "cocktail",
+        "Fotoboks": "aperture",
+        "Ringer": "diamond",
+        "Drakt & Dress": "suit",
+        "Overnatting": "bed",
+        "Husdyr": "heart",
+      };
+      
+      return iconMap[categoryName] || "camera";
+    };
+
+    return (
+      <Animated.View entering={FadeInRight.delay(index * 50).duration(300)}>
+        <Pressable
+          style={[
+            styles.vendorCard,
+            { backgroundColor: theme.backgroundDefault, borderColor: theme.border },
+            (item as any).isFeatured && { borderColor: Colors.dark.accent, borderWidth: 2 },
+          ]}
+          onPress={() => handleVendorPress(item)}
+        >
+          <View style={[styles.vendorImage, { backgroundColor: theme.backgroundSecondary }]}>
+            <CategoryIcon name={getIconName((item as any).categoryName)} size={28} color={Colors.dark.accent} />
+            {(item as any).isFeatured && (
+              <View style={[styles.featuredBadge, { backgroundColor: Colors.dark.accent }]}>
+                <Feather name="star" size={10} color="#FFFFFF" />
+              </View>
+            )}
+          </View>
+          <View style={styles.vendorInfo}>
+            <View style={styles.vendorHeader}>
+              <View style={{ flexDirection: "row", alignItems: "center", gap: Spacing.xs, flex: 1 }}>
+                <ThemedText style={styles.vendorName}>{item.name}</ThemedText>
+                {(item as any).isPrioritized && !((item as any).isFeatured) && (
+                  <Feather name="zap" size={14} color={Colors.dark.accent} />
+                )}
+                {(item as any).hasReviewBadge && (
+                  <View style={[styles.reviewBadge, { backgroundColor: Colors.dark.accent }]}>
+                    <Feather name="award" size={10} color="#FFFFFF" />
+                  </View>
+                )}
+              </View>
             </View>
-          )}
-        </View>
-        <View style={styles.vendorInfo}>
-          <View style={styles.vendorHeader}>
-            <View style={{ flexDirection: "row", alignItems: "center", gap: Spacing.xs, flex: 1 }}>
-              <ThemedText style={styles.vendorName}>{item.name}</ThemedText>
-              {(item as any).isPrioritized && !((item as any).isFeatured) && (
-                <Feather name="zap" size={14} color={Colors.dark.accent} />
-              )}
-            </View>
-            <Pressable onPress={() => handleToggleSave(item.id)} style={styles.saveBtn}>
-              <Feather
-                name={item.saved ? "heart" : "heart"}
-                size={20}
-                color={item.saved ? Colors.dark.accent : theme.textMuted}
-              />
-            </Pressable>
           </View>
           <View style={styles.vendorMeta}>
             <Feather name="map-pin" size={12} color={theme.textSecondary} />
@@ -196,10 +240,10 @@ export default function VendorsScreen() {
               {item.priceRange}
             </ThemedText>
           </View>
-        </View>
-      </Pressable>
-    </Animated.View>
-  );
+        </Pressable>
+      </Animated.View>
+    );
+  };
 
   const ListHeader = () => (
     <>
@@ -391,6 +435,13 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  reviewBadge: {
+    width: 18,
+    height: 18,
+    borderRadius: 9,
     alignItems: "center",
     justifyContent: "center",
   },

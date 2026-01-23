@@ -259,19 +259,50 @@ export default function CoupleOffersScreen() {
                 <ThemedText style={[styles.sectionLabel, { color: theme.textMuted }]}>
                   Linjer
                 </ThemedText>
-                {offer.items.map((item) => (
-                  <View key={item.id} style={[styles.itemRow, { borderBottomColor: theme.border }]}>
-                    <View style={styles.itemInfo}>
-                      <ThemedText style={styles.itemTitle}>{item.title}</ThemedText>
-                      <ThemedText style={[styles.itemDesc, { color: theme.textMuted }]}>
-                        {formatPrice(item.unitPrice)} x {item.quantity}
+                {offer.items.map((item) => {
+                  // Check if inventory tracking is enabled and if quantity is available
+                  const product = (item as any).product;
+                  const hasInventory = product?.trackInventory;
+                  const available = hasInventory 
+                    ? (product.availableQuantity || 0) - (product.reservedQuantity || 0) - (product.bookingBuffer || 0)
+                    : null;
+                  const exceedsInventory = hasInventory && available !== null && item.quantity > available;
+                  
+                  return (
+                    <View key={item.id} style={[styles.itemRow, { borderBottomColor: theme.border }]}>
+                      <View style={styles.itemInfo}>
+                        <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                          <ThemedText style={styles.itemTitle}>{item.title}</ThemedText>
+                          {hasInventory && (
+                            <View style={[styles.inventoryBadge, {
+                              backgroundColor: exceedsInventory ? "#F44336" + "20" : "#4CAF50" + "20"
+                            }]}>
+                              <Feather 
+                                name={exceedsInventory ? "alert-triangle" : "check"} 
+                                size={10} 
+                                color={exceedsInventory ? "#F44336" : "#4CAF50"}
+                              />
+                              <ThemedText style={{
+                                fontSize: 10,
+                                marginLeft: 3,
+                                color: exceedsInventory ? "#F44336" : "#4CAF50",
+                                fontWeight: "600",
+                              }}>
+                                {exceedsInventory ? `Kun ${available} tilgj.` : 'På lager'}
+                              </ThemedText>
+                            </View>
+                          )}
+                        </View>
+                        <ThemedText style={[styles.itemDesc, { color: theme.textMuted }]}>
+                          {formatPrice(item.unitPrice)} x {item.quantity}
+                        </ThemedText>
+                      </View>
+                      <ThemedText style={styles.itemTotal}>
+                        {formatPrice(item.lineTotal)}
                       </ThemedText>
                     </View>
-                    <ThemedText style={styles.itemTotal}>
-                      {formatPrice(item.lineTotal)}
-                    </ThemedText>
-                  </View>
-                ))}
+                  );
+                })}
               </View>
 
               <View style={styles.metaSection}>
@@ -500,6 +531,13 @@ const styles = StyleSheet.create({
   itemTitle: {
     fontSize: 14,
     fontWeight: "500",
+  },
+  inventoryBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 4,
   },
   itemDesc: {
     fontSize: 12,

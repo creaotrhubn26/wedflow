@@ -253,6 +253,7 @@ export default function OfferCreateScreen() {
   };
 
   const updateItemQuantity = (index: number, quantity: number) => {
+    // Note: Backend will validate date-specific availability when creating the offer
     const updated = [...items];
     updated[index].quantity = Math.max(1, quantity);
     setItems(updated);
@@ -350,6 +351,14 @@ export default function OfferCreateScreen() {
                       <ThemedText style={[styles.contactEmail, { color: theme.textMuted }]}>
                         {contact.couple.email}
                       </ThemedText>
+                      {contact.couple.weddingDate && (
+                        <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: 2 }}>
+                          <Feather name="calendar" size={12} color={theme.textMuted} />
+                          <ThemedText style={[styles.contactEmail, { color: theme.textMuted }]}>
+                            {new Date(contact.couple.weddingDate).toLocaleDateString("nb-NO", { day: "numeric", month: "long", year: "numeric" })}
+                          </ThemedText>
+                        </View>
+                      )}
                     </View>
                     {selectedContact?.couple.id === contact.couple.id ? (
                       <Feather name="check-circle" size={20} color={Colors.dark.accent} />
@@ -440,27 +449,64 @@ export default function OfferCreateScreen() {
 
         <Animated.View entering={FadeInDown.duration(300).delay(200)} style={styles.formSection}>
           <View style={[styles.formCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-            <ThemedText style={styles.formTitle}>Produkter og tjenester</ThemedText>
+            <View style={{ marginBottom: Spacing.md }}>
+              <ThemedText style={styles.formTitle}>Produkter og tjenester</ThemedText>
+              {selectedContact?.couple.weddingDate && (
+                <View style={[styles.dateInfoBadge, { backgroundColor: Colors.dark.accent + "15", borderColor: Colors.dark.accent + "30" }]}>
+                  <Feather name="calendar" size={14} color={Colors.dark.accent} />
+                  <ThemedText style={[styles.dateInfoText, { color: Colors.dark.accent }]}>
+                    Bryllup: {new Date(selectedContact.couple.weddingDate).toLocaleDateString("nb-NO", { day: "numeric", month: "long", year: "numeric" })}
+                  </ThemedText>
+                </View>
+              )}
+            </View>
 
             {productsLoading ? (
               <ActivityIndicator size="small" color={Colors.dark.accent} />
             ) : products.length > 0 ? (
               <View style={styles.productList}>
-                {products.map((product) => (
-                  <Pressable
-                    key={product.id}
-                    onPress={() => addProductToOffer(product)}
-                    style={[styles.productItem, { backgroundColor: theme.backgroundRoot, borderColor: theme.border }]}
-                  >
-                    <View style={styles.productInfo}>
-                      <ThemedText style={styles.productTitle}>{product.title}</ThemedText>
-                      <ThemedText style={[styles.productPrice, { color: Colors.dark.accent }]}>
-                        {formatPrice(product.unitPrice)} / {product.unitType}
-                      </ThemedText>
-                    </View>
-                    <Feather name="plus-circle" size={20} color={Colors.dark.accent} />
-                  </Pressable>
-                ))}
+                {products.map((product) => {
+                  // Show total available (server will check date-specific availability)
+                  const totalAvailable = product.trackInventory 
+                    ? (product.availableQuantity || 0) - (product.bookingBuffer || 0)
+                    : null;
+                  
+                  return (
+                    <Pressable
+                      key={product.id}
+                      onPress={() => addProductToOffer(product)}
+                      style={[styles.productItem, { backgroundColor: theme.backgroundRoot, borderColor: theme.border }]}
+                    >
+                      <View style={styles.productInfo}>
+                        <View style={{ flexDirection: "row", alignItems: "center", gap: Spacing.xs }}>
+                          <ThemedText style={styles.productTitle}>{product.title}</ThemedText>
+                          {product.trackInventory && totalAvailable !== null && (
+                            <View style={[styles.inventoryBadge, {
+                              backgroundColor: totalAvailable > 10 ? "#4CAF50" + "20" : totalAvailable > 0 ? "#FF9800" + "20" : "#F44336" + "20"
+                            }]}>
+                              <Feather 
+                                name={totalAvailable > 10 ? "check-circle" : totalAvailable > 0 ? "alert-circle" : "x-circle"} 
+                                size={12} 
+                                color={totalAvailable > 10 ? "#4CAF50" : totalAvailable > 0 ? "#FF9800" : "#F44336"}
+                              />
+                              <ThemedText style={{
+                                fontSize: 11,
+                                marginLeft: 4,
+                                color: totalAvailable > 10 ? "#4CAF50" : totalAvailable > 0 ? "#FF9800" : "#F44336"
+                              }}>
+                                {totalAvailable} totalt
+                              </ThemedText>
+                            </View>
+                          )}
+                        </View>
+                        <ThemedText style={[styles.productPrice, { color: Colors.dark.accent }]}>
+                          {formatPrice(product.unitPrice)} / {product.unitType}
+                        </ThemedText>
+                      </View>
+                      <Feather name="plus-circle" size={20} color={Colors.dark.accent} />
+                    </Pressable>
+                  );
+                })}
               </View>
             ) : null}
 
@@ -799,6 +845,13 @@ const styles = StyleSheet.create({
   submitButton: {
     marginTop: Spacing.md,
   },
+  inventoryBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: Spacing.xs,
+    paddingVertical: 2,
+    borderRadius: BorderRadius.sm,
+  },
   deleteBtn: {
     flexDirection: "row",
     alignItems: "center",
@@ -813,6 +866,21 @@ const styles = StyleSheet.create({
   deleteBtnText: {
     color: "#F44336",
     fontSize: 16,
+    fontWeight: "600",
+  },
+  dateInfoBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.xs,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: Spacing.xs,
+    borderRadius: BorderRadius.sm,
+    borderWidth: 1,
+    marginTop: Spacing.xs,
+    alignSelf: "flex-start",
+  },
+  dateInfoText: {
+    fontSize: 12,
     fontWeight: "600",
   },
 });

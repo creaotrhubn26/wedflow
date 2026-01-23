@@ -112,13 +112,21 @@ export interface BudgetCategory {
 export interface Vendor {
   id: string;
   name: string;
-  category: "photographer" | "videographer" | "dj" | "florist" | "caterer" | "venue";
+  businessName?: string;
+  categoryId: string | null;
+  categoryName?: string;
   location: string;
   country: "Norway" | "Sweden" | "Denmark";
   rating: number;
   priceRange: string;
   description: string;
   saved: boolean;
+  phone?: string | null;
+  website?: string | null;
+  imageUrl?: string | null;
+  isFeatured: boolean;
+  isPrioritized: boolean;
+  hasReviewBadge: boolean;
 }
 
 export interface AITimeSlot {

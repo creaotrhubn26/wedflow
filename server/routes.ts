@@ -55,15 +55,25 @@ function verifyPassword(password: string, hash: string): boolean {
 
 const DEFAULT_CATEGORIES = [
   { name: "Fotograf", icon: "camera", description: "Bryllupsfotografer" },
-  { name: "Videograf", icon: "video", description: "Bryllupsvideofilmer" },
+  { name: "Videograf", icon: "film", description: "Bryllupsvideofilmer" },
   { name: "Blomster", icon: "flower", description: "Blomsterdekoratører" },
-  { name: "Catering", icon: "utensils", description: "Mat og drikke" },
+  { name: "Catering", icon: "coffee", description: "Mat og drikke" },
   { name: "Musikk", icon: "music", description: "Band, DJ og musikere" },
-  { name: "Venue", icon: "home", description: "Bryllupslokaler" },
+  { name: "Venue", icon: "venue", description: "Bryllupslokaler" },
   { name: "Kake", icon: "cake", description: "Bryllupskaker" },
   { name: "Planlegger", icon: "clipboard", description: "Bryllupsplanleggere" },
   { name: "Hår & Makeup", icon: "scissors", description: "Styling og sminke" },
   { name: "Transport", icon: "car", description: "Bryllupstransport" },
+  { name: "Invitasjoner", icon: "mail", description: "Invitasjoner og trykkeri" },
+  { name: "Underholdning", icon: "sparkles", description: "Artister og show" },
+  { name: "Dekorasjon", icon: "star", description: "Dekorasjon og pynt" },
+  { name: "Konfektyrer", icon: "gift", description: "Sjokolade og godteri" },
+  { name: "Bar & Drikke", icon: "cocktail", description: "Bartjenester og drikke" },
+  { name: "Fotoboks", icon: "aperture", description: "Fotoboks og moro" },
+  { name: "Ringer", icon: "diamond", description: "Vielsesringer og smykker" },
+  { name: "Drakt & Dress", icon: "suit", description: "Brudgom antrekk" },
+  { name: "Overnatting", icon: "bed", description: "Hotell og overnatting" },
+  { name: "Husdyr", icon: "heart", description: "Kjæledyr på bryllupet" },
 ];
 
 const DEFAULT_INSPIRATION_CATEGORIES = [
@@ -705,6 +715,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         id: vendors.id,
         businessName: vendors.businessName,
         categoryId: vendors.categoryId,
+        categoryName: vendorCategories.name,
         description: vendors.description,
         location: vendors.location,
         phone: vendors.phone,
@@ -715,8 +726,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         tierId: vendorSubscriptions.tierId,
         hasPrioritizedSearch: subscriptionTiers.hasPrioritizedSearch,
         canHighlightProfile: subscriptionTiers.canHighlightProfile,
+        hasReviewBadge: subscriptionTiers.hasReviewBadge,
       })
         .from(vendors)
+        .leftJoin(vendorCategories, eq(vendorCategories.id, vendors.categoryId))
         .leftJoin(vendorSubscriptions, 
           and(
             eq(vendorSubscriptions.vendorId, vendors.id),
@@ -750,6 +763,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         id: v.id,
         businessName: v.businessName,
         categoryId: v.categoryId,
+        categoryName: v.categoryName,
         description: v.description,
         location: v.location,
         phone: v.phone,
@@ -758,6 +772,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         imageUrl: v.imageUrl,
         isFeatured: v.canHighlightProfile || false,
         isPrioritized: v.hasPrioritizedSearch || false,
+        hasReviewBadge: v.hasReviewBadge || false,
       }));
 
       res.json(response);
@@ -786,6 +801,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         imageUrl: vendors.imageUrl,
         hasPrioritizedSearch: subscriptionTiers.hasPrioritizedSearch,
         canHighlightProfile: subscriptionTiers.canHighlightProfile,
+        hasReviewBadge: subscriptionTiers.hasReviewBadge,
       })
         .from(vendors)
         .leftJoin(vendorSubscriptions, 
@@ -873,6 +889,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ...v,
         isFeatured: v.canHighlightProfile || false,
         isPrioritized: v.hasPrioritizedSearch || false,
+        hasReviewBadge: v.hasReviewBadge || false,
       }));
 
       res.json(response);
@@ -1189,6 +1206,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const vendorId = await checkVendorAuth(req, res);
     if (!vendorId) return;
 
+    // Check subscription access
+    if (!(await checkVendorSubscriptionAccess(vendorId, res))) return;
+
     try {
       const { businessName, organizationNumber, description, location, phone, website, priceRange, googleReviewUrl } = req.body;
 
@@ -1253,6 +1273,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/vendor/category-details", async (req: Request, res: Response) => {
     const vendorId = await checkVendorAuth(req, res);
     if (!vendorId) return;
+
+    // Check subscription access
+    if (!(await checkVendorSubscriptionAccess(vendorId, res))) return;
 
     try {
       const updateData = { ...req.body, updatedAt: new Date() };
@@ -1366,6 +1389,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const vendorId = await checkVendorAuth(req, res);
     if (!vendorId) return;
 
+    // Check subscription access
+    if (!(await checkVendorSubscriptionAccess(vendorId, res))) return;
+
     try {
       const { id } = req.params;
       const { items, ...deliveryData } = req.body;
@@ -1432,6 +1458,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete("/api/vendor/deliveries/:id", async (req: Request, res: Response) => {
     const vendorId = await checkVendorAuth(req, res);
     if (!vendorId) return;
+
+    // Check subscription access
+    if (!(await checkVendorSubscriptionAccess(vendorId, res))) return;
 
     try {
       const { id } = req.params;
@@ -1627,6 +1656,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const vendorId = await checkVendorAuth(req, res);
     if (!vendorId) return;
 
+    // Check subscription access
+    if (!(await checkVendorSubscriptionAccess(vendorId, res))) return;
+
     try {
       const { id } = req.params;
       const { media, ...inspirationData } = req.body;
@@ -1702,6 +1734,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete("/api/vendor/inspirations/:id", async (req: Request, res: Response) => {
     const vendorId = await checkVendorAuth(req, res);
     if (!vendorId) return;
+
+    // Check subscription access
+    if (!(await checkVendorSubscriptionAccess(vendorId, res))) return;
 
     try {
       const { id } = req.params;
@@ -2020,6 +2055,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/vendor/inquiries/:id/status", async (req: Request, res: Response) => {
     const vendorId = await checkVendorAuth(req, res);
     if (!vendorId) return;
+
+    // Check subscription access
+    if (!(await checkVendorSubscriptionAccess(vendorId, res))) return;
 
     try {
       const { id } = req.params;
@@ -2469,6 +2507,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const vendorId = await checkVendorAuth(req, res);
     if (!vendorId) return;
 
+    // Check subscription access
+    if (!(await checkVendorSubscriptionAccess(vendorId, res))) return;
+
     try {
       const { conversationId, body, attachmentUrl, attachmentType } = req.body;
 
@@ -2570,6 +2611,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/vendor/admin/messages", async (req: Request, res: Response) => {
     const vendorId = await checkVendorAuth(req, res);
     if (!vendorId) return;
+
+    // Check subscription access  
+    if (!(await checkVendorSubscriptionAccess(vendorId, res))) return;
 
     try {
       const { body, attachmentUrl, attachmentType } = req.body as any;
@@ -2785,6 +2829,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const vendorId = await checkVendorAuth(req, res);
     if (!vendorId) return;
 
+    // Check subscription access for messaging
+    if (!(await checkVendorSubscriptionAccess(vendorId, res))) return;
+
     try {
       const { id } = req.params;
 
@@ -2908,6 +2955,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const vendorId = await checkVendorAuth(req, res);
     if (!vendorId) return;
 
+    // Check subscription access
+    if (!(await checkVendorSubscriptionAccess(vendorId, res))) return;
+
     try {
       const { id } = req.params;
 
@@ -2936,6 +2986,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/vendor/messages/:id", async (req: Request, res: Response) => {
     const vendorId = await checkVendorAuth(req, res);
     if (!vendorId) return;
+
+    // Check subscription access
+    if (!(await checkVendorSubscriptionAccess(vendorId, res))) return;
 
     try {
       const { id } = req.params;
@@ -2978,6 +3031,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete("/api/vendor/conversations/:id", async (req: Request, res: Response) => {
     const vendorId = await checkVendorAuth(req, res);
     if (!vendorId) return;
+
+    // Check subscription access
+    if (!(await checkVendorSubscriptionAccess(vendorId, res))) return;
 
     try {
       const { id } = req.params;
@@ -3440,6 +3496,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const vendorId = await checkVendorAuth(req, res);
     if (!vendorId) return;
 
+    // Check subscription access
+    if (!(await checkVendorSubscriptionAccess(vendorId, res))) return;
+
     try {
       const { id } = req.params;
       const { reminderType, scheduledFor } = req.body;
@@ -3546,6 +3605,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const vendorId = await checkVendorAuth(req, res);
     if (!vendorId) return;
 
+    // Check subscription access
+    if (!(await checkVendorSubscriptionAccess(vendorId, res))) return;
+
     try {
       const { id } = req.params;
       
@@ -3625,6 +3687,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const vendorId = await checkVendorAuth(req, res);
     if (!vendorId) return;
 
+    // Check subscription access
+    if (!(await checkVendorSubscriptionAccess(vendorId, res))) return;
+
     try {
       const { id } = req.params;
       const updates = req.body;
@@ -3656,6 +3721,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete("/api/vendor/products/:id", async (req: Request, res: Response) => {
     const vendorId = await checkVendorAuth(req, res);
     if (!vendorId) return;
+
+    // Check subscription access
+    if (!(await checkVendorSubscriptionAccess(vendorId, res))) return;
 
     try {
       const { id } = req.params;
@@ -3793,6 +3861,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const vendorId = await checkVendorAuth(req, res);
     if (!vendorId) return;
 
+    // Check subscription access
+    if (!(await checkVendorSubscriptionAccess(vendorId, res))) return;
+
     try {
       const { id } = req.params;
       const updates = req.body;
@@ -3825,6 +3896,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete("/api/vendor/offers/:id", async (req: Request, res: Response) => {
     const vendorId = await checkVendorAuth(req, res);
     if (!vendorId) return;
+
+    // Check subscription access
+    if (!(await checkVendorSubscriptionAccess(vendorId, res))) return;
 
     try {
       const { id } = req.params;
@@ -4122,9 +4196,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         email: coupleProfiles.email,
       }).from(coupleProfiles).limit(50);
       
+      // Map the response to match frontend expectations
+      const mappedUsers = coupleData.map(user => ({
+        id: user.id,
+        name: user.name || "Ukjent brudepar",
+        email: user.email,
+      }));
+      
       res.json({
         role: "couple",
-        users: coupleData,
+        users: mappedUsers,
       });
     } catch (error) {
       console.error("Error fetching couple list:", error);
@@ -4138,17 +4219,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const vendorData = await db.select({
         id: vendors.id,
-        name: vendors.companyName,
+        name: vendors.businessName,
         email: vendors.email,
-        category: vendors.category,
+        categoryId: vendors.categoryId,
       })
         .from(vendors)
         .where(eq(vendors.status, "approved"))
         .limit(50);
       
+      // Map the response to match frontend expectations
+      const mappedUsers = vendorData.map(user => ({
+        id: user.id,
+        name: user.name || "Ukjent leverandør",
+        email: user.email,
+        categoryId: user.categoryId,
+      }));
+      
       res.json({
         role: "vendor",
-        users: vendorData,
+        users: mappedUsers,
       });
     } catch (error) {
       console.error("Error fetching vendor list:", error);
@@ -6422,7 +6511,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         actorId: vendorId,
         actorName: vendor?.businessName || "Leverandør",
         action: "schedule_suggestion",
-        description: `Foreslo endring: ${message.substring(0, 50)}${message.length > 50 ? '...' : ''}`,
+        entityType: "schedule_suggestion",
+        entityId: vendorId,
+        newValue: JSON.stringify({ message: message.substring(0, 100) }),
       });
 
       res.json({ success: true, message: "Forslag sendt til brudeparet" });
@@ -6795,6 +6886,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const vendorId = await checkVendorAuth(req, res);
     if (!vendorId) return;
 
+    // Check subscription access
+    if (!(await checkVendorSubscriptionAccess(vendorId, res))) return;
+
     try {
       const { reviewId } = req.params;
       const { body } = req.body;
@@ -6888,6 +6982,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const vendorId = await checkVendorAuth(req, res);
     if (!vendorId) return;
 
+    // Check subscription access
+    if (!(await checkVendorSubscriptionAccess(vendorId, res))) return;
+
     try {
       const { contractId } = req.params;
 
@@ -6957,6 +7054,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     const vendorId = await checkVendorAuth(req, res);
     if (!vendorId) return;
 
+    // Check subscription access
+    if (!(await checkVendorSubscriptionAccess(vendorId, res))) return;
+
     try {
       const { googleReviewUrl } = req.body;
 
@@ -7009,6 +7109,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/vendor/feedback", async (req: Request, res: Response) => {
     const vendorId = await checkVendorAuth(req, res);
     if (!vendorId) return;
+
+    // Check subscription access
+    if (!(await checkVendorSubscriptionAccess(vendorId, res))) return;
 
     try {
       const { category, subject, message } = req.body;
@@ -7137,6 +7240,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/vendor/contracts/:id/complete", async (req: Request, res: Response) => {
     const vendorId = await checkVendorAuth(req, res);
     if (!vendorId) return;
+
+    // Check subscription access
+    if (!(await checkVendorSubscriptionAccess(vendorId, res))) return;
 
     try {
       const { id } = req.params;

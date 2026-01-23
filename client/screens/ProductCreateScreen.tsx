@@ -6,6 +6,7 @@ import {
   Pressable,
   ActivityIndicator,
   Alert,
+  Switch,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
@@ -55,6 +56,9 @@ export default function ProductCreateScreen({ navigation, route }: Props) {
   const [leadTimeDays, setLeadTimeDays] = useState("");
   const [minQuantity, setMinQuantity] = useState("1");
   const [categoryTag, setCategoryTag] = useState("");
+  const [trackInventory, setTrackInventory] = useState(false);
+  const [availableQuantity, setAvailableQuantity] = useState("");
+  const [bookingBuffer, setBookingBuffer] = useState("0");
 
   // Pre-fill form when editing
   useEffect(() => {
@@ -66,6 +70,9 @@ export default function ProductCreateScreen({ navigation, route }: Props) {
       setLeadTimeDays(editingProduct.leadTimeDays ? String(editingProduct.leadTimeDays) : "");
       setMinQuantity(editingProduct.minQuantity ? String(editingProduct.minQuantity) : "1");
       setCategoryTag(editingProduct.categoryTag || "");
+      setTrackInventory(editingProduct.trackInventory || false);
+      setAvailableQuantity(editingProduct.availableQuantity ? String(editingProduct.availableQuantity) : "");
+      setBookingBuffer(editingProduct.bookingBuffer ? String(editingProduct.bookingBuffer) : "0");
     }
   }, [editingProduct]);
 
@@ -95,6 +102,9 @@ export default function ProductCreateScreen({ navigation, route }: Props) {
           leadTimeDays: leadTimeDays ? parseInt(leadTimeDays) : undefined,
           minQuantity: minQuantity ? parseInt(minQuantity) : 1,
           categoryTag: categoryTag || undefined,
+          trackInventory,
+          availableQuantity: trackInventory && availableQuantity ? parseInt(availableQuantity) : undefined,
+          bookingBuffer: trackInventory && bookingBuffer ? parseInt(bookingBuffer) : 0,
         }),
       });
 
@@ -336,7 +346,105 @@ export default function ProductCreateScreen({ navigation, route }: Props) {
                 onChangeText={setCategoryTag}
               />
             </View>
+          </View>
 
+          {/* Inventory Tracking Section */}
+          <View style={[styles.formCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border, marginTop: Spacing.lg }]}>
+            <View style={styles.sectionHeader}>
+              <View style={[styles.sectionIconCircle, { backgroundColor: theme.accent + "15" }]}>
+                <Feather name="package" size={16} color={theme.accent} />
+              </View>
+              <ThemedText style={[styles.formTitle, { color: theme.text }]}>Lagerstyring</ThemedText>
+            </View>
+
+            <View style={[styles.switchRow, { borderBottomColor: theme.border }]}>
+              <View style={styles.switchContent}>
+                <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Aktiver lagerstyring</ThemedText>
+                <ThemedText style={[styles.switchDescription, { color: theme.textMuted }]}>
+                  Hold oversikt over tilgjengelig antall (f.eks. 200 stoler)
+                </ThemedText>
+              </View>
+              <Switch
+                value={trackInventory}
+                onValueChange={(value) => {
+                  setTrackInventory(value);
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                }}
+                trackColor={{ false: theme.border, true: theme.accent }}
+                thumbColor="#FFFFFF"
+              />
+            </View>
+
+            {trackInventory && (
+              <Animated.View entering={FadeInDown.duration(300)}>
+                <View style={styles.rowInputs}>
+                  <View style={[styles.inputGroup, { flex: 1 }]}>
+                    <ThemedText style={[styles.inputLabel, { color: theme.textMuted }]}>
+                      Totalt tilgjengelig
+                    </ThemedText>
+                    <TextInput
+                      testID="input-available-quantity"
+                      style={[
+                        styles.textInput,
+                        { backgroundColor: theme.backgroundRoot, color: theme.text, borderColor: theme.border },
+                      ]}
+                      placeholder="200"
+                      placeholderTextColor={theme.textMuted}
+                      value={availableQuantity}
+                      onChangeText={setAvailableQuantity}
+                      keyboardType="numeric"
+                    />
+                  </View>
+
+                  <View style={[styles.inputGroup, { flex: 1 }]}>
+                    <ThemedText style={[styles.inputLabel, { color: theme.textMuted }]}>
+                      Sikkerhetsbuffer
+                    </ThemedText>
+                    <TextInput
+                      testID="input-booking-buffer"
+                      style={[
+                        styles.textInput,
+                        { backgroundColor: theme.backgroundRoot, color: theme.text, borderColor: theme.border },
+                      ]}
+                      placeholder="10"
+                      placeholderTextColor={theme.textMuted}
+                      value={bookingBuffer}
+                      onChangeText={setBookingBuffer}
+                      keyboardType="numeric"
+                    />
+                  </View>
+                </View>
+
+                <View style={[styles.infoBox, { backgroundColor: theme.accent + "12", borderColor: theme.accent + "30" }]}>
+                  <Feather name="info" size={16} color={theme.accent} />
+                  <View style={{ flex: 1, marginLeft: Spacing.sm }}>
+                    <ThemedText style={[styles.infoBoxText, { color: theme.text }]}>
+                      {availableQuantity && parseInt(availableQuantity) > 0 ? (
+                        <>
+                          <ThemedText style={{ fontWeight: "600" }}>
+                            {parseInt(availableQuantity) - parseInt(bookingBuffer || "0")}
+                          </ThemedText>
+                          {" "}tilgjengelig for booking
+                          {editingProduct?.reservedQuantity > 0 && (
+                            <ThemedText style={{ color: theme.textMuted }}>
+                              {" "}({editingProduct.reservedQuantity} reservert)
+                            </ThemedText>
+                          )}
+                        </>
+                      ) : (
+                        "Angi totalt antall og sikkerhetsbuffer"
+                      )}
+                    </ThemedText>
+                    <ThemedText style={[styles.infoBoxSubtext, { color: theme.textMuted }]}>
+                      Sikkerhetsbuffer holdes alltid tilbake
+                    </ThemedText>
+                  </View>
+                </View>
+              </Animated.View>
+            )}
+          </View>
+
+          <View style={[styles.formCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border, marginTop: Spacing.lg }]}>
             <View style={[styles.pricePreview, { backgroundColor: theme.accent + "12" }]}>
               <View style={[styles.pricePreviewIcon, { backgroundColor: theme.accent }]}>
                 <Feather name="tag" size={16} color="#FFFFFF" />
@@ -564,5 +672,41 @@ const styles = StyleSheet.create({
   deleteBtnText: {
     fontSize: 15,
     fontWeight: "600",
+  },
+  switchRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingBottom: Spacing.md,
+    marginBottom: Spacing.md,
+    borderBottomWidth: 1,
+  },
+  switchContent: {
+    flex: 1,
+    marginRight: Spacing.md,
+  },
+  switchLabel: {
+    fontSize: 15,
+    fontWeight: "600",
+    marginBottom: 2,
+  },
+  switchDescription: {
+    fontSize: 13,
+    lineHeight: 18,
+  },
+  infoBox: {
+    flexDirection: "row",
+    padding: Spacing.md,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    marginTop: Spacing.md,
+  },
+  infoBoxText: {
+    fontSize: 14,
+    lineHeight: 20,
+  },
+  infoBoxSubtext: {
+    fontSize: 12,
+    marginTop: 2,
   },
 });
