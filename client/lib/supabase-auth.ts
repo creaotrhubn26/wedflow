@@ -5,7 +5,18 @@ import * as AuthSession from "expo-auth-session";
 const SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL || "";
 const SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY || "";
 
-export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// Use singleton pattern to prevent multiple client instances
+let supabaseInstance: ReturnType<typeof createClient> | null = null;
+
+export function getSupabaseClient() {
+  if (!supabaseInstance) {
+    supabaseInstance = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+  return supabaseInstance;
+}
+
+// Export default instance for immediate use
+export const supabase = getSupabaseClient();
 
 // Configure redirect URL for OAuth
 WebBrowser.maybeCompleteAuthSession();
