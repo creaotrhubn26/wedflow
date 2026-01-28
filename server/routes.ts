@@ -5626,12 +5626,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "userId is required" });
       }
 
+      console.log("[Impersonate] Looking up couple with ID:", userId);
+
       const couple = await db.select()
         .from(coupleProfiles)
         .where(eq(coupleProfiles.id, userId))
         .limit(1);
 
+      console.log("[Impersonate] Query result:", couple?.length ? "Found" : "Not found");
+
       if (!couple || couple.length === 0) {
+        console.warn("[Impersonate] Couple not found for ID:", userId);
         return res.status(404).json({ error: "Brudepar ikke funnet" });
       }
 
@@ -5644,13 +5649,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
       });
 
+      console.log("[Impersonate] Session created for couple:", userId);
+
       res.json({
         sessionToken,
         coupleId: userId,
         coupleData: couple[0],
       });
     } catch (error) {
-      console.error("Error impersonating couple:", error);
+      console.error("[Impersonate] Error:", error instanceof Error ? error.message : String(error));
+      console.error("[Impersonate] Full error:", error);
       res.status(500).json({ error: "Kunne ikke logge inn som brudepar" });
     }
   });
@@ -5664,12 +5672,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: "userId is required" });
       }
 
+      console.log("[Impersonate Vendor] Looking up vendor with ID:", userId);
+
       const vendor = await db.select()
         .from(vendors)
         .where(eq(vendors.id, userId))
         .limit(1);
 
+      console.log("[Impersonate Vendor] Query result:", vendor?.length ? "Found" : "Not found");
+
       if (!vendor || vendor.length === 0) {
+        console.warn("[Impersonate Vendor] Vendor not found for ID:", userId);
         return res.status(404).json({ error: "Leverandør ikke funnet" });
       }
 
@@ -5683,13 +5696,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
       });
 
+      console.log("[Impersonate Vendor] Session created for vendor:", userId);
+
       res.json({
         sessionToken,
         vendorId: userId,
         vendorData: vendor[0],
       });
     } catch (error) {
-      console.error("Error impersonating vendor:", error);
+      console.error("[Impersonate Vendor] Error:", error instanceof Error ? error.message : String(error));
+      console.error("[Impersonate Vendor] Full error:", error);
       res.status(500).json({ error: "Kunne ikke logge inn som leverandør" });
     }
   });
