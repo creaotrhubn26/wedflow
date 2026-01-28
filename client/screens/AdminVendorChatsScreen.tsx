@@ -78,12 +78,16 @@ export default function AdminVendorChatsScreen({ route, navigation }: Props) {
       const res = await fetch(url, {
         headers: { Authorization: `Bearer ${adminKey}` },
       });
-      if (!res.ok) throw new Error("Kunne ikke hente samtaler");
+      if (!res.ok) {
+        console.error(`API error: ${res.status} ${res.statusText}`);
+        setConversations([]);
+        return;
+      }
       const data = await res.json();
-      setConversations(data);
+      setConversations(Array.isArray(data) ? data : []);
     } catch (e) {
-      console.error(e);
-      Alert.alert("Feil", (e as Error).message);
+      console.error("Error fetching conversations:", e);
+      setConversations([]);
     } finally {
       setLoading(false);
       setRefreshing(false);
