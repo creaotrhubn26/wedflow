@@ -5666,7 +5666,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
           .where(eq(coupleProfiles.id, userId))
           .limit(1);
       } catch (dbError) {
-        console.error("[Impersonate] Database query error:", dbError instanceof Error ? dbError.message : String(dbError));
+        console.error("[Impersonate] Database query error:", dbError);
+        if (dbError instanceof Error) {
+          console.error("[Impersonate] Error message:", dbError.message);
+          console.error("[Impersonate] Error stack:", dbError.stack);
+        }
         return res.status(503).json({ error: "Databasefeil ved oppslag" });
       }
 
