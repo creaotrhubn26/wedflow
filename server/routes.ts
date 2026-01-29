@@ -2192,17 +2192,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Couple login/register (email + password)
   app.post("/api/couples/login", async (req: Request, res: Response) => {
     try {
+      console.log("[CoupleLogin] Login attempt for email:", req.body.email);
       const validation = coupleLoginSchema.safeParse(req.body);
       if (!validation.success) {
+        console.log("[CoupleLogin] Validation failed:", validation.error.errors[0].message);
         return res.status(400).json({ error: validation.error.errors[0].message });
       }
 
       const { email, displayName, password } = validation.data;
       const { selectedTraditions } = req.body; // Optional traditions array
 
+      console.log("[CoupleLogin] Starting lookup for email:", email);
+
       // Find or create couple profile
       let [couple] = await db.select().from(coupleProfiles).where(eq(coupleProfiles.email, email));
       let isNewRegistration = false;
+
+      console.log("[CoupleLogin] Lookup result:", couple ? "Found" : "Not found");
 
       if (!couple) {
         // New registration - hash password
@@ -2271,7 +2277,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json({ couple, sessionToken: token });
     } catch (error) {
-      console.error("Couple login error:", error);
+      console.error("[CoupleLogin] Error:", error);
+      if (error instanceof Error) {
+        console.error("[CoupleLogin] Error message:", error.message);
+        console.error("[CoupleLogin] Error stack:", error.stack);
+      }
       res.status(500).json({ error: "Kunne ikke logge inn" });
     }
   });
