@@ -2205,7 +2205,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log("[CoupleLogin] Starting lookup for email:", email);
 
       // Find or create couple profile
-      let [couple] = await db.select().from(coupleProfiles).where(eq(coupleProfiles.email, email));
+      const coupleResults = await db.select({
+        id: coupleProfiles.id,
+        email: coupleProfiles.email,
+        displayName: coupleProfiles.displayName,
+        password: coupleProfiles.password,
+        partnerEmail: coupleProfiles.partnerEmail,
+        weddingDate: coupleProfiles.weddingDate,
+        selectedTraditions: coupleProfiles.selectedTraditions,
+        lastActiveAt: coupleProfiles.lastActiveAt,
+        createdAt: coupleProfiles.createdAt,
+        updatedAt: coupleProfiles.updatedAt,
+      })
+        .from(coupleProfiles)
+        .where(eq(coupleProfiles.email, email));
+      
+      let couple = coupleResults[0] || null;
       let isNewRegistration = false;
 
       console.log("[CoupleLogin] Lookup result:", couple ? "Found" : "Not found");
