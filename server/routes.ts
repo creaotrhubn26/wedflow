@@ -224,6 +224,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
     }
   }
+
+  // Diagnostic endpoint to check server health and environment
+  app.get("/api/diagnostics", (req: Request, res: Response) => {
+    const diagnostics = {
+      timestamp: new Date().toISOString(),
+      environment: {
+        NODE_ENV: process.env.NODE_ENV,
+        HAS_DATABASE_URL: !!process.env.DATABASE_URL,
+        HAS_ADMIN_SECRET: !!process.env.ADMIN_SECRET,
+        ADMIN_SECRET_VALUE: process.env.ADMIN_SECRET || "NOT SET",
+      },
+      node_version: process.version,
+    };
+    res.json(diagnostics);
+  });
+
   app.get("/api/weather", async (req: Request, res: Response) => {
     try {
       const lat = parseFloat(req.query.lat as string);
