@@ -5651,7 +5651,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       let couple: any[];
       try {
-        couple = await db.select()
+        couple = await db.select({
+          id: coupleProfiles.id,
+          email: coupleProfiles.email,
+          displayName: coupleProfiles.displayName,
+          partnerEmail: coupleProfiles.partnerEmail,
+          weddingDate: coupleProfiles.weddingDate,
+          selectedTraditions: coupleProfiles.selectedTraditions,
+          lastActiveAt: coupleProfiles.lastActiveAt,
+          createdAt: coupleProfiles.createdAt,
+          updatedAt: coupleProfiles.updatedAt,
+        })
           .from(coupleProfiles)
           .where(eq(coupleProfiles.id, userId))
           .limit(1);
@@ -5714,7 +5724,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       let vendor: any[];
       try {
-        vendor = await db.select()
+        vendor = await db.select({
+          id: vendors.id,
+          businessName: vendors.businessName,
+          email: vendors.email,
+          categoryId: vendors.categoryId,
+          status: vendors.status,
+          createdAt: vendors.createdAt,
+          updatedAt: vendors.updatedAt,
+        })
           .from(vendors)
           .where(eq(vendors.id, userId))
           .limit(1);
