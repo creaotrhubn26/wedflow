@@ -50,6 +50,10 @@ __export(schema_exports, {
   createBudgetItemSchema: () => createBudgetItemSchema,
   createChecklistTaskSchema: () => createChecklistTaskSchema,
   createCoordinatorInvitationSchema: () => createCoordinatorInvitationSchema,
+  createCreatorhubBookingSchema: () => createCreatorhubBookingSchema,
+  createCreatorhubCrmNoteSchema: () => createCreatorhubCrmNoteSchema,
+  createCreatorhubInvitationSchema: () => createCreatorhubInvitationSchema,
+  createCreatorhubProjectSchema: () => createCreatorhubProjectSchema,
   createDeliverySchema: () => createDeliverySchema,
   createDressAppointmentSchema: () => createDressAppointmentSchema,
   createDressFavoriteSchema: () => createDressFavoriteSchema,
@@ -63,6 +67,13 @@ __export(schema_exports, {
   createSpeechSchema: () => createSpeechSchema,
   createVendorAvailabilitySchema: () => createVendorAvailabilitySchema,
   createVendorProductSchema: () => createVendorProductSchema,
+  creatorhubAnalyticsEvents: () => creatorhubAnalyticsEvents,
+  creatorhubApiAuditLog: () => creatorhubApiAuditLog,
+  creatorhubBookings: () => creatorhubBookings,
+  creatorhubCrmNotes: () => creatorhubCrmNotes,
+  creatorhubInvitations: () => creatorhubInvitations,
+  creatorhubProjects: () => creatorhubProjects,
+  creatorhubUsers: () => creatorhubUsers,
   deliveries: () => deliveries,
   deliveryItems: () => deliveryItems,
   faqItems: () => faqItems,
@@ -157,7 +168,7 @@ import { sql } from "drizzle-orm";
 import { pgTable, text, varchar, timestamp, integer, boolean, date, index, uniqueIndex } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
-var users, insertUserSchema, vendorCategories, vendors, vendorSessions, insertVendorCategorySchema, insertVendorSchema, vendorRegistrationSchema, vendorFeatures, vendorInspirationCategories, vendorCategoryDetails, deliveries, deliveryItems, insertDeliverySchema, insertDeliveryItemSchema, createDeliverySchema, inspirationCategories, inspirations, inspirationMedia, insertInspirationCategorySchema, insertInspirationSchema, insertInspirationMediaSchema, createInspirationSchema, inspirationInquiries, createInquirySchema, checklistTasks, insertChecklistTaskSchema, createChecklistTaskSchema, coupleProfiles, coupleSessions, coupleBudgetItems, coupleBudgetSettings, coupleDressAppointments, coupleDressFavorites, coupleDressTimeline, coupleImportantPeople, couplePhotoShots, createBudgetItemSchema, createDressAppointmentSchema, createDressFavoriteSchema, createImportantPersonSchema, createPhotoShotSchema, conversations, messages, adminConversations, adminMessages, sendAdminMessageSchema, insertCoupleProfileSchema, coupleLoginSchema, sendMessageSchema, reminders, insertReminderSchema, createReminderSchema, vendorProducts, vendorAvailability, insertVendorAvailabilitySchema, insertVendorProductSchema, createVendorProductSchema, createVendorAvailabilitySchema, coupleVenueBookings, coupleVenueTimelines, vendorVenueBookings, vendorVenueAvailability, vendorVenueTimelines, insertCoupleVenueBookingSchema, insertCoupleVenueTimelineSchema, insertVendorVenueBookingSchema, insertVendorVenueAvailabilitySchema, insertVendorVenueTimelineSchema, vendorOffers, vendorOfferItems, insertVendorOfferSchema, insertVendorOfferItemSchema, createOfferSchema, speeches, insertSpeechSchema, createSpeechSchema, messageReminders, appSettings, insertAppSettingSchema, updateAppSettingSchema, whatsNewItems, insertWhatsNewSchema, updateWhatsNewSchema, scheduleEvents, insertScheduleEventSchema, coordinatorInvitations, insertCoordinatorInvitationSchema, createCoordinatorInvitationSchema, guestInvitations, insertGuestInvitationSchema, createGuestInvitationSchema, coupleVendorContracts, insertCoupleVendorContractSchema, notifications, insertNotificationSchema, activityLogs, weddingGuests, insertWeddingGuestSchema, updateWeddingGuestSchema, weddingTables, insertWeddingTableSchema, tableGuestAssignments, tableSeatingInvitations, insertTableSeatingInvitationSchema, appFeedback, insertAppFeedbackSchema, vendorReviews, insertVendorReviewSchema, vendorReviewResponses, insertVendorReviewResponseSchema, faqItems, insertFaqItemSchema, updateFaqItemSchema, videoGuides, insertVideoGuideSchema, updateVideoGuideSchema, subscriptionTiers, vendorSubscriptions, vendorUsageMetrics, vendorPayments, insertSubscriptionTierSchema, updateSubscriptionTierSchema, insertVendorSubscriptionSchema, insertVendorUsageSchema, insertVendorPaymentSchema, coupleHairMakeupAppointments, coupleHairMakeupLooks, coupleHairMakeupTimeline, coupleTransportBookings, coupleTransportTimeline, coupleFlowerAppointments, coupleFlowerSelections, coupleFlowerTimeline, coupleCateringTastings, coupleCateringMenu, coupleCateringDietaryNeeds, coupleCateringTimeline, coupleCakeTastings, coupleCakeDesigns, coupleCakeTimeline;
+var users, insertUserSchema, vendorCategories, vendors, vendorSessions, insertVendorCategorySchema, insertVendorSchema, vendorRegistrationSchema, vendorFeatures, vendorInspirationCategories, vendorCategoryDetails, deliveries, deliveryItems, insertDeliverySchema, insertDeliveryItemSchema, createDeliverySchema, inspirationCategories, inspirations, inspirationMedia, insertInspirationCategorySchema, insertInspirationSchema, insertInspirationMediaSchema, createInspirationSchema, inspirationInquiries, createInquirySchema, checklistTasks, insertChecklistTaskSchema, createChecklistTaskSchema, coupleProfiles, coupleSessions, coupleBudgetItems, coupleBudgetSettings, coupleDressAppointments, coupleDressFavorites, coupleDressTimeline, coupleImportantPeople, couplePhotoShots, createBudgetItemSchema, createDressAppointmentSchema, createDressFavoriteSchema, createImportantPersonSchema, createPhotoShotSchema, conversations, messages, adminConversations, adminMessages, sendAdminMessageSchema, insertCoupleProfileSchema, coupleLoginSchema, sendMessageSchema, reminders, insertReminderSchema, createReminderSchema, vendorProducts, vendorAvailability, insertVendorAvailabilitySchema, insertVendorProductSchema, createVendorProductSchema, createVendorAvailabilitySchema, coupleVenueBookings, coupleVenueTimelines, vendorVenueBookings, vendorVenueAvailability, vendorVenueTimelines, insertCoupleVenueBookingSchema, insertCoupleVenueTimelineSchema, insertVendorVenueBookingSchema, insertVendorVenueAvailabilitySchema, insertVendorVenueTimelineSchema, vendorOffers, vendorOfferItems, insertVendorOfferSchema, insertVendorOfferItemSchema, createOfferSchema, speeches, insertSpeechSchema, createSpeechSchema, messageReminders, appSettings, insertAppSettingSchema, updateAppSettingSchema, whatsNewItems, insertWhatsNewSchema, updateWhatsNewSchema, scheduleEvents, insertScheduleEventSchema, coordinatorInvitations, insertCoordinatorInvitationSchema, createCoordinatorInvitationSchema, guestInvitations, insertGuestInvitationSchema, createGuestInvitationSchema, coupleVendorContracts, insertCoupleVendorContractSchema, notifications, insertNotificationSchema, activityLogs, weddingGuests, insertWeddingGuestSchema, updateWeddingGuestSchema, weddingTables, insertWeddingTableSchema, tableGuestAssignments, tableSeatingInvitations, insertTableSeatingInvitationSchema, appFeedback, insertAppFeedbackSchema, vendorReviews, insertVendorReviewSchema, vendorReviewResponses, insertVendorReviewResponseSchema, faqItems, insertFaqItemSchema, updateFaqItemSchema, videoGuides, insertVideoGuideSchema, updateVideoGuideSchema, subscriptionTiers, vendorSubscriptions, vendorUsageMetrics, vendorPayments, insertSubscriptionTierSchema, updateSubscriptionTierSchema, insertVendorSubscriptionSchema, insertVendorUsageSchema, insertVendorPaymentSchema, coupleHairMakeupAppointments, coupleHairMakeupLooks, coupleHairMakeupTimeline, coupleTransportBookings, coupleTransportTimeline, coupleFlowerAppointments, coupleFlowerSelections, coupleFlowerTimeline, coupleCateringTastings, coupleCateringMenu, coupleCateringDietaryNeeds, coupleCateringTimeline, coupleCakeTastings, coupleCakeDesigns, coupleCakeTimeline, creatorhubProjects, creatorhubUsers, creatorhubInvitations, creatorhubBookings, creatorhubCrmNotes, creatorhubAnalyticsEvents, creatorhubApiAuditLog, createCreatorhubProjectSchema, createCreatorhubInvitationSchema, createCreatorhubBookingSchema, createCreatorhubCrmNoteSchema;
 var init_schema = __esm({
   "shared/schema.ts"() {
     "use strict";
@@ -1808,6 +1819,212 @@ var init_schema = __esm({
       createdAt: timestamp("created_at").defaultNow(),
       updatedAt: timestamp("updated_at").defaultNow()
     });
+    creatorhubProjects = pgTable("creatorhub_projects", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      name: text("name").notNull(),
+      slug: text("slug").notNull().unique(),
+      // URL-friendly project identifier
+      description: text("description"),
+      logoUrl: text("logo_url"),
+      ownerId: varchar("owner_id").notNull(),
+      // references creatorhubUsers.id (set after first user created)
+      status: text("status").notNull().default("active"),
+      // active, archived, suspended
+      // API access
+      apiKey: text("api_key").notNull().unique(),
+      // For external API calls
+      apiKeyPrefix: text("api_key_prefix").notNull(),
+      // First 8 chars for display (ch_xxxx...)
+      webhookUrl: text("webhook_url"),
+      // Callback URL for events
+      webhookSecret: text("webhook_secret"),
+      // HMAC secret for webhook signing
+      // Settings
+      defaultTimezone: text("default_timezone").default("Europe/Oslo"),
+      defaultCurrency: text("default_currency").default("NOK"),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    creatorhubUsers = pgTable("creatorhub_users", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      projectId: varchar("project_id").notNull().references(() => creatorhubProjects.id, { onDelete: "cascade" }),
+      vendorId: varchar("vendor_id").references(() => vendors.id, { onDelete: "set null" }),
+      // Link to Wedflow vendor
+      email: text("email").notNull(),
+      displayName: text("display_name").notNull(),
+      avatarUrl: text("avatar_url"),
+      role: text("role").notNull().default("creator"),
+      // owner, admin, creator, viewer
+      status: text("status").notNull().default("active"),
+      // active, suspended, deactivated
+      lastLoginAt: timestamp("last_login_at"),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    }, (table) => ({
+      projectEmailIdx: uniqueIndex("idx_creatorhub_users_project_email").on(table.projectId, table.email)
+    }));
+    creatorhubInvitations = pgTable("creatorhub_invitations", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      projectId: varchar("project_id").notNull().references(() => creatorhubProjects.id, { onDelete: "cascade" }),
+      invitedBy: varchar("invited_by").notNull().references(() => creatorhubUsers.id, { onDelete: "cascade" }),
+      email: text("email").notNull(),
+      role: text("role").notNull().default("creator"),
+      // admin, creator, viewer
+      token: text("token").notNull().unique(),
+      // Unique invite token
+      message: text("message"),
+      // Personal invite message
+      status: text("status").notNull().default("pending"),
+      // pending, accepted, expired, revoked
+      acceptedAt: timestamp("accepted_at"),
+      acceptedUserId: varchar("accepted_user_id").references(() => creatorhubUsers.id, { onDelete: "set null" }),
+      expiresAt: timestamp("expires_at").notNull(),
+      createdAt: timestamp("created_at").defaultNow()
+    });
+    creatorhubBookings = pgTable("creatorhub_bookings", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      projectId: varchar("project_id").notNull().references(() => creatorhubProjects.id, { onDelete: "cascade" }),
+      creatorUserId: varchar("creator_user_id").notNull().references(() => creatorhubUsers.id, { onDelete: "cascade" }),
+      // Link to Wedflow entities
+      vendorId: varchar("vendor_id").references(() => vendors.id, { onDelete: "set null" }),
+      coupleId: varchar("couple_id").references(() => coupleProfiles.id, { onDelete: "set null" }),
+      conversationId: varchar("conversation_id").references(() => conversations.id, { onDelete: "set null" }),
+      offerId: varchar("offer_id").references(() => vendorOffers.id, { onDelete: "set null" }),
+      // Booking details
+      title: text("title").notNull(),
+      description: text("description"),
+      clientName: text("client_name").notNull(),
+      clientEmail: text("client_email"),
+      clientPhone: text("client_phone"),
+      eventDate: date("event_date").notNull(),
+      eventTime: text("event_time"),
+      // HH:mm
+      eventEndTime: text("event_end_time"),
+      // HH:mm
+      location: text("location"),
+      // Financial
+      totalAmount: integer("total_amount"),
+      // In øre (cents)
+      depositAmount: integer("deposit_amount"),
+      depositPaid: boolean("deposit_paid").default(false),
+      fullPaid: boolean("full_paid").default(false),
+      currency: text("currency").default("NOK"),
+      // Status
+      status: text("status").notNull().default("confirmed"),
+      // inquiry, confirmed, completed, cancelled
+      notes: text("notes"),
+      internalNotes: text("internal_notes"),
+      // Not shared with client
+      // Metadata
+      tags: text("tags").array(),
+      // free-form tags for filtering
+      externalRef: text("external_ref"),
+      // Reference from external system
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    }, (table) => ({
+      projectDateIdx: index("idx_creatorhub_bookings_project_date").on(table.projectId, table.eventDate),
+      creatorIdx: index("idx_creatorhub_bookings_creator").on(table.creatorUserId)
+    }));
+    creatorhubCrmNotes = pgTable("creatorhub_crm_notes", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      projectId: varchar("project_id").notNull().references(() => creatorhubProjects.id, { onDelete: "cascade" }),
+      bookingId: varchar("booking_id").references(() => creatorhubBookings.id, { onDelete: "cascade" }),
+      creatorUserId: varchar("creator_user_id").notNull().references(() => creatorhubUsers.id, { onDelete: "cascade" }),
+      // Link to Wedflow conversation for shared messaging
+      conversationId: varchar("conversation_id").references(() => conversations.id, { onDelete: "set null" }),
+      // CRM note
+      noteType: text("note_type").notNull().default("note"),
+      // note, call_log, email_log, task, follow_up
+      subject: text("subject"),
+      body: text("body").notNull(),
+      dueDate: timestamp("due_date"),
+      // For tasks/follow-ups
+      isCompleted: boolean("is_completed").default(false),
+      completedAt: timestamp("completed_at"),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    creatorhubAnalyticsEvents = pgTable("creatorhub_analytics_events", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      projectId: varchar("project_id").notNull().references(() => creatorhubProjects.id, { onDelete: "cascade" }),
+      creatorUserId: varchar("creator_user_id").references(() => creatorhubUsers.id, { onDelete: "set null" }),
+      bookingId: varchar("booking_id").references(() => creatorhubBookings.id, { onDelete: "set null" }),
+      // Event data
+      eventType: text("event_type").notNull(),
+      // booking_created, booking_completed, payment_received, message_sent, etc.
+      eventData: text("event_data"),
+      // JSON payload with event-specific data
+      // Attribution
+      source: text("source").default("creatorhub"),
+      // creatorhub, wedflow, api, webhook
+      ipAddress: text("ip_address"),
+      userAgent: text("user_agent"),
+      createdAt: timestamp("created_at").defaultNow()
+    }, (table) => ({
+      projectTypeIdx: index("idx_creatorhub_analytics_project_type").on(table.projectId, table.eventType),
+      createdAtIdx: index("idx_creatorhub_analytics_created_at").on(table.createdAt)
+    }));
+    creatorhubApiAuditLog = pgTable("creatorhub_api_audit_log", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      projectId: varchar("project_id").notNull().references(() => creatorhubProjects.id, { onDelete: "cascade" }),
+      userId: varchar("user_id").references(() => creatorhubUsers.id, { onDelete: "set null" }),
+      method: text("method").notNull(),
+      // GET, POST, PUT, DELETE
+      path: text("path").notNull(),
+      statusCode: integer("status_code"),
+      requestBody: text("request_body"),
+      // Truncated request body
+      responseTime: integer("response_time"),
+      // ms
+      ipAddress: text("ip_address"),
+      userAgent: text("user_agent"),
+      createdAt: timestamp("created_at").defaultNow()
+    });
+    createCreatorhubProjectSchema = z.object({
+      name: z.string().min(2, "Project name must be at least 2 characters"),
+      slug: z.string().min(2).max(50).regex(/^[a-z0-9-]+$/, "Slug must be lowercase alphanumeric with hyphens"),
+      description: z.string().optional(),
+      logoUrl: z.string().url().optional().or(z.literal("")),
+      defaultTimezone: z.string().default("Europe/Oslo"),
+      defaultCurrency: z.string().default("NOK")
+    });
+    createCreatorhubInvitationSchema = z.object({
+      email: z.string().email("Invalid email address"),
+      role: z.enum(["admin", "creator", "viewer"]).default("creator"),
+      message: z.string().max(500).optional()
+    });
+    createCreatorhubBookingSchema = z.object({
+      title: z.string().min(1, "Title is required"),
+      description: z.string().optional(),
+      clientName: z.string().min(1, "Client name is required"),
+      clientEmail: z.string().email().optional().or(z.literal("")),
+      clientPhone: z.string().optional(),
+      eventDate: z.string().min(1, "Event date is required"),
+      eventTime: z.string().optional(),
+      eventEndTime: z.string().optional(),
+      location: z.string().optional(),
+      totalAmount: z.number().int().min(0).optional(),
+      depositAmount: z.number().int().min(0).optional(),
+      status: z.enum(["inquiry", "confirmed", "completed", "cancelled"]).default("confirmed"),
+      notes: z.string().optional(),
+      internalNotes: z.string().optional(),
+      tags: z.array(z.string()).optional(),
+      externalRef: z.string().optional(),
+      // Optional Wedflow links
+      vendorId: z.string().optional(),
+      coupleId: z.string().optional(),
+      conversationId: z.string().optional(),
+      offerId: z.string().optional()
+    });
+    createCreatorhubCrmNoteSchema = z.object({
+      bookingId: z.string().optional(),
+      conversationId: z.string().optional(),
+      noteType: z.enum(["note", "call_log", "email_log", "task", "follow_up"]).default("note"),
+      subject: z.string().optional(),
+      body: z.string().min(1, "Note body is required"),
+      dueDate: z.string().optional()
+    });
   }
 });
 
@@ -1818,7 +2035,7 @@ import express from "express";
 // server/routes.ts
 import { createServer } from "node:http";
 import { WebSocketServer } from "ws";
-import crypto2 from "node:crypto";
+import crypto3 from "node:crypto";
 
 // server/db.ts
 init_schema();
@@ -2506,6 +2723,640 @@ function registerSubscriptionRoutes(app2) {
   });
 }
 
+// server/creatorhub-routes.ts
+import crypto2 from "node:crypto";
+init_schema();
+import { eq as eq2, and as and2, desc, sql as sql3, gte, lte } from "drizzle-orm";
+function generateApiKey() {
+  const key = `ch_${crypto2.randomBytes(32).toString("hex")}`;
+  const prefix = key.substring(0, 11);
+  return { key, prefix };
+}
+function generateInviteToken() {
+  return crypto2.randomBytes(24).toString("base64url");
+}
+async function authenticateApiKey(req, res, next) {
+  const apiKey = req.header("X-API-Key") || extractBearerToken(req);
+  if (!apiKey || !apiKey.startsWith("ch_")) {
+    return res.status(401).json({ error: "Missing or invalid API key" });
+  }
+  try {
+    const [project] = await db.select().from(creatorhubProjects).where(eq2(creatorhubProjects.apiKey, apiKey));
+    if (!project || project.status !== "active") {
+      return res.status(401).json({ error: "Invalid or inactive API key" });
+    }
+    req.project = project;
+    next();
+  } catch (err) {
+    console.error("[CreatorHub] Auth error:", err);
+    return res.status(500).json({ error: "Authentication error" });
+  }
+}
+function extractBearerToken(req) {
+  const auth = req.header("Authorization");
+  if (auth?.startsWith("Bearer ch_")) {
+    return auth.substring(7);
+  }
+  return null;
+}
+async function auditLog(req, res, next) {
+  const startTime = Date.now();
+  const originalEnd = res.end.bind(res);
+  res.end = function(...args) {
+    const responseTime = Date.now() - startTime;
+    if (req.project) {
+      db.insert(creatorhubApiAuditLog).values({
+        projectId: req.project.id,
+        userId: req.creatorhubUser?.id || null,
+        method: req.method,
+        path: req.path,
+        statusCode: res.statusCode,
+        requestBody: req.method !== "GET" ? JSON.stringify(req.body).substring(0, 2e3) : null,
+        responseTime,
+        ipAddress: req.ip || req.socket.remoteAddress || null,
+        userAgent: req.header("User-Agent") || null
+      }).catch((err) => console.error("[CreatorHub] Audit log error:", err));
+    }
+    return originalEnd(...args);
+  };
+  next();
+}
+function registerCreatorhubRoutes(app2) {
+  app2.use("/api/creatorhub", auditLog);
+  app2.post("/api/creatorhub/projects", async (req, res) => {
+    const adminSecret = req.header("X-Admin-Secret") || req.header("Authorization")?.replace("Bearer ", "");
+    if (adminSecret !== process.env.ADMIN_SECRET) {
+      return res.status(403).json({ error: "Admin authentication required" });
+    }
+    try {
+      const parsed = createCreatorhubProjectSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ error: "Validation error", details: parsed.error.flatten() });
+      }
+      const existing = await db.select().from(creatorhubProjects).where(eq2(creatorhubProjects.slug, parsed.data.slug));
+      if (existing.length > 0) {
+        return res.status(409).json({ error: "Project slug already exists" });
+      }
+      const { key: apiKey, prefix: apiKeyPrefix } = generateApiKey();
+      const webhookSecret = crypto2.randomBytes(32).toString("hex");
+      const [project] = await db.insert(creatorhubProjects).values({
+        ...parsed.data,
+        ownerId: "system",
+        // Will be updated when first user is created
+        apiKey,
+        apiKeyPrefix,
+        webhookSecret
+      }).returning();
+      if (req.body.ownerEmail && req.body.ownerName) {
+        const [user] = await db.insert(creatorhubUsers).values({
+          projectId: project.id,
+          email: req.body.ownerEmail,
+          displayName: req.body.ownerName,
+          role: "owner",
+          vendorId: req.body.vendorId || null
+        }).returning();
+        await db.update(creatorhubProjects).set({ ownerId: user.id }).where(eq2(creatorhubProjects.id, project.id));
+        return res.json({
+          project: { ...project, ownerId: user.id },
+          apiKey,
+          // Show ONCE - store this!
+          webhookSecret,
+          // Show ONCE - store this!
+          owner: user
+        });
+      }
+      return res.json({
+        project,
+        apiKey,
+        // Show ONCE - store this!
+        webhookSecret
+        // Show ONCE - store this!
+      });
+    } catch (err) {
+      console.error("[CreatorHub] Create project error:", err);
+      return res.status(500).json({ error: "Failed to create project" });
+    }
+  });
+  app2.get("/api/creatorhub/projects", async (req, res) => {
+    const adminSecret = req.header("X-Admin-Secret") || req.header("Authorization")?.replace("Bearer ", "");
+    if (adminSecret !== process.env.ADMIN_SECRET) {
+      return res.status(403).json({ error: "Admin authentication required" });
+    }
+    try {
+      const projects = await db.select({
+        id: creatorhubProjects.id,
+        name: creatorhubProjects.name,
+        slug: creatorhubProjects.slug,
+        status: creatorhubProjects.status,
+        apiKeyPrefix: creatorhubProjects.apiKeyPrefix,
+        createdAt: creatorhubProjects.createdAt
+      }).from(creatorhubProjects).orderBy(desc(creatorhubProjects.createdAt));
+      return res.json(projects);
+    } catch (err) {
+      console.error("[CreatorHub] List projects error:", err);
+      return res.status(500).json({ error: "Failed to list projects" });
+    }
+  });
+  app2.get("/api/creatorhub/project", authenticateApiKey, async (req, res) => {
+    const { apiKey, webhookSecret, ...safeProject } = req.project;
+    return res.json(safeProject);
+  });
+  app2.get("/api/creatorhub/users", authenticateApiKey, async (req, res) => {
+    try {
+      const users2 = await db.select().from(creatorhubUsers).where(eq2(creatorhubUsers.projectId, req.project.id)).orderBy(desc(creatorhubUsers.createdAt));
+      return res.json(users2);
+    } catch (err) {
+      console.error("[CreatorHub] List users error:", err);
+      return res.status(500).json({ error: "Failed to list users" });
+    }
+  });
+  app2.get("/api/creatorhub/users/:id", authenticateApiKey, async (req, res) => {
+    try {
+      const [user] = await db.select().from(creatorhubUsers).where(and2(
+        eq2(creatorhubUsers.id, req.params.id),
+        eq2(creatorhubUsers.projectId, req.project.id)
+      ));
+      if (!user) return res.status(404).json({ error: "User not found" });
+      return res.json(user);
+    } catch (err) {
+      return res.status(500).json({ error: "Failed to get user" });
+    }
+  });
+  app2.patch("/api/creatorhub/users/:id", authenticateApiKey, async (req, res) => {
+    try {
+      const { role, status, displayName, avatarUrl, vendorId } = req.body;
+      const updates = { updatedAt: /* @__PURE__ */ new Date() };
+      if (role) updates.role = role;
+      if (status) updates.status = status;
+      if (displayName) updates.displayName = displayName;
+      if (avatarUrl !== void 0) updates.avatarUrl = avatarUrl;
+      if (vendorId !== void 0) updates.vendorId = vendorId;
+      const [updated] = await db.update(creatorhubUsers).set(updates).where(and2(
+        eq2(creatorhubUsers.id, req.params.id),
+        eq2(creatorhubUsers.projectId, req.project.id)
+      )).returning();
+      if (!updated) return res.status(404).json({ error: "User not found" });
+      return res.json(updated);
+    } catch (err) {
+      return res.status(500).json({ error: "Failed to update user" });
+    }
+  });
+  app2.post("/api/creatorhub/invitations", authenticateApiKey, async (req, res) => {
+    try {
+      const parsed = createCreatorhubInvitationSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ error: "Validation error", details: parsed.error.flatten() });
+      }
+      const existingUser = await db.select().from(creatorhubUsers).where(and2(
+        eq2(creatorhubUsers.projectId, req.project.id),
+        eq2(creatorhubUsers.email, parsed.data.email)
+      ));
+      if (existingUser.length > 0) {
+        return res.status(409).json({ error: "User already exists in this project" });
+      }
+      const existingInvite = await db.select().from(creatorhubInvitations).where(and2(
+        eq2(creatorhubInvitations.projectId, req.project.id),
+        eq2(creatorhubInvitations.email, parsed.data.email),
+        eq2(creatorhubInvitations.status, "pending")
+      ));
+      if (existingInvite.length > 0) {
+        return res.status(409).json({ error: "Pending invitation already exists for this email" });
+      }
+      const invitedBy = req.body.invitedByUserId;
+      if (!invitedBy) {
+        return res.status(400).json({ error: "invitedByUserId is required" });
+      }
+      const token = generateInviteToken();
+      const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1e3);
+      const [invitation] = await db.insert(creatorhubInvitations).values({
+        projectId: req.project.id,
+        invitedBy,
+        email: parsed.data.email,
+        role: parsed.data.role,
+        token,
+        message: parsed.data.message,
+        expiresAt
+      }).returning();
+      await db.insert(creatorhubAnalyticsEvents).values({
+        projectId: req.project.id,
+        creatorUserId: invitedBy,
+        eventType: "invitation_sent",
+        eventData: JSON.stringify({ email: parsed.data.email, role: parsed.data.role }),
+        source: "api"
+      });
+      return res.status(201).json({
+        ...invitation,
+        inviteUrl: `${process.env.APP_URL || "https://wedflow.no"}/creatorhub/invite/${token}`
+      });
+    } catch (err) {
+      console.error("[CreatorHub] Create invitation error:", err);
+      return res.status(500).json({ error: "Failed to create invitation" });
+    }
+  });
+  app2.get("/api/creatorhub/invitations", authenticateApiKey, async (req, res) => {
+    try {
+      const status = req.query.status;
+      const conditions = [eq2(creatorhubInvitations.projectId, req.project.id)];
+      if (status) conditions.push(eq2(creatorhubInvitations.status, status));
+      const invitations = await db.select().from(creatorhubInvitations).where(and2(...conditions)).orderBy(desc(creatorhubInvitations.createdAt));
+      return res.json(invitations);
+    } catch (err) {
+      return res.status(500).json({ error: "Failed to list invitations" });
+    }
+  });
+  app2.post("/api/creatorhub/invitations/:token/accept", async (req, res) => {
+    try {
+      const { token } = req.params;
+      const { displayName, vendorId } = req.body;
+      const [invitation] = await db.select().from(creatorhubInvitations).where(eq2(creatorhubInvitations.token, token));
+      if (!invitation) {
+        return res.status(404).json({ error: "Invitation not found" });
+      }
+      if (invitation.status !== "pending") {
+        return res.status(400).json({ error: `Invitation is ${invitation.status}` });
+      }
+      if (invitation.expiresAt < /* @__PURE__ */ new Date()) {
+        await db.update(creatorhubInvitations).set({ status: "expired" }).where(eq2(creatorhubInvitations.id, invitation.id));
+        return res.status(400).json({ error: "Invitation has expired" });
+      }
+      const [user] = await db.insert(creatorhubUsers).values({
+        projectId: invitation.projectId,
+        email: invitation.email,
+        displayName: displayName || invitation.email.split("@")[0],
+        role: invitation.role,
+        vendorId: vendorId || null
+      }).returning();
+      await db.update(creatorhubInvitations).set({ status: "accepted", acceptedAt: /* @__PURE__ */ new Date(), acceptedUserId: user.id }).where(eq2(creatorhubInvitations.id, invitation.id));
+      await db.insert(creatorhubAnalyticsEvents).values({
+        projectId: invitation.projectId,
+        creatorUserId: user.id,
+        eventType: "invitation_accepted",
+        eventData: JSON.stringify({ role: invitation.role }),
+        source: "api"
+      });
+      return res.json({ user, projectId: invitation.projectId });
+    } catch (err) {
+      console.error("[CreatorHub] Accept invitation error:", err);
+      return res.status(500).json({ error: "Failed to accept invitation" });
+    }
+  });
+  app2.delete("/api/creatorhub/invitations/:id", authenticateApiKey, async (req, res) => {
+    try {
+      const [updated] = await db.update(creatorhubInvitations).set({ status: "revoked" }).where(and2(
+        eq2(creatorhubInvitations.id, req.params.id),
+        eq2(creatorhubInvitations.projectId, req.project.id),
+        eq2(creatorhubInvitations.status, "pending")
+      )).returning();
+      if (!updated) return res.status(404).json({ error: "Pending invitation not found" });
+      return res.json({ success: true });
+    } catch (err) {
+      return res.status(500).json({ error: "Failed to revoke invitation" });
+    }
+  });
+  app2.get("/api/creatorhub/bookings", authenticateApiKey, async (req, res) => {
+    try {
+      const { status, creatorUserId, from, to } = req.query;
+      const conditions = [eq2(creatorhubBookings.projectId, req.project.id)];
+      if (status) conditions.push(eq2(creatorhubBookings.status, status));
+      if (creatorUserId) conditions.push(eq2(creatorhubBookings.creatorUserId, creatorUserId));
+      if (from) conditions.push(gte(creatorhubBookings.eventDate, from));
+      if (to) conditions.push(lte(creatorhubBookings.eventDate, to));
+      const bookings = await db.select().from(creatorhubBookings).where(and2(...conditions)).orderBy(desc(creatorhubBookings.eventDate));
+      return res.json(bookings);
+    } catch (err) {
+      console.error("[CreatorHub] List bookings error:", err);
+      return res.status(500).json({ error: "Failed to list bookings" });
+    }
+  });
+  app2.get("/api/creatorhub/bookings/:id", authenticateApiKey, async (req, res) => {
+    try {
+      const [booking] = await db.select().from(creatorhubBookings).where(and2(
+        eq2(creatorhubBookings.id, req.params.id),
+        eq2(creatorhubBookings.projectId, req.project.id)
+      ));
+      if (!booking) return res.status(404).json({ error: "Booking not found" });
+      let wedflowData = {};
+      if (booking.vendorId) {
+        const [vendor] = await db.select({
+          id: vendors.id,
+          businessName: vendors.businessName,
+          email: vendors.email
+        }).from(vendors).where(eq2(vendors.id, booking.vendorId));
+        wedflowData.vendor = vendor || null;
+      }
+      if (booking.coupleId) {
+        const [couple] = await db.select({
+          id: coupleProfiles.id,
+          displayName: coupleProfiles.displayName,
+          email: coupleProfiles.email
+        }).from(coupleProfiles).where(eq2(coupleProfiles.id, booking.coupleId));
+        wedflowData.couple = couple || null;
+      }
+      return res.json({ ...booking, wedflow: wedflowData });
+    } catch (err) {
+      return res.status(500).json({ error: "Failed to get booking" });
+    }
+  });
+  app2.post("/api/creatorhub/bookings", authenticateApiKey, async (req, res) => {
+    try {
+      const parsed = createCreatorhubBookingSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ error: "Validation error", details: parsed.error.flatten() });
+      }
+      if (!req.body.creatorUserId) {
+        return res.status(400).json({ error: "creatorUserId is required" });
+      }
+      const [creator] = await db.select().from(creatorhubUsers).where(and2(
+        eq2(creatorhubUsers.id, req.body.creatorUserId),
+        eq2(creatorhubUsers.projectId, req.project.id)
+      ));
+      if (!creator) {
+        return res.status(400).json({ error: "Creator user not found in this project" });
+      }
+      const [booking] = await db.insert(creatorhubBookings).values({
+        projectId: req.project.id,
+        creatorUserId: req.body.creatorUserId,
+        ...parsed.data
+      }).returning();
+      await db.insert(creatorhubAnalyticsEvents).values({
+        projectId: req.project.id,
+        creatorUserId: req.body.creatorUserId,
+        bookingId: booking.id,
+        eventType: "booking_created",
+        eventData: JSON.stringify({ status: parsed.data.status, eventDate: parsed.data.eventDate }),
+        source: "api"
+      });
+      return res.status(201).json(booking);
+    } catch (err) {
+      console.error("[CreatorHub] Create booking error:", err);
+      return res.status(500).json({ error: "Failed to create booking" });
+    }
+  });
+  app2.patch("/api/creatorhub/bookings/:id", authenticateApiKey, async (req, res) => {
+    try {
+      const allowedFields = [
+        "title",
+        "description",
+        "clientName",
+        "clientEmail",
+        "clientPhone",
+        "eventDate",
+        "eventTime",
+        "eventEndTime",
+        "location",
+        "totalAmount",
+        "depositAmount",
+        "depositPaid",
+        "fullPaid",
+        "status",
+        "notes",
+        "internalNotes",
+        "tags",
+        "externalRef",
+        "vendorId",
+        "coupleId",
+        "conversationId",
+        "offerId"
+      ];
+      const updates = { updatedAt: /* @__PURE__ */ new Date() };
+      for (const field of allowedFields) {
+        if (req.body[field] !== void 0) {
+          updates[field] = req.body[field];
+        }
+      }
+      const [updated] = await db.update(creatorhubBookings).set(updates).where(and2(
+        eq2(creatorhubBookings.id, req.params.id),
+        eq2(creatorhubBookings.projectId, req.project.id)
+      )).returning();
+      if (!updated) return res.status(404).json({ error: "Booking not found" });
+      if (req.body.status) {
+        await db.insert(creatorhubAnalyticsEvents).values({
+          projectId: req.project.id,
+          creatorUserId: updated.creatorUserId,
+          bookingId: updated.id,
+          eventType: `booking_${req.body.status}`,
+          eventData: JSON.stringify({ previousStatus: "unknown", newStatus: req.body.status }),
+          source: "api"
+        });
+      }
+      return res.json(updated);
+    } catch (err) {
+      return res.status(500).json({ error: "Failed to update booking" });
+    }
+  });
+  app2.delete("/api/creatorhub/bookings/:id", authenticateApiKey, async (req, res) => {
+    try {
+      const [deleted] = await db.delete(creatorhubBookings).where(and2(
+        eq2(creatorhubBookings.id, req.params.id),
+        eq2(creatorhubBookings.projectId, req.project.id)
+      )).returning();
+      if (!deleted) return res.status(404).json({ error: "Booking not found" });
+      return res.json({ success: true });
+    } catch (err) {
+      return res.status(500).json({ error: "Failed to delete booking" });
+    }
+  });
+  app2.get("/api/creatorhub/crm/notes", authenticateApiKey, async (req, res) => {
+    try {
+      const { bookingId, creatorUserId, noteType } = req.query;
+      const conditions = [eq2(creatorhubCrmNotes.projectId, req.project.id)];
+      if (bookingId) conditions.push(eq2(creatorhubCrmNotes.bookingId, bookingId));
+      if (creatorUserId) conditions.push(eq2(creatorhubCrmNotes.creatorUserId, creatorUserId));
+      if (noteType) conditions.push(eq2(creatorhubCrmNotes.noteType, noteType));
+      const notes = await db.select().from(creatorhubCrmNotes).where(and2(...conditions)).orderBy(desc(creatorhubCrmNotes.createdAt));
+      return res.json(notes);
+    } catch (err) {
+      return res.status(500).json({ error: "Failed to list CRM notes" });
+    }
+  });
+  app2.post("/api/creatorhub/crm/notes", authenticateApiKey, async (req, res) => {
+    try {
+      const parsed = createCreatorhubCrmNoteSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ error: "Validation error", details: parsed.error.flatten() });
+      }
+      if (!req.body.creatorUserId) {
+        return res.status(400).json({ error: "creatorUserId is required" });
+      }
+      const [note] = await db.insert(creatorhubCrmNotes).values({
+        projectId: req.project.id,
+        creatorUserId: req.body.creatorUserId,
+        ...parsed.data,
+        dueDate: parsed.data.dueDate ? new Date(parsed.data.dueDate) : null
+      }).returning();
+      return res.status(201).json(note);
+    } catch (err) {
+      console.error("[CreatorHub] Create CRM note error:", err);
+      return res.status(500).json({ error: "Failed to create CRM note" });
+    }
+  });
+  app2.patch("/api/creatorhub/crm/notes/:id", authenticateApiKey, async (req, res) => {
+    try {
+      const updates = { updatedAt: /* @__PURE__ */ new Date() };
+      if (req.body.subject !== void 0) updates.subject = req.body.subject;
+      if (req.body.body !== void 0) updates.body = req.body.body;
+      if (req.body.isCompleted !== void 0) {
+        updates.isCompleted = req.body.isCompleted;
+        updates.completedAt = req.body.isCompleted ? /* @__PURE__ */ new Date() : null;
+      }
+      if (req.body.dueDate !== void 0) updates.dueDate = req.body.dueDate ? new Date(req.body.dueDate) : null;
+      const [updated] = await db.update(creatorhubCrmNotes).set(updates).where(and2(
+        eq2(creatorhubCrmNotes.id, req.params.id),
+        eq2(creatorhubCrmNotes.projectId, req.project.id)
+      )).returning();
+      if (!updated) return res.status(404).json({ error: "CRM note not found" });
+      return res.json(updated);
+    } catch (err) {
+      return res.status(500).json({ error: "Failed to update CRM note" });
+    }
+  });
+  app2.delete("/api/creatorhub/crm/notes/:id", authenticateApiKey, async (req, res) => {
+    try {
+      const [deleted] = await db.delete(creatorhubCrmNotes).where(and2(
+        eq2(creatorhubCrmNotes.id, req.params.id),
+        eq2(creatorhubCrmNotes.projectId, req.project.id)
+      )).returning();
+      if (!deleted) return res.status(404).json({ error: "CRM note not found" });
+      return res.json({ success: true });
+    } catch (err) {
+      return res.status(500).json({ error: "Failed to delete CRM note" });
+    }
+  });
+  app2.get("/api/creatorhub/wedflow/conversations", authenticateApiKey, async (req, res) => {
+    try {
+      const { vendorId } = req.query;
+      if (!vendorId) {
+        return res.status(400).json({ error: "vendorId query param required" });
+      }
+      const [creator] = await db.select().from(creatorhubUsers).where(and2(
+        eq2(creatorhubUsers.projectId, req.project.id),
+        eq2(creatorhubUsers.vendorId, vendorId)
+      ));
+      if (!creator) {
+        return res.status(403).json({ error: "Vendor not linked to this project" });
+      }
+      const convos = await db.select().from(conversations).where(eq2(conversations.vendorId, vendorId)).orderBy(desc(conversations.lastMessageAt));
+      return res.json(convos);
+    } catch (err) {
+      return res.status(500).json({ error: "Failed to list conversations" });
+    }
+  });
+  app2.get("/api/creatorhub/wedflow/conversations/:id/messages", authenticateApiKey, async (req, res) => {
+    try {
+      const [convo] = await db.select().from(conversations).where(eq2(conversations.id, req.params.id));
+      if (!convo) return res.status(404).json({ error: "Conversation not found" });
+      const [creator] = await db.select().from(creatorhubUsers).where(and2(
+        eq2(creatorhubUsers.projectId, req.project.id),
+        eq2(creatorhubUsers.vendorId, convo.vendorId)
+      ));
+      if (!creator) return res.status(403).json({ error: "Conversation not accessible from this project" });
+      const msgs = await db.select().from(messages).where(eq2(messages.conversationId, req.params.id)).orderBy(desc(messages.createdAt));
+      return res.json(msgs);
+    } catch (err) {
+      return res.status(500).json({ error: "Failed to get messages" });
+    }
+  });
+  app2.get("/api/creatorhub/wedflow/offers", authenticateApiKey, async (req, res) => {
+    try {
+      const { vendorId, status } = req.query;
+      if (!vendorId) return res.status(400).json({ error: "vendorId query param required" });
+      const [creator] = await db.select().from(creatorhubUsers).where(and2(
+        eq2(creatorhubUsers.projectId, req.project.id),
+        eq2(creatorhubUsers.vendorId, vendorId)
+      ));
+      if (!creator) return res.status(403).json({ error: "Vendor not linked to this project" });
+      const conditions = [eq2(vendorOffers.vendorId, vendorId)];
+      if (status) conditions.push(eq2(vendorOffers.status, status));
+      const offers = await db.select().from(vendorOffers).where(and2(...conditions)).orderBy(desc(vendorOffers.createdAt));
+      return res.json(offers);
+    } catch (err) {
+      return res.status(500).json({ error: "Failed to list offers" });
+    }
+  });
+  app2.get("/api/creatorhub/analytics/summary", authenticateApiKey, async (req, res) => {
+    try {
+      const { from, to } = req.query;
+      const bookingStats = await db.select({
+        total: sql3`count(*)::int`,
+        confirmed: sql3`count(*) filter (where status = 'confirmed')::int`,
+        completed: sql3`count(*) filter (where status = 'completed')::int`,
+        cancelled: sql3`count(*) filter (where status = 'cancelled')::int`,
+        totalRevenue: sql3`coalesce(sum(total_amount) filter (where status in ('confirmed', 'completed')), 0)::int`,
+        avgBookingValue: sql3`coalesce(avg(total_amount) filter (where total_amount > 0), 0)::int`
+      }).from(creatorhubBookings).where(eq2(creatorhubBookings.projectId, req.project.id));
+      const userStats = await db.select({
+        totalUsers: sql3`count(*)::int`,
+        activeUsers: sql3`count(*) filter (where status = 'active')::int`,
+        creators: sql3`count(*) filter (where role = 'creator')::int`
+      }).from(creatorhubUsers).where(eq2(creatorhubUsers.projectId, req.project.id));
+      const inviteStats = await db.select({
+        pending: sql3`count(*) filter (where status = 'pending')::int`,
+        accepted: sql3`count(*) filter (where status = 'accepted')::int`
+      }).from(creatorhubInvitations).where(eq2(creatorhubInvitations.projectId, req.project.id));
+      const recentEventCount = await db.select({
+        count: sql3`count(*)::int`
+      }).from(creatorhubAnalyticsEvents).where(and2(
+        eq2(creatorhubAnalyticsEvents.projectId, req.project.id),
+        gte(creatorhubAnalyticsEvents.createdAt, sql3`now() - interval '30 days'`)
+      ));
+      return res.json({
+        bookings: bookingStats[0] || {},
+        users: userStats[0] || {},
+        invitations: inviteStats[0] || {},
+        recentEventsLast30Days: recentEventCount[0]?.count || 0
+      });
+    } catch (err) {
+      console.error("[CreatorHub] Analytics summary error:", err);
+      return res.status(500).json({ error: "Failed to get analytics summary" });
+    }
+  });
+  app2.get("/api/creatorhub/analytics/events", authenticateApiKey, async (req, res) => {
+    try {
+      const { eventType, from, to, limit } = req.query;
+      const conditions = [eq2(creatorhubAnalyticsEvents.projectId, req.project.id)];
+      if (eventType) conditions.push(eq2(creatorhubAnalyticsEvents.eventType, eventType));
+      if (from) conditions.push(gte(creatorhubAnalyticsEvents.createdAt, new Date(from)));
+      if (to) conditions.push(lte(creatorhubAnalyticsEvents.createdAt, new Date(to)));
+      const events = await db.select().from(creatorhubAnalyticsEvents).where(and2(...conditions)).orderBy(desc(creatorhubAnalyticsEvents.createdAt)).limit(Math.min(parseInt(limit) || 100, 500));
+      return res.json(events);
+    } catch (err) {
+      return res.status(500).json({ error: "Failed to list analytics events" });
+    }
+  });
+  app2.post("/api/creatorhub/analytics/events", authenticateApiKey, async (req, res) => {
+    try {
+      const { eventType, eventData, creatorUserId, bookingId, source } = req.body;
+      if (!eventType) return res.status(400).json({ error: "eventType is required" });
+      const [event] = await db.insert(creatorhubAnalyticsEvents).values({
+        projectId: req.project.id,
+        creatorUserId: creatorUserId || null,
+        bookingId: bookingId || null,
+        eventType,
+        eventData: typeof eventData === "string" ? eventData : JSON.stringify(eventData),
+        source: source || "api",
+        ipAddress: req.ip || req.socket.remoteAddress || null,
+        userAgent: req.header("User-Agent") || null
+      }).returning();
+      return res.status(201).json(event);
+    } catch (err) {
+      return res.status(500).json({ error: "Failed to track event" });
+    }
+  });
+  app2.get("/api/creatorhub/audit-log", authenticateApiKey, async (req, res) => {
+    try {
+      const { limit, method, path: path2 } = req.query;
+      const conditions = [eq2(creatorhubApiAuditLog.projectId, req.project.id)];
+      if (method) conditions.push(eq2(creatorhubApiAuditLog.method, method));
+      if (path2) conditions.push(sql3`${creatorhubApiAuditLog.path} LIKE ${"%" + path2 + "%"}`);
+      const logs = await db.select().from(creatorhubApiAuditLog).where(and2(...conditions)).orderBy(desc(creatorhubApiAuditLog.createdAt)).limit(Math.min(parseInt(limit) || 50, 200));
+      return res.json(logs);
+    } catch (err) {
+      return res.status(500).json({ error: "Failed to get audit log" });
+    }
+  });
+  console.log("[CreatorHub] API routes registered at /api/creatorhub/*");
+}
+
 // server/timeline-templates.ts
 var TIMELINE_TEMPLATES = {
   norway: [
@@ -2632,12 +3483,12 @@ var DEFAULT_TIMELINE = [
 
 // server/routes.ts
 init_schema();
-import { eq as eq2, and as and2, desc, sql as sql3, inArray, or, gte, lte, isNotNull } from "drizzle-orm";
+import { eq as eq3, and as and3, desc as desc2, sql as sql4, inArray as inArray2, or as or2, gte as gte2, lte as lte2, isNotNull } from "drizzle-orm";
 function generateAccessCode() {
-  return crypto2.randomBytes(8).toString("hex").toUpperCase();
+  return crypto3.randomBytes(8).toString("hex").toUpperCase();
 }
 function generateSessionToken() {
-  return crypto2.randomBytes(32).toString("hex");
+  return crypto3.randomBytes(32).toString("hex");
 }
 var VENDOR_SESSIONS = /* @__PURE__ */ new Map();
 var SESSION_DURATION_MS = 7 * 24 * 60 * 60 * 1e3;
@@ -2721,14 +3572,14 @@ async function registerRoutes(app2) {
   const vendorListClients = /* @__PURE__ */ new Map();
   const coupleListClients = /* @__PURE__ */ new Map();
   async function checkVendorToken(token) {
-    const [vendorSession] = await db.select({ vendorId: vendorSessions.vendorId }).from(vendorSessions).where(and2(eq2(vendorSessions.token, token), sql3`${vendorSessions.expiresAt} > NOW()`));
+    const [vendorSession] = await db.select({ vendorId: vendorSessions.vendorId }).from(vendorSessions).where(and3(eq3(vendorSessions.token, token), sql4`${vendorSessions.expiresAt} > NOW()`));
     if (!vendorSession) return null;
-    const [vendor] = await db.select().from(vendors).where(eq2(vendors.id, vendorSession.vendorId));
+    const [vendor] = await db.select().from(vendors).where(eq3(vendors.id, vendorSession.vendorId));
     if (!vendor || vendor.status !== "approved") return null;
     return vendorSession.vendorId;
   }
   async function getOrCreateAdminConversationId(vendorId) {
-    const existing = await db.select().from(adminConversations).where(eq2(adminConversations.vendorId, vendorId));
+    const existing = await db.select().from(adminConversations).where(eq3(adminConversations.vendorId, vendorId));
     if (existing[0]) return existing[0].id;
     const [created] = await db.insert(adminConversations).values({ vendorId }).returning();
     return created.id;
@@ -2758,9 +3609,9 @@ async function registerRoutes(app2) {
     }
   }
   async function checkCoupleToken(token) {
-    const [sess] = await db.select({ coupleId: coupleSessions.coupleId }).from(coupleSessions).where(and2(eq2(coupleSessions.token, token), sql3`${coupleSessions.expiresAt} > NOW()`));
+    const [sess] = await db.select({ coupleId: coupleSessions.coupleId }).from(coupleSessions).where(and3(eq3(coupleSessions.token, token), sql4`${coupleSessions.expiresAt} > NOW()`));
     if (!sess) return null;
-    const [couple] = await db.select().from(coupleProfiles).where(eq2(coupleProfiles.id, sess.coupleId));
+    const [couple] = await db.select().from(coupleProfiles).where(eq3(coupleProfiles.id, sess.coupleId));
     if (!couple) return null;
     return sess.coupleId;
   }
@@ -2825,7 +3676,7 @@ async function registerRoutes(app2) {
         id: coupleProfiles.id,
         email: coupleProfiles.email,
         displayName: coupleProfiles.displayName
-      }).from(coupleProfiles).where(eq2(coupleProfiles.id, id));
+      }).from(coupleProfiles).where(eq3(coupleProfiles.id, id));
       console.log("[TestQuery] Success, found:", result.length);
       res.json({ success: true, data: result });
     } catch (error) {
@@ -2936,7 +3787,7 @@ async function registerRoutes(app2) {
   app2.get("/api/subscription/tiers", async (_req, res) => {
     try {
       const { subscriptionTiers: subscriptionTiers2 } = await Promise.resolve().then(() => (init_schema(), schema_exports));
-      const tiers = await db.select().from(subscriptionTiers2).where(eq2(subscriptionTiers2.isActive, true)).orderBy(subscriptionTiers2.sortOrder);
+      const tiers = await db.select().from(subscriptionTiers2).where(eq3(subscriptionTiers2.isActive, true)).orderBy(subscriptionTiers2.sortOrder);
       res.json(tiers);
     } catch (error) {
       console.error("Error fetching subscription tiers:", error);
@@ -2949,25 +3800,25 @@ async function registerRoutes(app2) {
       const { vendorSubscriptions: vendorSubscriptions2 } = await Promise.resolve().then(() => (init_schema(), schema_exports));
       const now = /* @__PURE__ */ new Date();
       const expiredTrials = await db.select().from(vendorSubscriptions2).where(
-        and2(
-          eq2(vendorSubscriptions2.status, "trialing"),
-          sql3`${vendorSubscriptions2.currentPeriodEnd} < ${now}`
+        and3(
+          eq3(vendorSubscriptions2.status, "trialing"),
+          sql4`${vendorSubscriptions2.currentPeriodEnd} < ${now}`
         )
       );
       if (expiredTrials.length > 0) {
         await db.update(vendorSubscriptions2).set({
           status: "paused",
-          pausedUntil: sql3`${vendorSubscriptions2.currentPeriodEnd} + interval '365 days'`,
+          pausedUntil: sql4`${vendorSubscriptions2.currentPeriodEnd} + interval '365 days'`,
           // Pause for 1 year
           updatedAt: now
         }).where(
-          and2(
-            eq2(vendorSubscriptions2.status, "trialing"),
-            sql3`${vendorSubscriptions2.currentPeriodEnd} < ${now}`
+          and3(
+            eq3(vendorSubscriptions2.status, "trialing"),
+            sql4`${vendorSubscriptions2.currentPeriodEnd} < ${now}`
           )
         );
         for (const sub of expiredTrials) {
-          const [vendor] = await db.select().from(vendors).where(eq2(vendors.id, sub.vendorId));
+          const [vendor] = await db.select().from(vendors).where(eq3(vendors.id, sub.vendorId));
           if (!vendor) continue;
           await db.insert(notifications).values({
             recipientType: "vendor",
@@ -3004,10 +3855,10 @@ async function registerRoutes(app2) {
           subscription: vendorSubscriptions2,
           tier: subscriptionTiers2,
           vendor: vendors
-        }).from(vendorSubscriptions2).innerJoin(subscriptionTiers2, eq2(vendorSubscriptions2.tierId, subscriptionTiers2.id)).innerJoin(vendors, eq2(vendorSubscriptions2.vendorId, vendors.id)).where(
-          and2(
-            eq2(vendorSubscriptions2.status, "trialing"),
-            sql3`${vendorSubscriptions2.currentPeriodEnd}::date = ${startOfDay}::date`
+        }).from(vendorSubscriptions2).innerJoin(subscriptionTiers2, eq3(vendorSubscriptions2.tierId, subscriptionTiers2.id)).innerJoin(vendors, eq3(vendorSubscriptions2.vendorId, vendors.id)).where(
+          and3(
+            eq3(vendorSubscriptions2.status, "trialing"),
+            sql4`${vendorSubscriptions2.currentPeriodEnd}::date = ${startOfDay}::date`
           )
         );
         for (const { subscription, tier, vendor } of expiringTrials) {
@@ -3065,7 +3916,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
         });
       }
       const { email, password, ...profileData } = validation.data;
-      const existingVendor = await db.select().from(vendors).where(eq2(vendors.email, email));
+      const existingVendor = await db.select().from(vendors).where(eq3(vendors.email, email));
       if (existingVendor.length > 0) {
         return res.status(400).json({ error: "E-postadressen er allerede registrert" });
       }
@@ -3110,7 +3961,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
       if (!email || !password) {
         return res.status(400).json({ error: "E-post og passord er p\xE5krevd" });
       }
-      const [vendor] = await db.select().from(vendors).where(eq2(vendors.email, email));
+      const [vendor] = await db.select().from(vendors).where(eq3(vendors.email, email));
       if (!vendor) {
         return res.status(401).json({ error: "Ugyldig e-post eller passord" });
       }
@@ -3126,7 +3977,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
       });
       let vendorCategory = null;
       if (vendor.categoryId) {
-        const [category] = await db.select().from(vendorCategories).where(eq2(vendorCategories.id, vendor.categoryId));
+        const [category] = await db.select().from(vendorCategories).where(eq3(vendorCategories.id, vendor.categoryId));
         vendorCategory = category?.name || null;
       }
       const { password: _, ...vendorWithoutPassword } = vendor;
@@ -3142,7 +3993,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
       if (!googleEmail || !googleName) {
         return res.status(400).json({ error: "Google informasjon mangler" });
       }
-      const [existingVendor] = await db.select().from(vendors).where(eq2(vendors.email, googleEmail));
+      const [existingVendor] = await db.select().from(vendors).where(eq3(vendors.email, googleEmail));
       if (existingVendor) {
         if (existingVendor.status === "approved") {
           const sessionToken = generateSessionToken();
@@ -3202,7 +4053,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     const authHeader = req.headers.authorization;
     if (authHeader && authHeader.startsWith("Bearer ")) {
       const token = authHeader.replace("Bearer ", "");
-      await db.delete(vendorSessions).where(eq2(vendorSessions.token, token));
+      await db.delete(vendorSessions).where(eq3(vendorSessions.token, token));
     }
     res.json({ message: "Logget ut" });
   });
@@ -3214,15 +4065,15 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     }
     const token = authHeader.replace("Bearer ", "");
     try {
-      const [vendorSession] = await db.select({ vendorId: vendorSessions.vendorId }).from(vendorSessions).where(and2(
-        eq2(vendorSessions.token, token),
-        sql3`${vendorSessions.expiresAt} > NOW()`
+      const [vendorSession] = await db.select({ vendorId: vendorSessions.vendorId }).from(vendorSessions).where(and3(
+        eq3(vendorSessions.token, token),
+        sql4`${vendorSessions.expiresAt} > NOW()`
       ));
       if (!vendorSession) {
         res.status(401).json({ valid: false, error: "\xD8kt utl\xF8pt" });
         return;
       }
-      const [vendor] = await db.select().from(vendors).where(eq2(vendors.id, vendorSession.vendorId));
+      const [vendor] = await db.select().from(vendors).where(eq3(vendors.id, vendorSession.vendorId));
       if (!vendor || vendor.status !== "approved") {
         res.status(401).json({ valid: false, error: "Ikke autorisert" });
         return;
@@ -3251,13 +4102,13 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
         hasPrioritizedSearch: subscriptionTiers.hasPrioritizedSearch,
         canHighlightProfile: subscriptionTiers.canHighlightProfile,
         hasReviewBadge: subscriptionTiers.hasReviewBadge
-      }).from(vendors).leftJoin(vendorCategories, eq2(vendorCategories.id, vendors.categoryId)).leftJoin(
+      }).from(vendors).leftJoin(vendorCategories, eq3(vendorCategories.id, vendors.categoryId)).leftJoin(
         vendorSubscriptions,
-        and2(
-          eq2(vendorSubscriptions.vendorId, vendors.id),
-          eq2(vendorSubscriptions.status, "active")
+        and3(
+          eq3(vendorSubscriptions.vendorId, vendors.id),
+          eq3(vendorSubscriptions.status, "active")
         )
-      ).leftJoin(subscriptionTiers, eq2(subscriptionTiers.id, vendorSubscriptions.tierId)).where(eq2(vendors.status, "approved"));
+      ).leftJoin(subscriptionTiers, eq3(subscriptionTiers.id, vendorSubscriptions.tierId)).where(eq3(vendors.status, "approved"));
       let filtered = categoryId ? vendorsWithSubs.filter((v) => v.categoryId === categoryId) : vendorsWithSubs;
       filtered.sort((a, b) => {
         if (a.canHighlightProfile && !b.canHighlightProfile) return -1;
@@ -3308,16 +4159,16 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
         hasReviewBadge: subscriptionTiers.hasReviewBadge
       }).from(vendors).leftJoin(
         vendorSubscriptions,
-        and2(
-          eq2(vendorSubscriptions.vendorId, vendors.id),
-          eq2(vendorSubscriptions.status, "active")
+        and3(
+          eq3(vendorSubscriptions.vendorId, vendors.id),
+          eq3(vendorSubscriptions.status, "active")
         )
-      ).leftJoin(subscriptionTiers, eq2(subscriptionTiers.id, vendorSubscriptions.tierId)).where(eq2(vendors.status, "approved"));
+      ).leftJoin(subscriptionTiers, eq3(subscriptionTiers.id, vendorSubscriptions.tierId)).where(eq3(vendors.status, "approved"));
       let filtered = category ? vendorsWithSubs.filter((v) => v.categoryId === category) : vendorsWithSubs;
       const vendorIds = filtered.map((v) => v.id);
       let categoryDetails = [];
       if (vendorIds.length > 0) {
-        categoryDetails = await db.select().from(vendorCategoryDetails).where(inArray(vendorCategoryDetails.vendorId, vendorIds));
+        categoryDetails = await db.select().from(vendorCategoryDetails).where(inArray2(vendorCategoryDetails.vendorId, vendorIds));
       }
       const vendorsWithDetails = filtered.map((vendor) => {
         const details = categoryDetails.find((d) => d.vendorId === vendor.id) || {};
@@ -3367,7 +4218,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
       const vendorIdsForProducts = result.map((v) => v.id);
       let vendorProductsMap = {};
       if (vendorIdsForProducts.length > 0) {
-        const allProducts = await db.select().from(vendorProducts).where(inArray(vendorProducts.vendorId, vendorIdsForProducts));
+        const allProducts = await db.select().from(vendorProducts).where(inArray2(vendorProducts.vendorId, vendorIdsForProducts));
         allProducts.forEach((product) => {
           if (!vendorProductsMap[product.vendorId]) {
             vendorProductsMap[product.vendorId] = [];
@@ -3422,7 +4273,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
         priceRange: vendors.priceRange,
         status: vendors.status,
         createdAt: vendors.createdAt
-      }).from(vendors).where(eq2(vendors.status, status));
+      }).from(vendors).where(eq3(vendors.status, status));
       res.json(vendorList);
     } catch (error) {
       console.error("Error fetching admin vendors:", error);
@@ -3434,15 +4285,15 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     try {
       const { id } = req.params;
       const { tierId } = req.body;
-      await db.update(vendors).set({ status: "approved", updatedAt: /* @__PURE__ */ new Date() }).where(eq2(vendors.id, id));
+      await db.update(vendors).set({ status: "approved", updatedAt: /* @__PURE__ */ new Date() }).where(eq3(vendors.id, id));
       const { vendorSubscriptions: vendorSubscriptions2 } = await Promise.resolve().then(() => (init_schema(), schema_exports));
-      const [existingSubscription] = await db.select().from(vendorSubscriptions2).where(eq2(vendorSubscriptions2.vendorId, id)).limit(1);
+      const [existingSubscription] = await db.select().from(vendorSubscriptions2).where(eq3(vendorSubscriptions2.vendorId, id)).limit(1);
       if (existingSubscription) {
         if (tierId && existingSubscription.tierId !== tierId) {
           await db.update(vendorSubscriptions2).set({
             tierId,
             updatedAt: /* @__PURE__ */ new Date()
-          }).where(eq2(vendorSubscriptions2.vendorId, id));
+          }).where(eq3(vendorSubscriptions2.vendorId, id));
         }
       } else if (tierId) {
         const now = /* @__PURE__ */ new Date();
@@ -3472,7 +4323,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
         status: "rejected",
         rejectionReason: reason || null,
         updatedAt: /* @__PURE__ */ new Date()
-      }).where(eq2(vendors.id, id));
+      }).where(eq3(vendors.id, id));
       res.json({ message: "Leverand\xF8r avvist" });
     } catch (error) {
       console.error("Error rejecting vendor:", error);
@@ -3486,15 +4337,15 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
       return null;
     }
     const token = authHeader.replace("Bearer ", "");
-    const [vendorSession] = await db.select({ vendorId: vendorSessions.vendorId }).from(vendorSessions).where(and2(
-      eq2(vendorSessions.token, token),
-      sql3`${vendorSessions.expiresAt} > NOW()`
+    const [vendorSession] = await db.select({ vendorId: vendorSessions.vendorId }).from(vendorSessions).where(and3(
+      eq3(vendorSessions.token, token),
+      sql4`${vendorSessions.expiresAt} > NOW()`
     ));
     if (!vendorSession) {
       res.status(401).json({ error: "\xD8kt utl\xF8pt. Vennligst logg inn p\xE5 nytt." });
       return null;
     }
-    const [vendor] = await db.select().from(vendors).where(eq2(vendors.id, vendorSession.vendorId));
+    const [vendor] = await db.select().from(vendors).where(eq3(vendors.id, vendorSession.vendorId));
     if (!vendor || vendor.status !== "approved") {
       res.status(401).json({ error: "Ikke autorisert" });
       return null;
@@ -3504,7 +4355,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
   const checkVendorSubscriptionAccess = async (vendorId, res) => {
     try {
       const { vendorSubscriptions: vendorSubscriptions2 } = await Promise.resolve().then(() => (init_schema(), schema_exports));
-      const [subscription] = await db.select().from(vendorSubscriptions2).where(eq2(vendorSubscriptions2.vendorId, vendorId)).limit(1);
+      const [subscription] = await db.select().from(vendorSubscriptions2).where(eq3(vendorSubscriptions2.vendorId, vendorId)).limit(1);
       if (!subscription) {
         res.status(403).json({
           error: "Ingen aktivt abonnement",
@@ -3528,7 +4379,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
           await db.update(vendorSubscriptions2).set({
             status: "paused",
             updatedAt: now
-          }).where(eq2(vendorSubscriptions2.id, subscription.id));
+          }).where(eq3(vendorSubscriptions2.id, subscription.id));
           res.status(403).json({
             error: "Pr\xF8veperiode utl\xF8pt",
             message: "Din 30-dagers pr\xF8veperiode har utl\xF8pt. Betal for \xE5 fortsette.",
@@ -3548,13 +4399,13 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
     try {
-      const [vendor] = await db.select().from(vendors).where(eq2(vendors.id, vendorId));
+      const [vendor] = await db.select().from(vendors).where(eq3(vendors.id, vendorId));
       if (!vendor) {
         return res.status(404).json({ error: "Leverand\xF8r ikke funnet" });
       }
       let category = null;
       if (vendor.categoryId) {
-        const [cat] = await db.select().from(vendorCategories).where(eq2(vendorCategories.id, vendor.categoryId));
+        const [cat] = await db.select().from(vendorCategories).where(eq3(vendorCategories.id, vendor.categoryId));
         category = cat ? { id: cat.id, name: cat.name } : null;
       }
       res.json({
@@ -3594,7 +4445,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
           displayName: subscriptionTiers2.displayName,
           priceNok: subscriptionTiers2.priceNok
         }
-      }).from(vendorSubscriptions2).innerJoin(subscriptionTiers2, eq2(vendorSubscriptions2.tierId, subscriptionTiers2.id)).where(eq2(vendorSubscriptions2.vendorId, vendorId)).limit(1);
+      }).from(vendorSubscriptions2).innerJoin(subscriptionTiers2, eq3(vendorSubscriptions2.tierId, subscriptionTiers2.id)).where(eq3(vendorSubscriptions2.vendorId, vendorId)).limit(1);
       if (!subscription) {
         return res.json({ hasSubscription: false });
       }
@@ -3640,7 +4491,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
         googleReviewUrl: googleReviewUrl || null,
         culturalExpertise: culturalExpertise || null,
         updatedAt: /* @__PURE__ */ new Date()
-      }).where(eq2(vendors.id, vendorId)).returning();
+      }).where(eq3(vendors.id, vendorId)).returning();
       res.json(updatedVendor);
     } catch (error) {
       console.error("Error updating vendor profile:", error);
@@ -3651,13 +4502,13 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
     try {
-      const [details] = await db.select().from(vendorCategoryDetails).where(eq2(vendorCategoryDetails.vendorId, vendorId));
+      const [details] = await db.select().from(vendorCategoryDetails).where(eq3(vendorCategoryDetails.vendorId, vendorId));
       const [vendor] = await db.select({
         categoryId: vendors.categoryId
-      }).from(vendors).where(eq2(vendors.id, vendorId));
+      }).from(vendors).where(eq3(vendors.id, vendorId));
       let categoryName = null;
       if (vendor?.categoryId) {
-        const [cat] = await db.select().from(vendorCategories).where(eq2(vendorCategories.id, vendor.categoryId));
+        const [cat] = await db.select().from(vendorCategories).where(eq3(vendorCategories.id, vendor.categoryId));
         categoryName = cat?.name || null;
       }
       res.json({
@@ -3678,9 +4529,9 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
       delete updateData.id;
       delete updateData.vendorId;
       delete updateData.createdAt;
-      const [existing] = await db.select().from(vendorCategoryDetails).where(eq2(vendorCategoryDetails.vendorId, vendorId));
+      const [existing] = await db.select().from(vendorCategoryDetails).where(eq3(vendorCategoryDetails.vendorId, vendorId));
       if (existing) {
-        const [updated] = await db.update(vendorCategoryDetails).set(updateData).where(eq2(vendorCategoryDetails.vendorId, vendorId)).returning();
+        const [updated] = await db.update(vendorCategoryDetails).set(updateData).where(eq3(vendorCategoryDetails.vendorId, vendorId)).returning();
         res.json(updated);
       } else {
         const [created] = await db.insert(vendorCategoryDetails).values({
@@ -3698,10 +4549,10 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
     try {
-      const vendorDeliveries = await db.select().from(deliveries).where(eq2(deliveries.vendorId, vendorId));
+      const vendorDeliveries = await db.select().from(deliveries).where(eq3(deliveries.vendorId, vendorId));
       const deliveriesWithItems = await Promise.all(
         vendorDeliveries.map(async (delivery) => {
-          const items = await db.select().from(deliveryItems).where(eq2(deliveryItems.deliveryId, delivery.id));
+          const items = await db.select().from(deliveryItems).where(eq3(deliveryItems.deliveryId, delivery.id));
           return { ...delivery, items };
         })
       );
@@ -3746,7 +4597,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
           })
         )
       );
-      const createdItems = await db.select().from(deliveryItems).where(eq2(deliveryItems.deliveryId, newDelivery.id));
+      const createdItems = await db.select().from(deliveryItems).where(eq3(deliveryItems.deliveryId, newDelivery.id));
       res.status(201).json({
         delivery: { ...newDelivery, items: createdItems },
         message: `Leveranse opprettet! Tilgangskode: ${accessCode}`
@@ -3763,9 +4614,9 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     try {
       const { id } = req.params;
       const { items, ...deliveryData } = req.body;
-      const [existing] = await db.select().from(deliveries).where(and2(
-        eq2(deliveries.id, id),
-        eq2(deliveries.vendorId, vendorId)
+      const [existing] = await db.select().from(deliveries).where(and3(
+        eq3(deliveries.id, id),
+        eq3(deliveries.vendorId, vendorId)
       ));
       if (!existing) {
         return res.status(404).json({ error: "Leveranse ikke funnet" });
@@ -3778,9 +4629,9 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
         weddingDate: deliveryData.weddingDate || null,
         status: deliveryData.status || existing.status,
         updatedAt: /* @__PURE__ */ new Date()
-      }).where(eq2(deliveries.id, id)).returning();
+      }).where(eq3(deliveries.id, id)).returning();
       if (items && Array.isArray(items)) {
-        await db.delete(deliveryItems).where(eq2(deliveryItems.deliveryId, id));
+        await db.delete(deliveryItems).where(eq3(deliveryItems.deliveryId, id));
         await Promise.all(
           items.map(
             (item, index2) => db.insert(deliveryItems).values({
@@ -3794,7 +4645,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
           )
         );
       }
-      const updatedItems = await db.select().from(deliveryItems).where(eq2(deliveryItems.deliveryId, id));
+      const updatedItems = await db.select().from(deliveryItems).where(eq3(deliveryItems.deliveryId, id));
       res.json({
         delivery: { ...updated, items: updatedItems },
         message: "Leveranse oppdatert!"
@@ -3810,15 +4661,15 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const { id } = req.params;
-      const [existing] = await db.select().from(deliveries).where(and2(
-        eq2(deliveries.id, id),
-        eq2(deliveries.vendorId, vendorId)
+      const [existing] = await db.select().from(deliveries).where(and3(
+        eq3(deliveries.id, id),
+        eq3(deliveries.vendorId, vendorId)
       ));
       if (!existing) {
         return res.status(404).json({ error: "Leveranse ikke funnet" });
       }
-      await db.delete(deliveryItems).where(eq2(deliveryItems.deliveryId, id));
-      await db.delete(deliveries).where(eq2(deliveries.id, id));
+      await db.delete(deliveryItems).where(eq3(deliveryItems.deliveryId, id));
+      await db.delete(deliveries).where(eq3(deliveries.id, id));
       res.json({ message: "Leveranse slettet" });
     } catch (error) {
       console.error("Error deleting delivery:", error);
@@ -3828,15 +4679,15 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
   app2.get("/api/deliveries/:accessCode", async (req, res) => {
     try {
       const { accessCode } = req.params;
-      const [delivery] = await db.select().from(deliveries).where(eq2(deliveries.accessCode, accessCode.toUpperCase()));
+      const [delivery] = await db.select().from(deliveries).where(eq3(deliveries.accessCode, accessCode.toUpperCase()));
       if (!delivery || delivery.status !== "active") {
         return res.status(404).json({ error: "Leveranse ikke funnet" });
       }
       const [vendor] = await db.select({
         businessName: vendors.businessName,
         categoryId: vendors.categoryId
-      }).from(vendors).where(eq2(vendors.id, delivery.vendorId));
-      const items = await db.select().from(deliveryItems).where(eq2(deliveryItems.deliveryId, delivery.id));
+      }).from(vendors).where(eq3(vendors.id, delivery.vendorId));
+      const items = await db.select().from(deliveryItems).where(eq3(deliveryItems.deliveryId, delivery.id));
       res.json({
         delivery: { ...delivery, items },
         vendor
@@ -3858,16 +4709,16 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
   app2.get("/api/inspirations", async (req, res) => {
     try {
       const categoryId = req.query.categoryId;
-      const approvedInspirations = await db.select().from(inspirations).where(eq2(inspirations.status, "approved"));
+      const approvedInspirations = await db.select().from(inspirations).where(eq3(inspirations.status, "approved"));
       const filtered = categoryId ? approvedInspirations.filter((i) => i.categoryId === categoryId) : approvedInspirations;
       const inspirationsWithDetails = await Promise.all(
         filtered.map(async (insp) => {
-          const media = await db.select().from(inspirationMedia).where(eq2(inspirationMedia.inspirationId, insp.id));
+          const media = await db.select().from(inspirationMedia).where(eq3(inspirationMedia.inspirationId, insp.id));
           const [vendor] = await db.select({
             id: vendors.id,
             businessName: vendors.businessName
-          }).from(vendors).where(eq2(vendors.id, insp.vendorId));
-          const [category] = await db.select().from(inspirationCategories).where(eq2(inspirationCategories.id, insp.categoryId || ""));
+          }).from(vendors).where(eq3(vendors.id, insp.vendorId));
+          const [category] = await db.select().from(inspirationCategories).where(eq3(inspirationCategories.id, insp.categoryId || ""));
           return { ...insp, media, vendor, category };
         })
       );
@@ -3881,11 +4732,11 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
     try {
-      const vendorInspirations = await db.select().from(inspirations).where(eq2(inspirations.vendorId, vendorId));
+      const vendorInspirations = await db.select().from(inspirations).where(eq3(inspirations.vendorId, vendorId));
       const inspirationsWithMedia = await Promise.all(
         vendorInspirations.map(async (insp) => {
-          const media = await db.select().from(inspirationMedia).where(eq2(inspirationMedia.inspirationId, insp.id));
-          const [category] = await db.select().from(inspirationCategories).where(eq2(inspirationCategories.id, insp.categoryId || ""));
+          const media = await db.select().from(inspirationMedia).where(eq3(inspirationMedia.inspirationId, insp.id));
+          const [category] = await db.select().from(inspirationCategories).where(eq3(inspirationCategories.id, insp.categoryId || ""));
           return { ...insp, media, category };
         })
       );
@@ -3900,7 +4751,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     if (!vendorId) return;
     if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
-      const featureRows = await db.select().from(vendorFeatures).where(and2(eq2(vendorFeatures.vendorId, vendorId), eq2(vendorFeatures.featureKey, "inspirations")));
+      const featureRows = await db.select().from(vendorFeatures).where(and3(eq3(vendorFeatures.vendorId, vendorId), eq3(vendorFeatures.featureKey, "inspirations")));
       if (featureRows.length > 0 && !featureRows[0].isEnabled) {
         return res.status(403).json({ error: "Inspirasjoner er deaktivert for denne kontoen" });
       }
@@ -3912,7 +4763,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
         });
       }
       const { media, ...inspirationData } = validation.data;
-      const assignments = await db.select().from(vendorInspirationCategories).where(eq2(vendorInspirationCategories.vendorId, vendorId));
+      const assignments = await db.select().from(vendorInspirationCategories).where(eq3(vendorInspirationCategories.vendorId, vendorId));
       if (assignments.length > 0) {
         const allowedCategoryIds = assignments.map((a) => a.categoryId);
         if (!allowedCategoryIds.includes(inspirationData.categoryId)) {
@@ -3947,7 +4798,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
           })
         )
       );
-      const createdMedia = await db.select().from(inspirationMedia).where(eq2(inspirationMedia.inspirationId, newInspiration.id));
+      const createdMedia = await db.select().from(inspirationMedia).where(eq3(inspirationMedia.inspirationId, newInspiration.id));
       res.status(201).json({
         inspiration: { ...newInspiration, media: createdMedia },
         message: "Inspirasjon opprettet! Den vil bli synlig etter godkjenning."
@@ -3964,9 +4815,9 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     try {
       const { id } = req.params;
       const { media, ...inspirationData } = req.body;
-      const [existing] = await db.select().from(inspirations).where(and2(
-        eq2(inspirations.id, id),
-        eq2(inspirations.vendorId, vendorId)
+      const [existing] = await db.select().from(inspirations).where(and3(
+        eq3(inspirations.id, id),
+        eq3(inspirations.vendorId, vendorId)
       ));
       if (!existing) {
         return res.status(404).json({ error: "Showcase ikke funnet" });
@@ -3989,9 +4840,9 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
         // Reset status to pending if content changes
         status: "pending",
         updatedAt: /* @__PURE__ */ new Date()
-      }).where(eq2(inspirations.id, id)).returning();
+      }).where(eq3(inspirations.id, id)).returning();
       if (media && Array.isArray(media)) {
-        await db.delete(inspirationMedia).where(eq2(inspirationMedia.inspirationId, id));
+        await db.delete(inspirationMedia).where(eq3(inspirationMedia.inspirationId, id));
         await Promise.all(
           media.map(
             (item, index2) => db.insert(inspirationMedia).values({
@@ -4004,7 +4855,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
           )
         );
       }
-      const updatedMedia = await db.select().from(inspirationMedia).where(eq2(inspirationMedia.inspirationId, id));
+      const updatedMedia = await db.select().from(inspirationMedia).where(eq3(inspirationMedia.inspirationId, id));
       res.json({
         inspiration: { ...updated, media: updatedMedia },
         message: "Showcase oppdatert! Endringer vil bli synlig etter godkjenning."
@@ -4020,15 +4871,15 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const { id } = req.params;
-      const [existing] = await db.select().from(inspirations).where(and2(
-        eq2(inspirations.id, id),
-        eq2(inspirations.vendorId, vendorId)
+      const [existing] = await db.select().from(inspirations).where(and3(
+        eq3(inspirations.id, id),
+        eq3(inspirations.vendorId, vendorId)
       ));
       if (!existing) {
         return res.status(404).json({ error: "Showcase ikke funnet" });
       }
-      await db.delete(inspirationMedia).where(eq2(inspirationMedia.inspirationId, id));
-      await db.delete(inspirations).where(eq2(inspirations.id, id));
+      await db.delete(inspirationMedia).where(eq3(inspirationMedia.inspirationId, id));
+      await db.delete(inspirations).where(eq3(inspirations.id, id));
       res.json({ message: "Showcase slettet" });
     } catch (error) {
       console.error("Error deleting inspiration:", error);
@@ -4039,15 +4890,15 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     if (!checkAdminAuth(req, res)) return;
     try {
       const status = req.query.status || "pending";
-      const inspirationList = await db.select().from(inspirations).where(eq2(inspirations.status, status));
+      const inspirationList = await db.select().from(inspirations).where(eq3(inspirations.status, status));
       const inspirationsWithDetails = await Promise.all(
         inspirationList.map(async (insp) => {
-          const media = await db.select().from(inspirationMedia).where(eq2(inspirationMedia.inspirationId, insp.id));
+          const media = await db.select().from(inspirationMedia).where(eq3(inspirationMedia.inspirationId, insp.id));
           const [vendor] = await db.select({
             id: vendors.id,
             businessName: vendors.businessName
-          }).from(vendors).where(eq2(vendors.id, insp.vendorId));
-          const [category] = await db.select().from(inspirationCategories).where(eq2(inspirationCategories.id, insp.categoryId || ""));
+          }).from(vendors).where(eq3(vendors.id, insp.vendorId));
+          const [category] = await db.select().from(inspirationCategories).where(eq3(inspirationCategories.id, insp.categoryId || ""));
           return { ...insp, media, vendor, category };
         })
       );
@@ -4061,7 +4912,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     if (!checkAdminAuth(req, res)) return;
     try {
       const { id } = req.params;
-      await db.update(inspirations).set({ status: "approved", updatedAt: /* @__PURE__ */ new Date() }).where(eq2(inspirations.id, id));
+      await db.update(inspirations).set({ status: "approved", updatedAt: /* @__PURE__ */ new Date() }).where(eq3(inspirations.id, id));
       res.json({ message: "Inspirasjon godkjent" });
     } catch (error) {
       console.error("Error approving inspiration:", error);
@@ -4077,7 +4928,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
         status: "rejected",
         rejectionReason: reason || null,
         updatedAt: /* @__PURE__ */ new Date()
-      }).where(eq2(inspirations.id, id));
+      }).where(eq3(inspirations.id, id));
       res.json({ message: "Inspirasjon avvist" });
     } catch (error) {
       console.error("Error rejecting inspiration:", error);
@@ -4088,7 +4939,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     if (!checkAdminAuth(req, res)) return;
     try {
       const { id } = req.params;
-      const features = await db.select().from(vendorFeatures).where(eq2(vendorFeatures.vendorId, id));
+      const features = await db.select().from(vendorFeatures).where(eq3(vendorFeatures.vendorId, id));
       res.json(features);
     } catch (error) {
       console.error("Error fetching vendor features:", error);
@@ -4110,9 +4961,9 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
         }
       }
       for (const feature of features) {
-        const existing = await db.select().from(vendorFeatures).where(and2(eq2(vendorFeatures.vendorId, id), eq2(vendorFeatures.featureKey, feature.featureKey)));
+        const existing = await db.select().from(vendorFeatures).where(and3(eq3(vendorFeatures.vendorId, id), eq3(vendorFeatures.featureKey, feature.featureKey)));
         if (existing.length > 0) {
-          await db.update(vendorFeatures).set({ isEnabled: feature.isEnabled, updatedAt: /* @__PURE__ */ new Date() }).where(and2(eq2(vendorFeatures.vendorId, id), eq2(vendorFeatures.featureKey, feature.featureKey)));
+          await db.update(vendorFeatures).set({ isEnabled: feature.isEnabled, updatedAt: /* @__PURE__ */ new Date() }).where(and3(eq3(vendorFeatures.vendorId, id), eq3(vendorFeatures.featureKey, feature.featureKey)));
         } else {
           await db.insert(vendorFeatures).values({
             vendorId: id,
@@ -4131,7 +4982,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     if (!checkAdminAuth(req, res)) return;
     try {
       const { id } = req.params;
-      const assignments = await db.select().from(vendorInspirationCategories).where(eq2(vendorInspirationCategories.vendorId, id));
+      const assignments = await db.select().from(vendorInspirationCategories).where(eq3(vendorInspirationCategories.vendorId, id));
       res.json(assignments.map((a) => a.categoryId));
     } catch (error) {
       console.error("Error fetching vendor categories:", error);
@@ -4155,7 +5006,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
           }
         }
       }
-      await db.delete(vendorInspirationCategories).where(eq2(vendorInspirationCategories.vendorId, id));
+      await db.delete(vendorInspirationCategories).where(eq3(vendorInspirationCategories.vendorId, id));
       if (categoryIds.length > 0) {
         await db.insert(vendorInspirationCategories).values(
           categoryIds.map((categoryId) => ({
@@ -4174,7 +5025,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
     try {
-      const assignments = await db.select().from(vendorInspirationCategories).where(eq2(vendorInspirationCategories.vendorId, vendorId));
+      const assignments = await db.select().from(vendorInspirationCategories).where(eq3(vendorInspirationCategories.vendorId, vendorId));
       if (assignments.length === 0) {
         const allCategories = await db.select().from(inspirationCategories);
         res.json(allCategories);
@@ -4192,7 +5043,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
     try {
-      const features = await db.select().from(vendorFeatures).where(eq2(vendorFeatures.vendorId, vendorId));
+      const features = await db.select().from(vendorFeatures).where(eq3(vendorFeatures.vendorId, vendorId));
       const featureMap = {
         deliveries: true,
         inspirations: true
@@ -4216,11 +5067,11 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
           details: validation.error.errors
         });
       }
-      const [inspiration] = await db.select().from(inspirations).where(eq2(inspirations.id, id));
+      const [inspiration] = await db.select().from(inspirations).where(eq3(inspirations.id, id));
       if (!inspiration || inspiration.status !== "approved") {
         return res.status(404).json({ error: "Inspirasjon ikke funnet" });
       }
-      const featureRows = await db.select().from(vendorFeatures).where(and2(eq2(vendorFeatures.vendorId, inspiration.vendorId), eq2(vendorFeatures.featureKey, "inspirations")));
+      const featureRows = await db.select().from(vendorFeatures).where(and3(eq3(vendorFeatures.vendorId, inspiration.vendorId), eq3(vendorFeatures.featureKey, "inspirations")));
       if (featureRows.length > 0 && !featureRows[0].isEnabled) {
         return res.status(403).json({ error: "Denne leverand\xF8ren har deaktivert inspirasjoner" });
       }
@@ -4247,10 +5098,10 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
     try {
-      const inquiries = await db.select().from(inspirationInquiries).where(eq2(inspirationInquiries.vendorId, vendorId));
+      const inquiries = await db.select().from(inspirationInquiries).where(eq3(inspirationInquiries.vendorId, vendorId));
       const inquiriesWithDetails = await Promise.all(
         inquiries.map(async (inq) => {
-          const [insp] = await db.select({ title: inspirations.title }).from(inspirations).where(eq2(inspirations.id, inq.inspirationId));
+          const [insp] = await db.select({ title: inspirations.title }).from(inspirations).where(eq3(inspirations.id, inq.inspirationId));
           return { ...inq, inspirationTitle: insp?.title };
         })
       );
@@ -4267,11 +5118,11 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     try {
       const { id } = req.params;
       const { status } = req.body;
-      const [inquiry] = await db.select().from(inspirationInquiries).where(eq2(inspirationInquiries.id, id));
+      const [inquiry] = await db.select().from(inspirationInquiries).where(eq3(inspirationInquiries.id, id));
       if (!inquiry || inquiry.vendorId !== vendorId) {
         return res.status(404).json({ error: "Foresp\xF8rsel ikke funnet" });
       }
-      await db.update(inspirationInquiries).set({ status }).where(eq2(inspirationInquiries.id, id));
+      await db.update(inspirationInquiries).set({ status }).where(eq3(inspirationInquiries.id, id));
       res.json({ message: "Status oppdatert" });
     } catch (error) {
       console.error("Error updating inquiry status:", error);
@@ -4289,7 +5140,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     if (cached && cached.expiresAt > /* @__PURE__ */ new Date()) {
       return cached.coupleId;
     }
-    const [session] = await db.select().from(coupleSessions).where(eq2(coupleSessions.token, token));
+    const [session] = await db.select().from(coupleSessions).where(eq3(coupleSessions.token, token));
     if (!session || session.expiresAt < /* @__PURE__ */ new Date()) {
       res.status(401).json({ error: "Sesjon utl\xF8pt" });
       return null;
@@ -4319,7 +5170,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
         lastActiveAt: coupleProfiles.lastActiveAt,
         createdAt: coupleProfiles.createdAt,
         updatedAt: coupleProfiles.updatedAt
-      }).from(coupleProfiles).where(eq2(coupleProfiles.email, email));
+      }).from(coupleProfiles).where(eq3(coupleProfiles.email, email));
       let couple = coupleResults[0] || null;
       let isNewRegistration = false;
       console.log("[CoupleLogin] Lookup result:", couple ? "Found" : "Not found");
@@ -4342,7 +5193,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
           return res.status(401).json({ error: "Ugyldig e-post eller passord" });
         }
         if (couple.displayName !== displayName) {
-          await db.update(coupleProfiles).set({ displayName, updatedAt: /* @__PURE__ */ new Date() }).where(eq2(coupleProfiles.id, couple.id));
+          await db.update(coupleProfiles).set({ displayName, updatedAt: /* @__PURE__ */ new Date() }).where(eq3(coupleProfiles.id, couple.id));
           couple.displayName = displayName;
         }
       }
@@ -4382,7 +5233,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     if (authHeader?.startsWith("Bearer ")) {
       const token = authHeader.substring(7);
       COUPLE_SESSIONS.delete(token);
-      await db.delete(coupleSessions).where(eq2(coupleSessions.token, token));
+      await db.delete(coupleSessions).where(eq3(coupleSessions.token, token));
     }
     res.json({ message: "Logget ut" });
   });
@@ -4390,7 +5241,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     const coupleId = await checkCoupleAuth(req, res);
     if (!coupleId) return;
     try {
-      const [couple] = await db.select().from(coupleProfiles).where(eq2(coupleProfiles.id, coupleId));
+      const [couple] = await db.select().from(coupleProfiles).where(eq3(coupleProfiles.id, coupleId));
       if (!couple) {
         return res.status(404).json({ error: "Profil ikke funnet" });
       }
@@ -4409,7 +5260,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
       if (displayName !== void 0) updateData.displayName = displayName;
       if (weddingDate !== void 0) updateData.weddingDate = weddingDate;
       if (selectedTraditions !== void 0) updateData.selectedTraditions = selectedTraditions;
-      const [updated] = await db.update(coupleProfiles).set(updateData).where(eq2(coupleProfiles.id, coupleId)).returning();
+      const [updated] = await db.update(coupleProfiles).set(updateData).where(eq3(coupleProfiles.id, coupleId)).returning();
       res.json(updated);
     } catch (error) {
       console.error("Error updating couple profile:", error);
@@ -4420,18 +5271,18 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     const coupleId = await checkCoupleAuth(req, res);
     if (!coupleId) return;
     try {
-      const convos = await db.select().from(conversations).where(and2(
-        eq2(conversations.coupleId, coupleId),
-        eq2(conversations.deletedByCouple, false)
-      )).orderBy(desc(conversations.lastMessageAt));
+      const convos = await db.select().from(conversations).where(and3(
+        eq3(conversations.coupleId, coupleId),
+        eq3(conversations.deletedByCouple, false)
+      )).orderBy(desc2(conversations.lastMessageAt));
       const enriched = await Promise.all(convos.map(async (conv) => {
-        const [vendor] = await db.select({ id: vendors.id, businessName: vendors.businessName }).from(vendors).where(eq2(vendors.id, conv.vendorId));
+        const [vendor] = await db.select({ id: vendors.id, businessName: vendors.businessName }).from(vendors).where(eq3(vendors.id, conv.vendorId));
         let inspiration = null;
         if (conv.inspirationId) {
-          const [insp] = await db.select({ id: inspirations.id, title: inspirations.title, coverImageUrl: inspirations.coverImageUrl }).from(inspirations).where(eq2(inspirations.id, conv.inspirationId));
+          const [insp] = await db.select({ id: inspirations.id, title: inspirations.title, coverImageUrl: inspirations.coverImageUrl }).from(inspirations).where(eq3(inspirations.id, conv.inspirationId));
           inspiration = insp;
         }
-        const [lastMsg] = await db.select().from(messages).where(eq2(messages.conversationId, conv.id)).orderBy(desc(messages.createdAt)).limit(1);
+        const [lastMsg] = await db.select().from(messages).where(eq3(messages.conversationId, conv.id)).orderBy(desc2(messages.createdAt)).limit(1);
         return { ...conv, vendor, inspiration, lastMessage: lastMsg };
       }));
       res.json(enriched);
@@ -4444,18 +5295,18 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
     try {
-      const convos = await db.select().from(conversations).where(and2(
-        eq2(conversations.vendorId, vendorId),
-        eq2(conversations.deletedByVendor, false)
-      )).orderBy(desc(conversations.lastMessageAt));
+      const convos = await db.select().from(conversations).where(and3(
+        eq3(conversations.vendorId, vendorId),
+        eq3(conversations.deletedByVendor, false)
+      )).orderBy(desc2(conversations.lastMessageAt));
       const enriched = await Promise.all(convos.map(async (conv) => {
-        const [couple] = await db.select({ id: coupleProfiles.id, displayName: coupleProfiles.displayName, email: coupleProfiles.email }).from(coupleProfiles).where(eq2(coupleProfiles.id, conv.coupleId));
+        const [couple] = await db.select({ id: coupleProfiles.id, displayName: coupleProfiles.displayName, email: coupleProfiles.email }).from(coupleProfiles).where(eq3(coupleProfiles.id, conv.coupleId));
         let inspiration = null;
         if (conv.inspirationId) {
-          const [insp] = await db.select({ id: inspirations.id, title: inspirations.title }).from(inspirations).where(eq2(inspirations.id, conv.inspirationId));
+          const [insp] = await db.select({ id: inspirations.id, title: inspirations.title }).from(inspirations).where(eq3(inspirations.id, conv.inspirationId));
           inspiration = insp;
         }
-        const [lastMsg] = await db.select().from(messages).where(eq2(messages.conversationId, conv.id)).orderBy(desc(messages.createdAt)).limit(1);
+        const [lastMsg] = await db.select().from(messages).where(eq3(messages.conversationId, conv.id)).orderBy(desc2(messages.createdAt)).limit(1);
         return { ...conv, couple, inspiration, lastMessage: lastMsg };
       }));
       res.json(enriched);
@@ -4469,9 +5320,9 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     if (!vendorId) return;
     try {
       const { id } = req.params;
-      const [conv] = await db.select().from(conversations).where(and2(
-        eq2(conversations.id, id),
-        eq2(conversations.vendorId, vendorId)
+      const [conv] = await db.select().from(conversations).where(and3(
+        eq3(conversations.id, id),
+        eq3(conversations.vendorId, vendorId)
       ));
       if (!conv) {
         return res.status(404).json({ error: "Samtale ikke funnet" });
@@ -4480,13 +5331,13 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
         id: coupleProfiles.id,
         displayName: coupleProfiles.displayName,
         email: coupleProfiles.email
-      }).from(coupleProfiles).where(eq2(coupleProfiles.id, conv.coupleId));
+      }).from(coupleProfiles).where(eq3(coupleProfiles.id, conv.coupleId));
       let inspiration = null;
       if (conv.inspirationId) {
-        const [insp] = await db.select({ id: inspirations.id, title: inspirations.title }).from(inspirations).where(eq2(inspirations.id, conv.inspirationId));
+        const [insp] = await db.select({ id: inspirations.id, title: inspirations.title }).from(inspirations).where(eq3(inspirations.id, conv.inspirationId));
         inspiration = insp;
       }
-      const [lastMsg] = await db.select().from(messages).where(eq2(messages.conversationId, conv.id)).orderBy(desc(messages.createdAt)).limit(1);
+      const [lastMsg] = await db.select().from(messages).where(eq3(messages.conversationId, conv.id)).orderBy(desc2(messages.createdAt)).limit(1);
       res.json({ ...conv, couple, inspiration, lastMessage: lastMsg });
     } catch (error) {
       console.error("Error fetching conversation:", error);
@@ -4498,15 +5349,15 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     if (!coupleId) return;
     try {
       const { id } = req.params;
-      const [conv] = await db.select().from(conversations).where(eq2(conversations.id, id));
+      const [conv] = await db.select().from(conversations).where(eq3(conversations.id, id));
       if (!conv || conv.coupleId !== coupleId) {
         return res.status(404).json({ error: "Samtale ikke funnet" });
       }
-      const msgs = await db.select().from(messages).where(and2(
-        eq2(messages.conversationId, id),
-        eq2(messages.deletedByCouple, false)
+      const msgs = await db.select().from(messages).where(and3(
+        eq3(messages.conversationId, id),
+        eq3(messages.deletedByCouple, false)
       )).orderBy(messages.createdAt);
-      await db.update(conversations).set({ coupleUnreadCount: 0 }).where(eq2(conversations.id, id));
+      await db.update(conversations).set({ coupleUnreadCount: 0 }).where(eq3(conversations.id, id));
       res.json(msgs);
     } catch (error) {
       console.error("Error fetching messages:", error);
@@ -4518,11 +5369,11 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     if (!coupleId) return;
     try {
       const { id } = req.params;
-      const [conv] = await db.select().from(conversations).where(eq2(conversations.id, id));
+      const [conv] = await db.select().from(conversations).where(eq3(conversations.id, id));
       if (!conv || conv.coupleId !== coupleId) {
         return res.status(404).json({ error: "Samtale ikke funnet" });
       }
-      const [vendor] = await db.select().from(vendors).where(eq2(vendors.id, conv.vendorId));
+      const [vendor] = await db.select().from(vendors).where(eq3(vendors.id, conv.vendorId));
       res.json({
         conversation: conv,
         vendor: vendor ? {
@@ -4543,15 +5394,15 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     if (!vendorId) return;
     try {
       const { id } = req.params;
-      const [conv] = await db.select().from(conversations).where(eq2(conversations.id, id));
+      const [conv] = await db.select().from(conversations).where(eq3(conversations.id, id));
       if (!conv || conv.vendorId !== vendorId) {
         return res.status(404).json({ error: "Samtale ikke funnet" });
       }
-      const msgs = await db.select().from(messages).where(and2(
-        eq2(messages.conversationId, id),
-        eq2(messages.deletedByVendor, false)
+      const msgs = await db.select().from(messages).where(and3(
+        eq3(messages.conversationId, id),
+        eq3(messages.deletedByVendor, false)
       )).orderBy(messages.createdAt);
-      await db.update(conversations).set({ vendorUnreadCount: 0 }).where(eq2(conversations.id, id));
+      await db.update(conversations).set({ vendorUnreadCount: 0 }).where(eq3(conversations.id, id));
       res.json(msgs);
     } catch (error) {
       console.error("Error fetching messages:", error);
@@ -4569,7 +5420,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
       const { conversationId, vendorId, inspirationId, body, attachmentUrl, attachmentType } = validation.data;
       let convId = conversationId;
       if (!convId && vendorId) {
-        let [existing] = await db.select().from(conversations).where(and2(eq2(conversations.coupleId, coupleId), eq2(conversations.vendorId, vendorId)));
+        let [existing] = await db.select().from(conversations).where(and3(eq3(conversations.coupleId, coupleId), eq3(conversations.vendorId, vendorId)));
         if (existing) {
           convId = existing.id;
         } else {
@@ -4587,7 +5438,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
       if (!convId) {
         return res.status(400).json({ error: "Mangler samtale eller leverand\xF8r-ID" });
       }
-      const [conv] = await db.select().from(conversations).where(eq2(conversations.id, convId));
+      const [conv] = await db.select().from(conversations).where(eq3(conversations.id, convId));
       if (!conv || conv.coupleId !== coupleId) {
         return res.status(403).json({ error: "Ingen tilgang til denne samtalen" });
       }
@@ -4602,7 +5453,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
       await db.update(conversations).set({
         lastMessageAt: /* @__PURE__ */ new Date(),
         vendorUnreadCount: (conv.vendorUnreadCount || 0) + 1
-      }).where(eq2(conversations.id, convId));
+      }).where(eq3(conversations.id, convId));
       broadcastConversation(convId, { type: "message", payload: msg });
       const msgCreatedAt = msg.createdAt || /* @__PURE__ */ new Date();
       broadcastVendorList(conv.vendorId, { type: "conv-update", payload: { conversationId: convId, lastMessageAt: msgCreatedAt.toISOString(), vendorUnreadCount: (conv.vendorUnreadCount || 0) + 1 } });
@@ -4621,7 +5472,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
       if (!conversationId || !body && !attachmentUrl) {
         return res.status(400).json({ error: "Mangler samtale-ID eller melding" });
       }
-      const [conv] = await db.select().from(conversations).where(eq2(conversations.id, conversationId));
+      const [conv] = await db.select().from(conversations).where(eq3(conversations.id, conversationId));
       if (!conv || conv.vendorId !== vendorId) {
         return res.status(403).json({ error: "Ingen tilgang til denne samtalen" });
       }
@@ -4636,7 +5487,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
       await db.update(conversations).set({
         lastMessageAt: /* @__PURE__ */ new Date(),
         coupleUnreadCount: (conv.coupleUnreadCount || 0) + 1
-      }).where(eq2(conversations.id, conversationId));
+      }).where(eq3(conversations.id, conversationId));
       broadcastConversation(conversationId, { type: "message", payload: msg });
       const msgCreatedAt = msg.createdAt || /* @__PURE__ */ new Date();
       broadcastCoupleList(conv.coupleId, { type: "conv-update", payload: { conversationId, lastMessageAt: msgCreatedAt.toISOString(), coupleUnreadCount: (conv.coupleUnreadCount || 0) + 1 } });
@@ -4650,7 +5501,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
     try {
-      const existing = await db.select().from(adminConversations).where(eq2(adminConversations.vendorId, vendorId));
+      const existing = await db.select().from(adminConversations).where(eq3(adminConversations.vendorId, vendorId));
       let conv = existing[0];
       if (!conv) {
         const [created] = await db.insert(adminConversations).values({ vendorId }).returning();
@@ -4666,12 +5517,12 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
     try {
-      const [conv] = await db.select().from(adminConversations).where(eq2(adminConversations.vendorId, vendorId));
+      const [conv] = await db.select().from(adminConversations).where(eq3(adminConversations.vendorId, vendorId));
       if (!conv) {
         return res.json([]);
       }
-      const msgs = await db.select().from(adminMessages).where(eq2(adminMessages.conversationId, conv.id)).orderBy(desc(adminMessages.createdAt));
-      await db.update(adminConversations).set({ vendorUnreadCount: 0 }).where(eq2(adminConversations.id, conv.id));
+      const msgs = await db.select().from(adminMessages).where(eq3(adminMessages.conversationId, conv.id)).orderBy(desc2(adminMessages.createdAt));
+      await db.update(adminConversations).set({ vendorUnreadCount: 0 }).where(eq3(adminConversations.id, conv.id));
       res.json(msgs);
     } catch (error) {
       console.error("Error fetching admin messages:", error);
@@ -4688,7 +5539,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
       if (!parse.success) {
         return res.status(400).json({ error: parse.error.errors[0]?.message || "Ugyldig melding" });
       }
-      const [conv] = await db.select().from(adminConversations).where(eq2(adminConversations.vendorId, vendorId));
+      const [conv] = await db.select().from(adminConversations).where(eq3(adminConversations.vendorId, vendorId));
       let conversationId = conv?.id;
       if (!conversationId) {
         const [created] = await db.insert(adminConversations).values({ vendorId }).returning();
@@ -4707,7 +5558,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
       await db.update(adminConversations).set({
         lastMessageAt: newLast,
         adminUnreadCount: newAdminUnread
-      }).where(eq2(adminConversations.id, conversationId));
+      }).where(eq3(adminConversations.id, conversationId));
       broadcastAdminConv(conversationId, { type: "message", payload: msg });
       broadcastAdminList({ type: "conv-update", payload: { conversationId, lastMessageAt: newLast.toISOString(), adminUnreadCount: newAdminUnread } });
       res.status(201).json(msg);
@@ -4722,7 +5573,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
       const rows = await db.select({
         conv: adminConversations,
         vendor: vendors
-      }).from(adminConversations).leftJoin(vendors, eq2(adminConversations.vendorId, vendors.id)).orderBy(desc(adminConversations.lastMessageAt));
+      }).from(adminConversations).leftJoin(vendors, eq3(adminConversations.vendorId, vendors.id)).orderBy(desc2(adminConversations.lastMessageAt));
       res.json(rows);
     } catch (error) {
       console.error("Error listing admin convs:", error);
@@ -4733,8 +5584,8 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     if (!checkAdminAuth(req, res)) return;
     try {
       const { id } = req.params;
-      const msgs = await db.select().from(adminMessages).where(eq2(adminMessages.conversationId, id)).orderBy(desc(adminMessages.createdAt));
-      await db.update(adminConversations).set({ adminUnreadCount: 0 }).where(eq2(adminConversations.id, id));
+      const msgs = await db.select().from(adminMessages).where(eq3(adminMessages.conversationId, id)).orderBy(desc2(adminMessages.createdAt));
+      await db.update(adminConversations).set({ adminUnreadCount: 0 }).where(eq3(adminConversations.id, id));
       res.json(msgs);
     } catch (error) {
       console.error("Error fetching admin msgs:", error);
@@ -4762,8 +5613,8 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
       const newLast = /* @__PURE__ */ new Date();
       await db.update(adminConversations).set({
         lastMessageAt: newLast,
-        vendorUnreadCount: sql3`COALESCE(${adminConversations.vendorUnreadCount}, 0) + 1`
-      }).where(eq2(adminConversations.id, id));
+        vendorUnreadCount: sql4`COALESCE(${adminConversations.vendorUnreadCount}, 0) + 1`
+      }).where(eq3(adminConversations.id, id));
       broadcastAdminConv(id, { type: "message", payload: msg });
       broadcastAdminList({ type: "conv-update", payload: { conversationId: id, lastMessageAt: newLast.toISOString() } });
       res.status(201).json(msg);
@@ -4790,7 +5641,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
       if (!["active", "resolved"].includes(status)) {
         return res.status(400).json({ error: "Ugyldig status" });
       }
-      await db.update(adminConversations).set({ status }).where(eq2(adminConversations.id, id));
+      await db.update(adminConversations).set({ status }).where(eq3(adminConversations.id, id));
       broadcastAdminConv(id, { type: "status-update", payload: { status, updatedAt: (/* @__PURE__ */ new Date()).toISOString() } });
       res.json({ success: true, status });
     } catch (error) {
@@ -4807,21 +5658,21 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
       if (!body || typeof body !== "string" || body.trim() === "") {
         return res.status(400).json({ error: "Melding kan ikke v\xE6re tom" });
       }
-      const [msg] = await db.select().from(messages).where(eq2(messages.id, id));
+      const [msg] = await db.select().from(messages).where(eq3(messages.id, id));
       if (!msg) {
         return res.status(404).json({ error: "Melding ikke funnet" });
       }
       if (msg.senderType !== "couple" || msg.senderId !== coupleId) {
         return res.status(403).json({ error: "Du kan bare redigere dine egne meldinger" });
       }
-      const [conv] = await db.select().from(conversations).where(eq2(conversations.id, msg.conversationId));
+      const [conv] = await db.select().from(conversations).where(eq3(conversations.id, msg.conversationId));
       if (!conv || conv.coupleId !== coupleId) {
         return res.status(403).json({ error: "Ingen tilgang til denne samtalen" });
       }
       const [updated] = await db.update(messages).set({
         body: body.trim(),
         editedAt: /* @__PURE__ */ new Date()
-      }).where(eq2(messages.id, id)).returning();
+      }).where(eq3(messages.id, id)).returning();
       res.json(updated);
     } catch (error) {
       console.error("Error editing message:", error);
@@ -4834,13 +5685,13 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const { id } = req.params;
-      const [conv] = await db.select().from(conversations).where(eq2(conversations.id, id));
+      const [conv] = await db.select().from(conversations).where(eq3(conversations.id, id));
       if (!conv || conv.vendorId !== vendorId) {
         return res.status(403).json({ error: "Ingen tilgang til denne samtalen" });
       }
       await db.update(conversations).set({
         vendorTypingAt: /* @__PURE__ */ new Date()
-      }).where(eq2(conversations.id, id));
+      }).where(eq3(conversations.id, id));
       broadcastConversation(id, { type: "typing", payload: { sender: "vendor", at: (/* @__PURE__ */ new Date()).toISOString() } });
       res.json({ success: true });
     } catch (error) {
@@ -4853,13 +5704,13 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     if (!coupleId) return;
     try {
       const { id } = req.params;
-      const [conv] = await db.select().from(conversations).where(eq2(conversations.id, id));
+      const [conv] = await db.select().from(conversations).where(eq3(conversations.id, id));
       if (!conv || conv.coupleId !== coupleId) {
         return res.status(403).json({ error: "Ingen tilgang til denne samtalen" });
       }
       await db.update(conversations).set({
         coupleTypingAt: /* @__PURE__ */ new Date()
-      }).where(eq2(conversations.id, id));
+      }).where(eq3(conversations.id, id));
       broadcastConversation(id, { type: "typing", payload: { sender: "couple", at: (/* @__PURE__ */ new Date()).toISOString() } });
       res.json({ success: true });
     } catch (error) {
@@ -4872,15 +5723,15 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     if (!coupleId) return;
     try {
       const { id } = req.params;
-      const [msg] = await db.select().from(messages).where(eq2(messages.id, id));
+      const [msg] = await db.select().from(messages).where(eq3(messages.id, id));
       if (!msg) {
         return res.status(404).json({ error: "Melding ikke funnet" });
       }
-      const [conv] = await db.select().from(conversations).where(eq2(conversations.id, msg.conversationId));
+      const [conv] = await db.select().from(conversations).where(eq3(conversations.id, msg.conversationId));
       if (!conv || conv.coupleId !== coupleId) {
         return res.status(403).json({ error: "Ingen tilgang til denne meldingen" });
       }
-      await db.update(messages).set({ deletedByCouple: true, coupleDeletedAt: /* @__PURE__ */ new Date() }).where(eq2(messages.id, id));
+      await db.update(messages).set({ deletedByCouple: true, coupleDeletedAt: /* @__PURE__ */ new Date() }).where(eq3(messages.id, id));
       res.json({ success: true, message: "Melding slettet" });
     } catch (error) {
       console.error("Error deleting message:", error);
@@ -4892,12 +5743,12 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     if (!coupleId) return;
     try {
       const { id } = req.params;
-      const [conv] = await db.select().from(conversations).where(eq2(conversations.id, id));
+      const [conv] = await db.select().from(conversations).where(eq3(conversations.id, id));
       if (!conv || conv.coupleId !== coupleId) {
         return res.status(404).json({ error: "Samtale ikke funnet" });
       }
-      await db.update(conversations).set({ deletedByCouple: true, coupleDeletedAt: /* @__PURE__ */ new Date() }).where(eq2(conversations.id, id));
-      await db.update(messages).set({ deletedByCouple: true, coupleDeletedAt: /* @__PURE__ */ new Date() }).where(eq2(messages.conversationId, id));
+      await db.update(conversations).set({ deletedByCouple: true, coupleDeletedAt: /* @__PURE__ */ new Date() }).where(eq3(conversations.id, id));
+      await db.update(messages).set({ deletedByCouple: true, coupleDeletedAt: /* @__PURE__ */ new Date() }).where(eq3(messages.conversationId, id));
       res.json({ success: true, message: "Samtale og meldinger slettet" });
     } catch (error) {
       console.error("Error deleting conversation:", error);
@@ -4910,15 +5761,15 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const { id } = req.params;
-      const [msg] = await db.select().from(messages).where(eq2(messages.id, id));
+      const [msg] = await db.select().from(messages).where(eq3(messages.id, id));
       if (!msg) {
         return res.status(404).json({ error: "Melding ikke funnet" });
       }
-      const [conv] = await db.select().from(conversations).where(eq2(conversations.id, msg.conversationId));
+      const [conv] = await db.select().from(conversations).where(eq3(conversations.id, msg.conversationId));
       if (!conv || conv.vendorId !== vendorId) {
         return res.status(403).json({ error: "Ingen tilgang til denne meldingen" });
       }
-      await db.update(messages).set({ deletedByVendor: true, vendorDeletedAt: /* @__PURE__ */ new Date() }).where(eq2(messages.id, id));
+      await db.update(messages).set({ deletedByVendor: true, vendorDeletedAt: /* @__PURE__ */ new Date() }).where(eq3(messages.id, id));
       res.json({ success: true, message: "Melding slettet" });
     } catch (error) {
       console.error("Error deleting vendor message:", error);
@@ -4935,21 +5786,21 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
       if (!body || !body.trim()) {
         return res.status(400).json({ error: "Melding kan ikke v\xE6re tom" });
       }
-      const [msg] = await db.select().from(messages).where(eq2(messages.id, id));
+      const [msg] = await db.select().from(messages).where(eq3(messages.id, id));
       if (!msg) {
         return res.status(404).json({ error: "Melding ikke funnet" });
       }
       if (msg.senderType !== "vendor") {
         return res.status(403).json({ error: "Du kan kun redigere dine egne meldinger" });
       }
-      const [conv] = await db.select().from(conversations).where(eq2(conversations.id, msg.conversationId));
+      const [conv] = await db.select().from(conversations).where(eq3(conversations.id, msg.conversationId));
       if (!conv || conv.vendorId !== vendorId) {
         return res.status(403).json({ error: "Ingen tilgang til denne meldingen" });
       }
       const [updated] = await db.update(messages).set({
         body: body.trim(),
         editedAt: /* @__PURE__ */ new Date()
-      }).where(eq2(messages.id, id)).returning();
+      }).where(eq3(messages.id, id)).returning();
       res.json(updated);
     } catch (error) {
       console.error("Error editing vendor message:", error);
@@ -4962,12 +5813,12 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const { id } = req.params;
-      const [conv] = await db.select().from(conversations).where(eq2(conversations.id, id));
+      const [conv] = await db.select().from(conversations).where(eq3(conversations.id, id));
       if (!conv || conv.vendorId !== vendorId) {
         return res.status(404).json({ error: "Samtale ikke funnet" });
       }
-      await db.update(conversations).set({ deletedByVendor: true, vendorDeletedAt: /* @__PURE__ */ new Date() }).where(eq2(conversations.id, id));
-      await db.update(messages).set({ deletedByVendor: true, vendorDeletedAt: /* @__PURE__ */ new Date() }).where(eq2(messages.conversationId, id));
+      await db.update(conversations).set({ deletedByVendor: true, vendorDeletedAt: /* @__PURE__ */ new Date() }).where(eq3(conversations.id, id));
+      await db.update(messages).set({ deletedByVendor: true, vendorDeletedAt: /* @__PURE__ */ new Date() }).where(eq3(messages.conversationId, id));
       res.json({ success: true, message: "Samtale og meldinger slettet" });
     } catch (error) {
       console.error("Error deleting vendor conversation:", error);
@@ -4979,11 +5830,11 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     if (!coupleId) return;
     try {
       const { inquiryId } = req.body;
-      const [inquiry] = await db.select().from(inspirationInquiries).where(eq2(inspirationInquiries.id, inquiryId));
+      const [inquiry] = await db.select().from(inspirationInquiries).where(eq3(inspirationInquiries.id, inquiryId));
       if (!inquiry) {
         return res.status(404).json({ error: "Henvendelse ikke funnet" });
       }
-      let [existing] = await db.select().from(conversations).where(eq2(conversations.inquiryId, inquiryId));
+      let [existing] = await db.select().from(conversations).where(eq3(conversations.inquiryId, inquiryId));
       if (existing) {
         return res.json(existing);
       }
@@ -5038,7 +5889,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
       const updates = { updatedAt: /* @__PURE__ */ new Date() };
       if (isCompleted !== void 0) updates.isCompleted = isCompleted;
       if (notificationId !== void 0) updates.notificationId = notificationId;
-      const [updated] = await db.update(reminders).set(updates).where(eq2(reminders.id, id)).returning();
+      const [updated] = await db.update(reminders).set(updates).where(eq3(reminders.id, id)).returning();
       if (!updated) {
         return res.status(404).json({ error: "P\xE5minnelse ikke funnet" });
       }
@@ -5051,7 +5902,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
   app2.delete("/api/reminders/:id", async (req, res) => {
     try {
       const { id } = req.params;
-      const [deleted] = await db.delete(reminders).where(eq2(reminders.id, id)).returning();
+      const [deleted] = await db.delete(reminders).where(eq3(reminders.id, id)).returning();
       if (!deleted) {
         return res.status(404).json({ error: "P\xE5minnelse ikke funnet" });
       }
@@ -5064,7 +5915,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
   app2.get("/api/speeches", async (req, res) => {
     try {
       const coupleId = await checkCoupleAuth(req, res);
-      const allSpeeches = await db.select().from(speeches).where(coupleId ? eq2(speeches.coupleId, coupleId) : sql3`1=1`).orderBy(speeches.sortOrder);
+      const allSpeeches = await db.select().from(speeches).where(coupleId ? eq3(speeches.coupleId, coupleId) : sql4`1=1`).orderBy(speeches.sortOrder);
       res.json(allSpeeches);
     } catch (error) {
       console.error("Error fetching speeches:", error);
@@ -5075,7 +5926,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     try {
       const coupleId = await checkCoupleAuth(req, res);
       const validatedData = createSpeechSchema.parse(req.body);
-      const existingSpeeches = await db.select().from(speeches).where(coupleId ? eq2(speeches.coupleId, coupleId) : sql3`1=1`).orderBy(desc(speeches.sortOrder));
+      const existingSpeeches = await db.select().from(speeches).where(coupleId ? eq3(speeches.coupleId, coupleId) : sql4`1=1`).orderBy(desc2(speeches.sortOrder));
       const maxOrder = existingSpeeches.length > 0 ? existingSpeeches[0].sortOrder : 0;
       const [newSpeech] = await db.insert(speeches).values({
         coupleId: coupleId || void 0,
@@ -5087,13 +5938,13 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
         scheduledTime: validatedData.scheduledTime
       }).returning();
       if (coupleId) {
-        const [couple] = await db.select({ displayName: coupleProfiles.displayName }).from(coupleProfiles).where(eq2(coupleProfiles.id, coupleId));
+        const [couple] = await db.select({ displayName: coupleProfiles.displayName }).from(coupleProfiles).where(eq3(coupleProfiles.id, coupleId));
         const contracts = await db.select({
           vendorId: coupleVendorContracts.vendorId,
           notifyOnSpeechChanges: coupleVendorContracts.notifyOnSpeechChanges
-        }).from(coupleVendorContracts).where(and2(
-          eq2(coupleVendorContracts.coupleId, coupleId),
-          eq2(coupleVendorContracts.status, "active")
+        }).from(coupleVendorContracts).where(and3(
+          eq3(coupleVendorContracts.coupleId, coupleId),
+          eq3(coupleVendorContracts.status, "active")
         ));
         for (const contract of contracts) {
           if (contract.notifyOnSpeechChanges) {
@@ -5128,18 +5979,18 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
       if (sortOrder !== void 0) updates.sortOrder = sortOrder;
       if (notes !== void 0) updates.notes = notes;
       if (scheduledTime !== void 0) updates.scheduledTime = scheduledTime;
-      const [updated] = await db.update(speeches).set(updates).where(eq2(speeches.id, id)).returning();
+      const [updated] = await db.update(speeches).set(updates).where(eq3(speeches.id, id)).returning();
       if (!updated) {
         return res.status(404).json({ error: "Tale ikke funnet" });
       }
       if (coupleId && updated.coupleId) {
-        const [couple] = await db.select({ displayName: coupleProfiles.displayName }).from(coupleProfiles).where(eq2(coupleProfiles.id, coupleId));
+        const [couple] = await db.select({ displayName: coupleProfiles.displayName }).from(coupleProfiles).where(eq3(coupleProfiles.id, coupleId));
         const contracts = await db.select({
           vendorId: coupleVendorContracts.vendorId,
           notifyOnSpeechChanges: coupleVendorContracts.notifyOnSpeechChanges
-        }).from(coupleVendorContracts).where(and2(
-          eq2(coupleVendorContracts.coupleId, coupleId),
-          eq2(coupleVendorContracts.status, "active")
+        }).from(coupleVendorContracts).where(and3(
+          eq3(coupleVendorContracts.coupleId, coupleId),
+          eq3(coupleVendorContracts.status, "active")
         ));
         for (const contract of contracts) {
           if (contract.notifyOnSpeechChanges) {
@@ -5166,19 +6017,19 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     try {
       const coupleId = await checkCoupleAuth(req, res);
       const { id } = req.params;
-      const [speechToDelete] = await db.select().from(speeches).where(eq2(speeches.id, id));
-      const [deleted] = await db.delete(speeches).where(eq2(speeches.id, id)).returning();
+      const [speechToDelete] = await db.select().from(speeches).where(eq3(speeches.id, id));
+      const [deleted] = await db.delete(speeches).where(eq3(speeches.id, id)).returning();
       if (!deleted) {
         return res.status(404).json({ error: "Tale ikke funnet" });
       }
       if (coupleId && speechToDelete?.coupleId) {
-        const [couple] = await db.select({ displayName: coupleProfiles.displayName }).from(coupleProfiles).where(eq2(coupleProfiles.id, coupleId));
+        const [couple] = await db.select({ displayName: coupleProfiles.displayName }).from(coupleProfiles).where(eq3(coupleProfiles.id, coupleId));
         const contracts = await db.select({
           vendorId: coupleVendorContracts.vendorId,
           notifyOnSpeechChanges: coupleVendorContracts.notifyOnSpeechChanges
-        }).from(coupleVendorContracts).where(and2(
-          eq2(coupleVendorContracts.coupleId, coupleId),
-          eq2(coupleVendorContracts.status, "active")
+        }).from(coupleVendorContracts).where(and3(
+          eq3(coupleVendorContracts.coupleId, coupleId),
+          eq3(coupleVendorContracts.status, "active")
         ));
         for (const contract of contracts) {
           if (contract.notifyOnSpeechChanges) {
@@ -5208,7 +6059,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
         return res.status(400).json({ error: "orderedIds m\xE5 v\xE6re en liste" });
       }
       for (let i = 0; i < orderedIds.length; i++) {
-        await db.update(speeches).set({ sortOrder: i, updatedAt: /* @__PURE__ */ new Date() }).where(eq2(speeches.id, orderedIds[i]));
+        await db.update(speeches).set({ sortOrder: i, updatedAt: /* @__PURE__ */ new Date() }).where(eq3(speeches.id, orderedIds[i]));
       }
       res.json({ success: true });
     } catch (error) {
@@ -5223,22 +6074,22 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
       if (userType === "couple") {
         const coupleId = await checkCoupleAuth(req, res);
         if (!coupleId) return;
-        await db.update(coupleProfiles).set({ lastActiveAt: /* @__PURE__ */ new Date(), updatedAt: /* @__PURE__ */ new Date() }).where(eq2(coupleProfiles.id, coupleId));
-        await db.update(messages).set({ readAt: /* @__PURE__ */ new Date() }).where(and2(
-          eq2(messages.conversationId, id),
-          eq2(messages.senderType, "vendor"),
-          sql3`${messages.readAt} IS NULL`
+        await db.update(coupleProfiles).set({ lastActiveAt: /* @__PURE__ */ new Date(), updatedAt: /* @__PURE__ */ new Date() }).where(eq3(coupleProfiles.id, coupleId));
+        await db.update(messages).set({ readAt: /* @__PURE__ */ new Date() }).where(and3(
+          eq3(messages.conversationId, id),
+          eq3(messages.senderType, "vendor"),
+          sql4`${messages.readAt} IS NULL`
         ));
-        await db.update(conversations).set({ coupleUnreadCount: 0 }).where(eq2(conversations.id, id));
+        await db.update(conversations).set({ coupleUnreadCount: 0 }).where(eq3(conversations.id, id));
       } else if (userType === "vendor") {
         const vendorId = await checkVendorAuth2(req, res);
         if (!vendorId) return;
-        await db.update(messages).set({ readAt: /* @__PURE__ */ new Date() }).where(and2(
-          eq2(messages.conversationId, id),
-          eq2(messages.senderType, "couple"),
-          sql3`${messages.readAt} IS NULL`
+        await db.update(messages).set({ readAt: /* @__PURE__ */ new Date() }).where(and3(
+          eq3(messages.conversationId, id),
+          eq3(messages.senderType, "couple"),
+          sql4`${messages.readAt} IS NULL`
         ));
-        await db.update(conversations).set({ vendorUnreadCount: 0 }).where(eq2(conversations.id, id));
+        await db.update(conversations).set({ vendorUnreadCount: 0 }).where(eq3(conversations.id, id));
       }
       res.json({ success: true });
     } catch (error) {
@@ -5251,12 +6102,12 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     if (!vendorId) return;
     try {
       const { id } = req.params;
-      const [conv] = await db.select().from(conversations).where(eq2(conversations.id, id));
+      const [conv] = await db.select().from(conversations).where(eq3(conversations.id, id));
       if (!conv || conv.vendorId !== vendorId) {
         return res.status(404).json({ error: "Samtale ikke funnet" });
       }
-      const [couple] = await db.select().from(coupleProfiles).where(eq2(coupleProfiles.id, conv.coupleId));
-      const convMessages = await db.select().from(messages).where(eq2(messages.conversationId, id)).orderBy(messages.createdAt);
+      const [couple] = await db.select().from(coupleProfiles).where(eq3(coupleProfiles.id, conv.coupleId));
+      const convMessages = await db.select().from(messages).where(eq3(messages.conversationId, id)).orderBy(messages.createdAt);
       const vendorMessages = convMessages.filter((m) => m.senderType === "vendor");
       const lastVendorMessage = vendorMessages[vendorMessages.length - 1];
       const messageSeenByCuple = lastVendorMessage?.readAt ? true : false;
@@ -5284,7 +6135,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     try {
       const { id } = req.params;
       const { reminderType, scheduledFor } = req.body;
-      const [conv] = await db.select().from(conversations).where(eq2(conversations.id, id));
+      const [conv] = await db.select().from(conversations).where(eq3(conversations.id, id));
       if (!conv || conv.vendorId !== vendorId) {
         return res.status(404).json({ error: "Samtale ikke funnet" });
       }
@@ -5305,9 +6156,9 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
     try {
-      const pendingReminders = await db.select().from(messageReminders).where(and2(
-        eq2(messageReminders.vendorId, vendorId),
-        eq2(messageReminders.status, "pending")
+      const pendingReminders = await db.select().from(messageReminders).where(and3(
+        eq3(messageReminders.vendorId, vendorId),
+        eq3(messageReminders.status, "pending")
       )).orderBy(messageReminders.scheduledFor);
       res.json(pendingReminders);
     } catch (error) {
@@ -5318,16 +6169,16 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
   app2.post("/api/admin/jobs/process-message-reminders", async (req, res) => {
     if (!checkAdminAuth(req, res)) return;
     try {
-      const dueReminders = await db.select().from(messageReminders).where(and2(
-        eq2(messageReminders.status, "pending"),
-        sql3`${messageReminders.scheduledFor} <= NOW()`
+      const dueReminders = await db.select().from(messageReminders).where(and3(
+        eq3(messageReminders.status, "pending"),
+        sql4`${messageReminders.scheduledFor} <= NOW()`
       ));
       if (dueReminders.length === 0) {
         return res.json({ message: "Ingen p\xE5minnelser \xE5 behandle", sent: 0 });
       }
       let sent = 0;
       for (const reminder of dueReminders) {
-        const [vendor] = await db.select({ businessName: vendors.businessName }).from(vendors).where(eq2(vendors.id, reminder.vendorId));
+        const [vendor] = await db.select({ businessName: vendors.businessName }).from(vendors).where(eq3(vendors.id, reminder.vendorId));
         const reminderText = reminder.reminderType === "final" ? "Siste p\xE5minnelse: " : "P\xE5minnelse: ";
         await db.insert(notifications).values({
           recipientType: "couple",
@@ -5338,7 +6189,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
           relatedEntityType: "conversation",
           relatedEntityId: reminder.conversationId
         });
-        await db.update(messageReminders).set({ status: "sent", sentAt: /* @__PURE__ */ new Date() }).where(eq2(messageReminders.id, reminder.id));
+        await db.update(messageReminders).set({ status: "sent", sentAt: /* @__PURE__ */ new Date() }).where(eq3(messageReminders.id, reminder.id));
         sent++;
       }
       res.json({ message: `${sent} p\xE5minnelser sendt`, sent });
@@ -5353,9 +6204,9 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const { id } = req.params;
-      const [deleted] = await db.update(messageReminders).set({ status: "cancelled" }).where(and2(
-        eq2(messageReminders.id, id),
-        eq2(messageReminders.vendorId, vendorId)
+      const [deleted] = await db.update(messageReminders).set({ status: "cancelled" }).where(and3(
+        eq3(messageReminders.id, id),
+        eq3(messageReminders.vendorId, vendorId)
       )).returning();
       if (!deleted) {
         return res.status(404).json({ error: "P\xE5minnelse ikke funnet" });
@@ -5370,9 +6221,9 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
     try {
-      const products = await db.select().from(vendorProducts).where(and2(
-        eq2(vendorProducts.vendorId, vendorId),
-        eq2(vendorProducts.isArchived, false)
+      const products = await db.select().from(vendorProducts).where(and3(
+        eq3(vendorProducts.vendorId, vendorId),
+        eq3(vendorProducts.isArchived, false)
       )).orderBy(vendorProducts.sortOrder);
       const productsWithMetadata = products.map((p) => ({
         ...p,
@@ -5422,9 +6273,9 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     try {
       const { id } = req.params;
       const updates = req.body;
-      const [existing] = await db.select().from(vendorProducts).where(and2(
-        eq2(vendorProducts.id, id),
-        eq2(vendorProducts.vendorId, vendorId)
+      const [existing] = await db.select().from(vendorProducts).where(and3(
+        eq3(vendorProducts.id, id),
+        eq3(vendorProducts.vendorId, vendorId)
       ));
       if (!existing) {
         return res.status(404).json({ error: "Produkt ikke funnet" });
@@ -5433,7 +6284,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
       if (updates.metadata) {
         updateData.metadata = JSON.stringify(updates.metadata);
       }
-      const [updated] = await db.update(vendorProducts).set(updateData).where(eq2(vendorProducts.id, id)).returning();
+      const [updated] = await db.update(vendorProducts).set(updateData).where(eq3(vendorProducts.id, id)).returning();
       res.json({
         ...updated,
         metadata: updated.metadata ? JSON.parse(updated.metadata) : null
@@ -5449,9 +6300,9 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const { id } = req.params;
-      const [archived] = await db.update(vendorProducts).set({ isArchived: true, updatedAt: /* @__PURE__ */ new Date() }).where(and2(
-        eq2(vendorProducts.id, id),
-        eq2(vendorProducts.vendorId, vendorId)
+      const [archived] = await db.update(vendorProducts).set({ isArchived: true, updatedAt: /* @__PURE__ */ new Date() }).where(and3(
+        eq3(vendorProducts.id, id),
+        eq3(vendorProducts.vendorId, vendorId)
       )).returning();
       if (!archived) {
         return res.status(404).json({ error: "Produkt ikke funnet" });
@@ -5467,12 +6318,12 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     if (!vendorId) return;
     try {
       const { startDate, endDate } = req.query;
-      let query = db.select().from(vendorAvailability).where(eq2(vendorAvailability.vendorId, vendorId));
+      let query = db.select().from(vendorAvailability).where(eq3(vendorAvailability.vendorId, vendorId));
       if (startDate && endDate) {
-        query = db.select().from(vendorAvailability).where(and2(
-          eq2(vendorAvailability.vendorId, vendorId),
-          gte(vendorAvailability.date, startDate),
-          lte(vendorAvailability.date, endDate)
+        query = db.select().from(vendorAvailability).where(and3(
+          eq3(vendorAvailability.vendorId, vendorId),
+          gte2(vendorAvailability.date, startDate),
+          lte2(vendorAvailability.date, endDate)
         ));
       }
       const availability = await query.orderBy(vendorAvailability.date);
@@ -5487,9 +6338,9 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     if (!vendorId) return;
     try {
       const validatedData = createVendorAvailabilitySchema.parse(req.body);
-      const [existing] = await db.select().from(vendorAvailability).where(and2(
-        eq2(vendorAvailability.vendorId, vendorId),
-        eq2(vendorAvailability.date, validatedData.date)
+      const [existing] = await db.select().from(vendorAvailability).where(and3(
+        eq3(vendorAvailability.vendorId, vendorId),
+        eq3(vendorAvailability.date, validatedData.date)
       ));
       if (existing) {
         const [updated] = await db.update(vendorAvailability).set({
@@ -5498,7 +6349,7 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
           maxBookings: validatedData.maxBookings,
           notes: validatedData.notes,
           updatedAt: /* @__PURE__ */ new Date()
-        }).where(eq2(vendorAvailability.id, existing.id)).returning();
+        }).where(eq3(vendorAvailability.id, existing.id)).returning();
         res.json(updated);
       } else {
         const [created] = await db.insert(vendorAvailability).values({
@@ -5529,12 +6380,12 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
       }
       const results = await Promise.all(
         dates.map(async (date2) => {
-          const [existing] = await db.select().from(vendorAvailability).where(and2(
-            eq2(vendorAvailability.vendorId, vendorId),
-            eq2(vendorAvailability.date, date2)
+          const [existing] = await db.select().from(vendorAvailability).where(and3(
+            eq3(vendorAvailability.vendorId, vendorId),
+            eq3(vendorAvailability.date, date2)
           ));
           if (existing) {
-            const [updated] = await db.update(vendorAvailability).set({ status, maxBookings, name, notes, updatedAt: /* @__PURE__ */ new Date() }).where(eq2(vendorAvailability.id, existing.id)).returning();
+            const [updated] = await db.update(vendorAvailability).set({ status, maxBookings, name, notes, updatedAt: /* @__PURE__ */ new Date() }).where(eq3(vendorAvailability.id, existing.id)).returning();
             return updated;
           } else {
             const [created] = await db.insert(vendorAvailability).values({ vendorId, date: date2, status, maxBookings, name, notes }).returning();
@@ -5553,14 +6404,14 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     if (!vendorId) return;
     try {
       const { id } = req.params;
-      const [existing] = await db.select().from(vendorAvailability).where(and2(
-        eq2(vendorAvailability.id, id),
-        eq2(vendorAvailability.vendorId, vendorId)
+      const [existing] = await db.select().from(vendorAvailability).where(and3(
+        eq3(vendorAvailability.id, id),
+        eq3(vendorAvailability.vendorId, vendorId)
       ));
       if (!existing) {
         return res.status(404).json({ error: "Tilgjengelighet ikke funnet" });
       }
-      await db.delete(vendorAvailability).where(eq2(vendorAvailability.id, id));
+      await db.delete(vendorAvailability).where(eq3(vendorAvailability.id, id));
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting vendor availability:", error);
@@ -5572,9 +6423,9 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     if (!vendorId) return;
     try {
       const { date: date2 } = req.params;
-      await db.delete(vendorAvailability).where(and2(
-        eq2(vendorAvailability.vendorId, vendorId),
-        eq2(vendorAvailability.date, date2)
+      await db.delete(vendorAvailability).where(and3(
+        eq3(vendorAvailability.vendorId, vendorId),
+        eq3(vendorAvailability.date, date2)
       ));
       res.json({ success: true });
     } catch (error) {
@@ -5590,10 +6441,10 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
       const acceptedOffers = await db.select({
         offer: vendorOffers,
         weddingDate: coupleProfiles.weddingDate
-      }).from(vendorOffers).leftJoin(coupleProfiles, eq2(vendorOffers.coupleId, coupleProfiles.id)).where(and2(
-        eq2(vendorOffers.vendorId, vendorId),
-        eq2(vendorOffers.status, "accepted"),
-        eq2(coupleProfiles.weddingDate, date2)
+      }).from(vendorOffers).leftJoin(coupleProfiles, eq3(vendorOffers.coupleId, coupleProfiles.id)).where(and3(
+        eq3(vendorOffers.vendorId, vendorId),
+        eq3(vendorOffers.status, "accepted"),
+        eq3(coupleProfiles.weddingDate, date2)
       ));
       res.json({
         date: date2,
@@ -5611,9 +6462,9 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
       if (!date2) {
         return res.status(400).json({ error: "M\xE5 oppgi dato" });
       }
-      const [availability] = await db.select().from(vendorAvailability).where(and2(
-        eq2(vendorAvailability.vendorId, vendorId),
-        eq2(vendorAvailability.date, date2)
+      const [availability] = await db.select().from(vendorAvailability).where(and3(
+        eq3(vendorAvailability.vendorId, vendorId),
+        eq3(vendorAvailability.date, date2)
       ));
       if (!availability) {
         res.json({ status: "available", isAvailable: true });
@@ -5640,10 +6491,10 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
           displayName: coupleProfiles.displayName,
           email: coupleProfiles.email
         }
-      }).from(vendorOffers).leftJoin(coupleProfiles, eq2(vendorOffers.coupleId, coupleProfiles.id)).where(eq2(vendorOffers.vendorId, vendorId)).orderBy(desc(vendorOffers.createdAt));
+      }).from(vendorOffers).leftJoin(coupleProfiles, eq3(vendorOffers.coupleId, coupleProfiles.id)).where(eq3(vendorOffers.vendorId, vendorId)).orderBy(desc2(vendorOffers.createdAt));
       const offersWithItems = await Promise.all(
         offers.map(async ({ offer, couple }) => {
-          const items = await db.select().from(vendorOfferItems).where(eq2(vendorOfferItems.offerId, offer.id)).orderBy(vendorOfferItems.sortOrder);
+          const items = await db.select().from(vendorOfferItems).where(eq3(vendorOfferItems.offerId, offer.id)).orderBy(vendorOfferItems.sortOrder);
           return { ...offer, couple, items };
         })
       );
@@ -5659,15 +6510,15 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const validatedData = createOfferSchema.parse(req.body);
-      const [couple] = await db.select().from(coupleProfiles).where(eq2(coupleProfiles.id, validatedData.coupleId));
+      const [couple] = await db.select().from(coupleProfiles).where(eq3(coupleProfiles.id, validatedData.coupleId));
       if (!couple) {
         return res.status(404).json({ error: "Par ikke funnet" });
       }
       const targetWeddingDate = couple.weddingDate;
       if (targetWeddingDate) {
-        const [availability] = await db.select().from(vendorAvailability).where(and2(
-          eq2(vendorAvailability.vendorId, vendorId),
-          eq2(vendorAvailability.date, targetWeddingDate)
+        const [availability] = await db.select().from(vendorAvailability).where(and3(
+          eq3(vendorAvailability.vendorId, vendorId),
+          eq3(vendorAvailability.date, targetWeddingDate)
         ));
         if (availability?.status === "blocked") {
           return res.status(400).json({
@@ -5676,10 +6527,10 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
           });
         }
         if (availability?.maxBookings !== null && availability?.maxBookings !== void 0) {
-          const [existingBookings] = await db.select({ count: sql3`count(*)` }).from(vendorOffers).innerJoin(coupleProfiles, eq2(vendorOffers.coupleId, coupleProfiles.id)).where(and2(
-            eq2(vendorOffers.vendorId, vendorId),
-            eq2(coupleProfiles.weddingDate, targetWeddingDate),
-            eq2(vendorOffers.status, "accepted")
+          const [existingBookings] = await db.select({ count: sql4`count(*)` }).from(vendorOffers).innerJoin(coupleProfiles, eq3(vendorOffers.coupleId, coupleProfiles.id)).where(and3(
+            eq3(vendorOffers.vendorId, vendorId),
+            eq3(coupleProfiles.weddingDate, targetWeddingDate),
+            eq3(vendorOffers.status, "accepted")
           ));
           if (existingBookings && existingBookings.count >= availability.maxBookings) {
             return res.status(400).json({
@@ -5692,18 +6543,18 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
       const inventoryErrors = [];
       for (const item of validatedData.items) {
         if (!item.productId) continue;
-        const [product] = await db.select().from(vendorProducts).where(eq2(vendorProducts.id, item.productId));
+        const [product] = await db.select().from(vendorProducts).where(eq3(vendorProducts.id, item.productId));
         if (!product || !product.trackInventory) continue;
         let reservedForDate = 0;
         if (targetWeddingDate) {
           const existingOffers = await db.select({
             quantity: vendorOfferItems.quantity
-          }).from(vendorOfferItems).innerJoin(vendorOffers, eq2(vendorOfferItems.offerId, vendorOffers.id)).innerJoin(coupleProfiles, eq2(vendorOffers.coupleId, coupleProfiles.id)).where(and2(
-            eq2(vendorOfferItems.productId, item.productId),
-            eq2(coupleProfiles.weddingDate, targetWeddingDate),
-            or(
-              eq2(vendorOffers.status, "pending"),
-              eq2(vendorOffers.status, "accepted")
+          }).from(vendorOfferItems).innerJoin(vendorOffers, eq3(vendorOfferItems.offerId, vendorOffers.id)).innerJoin(coupleProfiles, eq3(vendorOffers.coupleId, coupleProfiles.id)).where(and3(
+            eq3(vendorOfferItems.productId, item.productId),
+            eq3(coupleProfiles.weddingDate, targetWeddingDate),
+            or2(
+              eq3(vendorOffers.status, "pending"),
+              eq3(vendorOffers.status, "accepted")
             )
           ));
           reservedForDate = existingOffers.reduce((sum, o) => sum + (o.quantity || 0), 0);
@@ -5761,7 +6612,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         await db.update(conversations).set({
           lastMessageAt: /* @__PURE__ */ new Date(),
           coupleUnreadCount: 1
-        }).where(eq2(conversations.id, validatedData.conversationId));
+        }).where(eq3(conversations.id, validatedData.conversationId));
       }
       res.status(201).json({ ...offer, items });
     } catch (error) {
@@ -5776,14 +6627,14 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     try {
       const { id } = req.params;
       const updates = req.body;
-      const [existing] = await db.select().from(vendorOffers).where(and2(
-        eq2(vendorOffers.id, id),
-        eq2(vendorOffers.vendorId, vendorId)
+      const [existing] = await db.select().from(vendorOffers).where(and3(
+        eq3(vendorOffers.id, id),
+        eq3(vendorOffers.vendorId, vendorId)
       ));
       if (!existing) {
         return res.status(404).json({ error: "Tilbud ikke funnet" });
       }
-      const [updated] = await db.update(vendorOffers).set({ ...updates, updatedAt: /* @__PURE__ */ new Date() }).where(eq2(vendorOffers.id, id)).returning();
+      const [updated] = await db.update(vendorOffers).set({ ...updates, updatedAt: /* @__PURE__ */ new Date() }).where(eq3(vendorOffers.id, id)).returning();
       res.json(updated);
     } catch (error) {
       console.error("Error updating vendor offer:", error);
@@ -5796,15 +6647,15 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const { id } = req.params;
-      const [existing] = await db.select().from(vendorOffers).where(and2(
-        eq2(vendorOffers.id, id),
-        eq2(vendorOffers.vendorId, vendorId)
+      const [existing] = await db.select().from(vendorOffers).where(and3(
+        eq3(vendorOffers.id, id),
+        eq3(vendorOffers.vendorId, vendorId)
       ));
       if (!existing) {
         return res.status(404).json({ error: "Tilbud ikke funnet" });
       }
-      await db.delete(vendorOfferItems).where(eq2(vendorOfferItems.offerId, id));
-      await db.delete(vendorOffers).where(eq2(vendorOffers.id, id));
+      await db.delete(vendorOfferItems).where(eq3(vendorOfferItems.offerId, id));
+      await db.delete(vendorOffers).where(eq3(vendorOffers.id, id));
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting vendor offer:", error);
@@ -5821,7 +6672,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         return res.status(400).json({ error: "Ugyldig planner-type" });
       }
       const key = plannerKey(kind, vendorId);
-      const [setting] = await db.select().from(appSettings).where(eq2(appSettings.key, key));
+      const [setting] = await db.select().from(appSettings).where(eq3(appSettings.key, key));
       const value = setting?.value ? JSON.parse(setting.value) : kind === "timeline" ? [] : [];
       res.json(value);
     } catch (error) {
@@ -5840,9 +6691,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       const key = plannerKey(kind, vendorId);
       const payload = req.body;
       const json = JSON.stringify(payload);
-      const [existing] = await db.select().from(appSettings).where(eq2(appSettings.key, key));
+      const [existing] = await db.select().from(appSettings).where(eq3(appSettings.key, key));
       if (existing) {
-        await db.update(appSettings).set({ value: json, updatedAt: /* @__PURE__ */ new Date() }).where(eq2(appSettings.key, key));
+        await db.update(appSettings).set({ value: json, updatedAt: /* @__PURE__ */ new Date() }).where(eq3(appSettings.key, key));
       } else {
         await db.insert(appSettings).values({ key, value: json, category: "vendor_planner" });
       }
@@ -5863,11 +6714,11 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       const key = plannerKey(kind, vendorId);
       const payload = req.body;
       const json = JSON.stringify(payload);
-      const [existing] = await db.select().from(appSettings).where(eq2(appSettings.key, key));
+      const [existing] = await db.select().from(appSettings).where(eq3(appSettings.key, key));
       if (!existing) {
         return res.status(404).json({ error: "Planner-data ikke funnet" });
       }
-      const [updated] = await db.update(appSettings).set({ value: json, updatedAt: /* @__PURE__ */ new Date() }).where(eq2(appSettings.key, key)).returning();
+      const [updated] = await db.update(appSettings).set({ value: json, updatedAt: /* @__PURE__ */ new Date() }).where(eq3(appSettings.key, key)).returning();
       res.json({ success: true, updated });
     } catch (error) {
       console.error("Error updating vendor planner items:", error);
@@ -5883,7 +6734,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         return res.status(400).json({ error: "Ugyldig planner-type" });
       }
       const key = plannerKey(kind, vendorId);
-      await db.delete(appSettings).where(eq2(appSettings.key, key));
+      await db.delete(appSettings).where(eq3(appSettings.key, key));
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting vendor planner items:", error);
@@ -5899,7 +6750,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     }
     let coupleId = COUPLE_SESSIONS.get(token)?.coupleId;
     if (!coupleId) {
-      const [session] = await db.select().from(coupleSessions).where(eq2(coupleSessions.token, token));
+      const [session] = await db.select().from(coupleSessions).where(eq3(coupleSessions.token, token));
       if (!session || session.expiresAt < /* @__PURE__ */ new Date()) {
         res.status(401).json({ error: "Ugyldig \xF8kt" });
         return null;
@@ -5911,17 +6762,17 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
   };
   const backfillCoupleVenueFromSettings = async (kind, coupleId) => {
     const key = coupleVenueKey(kind, coupleId);
-    const [setting] = await db.select().from(appSettings).where(eq2(appSettings.key, key));
+    const [setting] = await db.select().from(appSettings).where(eq3(appSettings.key, key));
     if (!setting?.value) return null;
     const parsed = JSON.parse(setting.value);
     try {
       if (kind === "bookings" && Array.isArray(parsed)) {
         await db.transaction(async (tx) => {
-          await tx.delete(coupleVenueBookings).where(eq2(coupleVenueBookings.coupleId, coupleId));
+          await tx.delete(coupleVenueBookings).where(eq3(coupleVenueBookings.coupleId, coupleId));
           if (parsed.length === 0) return;
           await tx.insert(coupleVenueBookings).values(
             parsed.map((b) => ({
-              id: b.id || crypto2.randomUUID(),
+              id: b.id || crypto3.randomUUID(),
               coupleId,
               venueName: b.venueName,
               date: b.date,
@@ -5970,7 +6821,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     }
     try {
       if (kind === "bookings") {
-        const rows = await db.select().from(coupleVenueBookings).where(eq2(coupleVenueBookings.coupleId, coupleId)).orderBy(desc(coupleVenueBookings.createdAt));
+        const rows = await db.select().from(coupleVenueBookings).where(eq3(coupleVenueBookings.coupleId, coupleId)).orderBy(desc2(coupleVenueBookings.createdAt));
         if (rows.length > 0) {
           return res.json(rows.map((r) => ({
             id: r.id,
@@ -5988,7 +6839,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         const fallback2 = await backfillCoupleVenueFromSettings(kind, coupleId);
         return res.json(Array.isArray(fallback2) ? fallback2 : []);
       }
-      const [timeline] = await db.select().from(coupleVenueTimelines).where(eq2(coupleVenueTimelines.coupleId, coupleId));
+      const [timeline] = await db.select().from(coupleVenueTimelines).where(eq3(coupleVenueTimelines.coupleId, coupleId));
       if (timeline) {
         return res.json({
           venueSelected: !!timeline.venueSelected,
@@ -6017,11 +6868,11 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       if (kind === "bookings") {
         const payload2 = Array.isArray(req.body) ? req.body : [];
         await db.transaction(async (tx) => {
-          await tx.delete(coupleVenueBookings).where(eq2(coupleVenueBookings.coupleId, coupleId));
+          await tx.delete(coupleVenueBookings).where(eq3(coupleVenueBookings.coupleId, coupleId));
           if (payload2.length === 0) return;
           await tx.insert(coupleVenueBookings).values(
             payload2.map((b) => ({
-              id: b.id || crypto2.randomUUID(),
+              id: b.id || crypto3.randomUUID(),
               coupleId,
               venueName: b.venueName,
               date: b.date,
@@ -6073,11 +6924,11 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       if (kind === "bookings") {
         const payload2 = Array.isArray(req.body) ? req.body : [];
         await db.transaction(async (tx) => {
-          await tx.delete(coupleVenueBookings).where(eq2(coupleVenueBookings.coupleId, coupleId));
+          await tx.delete(coupleVenueBookings).where(eq3(coupleVenueBookings.coupleId, coupleId));
           if (payload2.length === 0) return;
           await tx.insert(coupleVenueBookings).values(
             payload2.map((b) => ({
-              id: b.id || crypto2.randomUUID(),
+              id: b.id || crypto3.randomUUID(),
               coupleId,
               venueName: b.venueName,
               date: b.date,
@@ -6127,10 +6978,10 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     }
     try {
       if (kind === "bookings") {
-        await db.delete(coupleVenueBookings).where(eq2(coupleVenueBookings.coupleId, coupleId));
+        await db.delete(coupleVenueBookings).where(eq3(coupleVenueBookings.coupleId, coupleId));
         return res.json({ success: true });
       }
-      await db.delete(coupleVenueTimelines).where(eq2(coupleVenueTimelines.coupleId, coupleId));
+      await db.delete(coupleVenueTimelines).where(eq3(coupleVenueTimelines.coupleId, coupleId));
       return res.json({ success: true });
     } catch (error) {
       console.error("Error deleting couple venue data:", error);
@@ -6143,7 +6994,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const key = coupleSeatingKey(coupleId);
-      const [setting] = await db.select().from(appSettings).where(eq2(appSettings.key, key));
+      const [setting] = await db.select().from(appSettings).where(eq3(appSettings.key, key));
       const seating = setting?.value ? JSON.parse(setting.value) : { tables: [], guests: [] };
       return res.json(seating);
     } catch (error) {
@@ -6158,9 +7009,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       const key = coupleSeatingKey(coupleId);
       const payload = req.body || { tables: [], guests: [] };
       const json = JSON.stringify(payload);
-      const [existing] = await db.select().from(appSettings).where(eq2(appSettings.key, key));
+      const [existing] = await db.select().from(appSettings).where(eq3(appSettings.key, key));
       if (existing) {
-        await db.update(appSettings).set({ value: json, updatedAt: /* @__PURE__ */ new Date() }).where(eq2(appSettings.key, key));
+        await db.update(appSettings).set({ value: json, updatedAt: /* @__PURE__ */ new Date() }).where(eq3(appSettings.key, key));
       } else {
         await db.insert(appSettings).values({ key, value: json, category: "couple_venue_seating" });
       }
@@ -6173,17 +7024,17 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
   const vendorVenueKey = (kind, vendorId) => `vendor_venue_${kind}_${vendorId}`;
   const backfillVendorVenueFromSettings = async (kind, vendorId) => {
     const key = vendorVenueKey(kind, vendorId);
-    const [setting] = await db.select().from(appSettings).where(eq2(appSettings.key, key));
+    const [setting] = await db.select().from(appSettings).where(eq3(appSettings.key, key));
     if (!setting?.value) return null;
     const parsed = JSON.parse(setting.value);
     try {
       if (kind === "bookings" && Array.isArray(parsed)) {
         await db.transaction(async (tx) => {
-          await tx.delete(vendorVenueBookings).where(eq2(vendorVenueBookings.vendorId, vendorId));
+          await tx.delete(vendorVenueBookings).where(eq3(vendorVenueBookings.vendorId, vendorId));
           if (parsed.length === 0) return;
           await tx.insert(vendorVenueBookings).values(
             parsed.map((b) => ({
-              id: b.id || crypto2.randomUUID(),
+              id: b.id || crypto3.randomUUID(),
               vendorId,
               coupleName: b.coupleName,
               date: b.date,
@@ -6199,11 +7050,11 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       }
       if (kind === "availability" && Array.isArray(parsed)) {
         await db.transaction(async (tx) => {
-          await tx.delete(vendorVenueAvailability).where(eq2(vendorVenueAvailability.vendorId, vendorId));
+          await tx.delete(vendorVenueAvailability).where(eq3(vendorVenueAvailability.vendorId, vendorId));
           if (parsed.length === 0) return;
           await tx.insert(vendorVenueAvailability).values(
             parsed.map((a) => ({
-              id: a.id || crypto2.randomUUID(),
+              id: a.id || crypto3.randomUUID(),
               vendorId,
               date: a.date,
               status: a.status || "available",
@@ -6245,7 +7096,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     }
     try {
       if (kind === "bookings") {
-        const rows = await db.select().from(vendorVenueBookings).where(eq2(vendorVenueBookings.vendorId, vendorId)).orderBy(desc(vendorVenueBookings.createdAt));
+        const rows = await db.select().from(vendorVenueBookings).where(eq3(vendorVenueBookings.vendorId, vendorId)).orderBy(desc2(vendorVenueBookings.createdAt));
         if (rows.length > 0) {
           return res.json(rows.map((r) => ({
             id: r.id,
@@ -6264,7 +7115,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         return res.json(Array.isArray(fallback2) ? fallback2 : []);
       }
       if (kind === "availability") {
-        const rows = await db.select().from(vendorVenueAvailability).where(eq2(vendorVenueAvailability.vendorId, vendorId)).orderBy(desc(vendorVenueAvailability.date));
+        const rows = await db.select().from(vendorVenueAvailability).where(eq3(vendorVenueAvailability.vendorId, vendorId)).orderBy(desc2(vendorVenueAvailability.date));
         if (rows.length > 0) {
           return res.json(rows.map((r) => ({
             id: r.id,
@@ -6277,7 +7128,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         const fallback2 = await backfillVendorVenueFromSettings(kind, vendorId);
         return res.json(Array.isArray(fallback2) ? fallback2 : []);
       }
-      const [timeline] = await db.select().from(vendorVenueTimelines).where(eq2(vendorVenueTimelines.vendorId, vendorId));
+      const [timeline] = await db.select().from(vendorVenueTimelines).where(eq3(vendorVenueTimelines.vendorId, vendorId));
       if (timeline) {
         return res.json({
           siteVisitDone: !!timeline.siteVisitDone,
@@ -6304,11 +7155,11 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       if (kind === "bookings") {
         const payload2 = Array.isArray(req.body) ? req.body : [];
         await db.transaction(async (tx) => {
-          await tx.delete(vendorVenueBookings).where(eq2(vendorVenueBookings.vendorId, vendorId));
+          await tx.delete(vendorVenueBookings).where(eq3(vendorVenueBookings.vendorId, vendorId));
           if (payload2.length === 0) return;
           await tx.insert(vendorVenueBookings).values(
             payload2.map((b) => ({
-              id: b.id || crypto2.randomUUID(),
+              id: b.id || crypto3.randomUUID(),
               vendorId,
               coupleName: b.coupleName,
               date: b.date,
@@ -6326,11 +7177,11 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       if (kind === "availability") {
         const payload2 = Array.isArray(req.body) ? req.body : [];
         await db.transaction(async (tx) => {
-          await tx.delete(vendorVenueAvailability).where(eq2(vendorVenueAvailability.vendorId, vendorId));
+          await tx.delete(vendorVenueAvailability).where(eq3(vendorVenueAvailability.vendorId, vendorId));
           if (payload2.length === 0) return;
           await tx.insert(vendorVenueAvailability).values(
             payload2.map((a) => ({
-              id: a.id || crypto2.randomUUID(),
+              id: a.id || crypto3.randomUUID(),
               vendorId,
               date: a.date,
               status: a.status || "available",
@@ -6375,11 +7226,11 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       if (kind === "bookings") {
         const payload2 = Array.isArray(req.body) ? req.body : [];
         await db.transaction(async (tx) => {
-          await tx.delete(vendorVenueBookings).where(eq2(vendorVenueBookings.vendorId, vendorId));
+          await tx.delete(vendorVenueBookings).where(eq3(vendorVenueBookings.vendorId, vendorId));
           if (payload2.length === 0) return;
           await tx.insert(vendorVenueBookings).values(
             payload2.map((b) => ({
-              id: b.id || crypto2.randomUUID(),
+              id: b.id || crypto3.randomUUID(),
               vendorId,
               coupleName: b.coupleName,
               date: b.date,
@@ -6397,11 +7248,11 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       if (kind === "availability") {
         const payload2 = Array.isArray(req.body) ? req.body : [];
         await db.transaction(async (tx) => {
-          await tx.delete(vendorVenueAvailability).where(eq2(vendorVenueAvailability.vendorId, vendorId));
+          await tx.delete(vendorVenueAvailability).where(eq3(vendorVenueAvailability.vendorId, vendorId));
           if (payload2.length === 0) return;
           await tx.insert(vendorVenueAvailability).values(
             payload2.map((a) => ({
-              id: a.id || crypto2.randomUUID(),
+              id: a.id || crypto3.randomUUID(),
               vendorId,
               date: a.date,
               status: a.status || "available",
@@ -6444,14 +7295,14 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     }
     try {
       if (kind === "bookings") {
-        await db.delete(vendorVenueBookings).where(eq2(vendorVenueBookings.vendorId, vendorId));
+        await db.delete(vendorVenueBookings).where(eq3(vendorVenueBookings.vendorId, vendorId));
         return res.json({ success: true });
       }
       if (kind === "availability") {
-        await db.delete(vendorVenueAvailability).where(eq2(vendorVenueAvailability.vendorId, vendorId));
+        await db.delete(vendorVenueAvailability).where(eq3(vendorVenueAvailability.vendorId, vendorId));
         return res.json({ success: true });
       }
-      await db.delete(vendorVenueTimelines).where(eq2(vendorVenueTimelines.vendorId, vendorId));
+      await db.delete(vendorVenueTimelines).where(eq3(vendorVenueTimelines.vendorId, vendorId));
       return res.json({ success: true });
     } catch (error) {
       console.error("Error deleting vendor venue data:", error);
@@ -6464,7 +7315,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!vendorId) return;
     try {
       const key = vendorSeatingKey(vendorId);
-      const [setting] = await db.select().from(appSettings).where(eq2(appSettings.key, key));
+      const [setting] = await db.select().from(appSettings).where(eq3(appSettings.key, key));
       const seating = setting?.value ? JSON.parse(setting.value) : { tables: [], guests: [] };
       return res.json(seating);
     } catch (error) {
@@ -6479,9 +7330,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       const key = vendorSeatingKey(vendorId);
       const payload = req.body || { tables: [], guests: [] };
       const json = JSON.stringify(payload);
-      const [existing] = await db.select().from(appSettings).where(eq2(appSettings.key, key));
+      const [existing] = await db.select().from(appSettings).where(eq3(appSettings.key, key));
       if (existing) {
-        await db.update(appSettings).set({ value: json, updatedAt: /* @__PURE__ */ new Date() }).where(eq2(appSettings.key, key));
+        await db.update(appSettings).set({ value: json, updatedAt: /* @__PURE__ */ new Date() }).where(eq3(appSettings.key, key));
       } else {
         await db.insert(appSettings).values({ key, value: json, category: "vendor_venue_seating" });
       }
@@ -6511,8 +7362,8 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         vendorVisitConfirmed: coupleVenueBookings.vendorVisitConfirmed,
         vendorVisitNotes: coupleVenueBookings.vendorVisitNotes,
         vendorVisitCompleted: coupleVenueBookings.vendorVisitCompleted
-      }).from(coupleVenueBookings).innerJoin(coupleProfiles, eq2(coupleVenueBookings.coupleId, coupleProfiles.id)).where(and2(
-        eq2(coupleVenueBookings.vendorId, vendorId),
+      }).from(coupleVenueBookings).innerJoin(coupleProfiles, eq3(coupleVenueBookings.coupleId, coupleProfiles.id)).where(and3(
+        eq3(coupleVenueBookings.vendorId, vendorId),
         isNotNull(coupleVenueBookings.siteVisitDate)
       )).orderBy(coupleVenueBookings.siteVisitDate, coupleVenueBookings.siteVisitTime);
       res.json(siteVisits);
@@ -6527,9 +7378,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     try {
       const { id } = req.params;
       const { vendorVisitConfirmed, vendorVisitNotes, vendorVisitCompleted } = req.body;
-      const [existing] = await db.select().from(coupleVenueBookings).where(and2(
-        eq2(coupleVenueBookings.id, id),
-        eq2(coupleVenueBookings.vendorId, vendorId)
+      const [existing] = await db.select().from(coupleVenueBookings).where(and3(
+        eq3(coupleVenueBookings.id, id),
+        eq3(coupleVenueBookings.vendorId, vendorId)
       ));
       if (!existing) {
         return res.status(404).json({ error: "Befaring ikke funnet" });
@@ -6539,7 +7390,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         vendorVisitNotes: vendorVisitNotes ?? existing.vendorVisitNotes,
         vendorVisitCompleted: vendorVisitCompleted ?? existing.vendorVisitCompleted,
         updatedAt: /* @__PURE__ */ new Date()
-      }).where(eq2(coupleVenueBookings.id, id)).returning();
+      }).where(eq3(coupleVenueBookings.id, id)).returning();
       res.json(updated);
     } catch (error) {
       console.error("Error updating site visit:", error);
@@ -6554,7 +7405,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       }
       let coupleId = COUPLE_SESSIONS.get(token)?.coupleId;
       if (!coupleId) {
-        const [session] = await db.select().from(coupleSessions).where(eq2(coupleSessions.token, token));
+        const [session] = await db.select().from(coupleSessions).where(eq3(coupleSessions.token, token));
         if (!session || session.expiresAt < /* @__PURE__ */ new Date()) {
           return res.status(401).json({ error: "Ugyldig \xF8kt" });
         }
@@ -6563,9 +7414,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       }
       const { id } = req.params;
       const { response } = req.body;
-      const [offer] = await db.select().from(vendorOffers).where(and2(
-        eq2(vendorOffers.id, id),
-        eq2(vendorOffers.coupleId, coupleId)
+      const [offer] = await db.select().from(vendorOffers).where(and3(
+        eq3(vendorOffers.id, id),
+        eq3(vendorOffers.coupleId, coupleId)
       ));
       if (!offer) {
         return res.status(404).json({ error: "Tilbud ikke funnet" });
@@ -6581,10 +7432,10 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         updates.acceptedAt = /* @__PURE__ */ new Date();
         try {
           await db.transaction(async (tx) => {
-            const offerItems = await tx.select().from(vendorOfferItems).where(eq2(vendorOfferItems.offerId, id));
+            const offerItems = await tx.select().from(vendorOfferItems).where(eq3(vendorOfferItems.offerId, id));
             for (const item of offerItems) {
               if (!item.productId) continue;
-              const [product] = await tx.select().from(vendorProducts).where(eq2(vendorProducts.id, item.productId));
+              const [product] = await tx.select().from(vendorProducts).where(eq3(vendorProducts.id, item.productId));
               if (product?.trackInventory && product.availableQuantity !== null) {
                 if (product.availableQuantity < (item.quantity || 0)) {
                   throw new Error(`Ikke nok p\xE5 lager av "${product.title}". Tilgjengelig: ${product.availableQuantity}, \xD8nsket: ${item.quantity}`);
@@ -6593,7 +7444,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
                 await tx.update(vendorProducts).set({
                   availableQuantity: newQuantity,
                   updatedAt: /* @__PURE__ */ new Date()
-                }).where(eq2(vendorProducts.id, item.productId));
+                }).where(eq3(vendorProducts.id, item.productId));
               }
             }
             await tx.insert(coupleVendorContracts).values({
@@ -6602,7 +7453,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
               offerId: offer.id,
               status: "active"
             });
-            await tx.update(vendorOffers).set(updates).where(eq2(vendorOffers.id, id));
+            await tx.update(vendorOffers).set(updates).where(eq3(vendorOffers.id, id));
           });
         } catch (txError) {
           console.error("Transaction error accepting offer:", txError);
@@ -6610,7 +7461,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
             error: txError.message || "Kunne ikke akseptere tilbud - lagerstatus endret"
           });
         }
-        const [updated2] = await db.select().from(vendorOffers).where(eq2(vendorOffers.id, id));
+        const [updated2] = await db.select().from(vendorOffers).where(eq3(vendorOffers.id, id));
         if (offer.conversationId) {
           await db.insert(messages).values({
             conversationId: offer.conversationId,
@@ -6621,13 +7472,13 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
           await db.update(conversations).set({
             lastMessageAt: /* @__PURE__ */ new Date(),
             vendorUnreadCount: 1
-          }).where(eq2(conversations.id, offer.conversationId));
+          }).where(eq3(conversations.id, offer.conversationId));
         }
         return res.json(updated2);
       } else {
         updates.declinedAt = /* @__PURE__ */ new Date();
       }
-      const [updated] = await db.update(vendorOffers).set(updates).where(eq2(vendorOffers.id, id)).returning();
+      const [updated] = await db.update(vendorOffers).set(updates).where(eq3(vendorOffers.id, id)).returning();
       if (offer.conversationId) {
         await db.insert(messages).values({
           conversationId: offer.conversationId,
@@ -6638,7 +7489,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         await db.update(conversations).set({
           lastMessageAt: /* @__PURE__ */ new Date(),
           vendorUnreadCount: 1
-        }).where(eq2(conversations.id, offer.conversationId));
+        }).where(eq3(conversations.id, offer.conversationId));
       }
       res.json(updated);
     } catch (error) {
@@ -6654,7 +7505,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       }
       let coupleId = COUPLE_SESSIONS.get(token)?.coupleId;
       if (!coupleId) {
-        const [session] = await db.select().from(coupleSessions).where(eq2(coupleSessions.token, token));
+        const [session] = await db.select().from(coupleSessions).where(eq3(coupleSessions.token, token));
         if (!session || session.expiresAt < /* @__PURE__ */ new Date()) {
           return res.status(401).json({ error: "Ugyldig \xF8kt" });
         }
@@ -6668,13 +7519,13 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
           businessName: vendors.businessName,
           imageUrl: vendors.imageUrl
         }
-      }).from(vendorOffers).leftJoin(vendors, eq2(vendorOffers.vendorId, vendors.id)).where(eq2(vendorOffers.coupleId, coupleId)).orderBy(desc(vendorOffers.createdAt));
+      }).from(vendorOffers).leftJoin(vendors, eq3(vendorOffers.vendorId, vendors.id)).where(eq3(vendorOffers.coupleId, coupleId)).orderBy(desc2(vendorOffers.createdAt));
       const offersWithItems = await Promise.all(
         offers.map(async ({ offer, vendor }) => {
           const items = await db.select({
             item: vendorOfferItems,
             product: vendorProducts
-          }).from(vendorOfferItems).leftJoin(vendorProducts, eq2(vendorOfferItems.productId, vendorProducts.id)).where(eq2(vendorOfferItems.offerId, offer.id)).orderBy(vendorOfferItems.sortOrder);
+          }).from(vendorOfferItems).leftJoin(vendorProducts, eq3(vendorOfferItems.productId, vendorProducts.id)).where(eq3(vendorOfferItems.offerId, offer.id)).orderBy(vendorOfferItems.sortOrder);
           const itemsWithMetadata = items.map(({ item, product }) => ({
             ...item,
             product: product ? {
@@ -6709,10 +7560,10 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
           weddingDate: coupleProfiles.weddingDate
         },
         conversationId: conversations.id
-      }).from(conversations).leftJoin(coupleProfiles, eq2(conversations.coupleId, coupleProfiles.id)).where(and2(
-        eq2(conversations.vendorId, session.vendorId),
-        eq2(conversations.status, "active"),
-        eq2(conversations.deletedByVendor, false)
+      }).from(conversations).leftJoin(coupleProfiles, eq3(conversations.coupleId, coupleProfiles.id)).where(and3(
+        eq3(conversations.vendorId, session.vendorId),
+        eq3(conversations.status, "active"),
+        eq3(conversations.deletedByVendor, false)
       ));
       const uniqueCouples = Array.from(
         new Map(vendorConversations.map((c) => [c.couple?.id, c])).values()
@@ -6737,9 +7588,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     try {
       const { settings: settingsArray } = req.body;
       for (const setting of settingsArray) {
-        const existing = await db.select().from(appSettings).where(eq2(appSettings.key, setting.key));
+        const existing = await db.select().from(appSettings).where(eq3(appSettings.key, setting.key));
         if (existing.length > 0) {
-          await db.update(appSettings).set({ value: setting.value, category: setting.category, updatedAt: /* @__PURE__ */ new Date() }).where(eq2(appSettings.key, setting.key));
+          await db.update(appSettings).set({ value: setting.value, category: setting.category, updatedAt: /* @__PURE__ */ new Date() }).where(eq3(appSettings.key, setting.key));
         } else {
           await db.insert(appSettings).values({
             key: setting.key,
@@ -6758,16 +7609,16 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
   app2.get("/api/admin/statistics", async (req, res) => {
     if (!checkAdminAuth(req, res)) return;
     try {
-      const [vendorCount] = await db.select({ count: sql3`count(*)` }).from(vendors);
-      const [approvedVendors] = await db.select({ count: sql3`count(*)` }).from(vendors).where(eq2(vendors.status, "approved"));
-      const [pendingVendors] = await db.select({ count: sql3`count(*)` }).from(vendors).where(eq2(vendors.status, "pending"));
-      const [coupleCount] = await db.select({ count: sql3`count(*)` }).from(coupleProfiles);
-      const [inspirationCount] = await db.select({ count: sql3`count(*)` }).from(inspirations);
-      const [pendingInspirations] = await db.select({ count: sql3`count(*)` }).from(inspirations).where(eq2(inspirations.status, "pending"));
-      const [conversationCount] = await db.select({ count: sql3`count(*)` }).from(conversations);
-      const [messageCount] = await db.select({ count: sql3`count(*)` }).from(messages);
-      const [deliveryCount] = await db.select({ count: sql3`count(*)` }).from(deliveries);
-      const [offerCount] = await db.select({ count: sql3`count(*)` }).from(vendorOffers);
+      const [vendorCount] = await db.select({ count: sql4`count(*)` }).from(vendors);
+      const [approvedVendors] = await db.select({ count: sql4`count(*)` }).from(vendors).where(eq3(vendors.status, "approved"));
+      const [pendingVendors] = await db.select({ count: sql4`count(*)` }).from(vendors).where(eq3(vendors.status, "pending"));
+      const [coupleCount] = await db.select({ count: sql4`count(*)` }).from(coupleProfiles);
+      const [inspirationCount] = await db.select({ count: sql4`count(*)` }).from(inspirations);
+      const [pendingInspirations] = await db.select({ count: sql4`count(*)` }).from(inspirations).where(eq3(inspirations.status, "pending"));
+      const [conversationCount] = await db.select({ count: sql4`count(*)` }).from(conversations);
+      const [messageCount] = await db.select({ count: sql4`count(*)` }).from(messages);
+      const [deliveryCount] = await db.select({ count: sql4`count(*)` }).from(deliveries);
+      const [offerCount] = await db.select({ count: sql4`count(*)` }).from(vendorOffers);
       res.json({
         vendors: {
           total: Number(vendorCount?.count || 0),
@@ -6819,7 +7670,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         name: vendors.businessName,
         email: vendors.email,
         categoryId: vendors.categoryId
-      }).from(vendors).where(eq2(vendors.status, "approved")).limit(50);
+      }).from(vendors).where(eq3(vendors.status, "approved")).limit(50);
       const mappedUsers = vendorData.map((user) => ({
         id: user.id,
         name: user.name || "Ukjent leverand\xF8r",
@@ -6907,7 +7758,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
           name: vendors.businessName,
           email: vendors.email,
           categoryId: vendors.categoryId
-        }).from(vendors).where(eq2(vendors.status, "approved")).limit(50);
+        }).from(vendors).where(eq3(vendors.status, "approved")).limit(50);
       } catch (dbError) {
         console.error("[Impersonate Vendor] Database query error:", dbError);
         if (dbError instanceof Error) {
@@ -6943,19 +7794,19 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
   app2.post("/api/admin/jobs/expire-offers", async (req, res) => {
     if (!checkAdminAuth(req, res)) return;
     try {
-      const expiredOffers = await db.select().from(vendorOffers).where(and2(
-        eq2(vendorOffers.status, "pending"),
-        sql3`${vendorOffers.validUntil} < NOW()`
+      const expiredOffers = await db.select().from(vendorOffers).where(and3(
+        eq3(vendorOffers.status, "pending"),
+        sql4`${vendorOffers.validUntil} < NOW()`
       ));
       if (expiredOffers.length === 0) {
         return res.json({ message: "Ingen utl\xF8pte tilbud", updated: 0 });
       }
-      await db.update(vendorOffers).set({ status: "expired", updatedAt: /* @__PURE__ */ new Date() }).where(and2(
-        eq2(vendorOffers.status, "pending"),
-        sql3`${vendorOffers.validUntil} < NOW()`
+      await db.update(vendorOffers).set({ status: "expired", updatedAt: /* @__PURE__ */ new Date() }).where(and3(
+        eq3(vendorOffers.status, "pending"),
+        sql4`${vendorOffers.validUntil} < NOW()`
       ));
       for (const offer of expiredOffers) {
-        const [vendor] = await db.select({ businessName: vendors.businessName }).from(vendors).where(eq2(vendors.id, offer.vendorId));
+        const [vendor] = await db.select({ businessName: vendors.businessName }).from(vendors).where(eq3(vendors.id, offer.vendorId));
         await db.insert(notifications).values({
           recipientType: "couple",
           recipientId: offer.coupleId,
@@ -6992,7 +7843,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     try {
       const { id } = req.params;
       const { name, icon, sortOrder } = req.body;
-      await db.update(inspirationCategories).set({ name, icon, sortOrder }).where(eq2(inspirationCategories.id, id));
+      await db.update(inspirationCategories).set({ name, icon, sortOrder }).where(eq3(inspirationCategories.id, id));
       res.json({ message: "Kategori oppdatert" });
     } catch (error) {
       console.error("Error updating category:", error);
@@ -7003,7 +7854,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!checkAdminAuth(req, res)) return;
     try {
       const { id } = req.params;
-      await db.delete(inspirationCategories).where(eq2(inspirationCategories.id, id));
+      await db.delete(inspirationCategories).where(eq3(inspirationCategories.id, id));
       res.json({ message: "Kategori slettet" });
     } catch (error) {
       console.error("Error deleting category:", error);
@@ -7030,7 +7881,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     try {
       const { id } = req.params;
       const { name, icon, description } = req.body;
-      await db.update(vendorCategories).set({ name, icon, description }).where(eq2(vendorCategories.id, id));
+      await db.update(vendorCategories).set({ name, icon, description }).where(eq3(vendorCategories.id, id));
       res.json({ message: "Kategori oppdatert" });
     } catch (error) {
       console.error("Error updating vendor category:", error);
@@ -7041,7 +7892,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!checkAdminAuth(req, res)) return;
     try {
       const { id } = req.params;
-      await db.delete(vendorCategories).where(eq2(vendorCategories.id, id));
+      await db.delete(vendorCategories).where(eq3(vendorCategories.id, id));
       res.json({ message: "Kategori slettet" });
     } catch (error) {
       console.error("Error deleting vendor category:", error);
@@ -7051,7 +7902,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
   app2.get("/api/admin/couples", async (req, res) => {
     if (!checkAdminAuth(req, res)) return;
     try {
-      const couples = await db.select().from(coupleProfiles).orderBy(desc(coupleProfiles.createdAt));
+      const couples = await db.select().from(coupleProfiles).orderBy(desc2(coupleProfiles.createdAt));
       res.json(couples);
     } catch (error) {
       console.error("Error fetching couples:", error);
@@ -7062,10 +7913,10 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!checkAdminAuth(req, res)) return;
     try {
       const { id } = req.params;
-      await db.delete(coupleSessions).where(eq2(coupleSessions.coupleId, id));
-      await db.delete(messages).where(sql3`conversation_id IN (SELECT id FROM conversations WHERE couple_id = ${id})`);
-      await db.delete(conversations).where(eq2(conversations.coupleId, id));
-      await db.delete(coupleProfiles).where(eq2(coupleProfiles.id, id));
+      await db.delete(coupleSessions).where(eq3(coupleSessions.coupleId, id));
+      await db.delete(messages).where(sql4`conversation_id IN (SELECT id FROM conversations WHERE couple_id = ${id})`);
+      await db.delete(conversations).where(eq3(conversations.coupleId, id));
+      await db.delete(coupleProfiles).where(eq3(coupleProfiles.id, id));
       res.json({ message: "Par slettet" });
     } catch (error) {
       console.error("Error deleting couple:", error);
@@ -7088,7 +7939,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         categoryId,
         status,
         updatedAt: /* @__PURE__ */ new Date()
-      }).where(eq2(vendors.id, id));
+      }).where(eq3(vendors.id, id));
       res.json({ message: "Leverand\xF8r oppdatert" });
     } catch (error) {
       console.error("Error updating vendor:", error);
@@ -7099,18 +7950,18 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!checkAdminAuth(req, res)) return;
     try {
       const { id } = req.params;
-      await db.delete(vendorFeatures).where(eq2(vendorFeatures.vendorId, id));
-      await db.delete(vendorInspirationCategories).where(eq2(vendorInspirationCategories.vendorId, id));
-      await db.delete(deliveryItems).where(sql3`delivery_id IN (SELECT id FROM deliveries WHERE vendor_id = ${id})`);
-      await db.delete(deliveries).where(eq2(deliveries.vendorId, id));
-      await db.delete(inspirationMedia).where(sql3`inspiration_id IN (SELECT id FROM inspirations WHERE vendor_id = ${id})`);
-      await db.delete(inspirations).where(eq2(inspirations.vendorId, id));
-      await db.delete(messages).where(sql3`conversation_id IN (SELECT id FROM conversations WHERE vendor_id = ${id})`);
-      await db.delete(conversations).where(eq2(conversations.vendorId, id));
-      await db.delete(vendorOfferItems).where(sql3`offer_id IN (SELECT id FROM vendor_offers WHERE vendor_id = ${id})`);
-      await db.delete(vendorOffers).where(eq2(vendorOffers.vendorId, id));
-      await db.delete(vendorProducts).where(eq2(vendorProducts.vendorId, id));
-      await db.delete(vendors).where(eq2(vendors.id, id));
+      await db.delete(vendorFeatures).where(eq3(vendorFeatures.vendorId, id));
+      await db.delete(vendorInspirationCategories).where(eq3(vendorInspirationCategories.vendorId, id));
+      await db.delete(deliveryItems).where(sql4`delivery_id IN (SELECT id FROM deliveries WHERE vendor_id = ${id})`);
+      await db.delete(deliveries).where(eq3(deliveries.vendorId, id));
+      await db.delete(inspirationMedia).where(sql4`inspiration_id IN (SELECT id FROM inspirations WHERE vendor_id = ${id})`);
+      await db.delete(inspirations).where(eq3(inspirations.vendorId, id));
+      await db.delete(messages).where(sql4`conversation_id IN (SELECT id FROM conversations WHERE vendor_id = ${id})`);
+      await db.delete(conversations).where(eq3(conversations.vendorId, id));
+      await db.delete(vendorOfferItems).where(sql4`offer_id IN (SELECT id FROM vendor_offers WHERE vendor_id = ${id})`);
+      await db.delete(vendorOffers).where(eq3(vendorOffers.vendorId, id));
+      await db.delete(vendorProducts).where(eq3(vendorProducts.vendorId, id));
+      await db.delete(vendors).where(eq3(vendors.id, id));
       res.json({ message: "Leverand\xF8r slettet" });
     } catch (error) {
       console.error("Error deleting vendor:", error);
@@ -7121,7 +7972,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     const coupleId = await checkCoupleAuth(req, res);
     if (!coupleId) return;
     try {
-      const invitations = await db.select().from(coordinatorInvitations).where(eq2(coordinatorInvitations.coupleId, coupleId)).orderBy(desc(coordinatorInvitations.createdAt));
+      const invitations = await db.select().from(coordinatorInvitations).where(eq3(coordinatorInvitations.coupleId, coupleId)).orderBy(desc2(coordinatorInvitations.createdAt));
       res.json(invitations);
     } catch (error) {
       console.error("Error fetching coordinators:", error);
@@ -7133,7 +7984,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const { name, email, roleLabel, canViewSpeeches, canViewSchedule, expiresAt } = req.body;
-      const accessToken = crypto2.randomBytes(32).toString("hex");
+      const accessToken = crypto3.randomBytes(32).toString("hex");
       const accessCode = Math.random().toString().slice(2, 8);
       const [invitation] = await db.insert(coordinatorInvitations).values({
         coupleId,
@@ -7165,9 +8016,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         canViewSchedule,
         status,
         updatedAt: /* @__PURE__ */ new Date()
-      }).where(and2(
-        eq2(coordinatorInvitations.id, id),
-        eq2(coordinatorInvitations.coupleId, coupleId)
+      }).where(and3(
+        eq3(coordinatorInvitations.id, id),
+        eq3(coordinatorInvitations.coupleId, coupleId)
       )).returning();
       if (!updated) {
         return res.status(404).json({ error: "Invitasjon ikke funnet" });
@@ -7183,9 +8034,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const { id } = req.params;
-      await db.delete(coordinatorInvitations).where(and2(
-        eq2(coordinatorInvitations.id, id),
-        eq2(coordinatorInvitations.coupleId, coupleId)
+      await db.delete(coordinatorInvitations).where(and3(
+        eq3(coordinatorInvitations.id, id),
+        eq3(coordinatorInvitations.coupleId, coupleId)
       ));
       res.json({ message: "Invitasjon slettet" });
     } catch (error) {
@@ -7198,7 +8049,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const domain = process.env.EXPO_PUBLIC_DOMAIN ? `https://${process.env.EXPO_PUBLIC_DOMAIN}` : `http://localhost:${process.env.PORT || 5e3}`;
-      const invitations = await db.select().from(guestInvitations).where(eq2(guestInvitations.coupleId, coupleId)).orderBy(desc(guestInvitations.createdAt));
+      const invitations = await db.select().from(guestInvitations).where(eq3(guestInvitations.coupleId, coupleId)).orderBy(desc2(guestInvitations.createdAt));
       res.json(
         invitations.map((inv) => ({
           ...inv,
@@ -7219,7 +8070,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     }
     const { name, email, phone, template, message, expiresAt } = parsed.data;
     try {
-      const inviteToken = crypto2.randomBytes(24).toString("hex");
+      const inviteToken = crypto3.randomBytes(24).toString("hex");
       const [invitation] = await db.insert(guestInvitations).values({
         coupleId,
         name,
@@ -7253,7 +8104,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         message,
         expiresAt: expiresAt ? new Date(expiresAt) : void 0,
         updatedAt: /* @__PURE__ */ new Date()
-      }).where(and2(eq2(guestInvitations.id, id), eq2(guestInvitations.coupleId, coupleId))).returning();
+      }).where(and3(eq3(guestInvitations.id, id), eq3(guestInvitations.coupleId, coupleId))).returning();
       if (!updated) return res.status(404).json({ error: "Invitasjon ikke funnet" });
       res.json(updated);
     } catch (error) {
@@ -7266,7 +8117,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     const { id } = req.params;
     try {
-      await db.delete(guestInvitations).where(and2(eq2(guestInvitations.id, id), eq2(guestInvitations.coupleId, coupleId)));
+      await db.delete(guestInvitations).where(and3(eq3(guestInvitations.id, id), eq3(guestInvitations.coupleId, coupleId)));
       res.json({ message: "Invitasjon slettet" });
     } catch (error) {
       console.error("Error deleting guest invitation:", error);
@@ -7279,7 +8130,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       const [invitation] = await db.select({
         invite: guestInvitations,
         coupleName: coupleProfiles.displayName
-      }).from(guestInvitations).leftJoin(coupleProfiles, eq2(guestInvitations.coupleId, coupleProfiles.id)).where(eq2(guestInvitations.inviteToken, token));
+      }).from(guestInvitations).leftJoin(coupleProfiles, eq3(guestInvitations.coupleId, coupleProfiles.id)).where(eq3(guestInvitations.inviteToken, token));
       if (!invitation?.invite) {
         return res.status(404).json({ error: "Ugyldig invitasjon" });
       }
@@ -7300,7 +8151,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     try {
       const { token } = req.params;
       const { attending, dietary, allergies, notes, plusOne } = req.body;
-      const [existing] = await db.select().from(guestInvitations).where(eq2(guestInvitations.inviteToken, token));
+      const [existing] = await db.select().from(guestInvitations).where(eq3(guestInvitations.inviteToken, token));
       if (!existing) {
         return res.status(404).json({ error: "Ugyldig invitasjon" });
       }
@@ -7317,7 +8168,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         status: attending === false ? "declined" : "responded",
         respondedAt: /* @__PURE__ */ new Date(),
         updatedAt: /* @__PURE__ */ new Date()
-      }).where(eq2(guestInvitations.id, existing.id)).returning();
+      }).where(eq3(guestInvitations.id, existing.id)).returning();
       res.json(updated);
     } catch (error) {
       console.error("Error responding to invitation:", error);
@@ -7465,29 +8316,29 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
   app2.get("/api/coordinator/access/:token", async (req, res) => {
     try {
       const { token } = req.params;
-      const [invitation] = await db.select().from(coordinatorInvitations).where(and2(
-        eq2(coordinatorInvitations.accessToken, token),
-        eq2(coordinatorInvitations.status, "active")
+      const [invitation] = await db.select().from(coordinatorInvitations).where(and3(
+        eq3(coordinatorInvitations.accessToken, token),
+        eq3(coordinatorInvitations.status, "active")
       ));
       if (!invitation) {
         return res.status(404).json({ error: "Ugyldig eller utl\xF8pt tilgang" });
       }
       if (invitation.expiresAt && new Date(invitation.expiresAt) < /* @__PURE__ */ new Date()) {
-        await db.update(coordinatorInvitations).set({ status: "expired" }).where(eq2(coordinatorInvitations.id, invitation.id));
+        await db.update(coordinatorInvitations).set({ status: "expired" }).where(eq3(coordinatorInvitations.id, invitation.id));
         return res.status(403).json({ error: "Tilgangen har utl\xF8pt" });
       }
-      await db.update(coordinatorInvitations).set({ lastAccessedAt: /* @__PURE__ */ new Date() }).where(eq2(coordinatorInvitations.id, invitation.id));
+      await db.update(coordinatorInvitations).set({ lastAccessedAt: /* @__PURE__ */ new Date() }).where(eq3(coordinatorInvitations.id, invitation.id));
       const [couple] = await db.select({
         displayName: coupleProfiles.displayName,
         weddingDate: coupleProfiles.weddingDate
-      }).from(coupleProfiles).where(eq2(coupleProfiles.id, invitation.coupleId));
+      }).from(coupleProfiles).where(eq3(coupleProfiles.id, invitation.coupleId));
       let speechList = [];
       if (invitation.canViewSpeeches) {
-        speechList = await db.select().from(speeches).where(eq2(speeches.coupleId, invitation.coupleId)).orderBy(speeches.sortOrder);
+        speechList = await db.select().from(speeches).where(eq3(speeches.coupleId, invitation.coupleId)).orderBy(speeches.sortOrder);
       }
       let scheduleList = [];
       if (invitation.canViewSchedule) {
-        scheduleList = await db.select().from(scheduleEvents).where(eq2(scheduleEvents.coupleId, invitation.coupleId)).orderBy(scheduleEvents.time);
+        scheduleList = await db.select().from(scheduleEvents).where(eq3(scheduleEvents.coupleId, invitation.coupleId)).orderBy(scheduleEvents.time);
       }
       res.json({
         invitation: {
@@ -7511,9 +8362,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
   app2.post("/api/coordinator/access-by-code", async (req, res) => {
     try {
       const { code } = req.body;
-      const [invitation] = await db.select().from(coordinatorInvitations).where(and2(
-        eq2(coordinatorInvitations.accessCode, code),
-        eq2(coordinatorInvitations.status, "active")
+      const [invitation] = await db.select().from(coordinatorInvitations).where(and3(
+        eq3(coordinatorInvitations.accessCode, code),
+        eq3(coordinatorInvitations.status, "active")
       ));
       if (!invitation) {
         return res.status(404).json({ error: "Ugyldig kode" });
@@ -7528,7 +8379,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     const coupleId = await checkCoupleAuth(req, res);
     if (!coupleId) return;
     try {
-      const events = await db.select().from(scheduleEvents).where(eq2(scheduleEvents.coupleId, coupleId)).orderBy(scheduleEvents.time);
+      const events = await db.select().from(scheduleEvents).where(eq3(scheduleEvents.coupleId, coupleId)).orderBy(scheduleEvents.time);
       res.json(events);
     } catch (error) {
       console.error("Error fetching schedule events:", error);
@@ -7541,13 +8392,13 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         vendorId: coupleVendorContracts.vendorId,
         notifyOnScheduleChanges: coupleVendorContracts.notifyOnScheduleChanges,
         notifyOnSpeechChanges: coupleVendorContracts.notifyOnSpeechChanges
-      }).from(coupleVendorContracts).where(and2(
-        eq2(coupleVendorContracts.coupleId, coupleId),
-        eq2(coupleVendorContracts.status, "active")
+      }).from(coupleVendorContracts).where(and3(
+        eq3(coupleVendorContracts.coupleId, coupleId),
+        eq3(coupleVendorContracts.status, "active")
       ));
       const [couple] = await db.select({
         displayName: coupleProfiles.displayName
-      }).from(coupleProfiles).where(eq2(coupleProfiles.id, coupleId));
+      }).from(coupleProfiles).where(eq3(coupleProfiles.id, coupleId));
       for (const contract of contracts) {
         const shouldNotify = changeType === "schedule" ? contract.notifyOnScheduleChanges : contract.notifyOnSpeechChanges;
         if (shouldNotify) {
@@ -7580,7 +8431,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         notes,
         sortOrder: sortOrder || 0
       }).returning();
-      const [couple] = await db.select({ displayName: coupleProfiles.displayName }).from(coupleProfiles).where(eq2(coupleProfiles.id, coupleId));
+      const [couple] = await db.select({ displayName: coupleProfiles.displayName }).from(coupleProfiles).where(eq3(coupleProfiles.id, coupleId));
       await notifyVendorsOfChangeInternal(coupleId, "schedule", couple?.displayName || "Brudeparet", `"${title}" ble lagt til kl. ${time}.`);
       res.status(201).json(event);
     } catch (error) {
@@ -7601,14 +8452,14 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         notes,
         sortOrder,
         updatedAt: /* @__PURE__ */ new Date()
-      }).where(and2(
-        eq2(scheduleEvents.id, id),
-        eq2(scheduleEvents.coupleId, coupleId)
+      }).where(and3(
+        eq3(scheduleEvents.id, id),
+        eq3(scheduleEvents.coupleId, coupleId)
       )).returning();
       if (!updated) {
         return res.status(404).json({ error: "Hendelse ikke funnet" });
       }
-      const [couple] = await db.select({ displayName: coupleProfiles.displayName }).from(coupleProfiles).where(eq2(coupleProfiles.id, coupleId));
+      const [couple] = await db.select({ displayName: coupleProfiles.displayName }).from(coupleProfiles).where(eq3(coupleProfiles.id, coupleId));
       await notifyVendorsOfChangeInternal(coupleId, "schedule", couple?.displayName || "Brudeparet", `"${title}" ble endret.`);
       res.json(updated);
     } catch (error) {
@@ -7621,16 +8472,16 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const { id } = req.params;
-      const [event] = await db.select().from(scheduleEvents).where(and2(
-        eq2(scheduleEvents.id, id),
-        eq2(scheduleEvents.coupleId, coupleId)
+      const [event] = await db.select().from(scheduleEvents).where(and3(
+        eq3(scheduleEvents.id, id),
+        eq3(scheduleEvents.coupleId, coupleId)
       ));
-      await db.delete(scheduleEvents).where(and2(
-        eq2(scheduleEvents.id, id),
-        eq2(scheduleEvents.coupleId, coupleId)
+      await db.delete(scheduleEvents).where(and3(
+        eq3(scheduleEvents.id, id),
+        eq3(scheduleEvents.coupleId, coupleId)
       ));
       if (event) {
-        const [couple] = await db.select({ displayName: coupleProfiles.displayName }).from(coupleProfiles).where(eq2(coupleProfiles.id, coupleId));
+        const [couple] = await db.select({ displayName: coupleProfiles.displayName }).from(coupleProfiles).where(eq3(coupleProfiles.id, coupleId));
         await notifyVendorsOfChangeInternal(coupleId, "schedule", couple?.displayName || "Brudeparet", `"${event.title}" ble fjernet.`);
       }
       res.json({ message: "Hendelse slettet" });
@@ -7646,19 +8497,19 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       return null;
     }
     const token = authHeader.replace("Bearer ", "");
-    const [invite] = await db.select().from(coordinatorInvitations).where(and2(eq2(coordinatorInvitations.accessToken, token), eq2(coordinatorInvitations.status, "active")));
+    const [invite] = await db.select().from(coordinatorInvitations).where(and3(eq3(coordinatorInvitations.accessToken, token), eq3(coordinatorInvitations.status, "active")));
     if (!invite) {
       res.status(401).json({ error: "Ugyldig eller inaktiv tilgang" });
       return null;
     }
-    await db.update(coordinatorInvitations).set({ lastAccessedAt: /* @__PURE__ */ new Date(), updatedAt: /* @__PURE__ */ new Date() }).where(eq2(coordinatorInvitations.id, invite.id));
+    await db.update(coordinatorInvitations).set({ lastAccessedAt: /* @__PURE__ */ new Date(), updatedAt: /* @__PURE__ */ new Date() }).where(eq3(coordinatorInvitations.id, invite.id));
     return invite.coupleId;
   }
   app2.get("/api/coordinator/schedule-events", async (req, res) => {
     const coupleId = await checkCoordinatorAuth(req, res);
     if (!coupleId) return;
     try {
-      const events = await db.select({ id: scheduleEvents.id, time: scheduleEvents.time, title: scheduleEvents.title, icon: scheduleEvents.icon }).from(scheduleEvents).where(eq2(scheduleEvents.coupleId, coupleId)).orderBy(scheduleEvents.time);
+      const events = await db.select({ id: scheduleEvents.id, time: scheduleEvents.time, title: scheduleEvents.title, icon: scheduleEvents.icon }).from(scheduleEvents).where(eq3(scheduleEvents.coupleId, coupleId)).orderBy(scheduleEvents.time);
       res.json(events);
     } catch (error) {
       console.error("Error fetching coordinator schedule:", error);
@@ -7669,7 +8520,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     const coupleId = await checkCoordinatorAuth(req, res);
     if (!coupleId) return;
     try {
-      const [couple] = await db.select({ id: coupleProfiles.id, displayName: coupleProfiles.displayName, weddingDate: coupleProfiles.weddingDate }).from(coupleProfiles).where(eq2(coupleProfiles.id, coupleId));
+      const [couple] = await db.select({ id: coupleProfiles.id, displayName: coupleProfiles.displayName, weddingDate: coupleProfiles.weddingDate }).from(coupleProfiles).where(eq3(coupleProfiles.id, coupleId));
       if (!couple) return res.status(404).json({ error: "Profil ikke funnet" });
       res.json(couple);
     } catch (error) {
@@ -7682,7 +8533,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const key = `couple_venue_seating_${coupleId}`;
-      const [setting] = await db.select().from(appSettings).where(eq2(appSettings.key, key));
+      const [setting] = await db.select().from(appSettings).where(eq3(appSettings.key, key));
       const seating = setting?.value ? JSON.parse(setting.value) : { tables: [] };
       res.json(seating);
     } catch (error) {
@@ -7694,7 +8545,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     const coupleId = await checkCoupleAuth(req, res);
     if (!coupleId) return;
     try {
-      const guests = await db.select().from(weddingGuests).where(eq2(weddingGuests.coupleId, coupleId)).orderBy(weddingGuests.createdAt);
+      const guests = await db.select().from(weddingGuests).where(eq3(weddingGuests.coupleId, coupleId)).orderBy(weddingGuests.createdAt);
       res.json(guests);
     } catch (error) {
       console.error("Error fetching guests:", error);
@@ -7720,15 +8571,15 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       const { id } = req.params;
       const parsed = updateWeddingGuestSchema.parse(req.body);
       const [guest] = await db.select().from(weddingGuests).where(
-        and2(
-          eq2(weddingGuests.id, id),
-          eq2(weddingGuests.coupleId, coupleId)
+        and3(
+          eq3(weddingGuests.id, id),
+          eq3(weddingGuests.coupleId, coupleId)
         )
       );
       if (!guest) {
         return res.status(404).json({ error: "Gjest ikke funnet" });
       }
-      const [updated] = await db.update(weddingGuests).set({ ...parsed, updatedAt: /* @__PURE__ */ new Date() }).where(eq2(weddingGuests.id, id)).returning();
+      const [updated] = await db.update(weddingGuests).set({ ...parsed, updatedAt: /* @__PURE__ */ new Date() }).where(eq3(weddingGuests.id, id)).returning();
       res.json(updated);
     } catch (error) {
       console.error("Error updating guest:", error);
@@ -7741,15 +8592,15 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     try {
       const { id } = req.params;
       const [guest] = await db.select().from(weddingGuests).where(
-        and2(
-          eq2(weddingGuests.id, id),
-          eq2(weddingGuests.coupleId, coupleId)
+        and3(
+          eq3(weddingGuests.id, id),
+          eq3(weddingGuests.coupleId, coupleId)
         )
       );
       if (!guest) {
         return res.status(404).json({ error: "Gjest ikke funnet" });
       }
-      await db.delete(weddingGuests).where(eq2(weddingGuests.id, id));
+      await db.delete(weddingGuests).where(eq3(weddingGuests.id, id));
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting guest:", error);
@@ -7760,8 +8611,8 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     const coupleId = await checkCoupleAuth(req, res);
     if (!coupleId) return;
     try {
-      const tables = await db.select().from(weddingTables).where(eq2(weddingTables.coupleId, coupleId)).orderBy(weddingTables.sortOrder);
-      const assignments = await db.select().from(tableGuestAssignments).where(eq2(tableGuestAssignments.coupleId, coupleId));
+      const tables = await db.select().from(weddingTables).where(eq3(weddingTables.coupleId, coupleId)).orderBy(weddingTables.sortOrder);
+      const assignments = await db.select().from(tableGuestAssignments).where(eq3(tableGuestAssignments.coupleId, coupleId));
       const guestsByTable = {};
       for (const a of assignments) {
         if (!guestsByTable[a.tableId]) guestsByTable[a.tableId] = [];
@@ -7816,9 +8667,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       if (notes !== void 0) updates.notes = notes;
       if (vendorNotes !== void 0) updates.vendorNotes = vendorNotes;
       if (sortOrder !== void 0) updates.sortOrder = sortOrder;
-      const [updated] = await db.update(weddingTables).set(updates).where(and2(
-        eq2(weddingTables.id, id),
-        eq2(weddingTables.coupleId, coupleId)
+      const [updated] = await db.update(weddingTables).set(updates).where(and3(
+        eq3(weddingTables.id, id),
+        eq3(weddingTables.coupleId, coupleId)
       )).returning();
       if (!updated) {
         return res.status(404).json({ error: "Bord ikke funnet" });
@@ -7826,12 +8677,12 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       const contracts = await db.select({
         vendorId: coupleVendorContracts.vendorId,
         notifyOnTableChanges: coupleVendorContracts.notifyOnTableChanges
-      }).from(coupleVendorContracts).where(and2(
-        eq2(coupleVendorContracts.coupleId, coupleId),
-        eq2(coupleVendorContracts.status, "active"),
-        eq2(coupleVendorContracts.canViewTableSeating, true)
+      }).from(coupleVendorContracts).where(and3(
+        eq3(coupleVendorContracts.coupleId, coupleId),
+        eq3(coupleVendorContracts.status, "active"),
+        eq3(coupleVendorContracts.canViewTableSeating, true)
       ));
-      const [couple] = await db.select({ displayName: coupleProfiles.displayName }).from(coupleProfiles).where(eq2(coupleProfiles.id, coupleId));
+      const [couple] = await db.select({ displayName: coupleProfiles.displayName }).from(coupleProfiles).where(eq3(coupleProfiles.id, coupleId));
       for (const contract of contracts) {
         if (contract.notifyOnTableChanges) {
           await db.insert(notifications).values({
@@ -7857,13 +8708,13 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const { id } = req.params;
-      await db.delete(tableGuestAssignments).where(and2(
-        eq2(tableGuestAssignments.tableId, id),
-        eq2(tableGuestAssignments.coupleId, coupleId)
+      await db.delete(tableGuestAssignments).where(and3(
+        eq3(tableGuestAssignments.tableId, id),
+        eq3(tableGuestAssignments.coupleId, coupleId)
       ));
-      await db.delete(weddingTables).where(and2(
-        eq2(weddingTables.id, id),
-        eq2(weddingTables.coupleId, coupleId)
+      await db.delete(weddingTables).where(and3(
+        eq3(weddingTables.id, id),
+        eq3(weddingTables.coupleId, coupleId)
       ));
       res.json({ message: "Bord slettet" });
     } catch (error) {
@@ -7877,9 +8728,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     try {
       const { tableId } = req.params;
       const { guestId, seatNumber } = req.body;
-      await db.delete(tableGuestAssignments).where(and2(
-        eq2(tableGuestAssignments.coupleId, coupleId),
-        eq2(tableGuestAssignments.guestId, guestId)
+      await db.delete(tableGuestAssignments).where(and3(
+        eq3(tableGuestAssignments.coupleId, coupleId),
+        eq3(tableGuestAssignments.guestId, guestId)
       ));
       await db.insert(tableGuestAssignments).values({
         coupleId,
@@ -7898,10 +8749,10 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const { tableId, guestId } = req.params;
-      await db.delete(tableGuestAssignments).where(and2(
-        eq2(tableGuestAssignments.coupleId, coupleId),
-        eq2(tableGuestAssignments.tableId, tableId),
-        eq2(tableGuestAssignments.guestId, guestId)
+      await db.delete(tableGuestAssignments).where(and3(
+        eq3(tableGuestAssignments.coupleId, coupleId),
+        eq3(tableGuestAssignments.tableId, tableId),
+        eq3(tableGuestAssignments.guestId, guestId)
       ));
       res.json({ success: true });
     } catch (error) {
@@ -7914,17 +8765,17 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!vendorId) return;
     try {
       const { coupleId } = req.params;
-      const [contract] = await db.select().from(coupleVendorContracts).where(and2(
-        eq2(coupleVendorContracts.vendorId, vendorId),
-        eq2(coupleVendorContracts.coupleId, coupleId),
-        eq2(coupleVendorContracts.status, "active"),
-        eq2(coupleVendorContracts.canViewTableSeating, true)
+      const [contract] = await db.select().from(coupleVendorContracts).where(and3(
+        eq3(coupleVendorContracts.vendorId, vendorId),
+        eq3(coupleVendorContracts.coupleId, coupleId),
+        eq3(coupleVendorContracts.status, "active"),
+        eq3(coupleVendorContracts.canViewTableSeating, true)
       ));
       if (!contract) {
         return res.status(403).json({ error: "Ingen tilgang til bordplassering" });
       }
-      const tables = await db.select().from(weddingTables).where(eq2(weddingTables.coupleId, coupleId)).orderBy(weddingTables.sortOrder);
-      const assignments = await db.select().from(tableGuestAssignments).where(eq2(tableGuestAssignments.coupleId, coupleId));
+      const tables = await db.select().from(weddingTables).where(eq3(weddingTables.coupleId, coupleId)).orderBy(weddingTables.sortOrder);
+      const assignments = await db.select().from(tableGuestAssignments).where(eq3(tableGuestAssignments.coupleId, coupleId));
       const guestsByTable = {};
       for (const a of assignments) {
         if (!guestsByTable[a.tableId]) guestsByTable[a.tableId] = [];
@@ -7943,9 +8794,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     }
   });
   async function validateCoordinatorAccess(token, requiredPermission) {
-    const [invitation] = await db.select().from(coordinatorInvitations).where(and2(
-      eq2(coordinatorInvitations.accessToken, token),
-      eq2(coordinatorInvitations.status, "active")
+    const [invitation] = await db.select().from(coordinatorInvitations).where(and3(
+      eq3(coordinatorInvitations.accessToken, token),
+      eq3(coordinatorInvitations.status, "active")
     ));
     if (!invitation) return null;
     if (invitation.expiresAt && new Date(invitation.expiresAt) < /* @__PURE__ */ new Date()) {
@@ -7965,13 +8816,13 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         vendorId: coupleVendorContracts.vendorId,
         notifyOnScheduleChanges: coupleVendorContracts.notifyOnScheduleChanges,
         notifyOnSpeechChanges: coupleVendorContracts.notifyOnSpeechChanges
-      }).from(coupleVendorContracts).where(and2(
-        eq2(coupleVendorContracts.coupleId, coupleId),
-        eq2(coupleVendorContracts.status, "active")
+      }).from(coupleVendorContracts).where(and3(
+        eq3(coupleVendorContracts.coupleId, coupleId),
+        eq3(coupleVendorContracts.status, "active")
       ));
       const [couple] = await db.select({
         displayName: coupleProfiles.displayName
-      }).from(coupleProfiles).where(eq2(coupleProfiles.id, coupleId));
+      }).from(coupleProfiles).where(eq3(coupleProfiles.id, coupleId));
       for (const contract of contracts) {
         const shouldNotify = changeType === "schedule" ? contract.notifyOnScheduleChanges : contract.notifyOnSpeechChanges;
         if (shouldNotify) {
@@ -7999,9 +8850,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         return res.status(403).json({ error: "Ingen tilgang til \xE5 redigere programmet" });
       }
       const { time, title, icon, notes } = req.body;
-      const [previousEvent] = await db.select().from(scheduleEvents).where(and2(
-        eq2(scheduleEvents.id, id),
-        eq2(scheduleEvents.coupleId, invitation.coupleId)
+      const [previousEvent] = await db.select().from(scheduleEvents).where(and3(
+        eq3(scheduleEvents.id, id),
+        eq3(scheduleEvents.coupleId, invitation.coupleId)
       ));
       if (!previousEvent) {
         return res.status(404).json({ error: "Hendelse ikke funnet" });
@@ -8012,9 +8863,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         icon,
         notes,
         updatedAt: /* @__PURE__ */ new Date()
-      }).where(and2(
-        eq2(scheduleEvents.id, id),
-        eq2(scheduleEvents.coupleId, invitation.coupleId)
+      }).where(and3(
+        eq3(scheduleEvents.id, id),
+        eq3(scheduleEvents.coupleId, invitation.coupleId)
       )).returning();
       await db.insert(activityLogs).values({
         coupleId: invitation.coupleId,
@@ -8084,16 +8935,16 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       if (!invitation) {
         return res.status(403).json({ error: "Ingen tilgang til \xE5 redigere programmet" });
       }
-      const [event] = await db.select().from(scheduleEvents).where(and2(
-        eq2(scheduleEvents.id, id),
-        eq2(scheduleEvents.coupleId, invitation.coupleId)
+      const [event] = await db.select().from(scheduleEvents).where(and3(
+        eq3(scheduleEvents.id, id),
+        eq3(scheduleEvents.coupleId, invitation.coupleId)
       ));
       if (!event) {
         return res.status(404).json({ error: "Hendelse ikke funnet" });
       }
-      await db.delete(scheduleEvents).where(and2(
-        eq2(scheduleEvents.id, id),
-        eq2(scheduleEvents.coupleId, invitation.coupleId)
+      await db.delete(scheduleEvents).where(and3(
+        eq3(scheduleEvents.id, id),
+        eq3(scheduleEvents.coupleId, invitation.coupleId)
       ));
       await db.insert(activityLogs).values({
         coupleId: invitation.coupleId,
@@ -8125,9 +8976,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         return res.status(403).json({ error: "Ingen tilgang til \xE5 redigere talelisten" });
       }
       const { speakerName, role, durationMinutes, notes, sortOrder, scheduledTime } = req.body;
-      const [previousSpeech] = await db.select().from(speeches).where(and2(
-        eq2(speeches.id, id),
-        eq2(speeches.coupleId, invitation.coupleId)
+      const [previousSpeech] = await db.select().from(speeches).where(and3(
+        eq3(speeches.id, id),
+        eq3(speeches.coupleId, invitation.coupleId)
       ));
       if (!previousSpeech) {
         return res.status(404).json({ error: "Tale ikke funnet" });
@@ -8140,9 +8991,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         sortOrder,
         scheduledTime,
         updatedAt: /* @__PURE__ */ new Date()
-      }).where(and2(
-        eq2(speeches.id, id),
-        eq2(speeches.coupleId, invitation.coupleId)
+      }).where(and3(
+        eq3(speeches.id, id),
+        eq3(speeches.coupleId, invitation.coupleId)
       )).returning();
       await db.insert(activityLogs).values({
         coupleId: invitation.coupleId,
@@ -8213,16 +9064,16 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       if (!invitation) {
         return res.status(403).json({ error: "Ingen tilgang til \xE5 redigere talelisten" });
       }
-      const [speech] = await db.select().from(speeches).where(and2(
-        eq2(speeches.id, id),
-        eq2(speeches.coupleId, invitation.coupleId)
+      const [speech] = await db.select().from(speeches).where(and3(
+        eq3(speeches.id, id),
+        eq3(speeches.coupleId, invitation.coupleId)
       ));
       if (!speech) {
         return res.status(404).json({ error: "Tale ikke funnet" });
       }
-      await db.delete(speeches).where(and2(
-        eq2(speeches.id, id),
-        eq2(speeches.coupleId, invitation.coupleId)
+      await db.delete(speeches).where(and3(
+        eq3(speeches.id, id),
+        eq3(speeches.coupleId, invitation.coupleId)
       ));
       await db.insert(activityLogs).values({
         coupleId: invitation.coupleId,
@@ -8262,7 +9113,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         createdAt: coupleVendorContracts.createdAt,
         vendorName: vendors.businessName,
         vendorCategory: vendorCategories.name
-      }).from(coupleVendorContracts).leftJoin(vendors, eq2(coupleVendorContracts.vendorId, vendors.id)).leftJoin(vendorCategories, eq2(vendors.categoryId, vendorCategories.id)).where(eq2(coupleVendorContracts.coupleId, coupleId)).orderBy(desc(coupleVendorContracts.createdAt));
+      }).from(coupleVendorContracts).leftJoin(vendors, eq3(coupleVendorContracts.vendorId, vendors.id)).leftJoin(vendorCategories, eq3(vendors.categoryId, vendorCategories.id)).where(eq3(coupleVendorContracts.coupleId, coupleId)).orderBy(desc2(coupleVendorContracts.createdAt));
       res.json(contracts);
     } catch (error) {
       console.error("Error fetching vendor contracts:", error);
@@ -8274,10 +9125,10 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const { vendorId, offerId, vendorRole, notifyOnScheduleChanges, notifyOnSpeechChanges, canViewSchedule, canViewSpeeches } = req.body;
-      const [existing] = await db.select().from(coupleVendorContracts).where(and2(
-        eq2(coupleVendorContracts.coupleId, coupleId),
-        eq2(coupleVendorContracts.vendorId, vendorId),
-        eq2(coupleVendorContracts.status, "active")
+      const [existing] = await db.select().from(coupleVendorContracts).where(and3(
+        eq3(coupleVendorContracts.coupleId, coupleId),
+        eq3(coupleVendorContracts.vendorId, vendorId),
+        eq3(coupleVendorContracts.status, "active")
       ));
       if (existing) {
         return res.status(400).json({ error: "Avtale eksisterer allerede" });
@@ -8294,7 +9145,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       }).returning();
       const [couple] = await db.select({
         displayName: coupleProfiles.displayName
-      }).from(coupleProfiles).where(eq2(coupleProfiles.id, coupleId));
+      }).from(coupleProfiles).where(eq3(coupleProfiles.id, coupleId));
       await db.insert(notifications).values({
         recipientType: "vendor",
         recipientId: vendorId,
@@ -8316,9 +9167,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     try {
       const { id } = req.params;
       const { notifyOnScheduleChanges, notifyOnSpeechChanges, canViewSchedule, canViewSpeeches, status } = req.body;
-      const [currentContract] = await db.select().from(coupleVendorContracts).where(and2(
-        eq2(coupleVendorContracts.id, id),
-        eq2(coupleVendorContracts.coupleId, coupleId)
+      const [currentContract] = await db.select().from(coupleVendorContracts).where(and3(
+        eq3(coupleVendorContracts.id, id),
+        eq3(coupleVendorContracts.coupleId, coupleId)
       ));
       if (!currentContract) {
         return res.status(404).json({ error: "Avtale ikke funnet" });
@@ -8327,16 +9178,16 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         try {
           await db.transaction(async (tx) => {
             if (currentContract.offerId) {
-              const offerItems = await tx.select().from(vendorOfferItems).where(eq2(vendorOfferItems.offerId, currentContract.offerId));
+              const offerItems = await tx.select().from(vendorOfferItems).where(eq3(vendorOfferItems.offerId, currentContract.offerId));
               for (const item of offerItems) {
                 if (!item.productId) continue;
-                const [product] = await tx.select().from(vendorProducts).where(eq2(vendorProducts.id, item.productId));
+                const [product] = await tx.select().from(vendorProducts).where(eq3(vendorProducts.id, item.productId));
                 if (product?.trackInventory && product.availableQuantity !== null) {
                   const restoredQuantity = product.availableQuantity + (item.quantity || 0);
                   await tx.update(vendorProducts).set({
                     availableQuantity: restoredQuantity,
                     updatedAt: /* @__PURE__ */ new Date()
-                  }).where(eq2(vendorProducts.id, item.productId));
+                  }).where(eq3(vendorProducts.id, item.productId));
                 }
               }
             }
@@ -8347,12 +9198,12 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
               canViewSpeeches,
               status,
               updatedAt: /* @__PURE__ */ new Date()
-            }).where(and2(
-              eq2(coupleVendorContracts.id, id),
-              eq2(coupleVendorContracts.coupleId, coupleId)
+            }).where(and3(
+              eq3(coupleVendorContracts.id, id),
+              eq3(coupleVendorContracts.coupleId, coupleId)
             ));
           });
-          const [updated2] = await db.select().from(coupleVendorContracts).where(eq2(coupleVendorContracts.id, id));
+          const [updated2] = await db.select().from(coupleVendorContracts).where(eq3(coupleVendorContracts.id, id));
           return res.json(updated2);
         } catch (txError) {
           console.error("Transaction error cancelling contract:", txError);
@@ -8366,9 +9217,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         canViewSpeeches,
         status,
         updatedAt: /* @__PURE__ */ new Date()
-      }).where(and2(
-        eq2(coupleVendorContracts.id, id),
-        eq2(coupleVendorContracts.coupleId, coupleId)
+      }).where(and3(
+        eq3(coupleVendorContracts.id, id),
+        eq3(coupleVendorContracts.coupleId, coupleId)
       )).returning();
       res.json(updated);
     } catch (error) {
@@ -8385,9 +9236,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         status: "completed",
         completedAt: /* @__PURE__ */ new Date(),
         updatedAt: /* @__PURE__ */ new Date()
-      }).where(and2(
-        eq2(coupleVendorContracts.id, id),
-        eq2(coupleVendorContracts.coupleId, coupleId)
+      }).where(and3(
+        eq3(coupleVendorContracts.id, id),
+        eq3(coupleVendorContracts.coupleId, coupleId)
       )).returning();
       if (!updated) {
         return res.status(404).json({ error: "Avtale ikke funnet" });
@@ -8402,10 +9253,10 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
     try {
-      const vendorNotifications = await db.select().from(notifications).where(and2(
-        eq2(notifications.recipientType, "vendor"),
-        eq2(notifications.recipientId, vendorId)
-      )).orderBy(desc(notifications.createdAt)).limit(50);
+      const vendorNotifications = await db.select().from(notifications).where(and3(
+        eq3(notifications.recipientType, "vendor"),
+        eq3(notifications.recipientId, vendorId)
+      )).orderBy(desc2(notifications.createdAt)).limit(50);
       res.json(vendorNotifications);
     } catch (error) {
       console.error("Error fetching vendor notifications:", error);
@@ -8417,9 +9268,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!vendorId) return;
     try {
       const { id } = req.params;
-      await db.update(notifications).set({ readAt: /* @__PURE__ */ new Date() }).where(and2(
-        eq2(notifications.id, id),
-        eq2(notifications.recipientId, vendorId)
+      await db.update(notifications).set({ readAt: /* @__PURE__ */ new Date() }).where(and3(
+        eq3(notifications.id, id),
+        eq3(notifications.recipientId, vendorId)
       ));
       res.json({ message: "Varsel markert som lest" });
     } catch (error) {
@@ -8431,10 +9282,10 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     const coupleId = await checkCoupleAuth(req, res);
     if (!coupleId) return;
     try {
-      const coupleNotifications = await db.select().from(notifications).where(and2(
-        eq2(notifications.recipientType, "couple"),
-        eq2(notifications.recipientId, coupleId)
-      )).orderBy(desc(notifications.createdAt)).limit(50);
+      const coupleNotifications = await db.select().from(notifications).where(and3(
+        eq3(notifications.recipientType, "couple"),
+        eq3(notifications.recipientId, coupleId)
+      )).orderBy(desc2(notifications.createdAt)).limit(50);
       res.json(coupleNotifications);
     } catch (error) {
       console.error("Error fetching couple notifications:", error);
@@ -8445,10 +9296,10 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     const vendorId = await checkVendorAuth2(req, res);
     if (!vendorId) return;
     try {
-      const [result] = await db.select({ count: sql3`count(*)::int` }).from(notifications).where(and2(
-        eq2(notifications.recipientType, "vendor"),
-        eq2(notifications.recipientId, vendorId),
-        sql3`${notifications.readAt} IS NULL`
+      const [result] = await db.select({ count: sql4`count(*)::int` }).from(notifications).where(and3(
+        eq3(notifications.recipientType, "vendor"),
+        eq3(notifications.recipientId, vendorId),
+        sql4`${notifications.readAt} IS NULL`
       ));
       res.json({ count: result?.count || 0 });
     } catch (error) {
@@ -8461,11 +9312,11 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!vendorId) return;
     try {
       const { coupleId } = req.params;
-      const [contract] = await db.select().from(coupleVendorContracts).where(and2(
-        eq2(coupleVendorContracts.coupleId, coupleId),
-        eq2(coupleVendorContracts.vendorId, vendorId),
-        eq2(coupleVendorContracts.status, "active"),
-        eq2(coupleVendorContracts.canViewSchedule, true)
+      const [contract] = await db.select().from(coupleVendorContracts).where(and3(
+        eq3(coupleVendorContracts.coupleId, coupleId),
+        eq3(coupleVendorContracts.vendorId, vendorId),
+        eq3(coupleVendorContracts.status, "active"),
+        eq3(coupleVendorContracts.canViewSchedule, true)
       ));
       if (!contract) {
         return res.status(403).json({ error: "Ingen tilgang til dette programmet" });
@@ -8473,11 +9324,11 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       const [couple] = await db.select({
         displayName: coupleProfiles.displayName,
         weddingDate: coupleProfiles.weddingDate
-      }).from(coupleProfiles).where(eq2(coupleProfiles.id, coupleId));
-      const schedule = await db.select().from(scheduleEvents).where(eq2(scheduleEvents.coupleId, coupleId)).orderBy(scheduleEvents.time);
+      }).from(coupleProfiles).where(eq3(coupleProfiles.id, coupleId));
+      const schedule = await db.select().from(scheduleEvents).where(eq3(scheduleEvents.coupleId, coupleId)).orderBy(scheduleEvents.time);
       let speechList = [];
       if (contract.canViewSpeeches) {
-        speechList = await db.select().from(speeches).where(eq2(speeches.coupleId, coupleId)).orderBy(speeches.sortOrder);
+        speechList = await db.select().from(speeches).where(eq3(speeches.coupleId, coupleId)).orderBy(speeches.sortOrder);
       }
       res.json({
         couple,
@@ -8498,15 +9349,15 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       if (!coupleId || !message) {
         return res.status(400).json({ error: "Mangler p\xE5krevde felter" });
       }
-      const [contract] = await db.select().from(coupleVendorContracts).where(and2(
-        eq2(coupleVendorContracts.coupleId, coupleId),
-        eq2(coupleVendorContracts.vendorId, vendorId),
-        eq2(coupleVendorContracts.status, "active")
+      const [contract] = await db.select().from(coupleVendorContracts).where(and3(
+        eq3(coupleVendorContracts.coupleId, coupleId),
+        eq3(coupleVendorContracts.vendorId, vendorId),
+        eq3(coupleVendorContracts.status, "active")
       ));
       if (!contract) {
         return res.status(403).json({ error: "Ingen aktiv avtale med dette brudeparet" });
       }
-      const [vendor] = await db.select({ businessName: vendors.businessName }).from(vendors).where(eq2(vendors.id, vendorId));
+      const [vendor] = await db.select({ businessName: vendors.businessName }).from(vendors).where(eq3(vendors.id, vendorId));
       const payload = {
         type,
         eventId,
@@ -8556,10 +9407,10 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         createdAt: coupleVendorContracts.createdAt,
         coupleName: coupleProfiles.displayName,
         weddingDate: coupleProfiles.weddingDate
-      }).from(coupleVendorContracts).innerJoin(coupleProfiles, eq2(coupleVendorContracts.coupleId, coupleProfiles.id)).where(and2(
-        eq2(coupleVendorContracts.vendorId, vendorId),
-        eq2(coupleVendorContracts.status, "active")
-      )).orderBy(desc(coupleVendorContracts.createdAt));
+      }).from(coupleVendorContracts).innerJoin(coupleProfiles, eq3(coupleVendorContracts.coupleId, coupleProfiles.id)).where(and3(
+        eq3(coupleVendorContracts.vendorId, vendorId),
+        eq3(coupleVendorContracts.status, "active")
+      )).orderBy(desc2(coupleVendorContracts.createdAt));
       res.json(contracts);
     } catch (error) {
       console.error("Error fetching vendor couple contracts:", error);
@@ -8570,7 +9421,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     const coupleId = await checkCoupleAuth(req, res);
     if (!coupleId) return;
     try {
-      const logs = await db.select().from(activityLogs).where(eq2(activityLogs.coupleId, coupleId)).orderBy(desc(activityLogs.createdAt)).limit(50);
+      const logs = await db.select().from(activityLogs).where(eq3(activityLogs.coupleId, coupleId)).orderBy(desc2(activityLogs.createdAt)).limit(50);
       res.json(logs);
     } catch (error) {
       console.error("Error fetching activity log:", error);
@@ -8588,11 +9439,11 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         completedAt: coupleVendorContracts.completedAt,
         businessName: vendors.businessName,
         imageUrl: vendors.imageUrl
-      }).from(coupleVendorContracts).innerJoin(vendors, eq2(coupleVendorContracts.vendorId, vendors.id)).where(and2(
-        eq2(coupleVendorContracts.coupleId, coupleId),
-        eq2(coupleVendorContracts.status, "completed")
+      }).from(coupleVendorContracts).innerJoin(vendors, eq3(coupleVendorContracts.vendorId, vendors.id)).where(and3(
+        eq3(coupleVendorContracts.coupleId, coupleId),
+        eq3(coupleVendorContracts.status, "completed")
       ));
-      const existingReviews = await db.select({ contractId: vendorReviews.contractId }).from(vendorReviews).where(eq2(vendorReviews.coupleId, coupleId));
+      const existingReviews = await db.select({ contractId: vendorReviews.contractId }).from(vendorReviews).where(eq3(vendorReviews.coupleId, coupleId));
       const reviewedContractIds = new Set(existingReviews.map((r) => r.contractId));
       const result = contracts.map((c) => ({
         ...c,
@@ -8612,15 +9463,15 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       if (!contractId || !rating || rating < 1 || rating > 5) {
         return res.status(400).json({ error: "Ugyldig anmeldelse" });
       }
-      const [contract] = await db.select().from(coupleVendorContracts).where(and2(
-        eq2(coupleVendorContracts.id, contractId),
-        eq2(coupleVendorContracts.coupleId, coupleId),
-        eq2(coupleVendorContracts.status, "completed")
+      const [contract] = await db.select().from(coupleVendorContracts).where(and3(
+        eq3(coupleVendorContracts.id, contractId),
+        eq3(coupleVendorContracts.coupleId, coupleId),
+        eq3(coupleVendorContracts.status, "completed")
       ));
       if (!contract) {
         return res.status(404).json({ error: "Fant ikke fullf\xF8rt avtale" });
       }
-      const [existing] = await db.select().from(vendorReviews).where(eq2(vendorReviews.contractId, contractId));
+      const [existing] = await db.select().from(vendorReviews).where(eq3(vendorReviews.contractId, contractId));
       if (existing) {
         return res.status(400).json({ error: "Du har allerede gitt en anmeldelse" });
       }
@@ -8656,9 +9507,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     try {
       const { id } = req.params;
       const { rating, title, body, isAnonymous } = req.body;
-      const [existing] = await db.select().from(vendorReviews).where(and2(
-        eq2(vendorReviews.id, id),
-        eq2(vendorReviews.coupleId, coupleId)
+      const [existing] = await db.select().from(vendorReviews).where(and3(
+        eq3(vendorReviews.id, id),
+        eq3(vendorReviews.coupleId, coupleId)
       ));
       if (!existing) {
         return res.status(404).json({ error: "Fant ikke anmeldelse" });
@@ -8674,7 +9525,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         isApproved: false,
         // Reset approval on edit
         updatedAt: /* @__PURE__ */ new Date()
-      }).where(eq2(vendorReviews.id, id)).returning();
+      }).where(eq3(vendorReviews.id, id)).returning();
       res.json(updated);
     } catch (error) {
       console.error("Error updating review:", error);
@@ -8697,7 +9548,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         editableUntil: vendorReviews.editableUntil,
         createdAt: vendorReviews.createdAt,
         businessName: vendors.businessName
-      }).from(vendorReviews).innerJoin(vendors, eq2(vendorReviews.vendorId, vendors.id)).where(eq2(vendorReviews.coupleId, coupleId)).orderBy(desc(vendorReviews.createdAt));
+      }).from(vendorReviews).innerJoin(vendors, eq3(vendorReviews.vendorId, vendors.id)).where(eq3(vendorReviews.coupleId, coupleId)).orderBy(desc2(vendorReviews.createdAt));
       res.json(reviews);
     } catch (error) {
       console.error("Error fetching couple reviews:", error);
@@ -8715,19 +9566,19 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         isAnonymous: vendorReviews.isAnonymous,
         createdAt: vendorReviews.createdAt,
         coupleName: coupleProfiles.displayName
-      }).from(vendorReviews).innerJoin(coupleProfiles, eq2(vendorReviews.coupleId, coupleProfiles.id)).where(and2(
-        eq2(vendorReviews.vendorId, vendorId),
-        eq2(vendorReviews.isApproved, true)
-      )).orderBy(desc(vendorReviews.createdAt));
-      const [vendor] = await db.select({ googleReviewUrl: vendors.googleReviewUrl }).from(vendors).where(eq2(vendors.id, vendorId));
+      }).from(vendorReviews).innerJoin(coupleProfiles, eq3(vendorReviews.coupleId, coupleProfiles.id)).where(and3(
+        eq3(vendorReviews.vendorId, vendorId),
+        eq3(vendorReviews.isApproved, true)
+      )).orderBy(desc2(vendorReviews.createdAt));
+      const [vendor] = await db.select({ googleReviewUrl: vendors.googleReviewUrl }).from(vendors).where(eq3(vendors.id, vendorId));
       const [stats] = await db.select({
-        count: sql3`count(*)::int`,
-        average: sql3`round(avg(${vendorReviews.rating})::numeric, 1)`
-      }).from(vendorReviews).where(and2(
-        eq2(vendorReviews.vendorId, vendorId),
-        eq2(vendorReviews.isApproved, true)
+        count: sql4`count(*)::int`,
+        average: sql4`round(avg(${vendorReviews.rating})::numeric, 1)`
+      }).from(vendorReviews).where(and3(
+        eq3(vendorReviews.vendorId, vendorId),
+        eq3(vendorReviews.isApproved, true)
       ));
-      const responses = await db.select().from(vendorReviewResponses).innerJoin(vendorReviews, eq2(vendorReviewResponses.reviewId, vendorReviews.id)).where(eq2(vendorReviews.vendorId, vendorId));
+      const responses = await db.select().from(vendorReviewResponses).innerJoin(vendorReviews, eq3(vendorReviewResponses.reviewId, vendorReviews.id)).where(eq3(vendorReviews.vendorId, vendorId));
       const responseMap = new Map(responses.map((r) => [r.vendor_review_responses.reviewId, r.vendor_review_responses]));
       const reviewsWithResponses = reviews.map((r) => ({
         ...r,
@@ -8750,7 +9601,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
   app2.get("/api/vendors/:vendorId/products", async (req, res) => {
     try {
       const { vendorId } = req.params;
-      const products = await db.select().from(vendorProducts).where(eq2(vendorProducts.vendorId, vendorId)).orderBy(vendorProducts.createdAt);
+      const products = await db.select().from(vendorProducts).where(eq3(vendorProducts.vendorId, vendorId)).orderBy(vendorProducts.createdAt);
       const productsWithMetadata = products.map((p) => ({
         ...p,
         metadata: p.metadata ? JSON.parse(p.metadata) : null
@@ -8775,8 +9626,8 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         isApproved: vendorReviews.isApproved,
         createdAt: vendorReviews.createdAt,
         coupleName: coupleProfiles.displayName
-      }).from(vendorReviews).innerJoin(coupleProfiles, eq2(vendorReviews.coupleId, coupleProfiles.id)).where(eq2(vendorReviews.vendorId, vendorId)).orderBy(desc(vendorReviews.createdAt));
-      const responses = await db.select().from(vendorReviewResponses).where(eq2(vendorReviewResponses.vendorId, vendorId));
+      }).from(vendorReviews).innerJoin(coupleProfiles, eq3(vendorReviews.coupleId, coupleProfiles.id)).where(eq3(vendorReviews.vendorId, vendorId)).orderBy(desc2(vendorReviews.createdAt));
+      const responses = await db.select().from(vendorReviewResponses).where(eq3(vendorReviewResponses.vendorId, vendorId));
       const responseMap = new Map(responses.map((r) => [r.reviewId, r]));
       const reviewsWithResponses = reviews.map((r) => ({
         ...r,
@@ -8784,10 +9635,10 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         response: responseMap.get(r.id) || null
       }));
       const [stats] = await db.select({
-        total: sql3`count(*)::int`,
-        approved: sql3`count(*) filter (where ${vendorReviews.isApproved})::int`,
-        average: sql3`round(avg(${vendorReviews.rating})::numeric, 1)`
-      }).from(vendorReviews).where(eq2(vendorReviews.vendorId, vendorId));
+        total: sql4`count(*)::int`,
+        approved: sql4`count(*) filter (where ${vendorReviews.isApproved})::int`,
+        average: sql4`round(avg(${vendorReviews.rating})::numeric, 1)`
+      }).from(vendorReviews).where(eq3(vendorReviews.vendorId, vendorId));
       res.json({
         reviews: reviewsWithResponses,
         stats: {
@@ -8811,16 +9662,16 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       if (!body || body.trim().length === 0) {
         return res.status(400).json({ error: "Svar kan ikke v\xE6re tomt" });
       }
-      const [review] = await db.select().from(vendorReviews).where(and2(
-        eq2(vendorReviews.id, reviewId),
-        eq2(vendorReviews.vendorId, vendorId)
+      const [review] = await db.select().from(vendorReviews).where(and3(
+        eq3(vendorReviews.id, reviewId),
+        eq3(vendorReviews.vendorId, vendorId)
       ));
       if (!review) {
         return res.status(404).json({ error: "Fant ikke anmeldelse" });
       }
-      const [existing] = await db.select().from(vendorReviewResponses).where(eq2(vendorReviewResponses.reviewId, reviewId));
+      const [existing] = await db.select().from(vendorReviewResponses).where(eq3(vendorReviewResponses.reviewId, reviewId));
       if (existing) {
-        const [updated] = await db.update(vendorReviewResponses).set({ body, updatedAt: /* @__PURE__ */ new Date() }).where(eq2(vendorReviewResponses.reviewId, reviewId)).returning();
+        const [updated] = await db.update(vendorReviewResponses).set({ body, updatedAt: /* @__PURE__ */ new Date() }).where(eq3(vendorReviewResponses.reviewId, reviewId)).returning();
         res.json(updated);
       } else {
         const [response] = await db.insert(vendorReviewResponses).values({
@@ -8846,9 +9697,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         completedAt: coupleVendorContracts.completedAt,
         reviewReminderSentAt: coupleVendorContracts.reviewReminderSentAt,
         coupleName: coupleProfiles.displayName
-      }).from(coupleVendorContracts).innerJoin(coupleProfiles, eq2(coupleVendorContracts.coupleId, coupleProfiles.id)).where(eq2(coupleVendorContracts.vendorId, vendorId)).orderBy(desc(coupleVendorContracts.createdAt));
+      }).from(coupleVendorContracts).innerJoin(coupleProfiles, eq3(coupleVendorContracts.coupleId, coupleProfiles.id)).where(eq3(coupleVendorContracts.vendorId, vendorId)).orderBy(desc2(coupleVendorContracts.createdAt));
       const contractIds = contracts.map((c) => c.id);
-      const reviews = contractIds.length > 0 ? await db.select({ contractId: vendorReviews.contractId }).from(vendorReviews).where(inArray(vendorReviews.contractId, contractIds)) : [];
+      const reviews = contractIds.length > 0 ? await db.select({ contractId: vendorReviews.contractId }).from(vendorReviews).where(inArray2(vendorReviews.contractId, contractIds)) : [];
       const reviewedContractIds = new Set(reviews.map((r) => r.contractId));
       const contractsWithReviewStatus = contracts.map((c) => ({
         ...c,
@@ -8866,10 +9717,10 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const { contractId } = req.params;
-      const [contract] = await db.select().from(coupleVendorContracts).where(and2(
-        eq2(coupleVendorContracts.id, contractId),
-        eq2(coupleVendorContracts.vendorId, vendorId),
-        eq2(coupleVendorContracts.status, "completed")
+      const [contract] = await db.select().from(coupleVendorContracts).where(and3(
+        eq3(coupleVendorContracts.id, contractId),
+        eq3(coupleVendorContracts.vendorId, vendorId),
+        eq3(coupleVendorContracts.status, "completed")
       ));
       if (!contract) {
         return res.status(404).json({ error: "Fant ikke fullf\xF8rt avtale" });
@@ -8884,11 +9735,11 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
           });
         }
       }
-      const [existingReview] = await db.select().from(vendorReviews).where(eq2(vendorReviews.contractId, contractId));
+      const [existingReview] = await db.select().from(vendorReviews).where(eq3(vendorReviews.contractId, contractId));
       if (existingReview) {
         return res.status(400).json({ error: "Brudeparet har allerede gitt anmeldelse" });
       }
-      const [vendor] = await db.select({ businessName: vendors.businessName }).from(vendors).where(eq2(vendors.id, vendorId));
+      const [vendor] = await db.select({ businessName: vendors.businessName }).from(vendors).where(eq3(vendors.id, vendorId));
       await db.insert(notifications).values({
         recipientType: "couple",
         recipientId: contract.coupleId,
@@ -8897,7 +9748,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         body: `${vendor?.businessName} \xF8nsker gjerne din tilbakemelding p\xE5 tjenesten`,
         payload: JSON.stringify({ contractId, vendorId })
       });
-      await db.update(coupleVendorContracts).set({ reviewReminderSentAt: /* @__PURE__ */ new Date() }).where(eq2(coupleVendorContracts.id, contractId));
+      await db.update(coupleVendorContracts).set({ reviewReminderSentAt: /* @__PURE__ */ new Date() }).where(eq3(coupleVendorContracts.id, contractId));
       res.json({ success: true, message: "P\xE5minnelse sendt" });
     } catch (error) {
       console.error("Error sending review reminder:", error);
@@ -8913,7 +9764,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       if (googleReviewUrl && !googleReviewUrl.includes("google.com")) {
         return res.status(400).json({ error: "Ugyldig Google-lenke" });
       }
-      await db.update(vendors).set({ googleReviewUrl: googleReviewUrl || null, updatedAt: /* @__PURE__ */ new Date() }).where(eq2(vendors.id, vendorId));
+      await db.update(vendors).set({ googleReviewUrl: googleReviewUrl || null, updatedAt: /* @__PURE__ */ new Date() }).where(eq3(vendors.id, vendorId));
       res.json({ success: true });
     } catch (error) {
       console.error("Error updating Google review URL:", error);
@@ -8969,7 +9820,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       return res.status(401).json({ error: "Ikke autorisert" });
     }
     try {
-      const feedback = await db.select().from(appFeedback).orderBy(desc(appFeedback.createdAt));
+      const feedback = await db.select().from(appFeedback).orderBy(desc2(appFeedback.createdAt));
       res.json(feedback);
     } catch (error) {
       console.error("Error fetching feedback:", error);
@@ -8984,7 +9835,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     try {
       const { id } = req.params;
       const { status, adminNotes } = req.body;
-      const [updated] = await db.update(appFeedback).set({ status, adminNotes, updatedAt: /* @__PURE__ */ new Date() }).where(eq2(appFeedback.id, id)).returning();
+      const [updated] = await db.update(appFeedback).set({ status, adminNotes, updatedAt: /* @__PURE__ */ new Date() }).where(eq3(appFeedback.id, id)).returning();
       res.json(updated);
     } catch (error) {
       console.error("Error updating feedback:", error);
@@ -9004,7 +9855,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         approvedAt: isApproved ? /* @__PURE__ */ new Date() : null,
         approvedBy: isApproved ? "admin" : null,
         updatedAt: /* @__PURE__ */ new Date()
-      }).where(eq2(vendorReviews.id, id)).returning();
+      }).where(eq3(vendorReviews.id, id)).returning();
       res.json(updated);
     } catch (error) {
       console.error("Error updating review approval:", error);
@@ -9026,7 +9877,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         createdAt: vendorReviews.createdAt,
         coupleName: coupleProfiles.displayName,
         businessName: vendors.businessName
-      }).from(vendorReviews).innerJoin(coupleProfiles, eq2(vendorReviews.coupleId, coupleProfiles.id)).innerJoin(vendors, eq2(vendorReviews.vendorId, vendors.id)).where(eq2(vendorReviews.isApproved, false)).orderBy(vendorReviews.createdAt);
+      }).from(vendorReviews).innerJoin(coupleProfiles, eq3(vendorReviews.coupleId, coupleProfiles.id)).innerJoin(vendors, eq3(vendorReviews.vendorId, vendors.id)).where(eq3(vendorReviews.isApproved, false)).orderBy(vendorReviews.createdAt);
       res.json(reviews);
     } catch (error) {
       console.error("Error fetching pending reviews:", error);
@@ -9039,9 +9890,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!await checkVendorSubscriptionAccess(vendorId, res)) return;
     try {
       const { id } = req.params;
-      const [contract] = await db.select().from(coupleVendorContracts).where(and2(
-        eq2(coupleVendorContracts.id, id),
-        eq2(coupleVendorContracts.vendorId, vendorId)
+      const [contract] = await db.select().from(coupleVendorContracts).where(and3(
+        eq3(coupleVendorContracts.id, id),
+        eq3(coupleVendorContracts.vendorId, vendorId)
       ));
       if (!contract) {
         return res.status(404).json({ error: "Fant ikke avtale" });
@@ -9050,8 +9901,8 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         status: "completed",
         completedAt: /* @__PURE__ */ new Date(),
         updatedAt: /* @__PURE__ */ new Date()
-      }).where(eq2(coupleVendorContracts.id, id)).returning();
-      const [vendor] = await db.select({ businessName: vendors.businessName }).from(vendors).where(eq2(vendors.id, vendorId));
+      }).where(eq3(coupleVendorContracts.id, id)).returning();
+      const [vendor] = await db.select({ businessName: vendors.businessName }).from(vendors).where(eq3(vendors.id, vendorId));
       await db.insert(notifications).values({
         recipientType: "couple",
         recipientId: contract.coupleId,
@@ -9086,7 +9937,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         coupleName: coupleProfiles.displayName,
         coupleEmail: coupleProfiles.email,
         weddingDate: coupleProfiles.weddingDate
-      }).from(checklistTasks).innerJoin(coupleProfiles, eq2(checklistTasks.coupleId, coupleProfiles.id)).orderBy(coupleProfiles.displayName, checklistTasks.sortOrder);
+      }).from(checklistTasks).innerJoin(coupleProfiles, eq3(checklistTasks.coupleId, coupleProfiles.id)).orderBy(coupleProfiles.displayName, checklistTasks.sortOrder);
       res.json(checklists);
     } catch (error) {
       console.error("Error fetching admin checklists:", error);
@@ -9100,8 +9951,8 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     }
     try {
       const { coupleId } = req.params;
-      const tasks = await db.select().from(checklistTasks).where(eq2(checklistTasks.coupleId, coupleId)).orderBy(checklistTasks.sortOrder, checklistTasks.monthsBefore);
-      const [couple] = await db.select().from(coupleProfiles).where(eq2(coupleProfiles.id, coupleId));
+      const tasks = await db.select().from(checklistTasks).where(eq3(checklistTasks.coupleId, coupleId)).orderBy(checklistTasks.sortOrder, checklistTasks.monthsBefore);
+      const [couple] = await db.select().from(coupleProfiles).where(eq3(coupleProfiles.id, coupleId));
       res.json({ couple, tasks });
     } catch (error) {
       console.error("Error fetching couple checklist:", error);
@@ -9131,7 +9982,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
           updateData.completedBy = null;
         }
       }
-      const [updated] = await db.update(checklistTasks).set(updateData).where(eq2(checklistTasks.id, id)).returning();
+      const [updated] = await db.update(checklistTasks).set(updateData).where(eq3(checklistTasks.id, id)).returning();
       res.json(updated);
     } catch (error) {
       console.error("Error updating checklist task (admin):", error);
@@ -9145,7 +9996,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     }
     try {
       const { id } = req.params;
-      await db.delete(checklistTasks).where(eq2(checklistTasks.id, id));
+      await db.delete(checklistTasks).where(eq3(checklistTasks.id, id));
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting checklist task (admin):", error);
@@ -9156,7 +10007,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     const coupleId = await checkCoupleAuth(req, res);
     if (!coupleId) return;
     try {
-      const tasks = await db.select().from(checklistTasks).where(eq2(checklistTasks.coupleId, coupleId)).orderBy(checklistTasks.sortOrder, checklistTasks.monthsBefore);
+      const tasks = await db.select().from(checklistTasks).where(eq3(checklistTasks.coupleId, coupleId)).orderBy(checklistTasks.sortOrder, checklistTasks.monthsBefore);
       res.json(tasks);
     } catch (error) {
       console.error("Error fetching checklist:", error);
@@ -9190,9 +10041,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     try {
       const { id } = req.params;
       const { title, monthsBefore, category, completed, notes, assignedTo, createReminder } = req.body;
-      const [existing] = await db.select().from(checklistTasks).where(and2(
-        eq2(checklistTasks.id, id),
-        eq2(checklistTasks.coupleId, coupleId)
+      const [existing] = await db.select().from(checklistTasks).where(and3(
+        eq3(checklistTasks.id, id),
+        eq3(checklistTasks.coupleId, coupleId)
       ));
       if (!existing) {
         return res.status(404).json({ error: "Fant ikke oppgave" });
@@ -9214,7 +10065,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         }
       }
       if (createReminder && monthsBefore !== void 0) {
-        const [couple] = await db.select().from(coupleProfiles).where(eq2(coupleProfiles.id, coupleId));
+        const [couple] = await db.select().from(coupleProfiles).where(eq3(coupleProfiles.id, coupleId));
         if (couple?.weddingDate) {
           const weddingDate = new Date(couple.weddingDate);
           const reminderDate = new Date(weddingDate);
@@ -9228,7 +10079,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
           updateData.linkedReminderId = reminder.id;
         }
       }
-      const [updated] = await db.update(checklistTasks).set(updateData).where(eq2(checklistTasks.id, id)).returning();
+      const [updated] = await db.update(checklistTasks).set(updateData).where(eq3(checklistTasks.id, id)).returning();
       res.json(updated);
     } catch (error) {
       console.error("Error updating checklist task:", error);
@@ -9240,9 +10091,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const { id } = req.params;
-      const [existing] = await db.select().from(checklistTasks).where(and2(
-        eq2(checklistTasks.id, id),
-        eq2(checklistTasks.coupleId, coupleId)
+      const [existing] = await db.select().from(checklistTasks).where(and3(
+        eq3(checklistTasks.id, id),
+        eq3(checklistTasks.coupleId, coupleId)
       ));
       if (!existing) {
         return res.status(404).json({ error: "Fant ikke oppgave" });
@@ -9250,7 +10101,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       if (existing.isDefault) {
         return res.status(400).json({ error: "Kan ikke slette standardoppgaver" });
       }
-      await db.delete(checklistTasks).where(eq2(checklistTasks.id, id));
+      await db.delete(checklistTasks).where(eq3(checklistTasks.id, id));
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting checklist task:", error);
@@ -9261,7 +10112,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     const coupleId = await checkCoupleAuth(req, res);
     if (!coupleId) return;
     try {
-      const existing = await db.select().from(checklistTasks).where(eq2(checklistTasks.coupleId, coupleId));
+      const existing = await db.select().from(checklistTasks).where(eq3(checklistTasks.coupleId, coupleId));
       if (existing.length > 0) {
         return res.status(400).json({ error: "Sjekkliste finnes allerede" });
       }
@@ -9308,7 +10159,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     const coupleId = await checkCoupleAuth(req, res);
     if (!coupleId) return;
     try {
-      const [settings] = await db.select().from(coupleBudgetSettings).where(eq2(coupleBudgetSettings.coupleId, coupleId));
+      const [settings] = await db.select().from(coupleBudgetSettings).where(eq3(coupleBudgetSettings.coupleId, coupleId));
       res.json(settings || { totalBudget: 0, currency: "NOK" });
     } catch (error) {
       console.error("Error fetching budget settings:", error);
@@ -9320,9 +10171,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const { totalBudget, currency } = req.body;
-      const [existing] = await db.select().from(coupleBudgetSettings).where(eq2(coupleBudgetSettings.coupleId, coupleId));
+      const [existing] = await db.select().from(coupleBudgetSettings).where(eq3(coupleBudgetSettings.coupleId, coupleId));
       if (existing) {
-        const [updated] = await db.update(coupleBudgetSettings).set({ totalBudget, currency, updatedAt: /* @__PURE__ */ new Date() }).where(eq2(coupleBudgetSettings.coupleId, coupleId)).returning();
+        const [updated] = await db.update(coupleBudgetSettings).set({ totalBudget, currency, updatedAt: /* @__PURE__ */ new Date() }).where(eq3(coupleBudgetSettings.coupleId, coupleId)).returning();
         res.json(updated);
       } else {
         const [created] = await db.insert(coupleBudgetSettings).values({
@@ -9341,7 +10192,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     const coupleId = await checkCoupleAuth(req, res);
     if (!coupleId) return;
     try {
-      const items = await db.select().from(coupleBudgetItems).where(eq2(coupleBudgetItems.coupleId, coupleId)).orderBy(coupleBudgetItems.sortOrder, coupleBudgetItems.createdAt);
+      const items = await db.select().from(coupleBudgetItems).where(eq3(coupleBudgetItems.coupleId, coupleId)).orderBy(coupleBudgetItems.sortOrder, coupleBudgetItems.createdAt);
       res.json(items);
     } catch (error) {
       console.error("Error fetching budget items:", error);
@@ -9372,7 +10223,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     try {
       const { id } = req.params;
       const { category, label, estimatedCost, actualCost, isPaid, notes, sortOrder } = req.body;
-      const [existing] = await db.select().from(coupleBudgetItems).where(and2(eq2(coupleBudgetItems.id, id), eq2(coupleBudgetItems.coupleId, coupleId)));
+      const [existing] = await db.select().from(coupleBudgetItems).where(and3(eq3(coupleBudgetItems.id, id), eq3(coupleBudgetItems.coupleId, coupleId)));
       if (!existing) {
         return res.status(404).json({ error: "Fant ikke budsjettlinje" });
       }
@@ -9384,7 +10235,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       if (isPaid !== void 0) updateData.isPaid = isPaid;
       if (notes !== void 0) updateData.notes = notes;
       if (sortOrder !== void 0) updateData.sortOrder = sortOrder;
-      const [updated] = await db.update(coupleBudgetItems).set(updateData).where(eq2(coupleBudgetItems.id, id)).returning();
+      const [updated] = await db.update(coupleBudgetItems).set(updateData).where(eq3(coupleBudgetItems.id, id)).returning();
       res.json(updated);
     } catch (error) {
       console.error("Error updating budget item:", error);
@@ -9396,7 +10247,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const { id } = req.params;
-      await db.delete(coupleBudgetItems).where(and2(eq2(coupleBudgetItems.id, id), eq2(coupleBudgetItems.coupleId, coupleId)));
+      await db.delete(coupleBudgetItems).where(and3(eq3(coupleBudgetItems.id, id), eq3(coupleBudgetItems.coupleId, coupleId)));
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting budget item:", error);
@@ -9408,9 +10259,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const [appointments, favorites, timeline] = await Promise.all([
-        db.select().from(coupleDressAppointments).where(eq2(coupleDressAppointments.coupleId, coupleId)).orderBy(coupleDressAppointments.date),
-        db.select().from(coupleDressFavorites).where(eq2(coupleDressFavorites.coupleId, coupleId)).orderBy(coupleDressFavorites.createdAt),
-        db.select().from(coupleDressTimeline).where(eq2(coupleDressTimeline.coupleId, coupleId))
+        db.select().from(coupleDressAppointments).where(eq3(coupleDressAppointments.coupleId, coupleId)).orderBy(coupleDressAppointments.date),
+        db.select().from(coupleDressFavorites).where(eq3(coupleDressFavorites.coupleId, coupleId)).orderBy(coupleDressFavorites.createdAt),
+        db.select().from(coupleDressTimeline).where(eq3(coupleDressTimeline.coupleId, coupleId))
       ]);
       res.json({
         appointments,
@@ -9452,7 +10303,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       if (time !== void 0) updateData.time = time;
       if (notes !== void 0) updateData.notes = notes;
       if (completed !== void 0) updateData.completed = completed;
-      const [updated] = await db.update(coupleDressAppointments).set(updateData).where(and2(eq2(coupleDressAppointments.id, id), eq2(coupleDressAppointments.coupleId, coupleId))).returning();
+      const [updated] = await db.update(coupleDressAppointments).set(updateData).where(and3(eq3(coupleDressAppointments.id, id), eq3(coupleDressAppointments.coupleId, coupleId))).returning();
       res.json(updated);
     } catch (error) {
       console.error("Error updating dress appointment:", error);
@@ -9464,7 +10315,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const { id } = req.params;
-      await db.delete(coupleDressAppointments).where(and2(eq2(coupleDressAppointments.id, id), eq2(coupleDressAppointments.coupleId, coupleId)));
+      await db.delete(coupleDressAppointments).where(and3(eq3(coupleDressAppointments.id, id), eq3(coupleDressAppointments.coupleId, coupleId)));
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting dress appointment:", error);
@@ -9503,7 +10354,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       if (imageUrl !== void 0) updateData.imageUrl = imageUrl;
       if (notes !== void 0) updateData.notes = notes;
       if (isFavorite !== void 0) updateData.isFavorite = isFavorite;
-      const [updated] = await db.update(coupleDressFavorites).set(updateData).where(and2(eq2(coupleDressFavorites.id, id), eq2(coupleDressFavorites.coupleId, coupleId))).returning();
+      const [updated] = await db.update(coupleDressFavorites).set(updateData).where(and3(eq3(coupleDressFavorites.id, id), eq3(coupleDressFavorites.coupleId, coupleId))).returning();
       res.json(updated);
     } catch (error) {
       console.error("Error updating dress favorite:", error);
@@ -9515,7 +10366,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const { id } = req.params;
-      await db.delete(coupleDressFavorites).where(and2(eq2(coupleDressFavorites.id, id), eq2(coupleDressFavorites.coupleId, coupleId)));
+      await db.delete(coupleDressFavorites).where(and3(eq3(coupleDressFavorites.id, id), eq3(coupleDressFavorites.coupleId, coupleId)));
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting dress favorite:", error);
@@ -9527,7 +10378,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const { ordered, orderedDate, firstFitting, firstFittingDate, alterations, alterationsDate, finalFitting, finalFittingDate, pickup, pickupDate, budget } = req.body;
-      const [existing] = await db.select().from(coupleDressTimeline).where(eq2(coupleDressTimeline.coupleId, coupleId));
+      const [existing] = await db.select().from(coupleDressTimeline).where(eq3(coupleDressTimeline.coupleId, coupleId));
       const timelineData = {
         ordered: ordered ?? false,
         orderedDate: orderedDate || null,
@@ -9543,7 +10394,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         updatedAt: /* @__PURE__ */ new Date()
       };
       if (existing) {
-        const [updated] = await db.update(coupleDressTimeline).set(timelineData).where(eq2(coupleDressTimeline.coupleId, coupleId)).returning();
+        const [updated] = await db.update(coupleDressTimeline).set(timelineData).where(eq3(coupleDressTimeline.coupleId, coupleId)).returning();
         res.json(updated);
       } else {
         const [created] = await db.insert(coupleDressTimeline).values({
@@ -9561,7 +10412,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     const coupleId = await checkCoupleAuth(req, res);
     if (!coupleId) return;
     try {
-      const people = await db.select().from(coupleImportantPeople).where(eq2(coupleImportantPeople.coupleId, coupleId)).orderBy(coupleImportantPeople.sortOrder, coupleImportantPeople.createdAt);
+      const people = await db.select().from(coupleImportantPeople).where(eq3(coupleImportantPeople.coupleId, coupleId)).orderBy(coupleImportantPeople.sortOrder, coupleImportantPeople.createdAt);
       res.json(people);
     } catch (error) {
       console.error("Error fetching important people:", error);
@@ -9599,7 +10450,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       if (email !== void 0) updateData.email = email;
       if (notes !== void 0) updateData.notes = notes;
       if (sortOrder !== void 0) updateData.sortOrder = sortOrder;
-      const [updated] = await db.update(coupleImportantPeople).set(updateData).where(and2(eq2(coupleImportantPeople.id, id), eq2(coupleImportantPeople.coupleId, coupleId))).returning();
+      const [updated] = await db.update(coupleImportantPeople).set(updateData).where(and3(eq3(coupleImportantPeople.id, id), eq3(coupleImportantPeople.coupleId, coupleId))).returning();
       res.json(updated);
     } catch (error) {
       console.error("Error updating important person:", error);
@@ -9611,7 +10462,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const { id } = req.params;
-      await db.delete(coupleImportantPeople).where(and2(eq2(coupleImportantPeople.id, id), eq2(coupleImportantPeople.coupleId, coupleId)));
+      await db.delete(coupleImportantPeople).where(and3(eq3(coupleImportantPeople.id, id), eq3(coupleImportantPeople.coupleId, coupleId)));
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting important person:", error);
@@ -9622,7 +10473,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     const coupleId = await checkCoupleAuth(req, res);
     if (!coupleId) return;
     try {
-      const shots = await db.select().from(couplePhotoShots).where(eq2(couplePhotoShots.coupleId, coupleId)).orderBy(couplePhotoShots.sortOrder, couplePhotoShots.createdAt);
+      const shots = await db.select().from(couplePhotoShots).where(eq3(couplePhotoShots.coupleId, coupleId)).orderBy(couplePhotoShots.sortOrder, couplePhotoShots.createdAt);
       res.json(shots);
     } catch (error) {
       console.error("Error fetching photo shots:", error);
@@ -9659,7 +10510,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       if (category !== void 0) updateData.category = category;
       if (completed !== void 0) updateData.completed = completed;
       if (sortOrder !== void 0) updateData.sortOrder = sortOrder;
-      const [updated] = await db.update(couplePhotoShots).set(updateData).where(and2(eq2(couplePhotoShots.id, id), eq2(couplePhotoShots.coupleId, coupleId))).returning();
+      const [updated] = await db.update(couplePhotoShots).set(updateData).where(and3(eq3(couplePhotoShots.id, id), eq3(couplePhotoShots.coupleId, coupleId))).returning();
       res.json(updated);
     } catch (error) {
       console.error("Error updating photo shot:", error);
@@ -9671,7 +10522,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const { id } = req.params;
-      await db.delete(couplePhotoShots).where(and2(eq2(couplePhotoShots.id, id), eq2(couplePhotoShots.coupleId, coupleId)));
+      await db.delete(couplePhotoShots).where(and3(eq3(couplePhotoShots.id, id), eq3(couplePhotoShots.coupleId, coupleId)));
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting photo shot:", error);
@@ -9682,7 +10533,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     const coupleId = await checkCoupleAuth(req, res);
     if (!coupleId) return;
     try {
-      const existing = await db.select().from(couplePhotoShots).where(eq2(couplePhotoShots.coupleId, coupleId));
+      const existing = await db.select().from(couplePhotoShots).where(eq3(couplePhotoShots.coupleId, coupleId));
       if (existing.length > 0) {
         return res.status(400).json({ error: "Fotoliste finnes allerede" });
       }
@@ -9715,9 +10566,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const [appointments, looks, timelineRows] = await Promise.all([
-        db.select().from(coupleHairMakeupAppointments).where(eq2(coupleHairMakeupAppointments.coupleId, coupleId)).orderBy(coupleHairMakeupAppointments.date),
-        db.select().from(coupleHairMakeupLooks).where(eq2(coupleHairMakeupLooks.coupleId, coupleId)),
-        db.select().from(coupleHairMakeupTimeline).where(eq2(coupleHairMakeupTimeline.coupleId, coupleId))
+        db.select().from(coupleHairMakeupAppointments).where(eq3(coupleHairMakeupAppointments.coupleId, coupleId)).orderBy(coupleHairMakeupAppointments.date),
+        db.select().from(coupleHairMakeupLooks).where(eq3(coupleHairMakeupLooks.coupleId, coupleId)),
+        db.select().from(coupleHairMakeupTimeline).where(eq3(coupleHairMakeupTimeline.coupleId, coupleId))
       ]);
       const timeline = timelineRows[0] || {
         consultationBooked: false,
@@ -9758,7 +10609,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const { id } = req.params;
-      const [appointment] = await db.update(coupleHairMakeupAppointments).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and2(eq2(coupleHairMakeupAppointments.id, id), eq2(coupleHairMakeupAppointments.coupleId, coupleId))).returning();
+      const [appointment] = await db.update(coupleHairMakeupAppointments).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and3(eq3(coupleHairMakeupAppointments.id, id), eq3(coupleHairMakeupAppointments.coupleId, coupleId))).returning();
       res.json(appointment);
     } catch (error) {
       console.error("Error updating appointment:", error);
@@ -9770,7 +10621,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const { id } = req.params;
-      await db.delete(coupleHairMakeupAppointments).where(and2(eq2(coupleHairMakeupAppointments.id, id), eq2(coupleHairMakeupAppointments.coupleId, coupleId)));
+      await db.delete(coupleHairMakeupAppointments).where(and3(eq3(coupleHairMakeupAppointments.id, id), eq3(coupleHairMakeupAppointments.coupleId, coupleId)));
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting appointment:", error);
@@ -9801,7 +10652,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const { id } = req.params;
-      const [look] = await db.update(coupleHairMakeupLooks).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and2(eq2(coupleHairMakeupLooks.id, id), eq2(coupleHairMakeupLooks.coupleId, coupleId))).returning();
+      const [look] = await db.update(coupleHairMakeupLooks).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and3(eq3(coupleHairMakeupLooks.id, id), eq3(coupleHairMakeupLooks.coupleId, coupleId))).returning();
       res.json(look);
     } catch (error) {
       console.error("Error updating look:", error);
@@ -9813,7 +10664,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const { id } = req.params;
-      await db.delete(coupleHairMakeupLooks).where(and2(eq2(coupleHairMakeupLooks.id, id), eq2(coupleHairMakeupLooks.coupleId, coupleId)));
+      await db.delete(coupleHairMakeupLooks).where(and3(eq3(coupleHairMakeupLooks.id, id), eq3(coupleHairMakeupLooks.coupleId, coupleId)));
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting look:", error);
@@ -9824,9 +10675,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     const coupleId = await checkCoupleAuth(req, res);
     if (!coupleId) return;
     try {
-      const existing = await db.select().from(coupleHairMakeupTimeline).where(eq2(coupleHairMakeupTimeline.coupleId, coupleId));
+      const existing = await db.select().from(coupleHairMakeupTimeline).where(eq3(coupleHairMakeupTimeline.coupleId, coupleId));
       if (existing.length > 0) {
-        const [timeline] = await db.update(coupleHairMakeupTimeline).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(eq2(coupleHairMakeupTimeline.coupleId, coupleId)).returning();
+        const [timeline] = await db.update(coupleHairMakeupTimeline).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(eq3(coupleHairMakeupTimeline.coupleId, coupleId)).returning();
         res.json(timeline);
       } else {
         const [timeline] = await db.insert(coupleHairMakeupTimeline).values({
@@ -9845,8 +10696,8 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const [bookings, timelineRows] = await Promise.all([
-        db.select().from(coupleTransportBookings).where(eq2(coupleTransportBookings.coupleId, coupleId)),
-        db.select().from(coupleTransportTimeline).where(eq2(coupleTransportTimeline.coupleId, coupleId))
+        db.select().from(coupleTransportBookings).where(eq3(coupleTransportBookings.coupleId, coupleId)),
+        db.select().from(coupleTransportTimeline).where(eq3(coupleTransportTimeline.coupleId, coupleId))
       ]);
       const timeline = timelineRows[0] || {
         brideCarBooked: false,
@@ -9881,7 +10732,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const { id } = req.params;
-      const [booking] = await db.update(coupleTransportBookings).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and2(eq2(coupleTransportBookings.id, id), eq2(coupleTransportBookings.coupleId, coupleId))).returning();
+      const [booking] = await db.update(coupleTransportBookings).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and3(eq3(coupleTransportBookings.id, id), eq3(coupleTransportBookings.coupleId, coupleId))).returning();
       res.json(booking);
     } catch (error) {
       console.error("Error updating booking:", error);
@@ -9893,7 +10744,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const { id } = req.params;
-      await db.delete(coupleTransportBookings).where(and2(eq2(coupleTransportBookings.id, id), eq2(coupleTransportBookings.coupleId, coupleId)));
+      await db.delete(coupleTransportBookings).where(and3(eq3(coupleTransportBookings.id, id), eq3(coupleTransportBookings.coupleId, coupleId)));
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting booking:", error);
@@ -9904,9 +10755,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     const coupleId = await checkCoupleAuth(req, res);
     if (!coupleId) return;
     try {
-      const existing = await db.select().from(coupleTransportTimeline).where(eq2(coupleTransportTimeline.coupleId, coupleId));
+      const existing = await db.select().from(coupleTransportTimeline).where(eq3(coupleTransportTimeline.coupleId, coupleId));
       if (existing.length > 0) {
-        const [timeline] = await db.update(coupleTransportTimeline).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(eq2(coupleTransportTimeline.coupleId, coupleId)).returning();
+        const [timeline] = await db.update(coupleTransportTimeline).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(eq3(coupleTransportTimeline.coupleId, coupleId)).returning();
         res.json(timeline);
       } else {
         const [timeline] = await db.insert(coupleTransportTimeline).values({
@@ -9925,9 +10776,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const [appointments, selections, timelineRows] = await Promise.all([
-        db.select().from(coupleFlowerAppointments).where(eq2(coupleFlowerAppointments.coupleId, coupleId)).orderBy(coupleFlowerAppointments.date),
-        db.select().from(coupleFlowerSelections).where(eq2(coupleFlowerSelections.coupleId, coupleId)),
-        db.select().from(coupleFlowerTimeline).where(eq2(coupleFlowerTimeline.coupleId, coupleId))
+        db.select().from(coupleFlowerAppointments).where(eq3(coupleFlowerAppointments.coupleId, coupleId)).orderBy(coupleFlowerAppointments.date),
+        db.select().from(coupleFlowerSelections).where(eq3(coupleFlowerSelections.coupleId, coupleId)),
+        db.select().from(coupleFlowerTimeline).where(eq3(coupleFlowerTimeline.coupleId, coupleId))
       ]);
       const timeline = timelineRows[0] || {
         floristSelected: false,
@@ -9961,7 +10812,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const { id } = req.params;
-      const [appointment] = await db.update(coupleFlowerAppointments).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and2(eq2(coupleFlowerAppointments.id, id), eq2(coupleFlowerAppointments.coupleId, coupleId))).returning();
+      const [appointment] = await db.update(coupleFlowerAppointments).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and3(eq3(coupleFlowerAppointments.id, id), eq3(coupleFlowerAppointments.coupleId, coupleId))).returning();
       res.json(appointment);
     } catch (error) {
       console.error("Error updating appointment:", error);
@@ -9973,7 +10824,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const { id } = req.params;
-      await db.delete(coupleFlowerAppointments).where(and2(eq2(coupleFlowerAppointments.id, id), eq2(coupleFlowerAppointments.coupleId, coupleId)));
+      await db.delete(coupleFlowerAppointments).where(and3(eq3(coupleFlowerAppointments.id, id), eq3(coupleFlowerAppointments.coupleId, coupleId)));
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting appointment:", error);
@@ -9999,7 +10850,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const { id } = req.params;
-      const [selection] = await db.update(coupleFlowerSelections).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and2(eq2(coupleFlowerSelections.id, id), eq2(coupleFlowerSelections.coupleId, coupleId))).returning();
+      const [selection] = await db.update(coupleFlowerSelections).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and3(eq3(coupleFlowerSelections.id, id), eq3(coupleFlowerSelections.coupleId, coupleId))).returning();
       res.json(selection);
     } catch (error) {
       console.error("Error updating selection:", error);
@@ -10011,7 +10862,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const { id } = req.params;
-      await db.delete(coupleFlowerSelections).where(and2(eq2(coupleFlowerSelections.id, id), eq2(coupleFlowerSelections.coupleId, coupleId)));
+      await db.delete(coupleFlowerSelections).where(and3(eq3(coupleFlowerSelections.id, id), eq3(coupleFlowerSelections.coupleId, coupleId)));
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting selection:", error);
@@ -10022,9 +10873,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     const coupleId = await checkCoupleAuth(req, res);
     if (!coupleId) return;
     try {
-      const existing = await db.select().from(coupleFlowerTimeline).where(eq2(coupleFlowerTimeline.coupleId, coupleId));
+      const existing = await db.select().from(coupleFlowerTimeline).where(eq3(coupleFlowerTimeline.coupleId, coupleId));
       if (existing.length > 0) {
-        const [timeline] = await db.update(coupleFlowerTimeline).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(eq2(coupleFlowerTimeline.coupleId, coupleId)).returning();
+        const [timeline] = await db.update(coupleFlowerTimeline).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(eq3(coupleFlowerTimeline.coupleId, coupleId)).returning();
         res.json(timeline);
       } else {
         const [timeline] = await db.insert(coupleFlowerTimeline).values({
@@ -10043,10 +10894,10 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const [tastings, menu, dietaryNeeds, timelineRows] = await Promise.all([
-        db.select().from(coupleCateringTastings).where(eq2(coupleCateringTastings.coupleId, coupleId)).orderBy(coupleCateringTastings.date),
-        db.select().from(coupleCateringMenu).where(eq2(coupleCateringMenu.coupleId, coupleId)),
-        db.select().from(coupleCateringDietaryNeeds).where(eq2(coupleCateringDietaryNeeds.coupleId, coupleId)),
-        db.select().from(coupleCateringTimeline).where(eq2(coupleCateringTimeline.coupleId, coupleId))
+        db.select().from(coupleCateringTastings).where(eq3(coupleCateringTastings.coupleId, coupleId)).orderBy(coupleCateringTastings.date),
+        db.select().from(coupleCateringMenu).where(eq3(coupleCateringMenu.coupleId, coupleId)),
+        db.select().from(coupleCateringDietaryNeeds).where(eq3(coupleCateringDietaryNeeds.coupleId, coupleId)),
+        db.select().from(coupleCateringTimeline).where(eq3(coupleCateringTimeline.coupleId, coupleId))
       ]);
       const timeline = timelineRows[0] || {
         catererSelected: false,
@@ -10081,7 +10932,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const { id } = req.params;
-      const [tasting] = await db.update(coupleCateringTastings).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and2(eq2(coupleCateringTastings.id, id), eq2(coupleCateringTastings.coupleId, coupleId))).returning();
+      const [tasting] = await db.update(coupleCateringTastings).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and3(eq3(coupleCateringTastings.id, id), eq3(coupleCateringTastings.coupleId, coupleId))).returning();
       res.json(tasting);
     } catch (error) {
       console.error("Error updating tasting:", error);
@@ -10093,7 +10944,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const { id } = req.params;
-      await db.delete(coupleCateringTastings).where(and2(eq2(coupleCateringTastings.id, id), eq2(coupleCateringTastings.coupleId, coupleId)));
+      await db.delete(coupleCateringTastings).where(and3(eq3(coupleCateringTastings.id, id), eq3(coupleCateringTastings.coupleId, coupleId)));
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting tasting:", error);
@@ -10119,7 +10970,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const { id } = req.params;
-      const [menuItem] = await db.update(coupleCateringMenu).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and2(eq2(coupleCateringMenu.id, id), eq2(coupleCateringMenu.coupleId, coupleId))).returning();
+      const [menuItem] = await db.update(coupleCateringMenu).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and3(eq3(coupleCateringMenu.id, id), eq3(coupleCateringMenu.coupleId, coupleId))).returning();
       res.json(menuItem);
     } catch (error) {
       console.error("Error updating menu item:", error);
@@ -10131,7 +10982,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const { id } = req.params;
-      await db.delete(coupleCateringMenu).where(and2(eq2(coupleCateringMenu.id, id), eq2(coupleCateringMenu.coupleId, coupleId)));
+      await db.delete(coupleCateringMenu).where(and3(eq3(coupleCateringMenu.id, id), eq3(coupleCateringMenu.coupleId, coupleId)));
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting menu item:", error);
@@ -10157,7 +11008,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const { id } = req.params;
-      const [need] = await db.update(coupleCateringDietaryNeeds).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and2(eq2(coupleCateringDietaryNeeds.id, id), eq2(coupleCateringDietaryNeeds.coupleId, coupleId))).returning();
+      const [need] = await db.update(coupleCateringDietaryNeeds).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and3(eq3(coupleCateringDietaryNeeds.id, id), eq3(coupleCateringDietaryNeeds.coupleId, coupleId))).returning();
       res.json(need);
     } catch (error) {
       console.error("Error updating dietary need:", error);
@@ -10169,7 +11020,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const { id } = req.params;
-      await db.delete(coupleCateringDietaryNeeds).where(and2(eq2(coupleCateringDietaryNeeds.id, id), eq2(coupleCateringDietaryNeeds.coupleId, coupleId)));
+      await db.delete(coupleCateringDietaryNeeds).where(and3(eq3(coupleCateringDietaryNeeds.id, id), eq3(coupleCateringDietaryNeeds.coupleId, coupleId)));
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting dietary need:", error);
@@ -10180,9 +11031,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     const coupleId = await checkCoupleAuth(req, res);
     if (!coupleId) return;
     try {
-      const existing = await db.select().from(coupleCateringTimeline).where(eq2(coupleCateringTimeline.coupleId, coupleId));
+      const existing = await db.select().from(coupleCateringTimeline).where(eq3(coupleCateringTimeline.coupleId, coupleId));
       if (existing.length > 0) {
-        const [timeline] = await db.update(coupleCateringTimeline).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(eq2(coupleCateringTimeline.coupleId, coupleId)).returning();
+        const [timeline] = await db.update(coupleCateringTimeline).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(eq3(coupleCateringTimeline.coupleId, coupleId)).returning();
         res.json(timeline);
       } else {
         const [timeline] = await db.insert(coupleCateringTimeline).values({
@@ -10201,9 +11052,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const [tastings, designs, timelineRows] = await Promise.all([
-        db.select().from(coupleCakeTastings).where(eq2(coupleCakeTastings.coupleId, coupleId)).orderBy(coupleCakeTastings.date),
-        db.select().from(coupleCakeDesigns).where(eq2(coupleCakeDesigns.coupleId, coupleId)),
-        db.select().from(coupleCakeTimeline).where(eq2(coupleCakeTimeline.coupleId, coupleId))
+        db.select().from(coupleCakeTastings).where(eq3(coupleCakeTastings.coupleId, coupleId)).orderBy(coupleCakeTastings.date),
+        db.select().from(coupleCakeDesigns).where(eq3(coupleCakeDesigns.coupleId, coupleId)),
+        db.select().from(coupleCakeTimeline).where(eq3(coupleCakeTimeline.coupleId, coupleId))
       ]);
       const timeline = timelineRows[0] || {
         bakerySelected: false,
@@ -10238,7 +11089,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const { id } = req.params;
-      const [tasting] = await db.update(coupleCakeTastings).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and2(eq2(coupleCakeTastings.id, id), eq2(coupleCakeTastings.coupleId, coupleId))).returning();
+      const [tasting] = await db.update(coupleCakeTastings).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and3(eq3(coupleCakeTastings.id, id), eq3(coupleCakeTastings.coupleId, coupleId))).returning();
       res.json(tasting);
     } catch (error) {
       console.error("Error updating tasting:", error);
@@ -10250,7 +11101,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const { id } = req.params;
-      await db.delete(coupleCakeTastings).where(and2(eq2(coupleCakeTastings.id, id), eq2(coupleCakeTastings.coupleId, coupleId)));
+      await db.delete(coupleCakeTastings).where(and3(eq3(coupleCakeTastings.id, id), eq3(coupleCakeTastings.coupleId, coupleId)));
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting tasting:", error);
@@ -10276,7 +11127,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const { id } = req.params;
-      const [design] = await db.update(coupleCakeDesigns).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and2(eq2(coupleCakeDesigns.id, id), eq2(coupleCakeDesigns.coupleId, coupleId))).returning();
+      const [design] = await db.update(coupleCakeDesigns).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and3(eq3(coupleCakeDesigns.id, id), eq3(coupleCakeDesigns.coupleId, coupleId))).returning();
       res.json(design);
     } catch (error) {
       console.error("Error updating design:", error);
@@ -10288,7 +11139,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!coupleId) return;
     try {
       const { id } = req.params;
-      await db.delete(coupleCakeDesigns).where(and2(eq2(coupleCakeDesigns.id, id), eq2(coupleCakeDesigns.coupleId, coupleId)));
+      await db.delete(coupleCakeDesigns).where(and3(eq3(coupleCakeDesigns.id, id), eq3(coupleCakeDesigns.coupleId, coupleId)));
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting design:", error);
@@ -10299,9 +11150,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     const coupleId = await checkCoupleAuth(req, res);
     if (!coupleId) return;
     try {
-      const existing = await db.select().from(coupleCakeTimeline).where(eq2(coupleCakeTimeline.coupleId, coupleId));
+      const existing = await db.select().from(coupleCakeTimeline).where(eq3(coupleCakeTimeline.coupleId, coupleId));
       if (existing.length > 0) {
-        const [timeline] = await db.update(coupleCakeTimeline).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(eq2(coupleCakeTimeline.coupleId, coupleId)).returning();
+        const [timeline] = await db.update(coupleCakeTimeline).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(eq3(coupleCakeTimeline.coupleId, coupleId)).returning();
         res.json(timeline);
       } else {
         const [timeline] = await db.insert(coupleCakeTimeline).values({
@@ -10321,9 +11172,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       if (category !== "couple" && category !== "vendor") {
         return res.status(400).json({ error: "Ugyldig kategori" });
       }
-      const items = await db.select().from(faqItems).where(and2(
-        eq2(faqItems.category, category),
-        eq2(faqItems.isActive, true)
+      const items = await db.select().from(faqItems).where(and3(
+        eq3(faqItems.category, category),
+        eq3(faqItems.isActive, true)
       )).orderBy(faqItems.sortOrder);
       res.json(items);
     } catch (error) {
@@ -10339,7 +11190,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       if (category !== "couple" && category !== "vendor") {
         return res.status(400).json({ error: "Ugyldig kategori" });
       }
-      const items = await db.select().from(faqItems).where(eq2(faqItems.category, category)).orderBy(faqItems.sortOrder);
+      const items = await db.select().from(faqItems).where(eq3(faqItems.category, category)).orderBy(faqItems.sortOrder);
       res.json(items);
     } catch (error) {
       console.error("Error fetching FAQ:", error);
@@ -10364,7 +11215,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     try {
       const { id } = req.params;
       const parsed = updateFaqItemSchema.parse(req.body);
-      const [item] = await db.update(faqItems).set(parsed).where(eq2(faqItems.id, id)).returning();
+      const [item] = await db.update(faqItems).set(parsed).where(eq3(faqItems.id, id)).returning();
       if (!item) {
         return res.status(404).json({ error: "FAQ ikke funnet" });
       }
@@ -10379,7 +11230,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!adminKey) return;
     try {
       const { id } = req.params;
-      await db.delete(faqItems).where(eq2(faqItems.id, id));
+      await db.delete(faqItems).where(eq3(faqItems.id, id));
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting FAQ:", error);
@@ -10398,7 +11249,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
   app2.get("/api/app-settings/:key", async (req, res) => {
     try {
       const { key } = req.params;
-      const [setting] = await db.select().from(appSettings).where(eq2(appSettings.key, key));
+      const [setting] = await db.select().from(appSettings).where(eq3(appSettings.key, key));
       if (!setting) {
         return res.status(404).json({ error: "Innstilling ikke funnet" });
       }
@@ -10425,10 +11276,10 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     try {
       const { key } = req.params;
       const parsed = updateAppSettingSchema.parse(req.body);
-      const [existing] = await db.select().from(appSettings).where(eq2(appSettings.key, key));
+      const [existing] = await db.select().from(appSettings).where(eq3(appSettings.key, key));
       let setting;
       if (existing) {
-        [setting] = await db.update(appSettings).set({ value: parsed.value, updatedAt: /* @__PURE__ */ new Date() }).where(eq2(appSettings.key, key)).returning();
+        [setting] = await db.update(appSettings).set({ value: parsed.value, updatedAt: /* @__PURE__ */ new Date() }).where(eq3(appSettings.key, key)).returning();
       } else {
         [setting] = await db.insert(appSettings).values({ key, value: parsed.value }).returning();
       }
@@ -10444,9 +11295,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       if (!["vendor", "couple"].includes(category)) {
         return res.status(400).json({ error: "Ugyldig kategori" });
       }
-      const items = await db.select().from(whatsNewItems).where(and2(
-        eq2(whatsNewItems.category, category),
-        eq2(whatsNewItems.isActive, true)
+      const items = await db.select().from(whatsNewItems).where(and3(
+        eq3(whatsNewItems.category, category),
+        eq3(whatsNewItems.isActive, true)
       )).orderBy(whatsNewItems.sortOrder);
       res.json(items);
     } catch (error) {
@@ -10462,7 +11313,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
       if (!["vendor", "couple"].includes(category)) {
         return res.status(400).json({ error: "Ugyldig kategori" });
       }
-      const items = await db.select().from(whatsNewItems).where(eq2(whatsNewItems.category, category)).orderBy(whatsNewItems.sortOrder);
+      const items = await db.select().from(whatsNewItems).where(eq3(whatsNewItems.category, category)).orderBy(whatsNewItems.sortOrder);
       res.json(items);
     } catch (error) {
       console.error("Error fetching what's new:", error);
@@ -10487,7 +11338,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     try {
       const { id } = req.params;
       const parsed = updateWhatsNewSchema.parse(req.body);
-      const [item] = await db.update(whatsNewItems).set({ ...parsed, updatedAt: /* @__PURE__ */ new Date() }).where(eq2(whatsNewItems.id, id)).returning();
+      const [item] = await db.update(whatsNewItems).set({ ...parsed, updatedAt: /* @__PURE__ */ new Date() }).where(eq3(whatsNewItems.id, id)).returning();
       if (!item) {
         return res.status(404).json({ error: "Hva som er nytt ikke funnet" });
       }
@@ -10502,7 +11353,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!adminKey) return;
     try {
       const { id } = req.params;
-      await db.delete(whatsNewItems).where(eq2(whatsNewItems.id, id));
+      await db.delete(whatsNewItems).where(eq3(whatsNewItems.id, id));
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting what's new:", error);
@@ -10511,7 +11362,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
   });
   app2.get("/api/video-guides", async (req, res) => {
     try {
-      const guides = await db.select().from(videoGuides).where(eq2(videoGuides.isActive, true)).orderBy(videoGuides.sortOrder);
+      const guides = await db.select().from(videoGuides).where(eq3(videoGuides.isActive, true)).orderBy(videoGuides.sortOrder);
       res.json(guides);
     } catch (error) {
       console.error("Error fetching video guides:", error);
@@ -10522,9 +11373,9 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     try {
       const { category } = req.params;
       const guides = await db.select().from(videoGuides).where(
-        and2(
-          eq2(videoGuides.category, category),
-          eq2(videoGuides.isActive, true)
+        and3(
+          eq3(videoGuides.category, category),
+          eq3(videoGuides.isActive, true)
         )
       ).orderBy(videoGuides.sortOrder);
       res.json(guides);
@@ -10538,7 +11389,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!adminKey) return;
     try {
       const { category } = req.params;
-      const guides = await db.select().from(videoGuides).where(eq2(videoGuides.category, category)).orderBy(videoGuides.sortOrder);
+      const guides = await db.select().from(videoGuides).where(eq3(videoGuides.category, category)).orderBy(videoGuides.sortOrder);
       res.json(guides);
     } catch (error) {
       console.error("Error fetching video guides:", error);
@@ -10563,7 +11414,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     try {
       const { id } = req.params;
       const parsed = updateVideoGuideSchema.parse(req.body);
-      const [guide] = await db.update(videoGuides).set({ ...parsed, updatedAt: /* @__PURE__ */ new Date() }).where(eq2(videoGuides.id, id)).returning();
+      const [guide] = await db.update(videoGuides).set({ ...parsed, updatedAt: /* @__PURE__ */ new Date() }).where(eq3(videoGuides.id, id)).returning();
       res.json(guide);
     } catch (error) {
       console.error("Error updating video guide:", error);
@@ -10575,7 +11426,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     if (!adminKey) return;
     try {
       const { id } = req.params;
-      await db.delete(videoGuides).where(eq2(videoGuides.id, id));
+      await db.delete(videoGuides).where(eq3(videoGuides.id, id));
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting video guide:", error);
@@ -10628,7 +11479,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         ws.close(1008, "bad-request");
         return;
       }
-      const [conv] = await db.select().from(adminConversations).where(eq2(adminConversations.id, conversationId));
+      const [conv] = await db.select().from(adminConversations).where(eq3(adminConversations.id, conversationId));
       if (!conv) {
         ws.close(1008, "not-found");
         return;
@@ -10684,7 +11535,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         ws.close(1008, "unauthorized");
         return;
       }
-      const [conv] = await db.select().from(conversations).where(eq2(conversations.id, conversationId));
+      const [conv] = await db.select().from(conversations).where(eq3(conversations.id, conversationId));
       if (!conv || conv.coupleId !== coupleId) {
         ws.close(1008, "forbidden");
         return;
@@ -10720,7 +11571,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
         ws.close(1008, "unauthorized");
         return;
       }
-      const [conv] = await db.select().from(conversations).where(eq2(conversations.id, conversationId));
+      const [conv] = await db.select().from(conversations).where(eq3(conversations.id, conversationId));
       if (!conv || conv.vendorId !== vendorId) {
         ws.close(1008, "forbidden");
         return;
@@ -10806,6 +11657,7 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
     }
   });
   registerSubscriptionRoutes(app2);
+  registerCreatorhubRoutes(app2);
   return httpServer;
 }
 

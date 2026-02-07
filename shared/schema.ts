@@ -2069,3 +2069,233 @@ export const coupleCakeTimeline = pgTable("couple_cake_timeline", {
 export type CoupleCakeTasting = typeof coupleCakeTastings.$inferSelect;
 export type CoupleCakeDesign = typeof coupleCakeDesigns.$inferSelect;
 export type CoupleCakeTimeline = typeof coupleCakeTimeline.$inferSelect;
+
+// ==========================================
+// ===== CREATORHUB INTEGRATION TABLES =====
+// ==========================================
+
+// CreatorHub Projects - A project groups creators and links to Wedflow vendor accounts
+export const creatorhubProjects = pgTable("creatorhub_projects", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  slug: text("slug").notNull().unique(), // URL-friendly project identifier
+  description: text("description"),
+  logoUrl: text("logo_url"),
+  ownerId: varchar("owner_id").notNull(), // references creatorhubUsers.id (set after first user created)
+  status: text("status").notNull().default("active"), // active, archived, suspended
+  // API access
+  apiKey: text("api_key").notNull().unique(), // For external API calls
+  apiKeyPrefix: text("api_key_prefix").notNull(), // First 8 chars for display (ch_xxxx...)
+  webhookUrl: text("webhook_url"), // Callback URL for events
+  webhookSecret: text("webhook_secret"), // HMAC secret for webhook signing
+  // Settings
+  defaultTimezone: text("default_timezone").default("Europe/Oslo"),
+  defaultCurrency: text("default_currency").default("NOK"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// CreatorHub Users - Users on the CreatorHub platform (linked to Wedflow vendors)
+export const creatorhubUsers = pgTable("creatorhub_users", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  projectId: varchar("project_id").notNull().references(() => creatorhubProjects.id, { onDelete: "cascade" }),
+  vendorId: varchar("vendor_id").references(() => vendors.id, { onDelete: "set null" }), // Link to Wedflow vendor
+  email: text("email").notNull(),
+  displayName: text("display_name").notNull(),
+  avatarUrl: text("avatar_url"),
+  role: text("role").notNull().default("creator"), // owner, admin, creator, viewer
+  status: text("status").notNull().default("active"), // active, suspended, deactivated
+  lastLoginAt: timestamp("last_login_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => ({
+  projectEmailIdx: uniqueIndex("idx_creatorhub_users_project_email").on(table.projectId, table.email),
+}));
+
+// CreatorHub Invitations - Invite-based user onboarding
+export const creatorhubInvitations = pgTable("creatorhub_invitations", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  projectId: varchar("project_id").notNull().references(() => creatorhubProjects.id, { onDelete: "cascade" }),
+  invitedBy: varchar("invited_by").notNull().references(() => creatorhubUsers.id, { onDelete: "cascade" }),
+  email: text("email").notNull(),
+  role: text("role").notNull().default("creator"), // admin, creator, viewer
+  token: text("token").notNull().unique(), // Unique invite token
+  message: text("message"), // Personal invite message
+  status: text("status").notNull().default("pending"), // pending, accepted, expired, revoked
+  acceptedAt: timestamp("accepted_at"),
+  acceptedUserId: varchar("accepted_user_id").references(() => creatorhubUsers.id, { onDelete: "set null" }),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// CreatorHub Bookings - Shared calendar/bookings synced with Wedflow vendors
+export const creatorhubBookings = pgTable("creatorhub_bookings", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  projectId: varchar("project_id").notNull().references(() => creatorhubProjects.id, { onDelete: "cascade" }),
+  creatorUserId: varchar("creator_user_id").notNull().references(() => creatorhubUsers.id, { onDelete: "cascade" }),
+  // Link to Wedflow entities
+  vendorId: varchar("vendor_id").references(() => vendors.id, { onDelete: "set null" }),
+  coupleId: varchar("couple_id").references(() => coupleProfiles.id, { onDelete: "set null" }),
+  conversationId: varchar("conversation_id").references(() => conversations.id, { onDelete: "set null" }),
+  offerId: varchar("offer_id").references(() => vendorOffers.id, { onDelete: "set null" }),
+  // Booking details
+  title: text("title").notNull(),
+  description: text("description"),
+  clientName: text("client_name").notNull(),
+  clientEmail: text("client_email"),
+  clientPhone: text("client_phone"),
+  eventDate: date("event_date").notNull(),
+  eventTime: text("event_time"), // HH:mm
+  eventEndTime: text("event_end_time"), // HH:mm
+  location: text("location"),
+  // Financial
+  totalAmount: integer("total_amount"), // In øre (cents)
+  depositAmount: integer("deposit_amount"),
+  depositPaid: boolean("deposit_paid").default(false),
+  fullPaid: boolean("full_paid").default(false),
+  currency: text("currency").default("NOK"),
+  // Status
+  status: text("status").notNull().default("confirmed"), // inquiry, confirmed, completed, cancelled
+  notes: text("notes"),
+  internalNotes: text("internal_notes"), // Not shared with client
+  // Metadata
+  tags: text("tags").array(), // free-form tags for filtering
+  externalRef: text("external_ref"), // Reference from external system
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (table) => ({
+  projectDateIdx: index("idx_creatorhub_bookings_project_date").on(table.projectId, table.eventDate),
+  creatorIdx: index("idx_creatorhub_bookings_creator").on(table.creatorUserId),
+}));
+
+// CreatorHub Messages / CRM Notes - Shared messaging/CRM linked to Wedflow conversations
+export const creatorhubCrmNotes = pgTable("creatorhub_crm_notes", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  projectId: varchar("project_id").notNull().references(() => creatorhubProjects.id, { onDelete: "cascade" }),
+  bookingId: varchar("booking_id").references(() => creatorhubBookings.id, { onDelete: "cascade" }),
+  creatorUserId: varchar("creator_user_id").notNull().references(() => creatorhubUsers.id, { onDelete: "cascade" }),
+  // Link to Wedflow conversation for shared messaging
+  conversationId: varchar("conversation_id").references(() => conversations.id, { onDelete: "set null" }),
+  // CRM note
+  noteType: text("note_type").notNull().default("note"), // note, call_log, email_log, task, follow_up
+  subject: text("subject"),
+  body: text("body").notNull(),
+  dueDate: timestamp("due_date"), // For tasks/follow-ups
+  isCompleted: boolean("is_completed").default(false),
+  completedAt: timestamp("completed_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// CreatorHub Analytics Events - Track events for reporting
+export const creatorhubAnalyticsEvents = pgTable("creatorhub_analytics_events", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  projectId: varchar("project_id").notNull().references(() => creatorhubProjects.id, { onDelete: "cascade" }),
+  creatorUserId: varchar("creator_user_id").references(() => creatorhubUsers.id, { onDelete: "set null" }),
+  bookingId: varchar("booking_id").references(() => creatorhubBookings.id, { onDelete: "set null" }),
+  // Event data
+  eventType: text("event_type").notNull(), // booking_created, booking_completed, payment_received, message_sent, etc.
+  eventData: text("event_data"), // JSON payload with event-specific data
+  // Attribution
+  source: text("source").default("creatorhub"), // creatorhub, wedflow, api, webhook
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (table) => ({
+  projectTypeIdx: index("idx_creatorhub_analytics_project_type").on(table.projectId, table.eventType),
+  createdAtIdx: index("idx_creatorhub_analytics_created_at").on(table.createdAt),
+}));
+
+// CreatorHub API Audit Log - Track all API calls for security
+export const creatorhubApiAuditLog = pgTable("creatorhub_api_audit_log", {
+  id: varchar("id")
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
+  projectId: varchar("project_id").notNull().references(() => creatorhubProjects.id, { onDelete: "cascade" }),
+  userId: varchar("user_id").references(() => creatorhubUsers.id, { onDelete: "set null" }),
+  method: text("method").notNull(), // GET, POST, PUT, DELETE
+  path: text("path").notNull(),
+  statusCode: integer("status_code"),
+  requestBody: text("request_body"), // Truncated request body
+  responseTime: integer("response_time"), // ms
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// ===== CreatorHub Zod Schemas =====
+
+export const createCreatorhubProjectSchema = z.object({
+  name: z.string().min(2, "Project name must be at least 2 characters"),
+  slug: z.string().min(2).max(50).regex(/^[a-z0-9-]+$/, "Slug must be lowercase alphanumeric with hyphens"),
+  description: z.string().optional(),
+  logoUrl: z.string().url().optional().or(z.literal("")),
+  defaultTimezone: z.string().default("Europe/Oslo"),
+  defaultCurrency: z.string().default("NOK"),
+});
+
+export const createCreatorhubInvitationSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  role: z.enum(["admin", "creator", "viewer"]).default("creator"),
+  message: z.string().max(500).optional(),
+});
+
+export const createCreatorhubBookingSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().optional(),
+  clientName: z.string().min(1, "Client name is required"),
+  clientEmail: z.string().email().optional().or(z.literal("")),
+  clientPhone: z.string().optional(),
+  eventDate: z.string().min(1, "Event date is required"),
+  eventTime: z.string().optional(),
+  eventEndTime: z.string().optional(),
+  location: z.string().optional(),
+  totalAmount: z.number().int().min(0).optional(),
+  depositAmount: z.number().int().min(0).optional(),
+  status: z.enum(["inquiry", "confirmed", "completed", "cancelled"]).default("confirmed"),
+  notes: z.string().optional(),
+  internalNotes: z.string().optional(),
+  tags: z.array(z.string()).optional(),
+  externalRef: z.string().optional(),
+  // Optional Wedflow links
+  vendorId: z.string().optional(),
+  coupleId: z.string().optional(),
+  conversationId: z.string().optional(),
+  offerId: z.string().optional(),
+});
+
+export const createCreatorhubCrmNoteSchema = z.object({
+  bookingId: z.string().optional(),
+  conversationId: z.string().optional(),
+  noteType: z.enum(["note", "call_log", "email_log", "task", "follow_up"]).default("note"),
+  subject: z.string().optional(),
+  body: z.string().min(1, "Note body is required"),
+  dueDate: z.string().optional(),
+});
+
+// ===== CreatorHub Types =====
+
+export type CreatorhubProject = typeof creatorhubProjects.$inferSelect;
+export type CreatorhubUser = typeof creatorhubUsers.$inferSelect;
+export type CreatorhubInvitation = typeof creatorhubInvitations.$inferSelect;
+export type CreatorhubBooking = typeof creatorhubBookings.$inferSelect;
+export type CreatorhubCrmNote = typeof creatorhubCrmNotes.$inferSelect;
+export type CreatorhubAnalyticsEvent = typeof creatorhubAnalyticsEvents.$inferSelect;
+export type CreatorhubApiAuditLog = typeof creatorhubApiAuditLog.$inferSelect;
+
+export type CreateCreatorhubProject = z.infer<typeof createCreatorhubProjectSchema>;
+export type CreateCreatorhubInvitation = z.infer<typeof createCreatorhubInvitationSchema>;
+export type CreateCreatorhubBooking = z.infer<typeof createCreatorhubBookingSchema>;
+export type CreateCreatorhubCrmNote = z.infer<typeof createCreatorhubCrmNoteSchema>;
