@@ -3664,7 +3664,7 @@ async function registerRoutes(app2) {
         ADMIN_SECRET_VALUE: process.env.ADMIN_SECRET || "NOT SET"
       },
       node_version: process.version,
-      build_version: "fe0eec0"
+      build_version: "eaa439b-ch"
     };
     res.json(diagnostics);
   });
