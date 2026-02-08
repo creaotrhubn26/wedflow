@@ -2418,7 +2418,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const projects = await db.execute(sql`
         SELECT 
           p.id, p.name, p.description, p.status, p.event_date,
-          p.event_type, p.location, p.client_name, p.client_email,
+          p.category, p.location, p.client_email,
           p.budget, p.created_at, p.updated_at,
           u.email as vendor_email,
           v.business_name as vendor_name, v.category as vendor_category,
@@ -2451,7 +2451,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const result = await db.execute(sql`
         SELECT 
           p.id, p.name, p.description, p.status, p.event_date,
-          p.event_type, p.location, p.client_name, p.client_email,
+          p.category, p.location, p.client_email,
           p.budget, p.created_at, p.updated_at,
           u.email as vendor_email,
           v.business_name as vendor_name, v.category as vendor_category,
@@ -2489,7 +2489,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Get projects
       const projects = await db.execute(sql`
-        SELECT p.id, p.name, p.status, p.event_date, p.location, p.client_name,
+        SELECT p.id, p.name, p.status, p.event_date, p.location,
                v.business_name as vendor_name, v.category as vendor_category
         FROM legacy.projects p
         LEFT JOIN users u ON u.id = p.user_id
@@ -2500,10 +2500,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Get bookings
       const bookings = await db.execute(sql`
-        SELECT id, client_name, event_date, event_type, location, status, created_at
+        SELECT id, client_name, date, event_type, location, status, created_at
         FROM bookings
         WHERE client_email = ${couple.email}
-        ORDER BY event_date DESC
+        ORDER BY date DESC
       `);
 
       // Get vendors from projects
