@@ -1374,5 +1374,13 @@ export function registerCreatorhubRoutes(app: Express) {
     }
   });
 
-  console.log("[CreatorHub] API routes registered at /api/creatorhub/*");
+  // ===============================================
+  // SHORT ALIASES (no /creatorhub prefix)
+  // ===============================================
+  app.use("/api/projects", (req, res, next) => { req.url = req.url; res.redirect(307, `/api/creatorhub/projects${req.url === "/" ? "" : req.url}`); });
+  app.use("/api/users", (req, res, next) => { res.redirect(307, `/api/creatorhub/users${req.url === "/" ? "" : req.url}`); });
+  app.use("/api/bookings", (req, res, next) => { res.redirect(307, `/api/creatorhub/bookings${req.url === "/" ? "" : req.url}`); });
+  app.use("/api/invitations", (req, res, next) => { res.redirect(307, `/api/creatorhub/invitations${req.url === "/" ? "" : req.url}`); });
+
+  console.log("[CreatorHub] API routes registered at /api/creatorhub/* (also /api/projects, /api/users, /api/bookings, /api/invitations)");
 }

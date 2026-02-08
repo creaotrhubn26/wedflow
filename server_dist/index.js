@@ -3606,7 +3606,20 @@ function registerCreatorhubRoutes(app2) {
       return res.status(500).json({ error: "Failed to get statistics" });
     }
   });
-  console.log("[CreatorHub] API routes registered at /api/creatorhub/*");
+  app2.use("/api/projects", (req, res, next) => {
+    req.url = req.url;
+    res.redirect(307, `/api/creatorhub/projects${req.url === "/" ? "" : req.url}`);
+  });
+  app2.use("/api/users", (req, res, next) => {
+    res.redirect(307, `/api/creatorhub/users${req.url === "/" ? "" : req.url}`);
+  });
+  app2.use("/api/bookings", (req, res, next) => {
+    res.redirect(307, `/api/creatorhub/bookings${req.url === "/" ? "" : req.url}`);
+  });
+  app2.use("/api/invitations", (req, res, next) => {
+    res.redirect(307, `/api/creatorhub/invitations${req.url === "/" ? "" : req.url}`);
+  });
+  console.log("[CreatorHub] API routes registered at /api/creatorhub/* (also /api/projects, /api/users, /api/bookings, /api/invitations)");
 }
 
 // server/timeline-templates.ts
