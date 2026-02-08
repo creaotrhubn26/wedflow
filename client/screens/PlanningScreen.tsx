@@ -20,17 +20,23 @@ import Animated, {
   FadeInDown,
 } from "react-native-reanimated";
 
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius, Colors } from "@/constants/theme";
 import { PlanningStackParamList } from "@/navigation/PlanningStackNavigator";
 import {
   getWeddingDetails,
+  saveWeddingDetails,
   getSchedule,
   getBudgetItems,
   getTotalBudget,
 } from "@/lib/storage";
 import { WeddingDetails, ScheduleEvent } from "@/lib/types";
+
+const API_BASE = process.env.EXPO_PUBLIC_API_URL || "";
+const COUPLE_STORAGE_KEY = "wedflow_couple_session";
 
 type NavigationProp = NativeStackNavigationProp<PlanningStackParamList>;
 
@@ -153,14 +159,55 @@ export default function PlanningScreen() {
   const loadData = useCallback(async () => {
     try {
       setError(null);
-      const [weddingData, scheduleData, budgetItems, budget] = await Promise.all([
+
+      // Try to fetch real project data from the API
+      let apiWedding: WeddingDetails | null = null;
+      let apiBudget: number | null = null;
+      try {
+        const sessionStr = await AsyncStorage.getItem(COUPLE_STORAGE_KEY);
+        if (sessionStr) {
+          const session = JSON.parse(sessionStr);
+          const token = session.sessionToken || session.token;
+          if (token) {
+            const res = await fetch(`${API_BASE}/api/couples/dashboard`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            if (res.ok) {
+              const dashboard = await res.json();
+              // Use the first project's data if available
+              if (dashboard.projects && dashboard.projects.length > 0) {
+                const project = dashboard.projects[0];
+                const couple = dashboard.couple;
+                apiWedding = {
+                  coupleNames: couple?.displayName && couple.displayName !== couple.email?.split("@")[0]
+                    ? couple.displayName
+                    : project.name || "Ditt bryllup",
+                  weddingDate: project.event_date || couple?.weddingDate || "2026-06-20",
+                  venue: project.location || "Legg inn detaljer",
+                };
+                // Use project budget if available
+                if (project.budget) {
+                  apiBudget = Number(project.budget);
+                }
+                // Save to local storage for offline use
+                await saveWeddingDetails(apiWedding);
+              }
+            }
+          }
+        }
+      } catch (apiErr) {
+        console.log("API fetch failed, using local data:", apiErr);
+      }
+
+      const [localWeddingData, scheduleData, budgetItems, storedBudget] = await Promise.all([
         getWeddingDetails(),
         getSchedule(),
         getBudgetItems(),
         getTotalBudget(),
       ]);
 
-      setWedding(weddingData || DEFAULT_WEDDING);
+      // Prefer API data, then local, then defaults
+      setWedding(apiWedding || localWeddingData || DEFAULT_WEDDING);
       // Sort schedule by time
       const sortedSchedule = scheduleData.sort((a, b) => {
         const timeA = a.time.replace(":", "");
@@ -169,7 +216,7 @@ export default function PlanningScreen() {
       });
       setSchedule(sortedSchedule);
       setBudgetUsed(budgetItems.reduce((sum, item) => sum + item.estimatedCost, 0));
-      setTotalBudget(budget || 300000); // Fallback to default if null/undefined
+      setTotalBudget(apiBudget || storedBudget || 300000);
     } catch (err) {
       console.error("Failed to load planning data:", err);
       setError((err as Error).message || "Kunne ikke laste data");
