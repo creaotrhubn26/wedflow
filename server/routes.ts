@@ -2294,12 +2294,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           return res.status(401).json({ error: "Ugyldig e-post eller passord" });
         }
 
-        // Update display name if changed
-        if (couple.displayName !== displayName) {
+        // Update display name only if an explicit displayName was provided in the request
+        // Don't overwrite with the email-prefix fallback
+        const explicitDisplayName = req.body.displayName;
+        if (explicitDisplayName && couple.displayName !== explicitDisplayName) {
           await db.update(coupleProfiles)
-            .set({ displayName, updatedAt: new Date() })
+            .set({ displayName: explicitDisplayName, updatedAt: new Date() })
             .where(eq(coupleProfiles.id, couple.id));
-          couple.displayName = displayName;
+          couple.displayName = explicitDisplayName;
         }
       }
 
