@@ -24,7 +24,10 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ThemedText } from '../components/ThemedText';
 import { Button } from '../components/Button';
 import { SwipeableRow } from '../components/SwipeableRow';
+import { VendorSuggestions } from '@/components/VendorSuggestions';
+import { VendorActionBar } from '@/components/VendorActionBar';
 import { useTheme } from '../hooks/useTheme';
+import { useVendorSearch } from '@/hooks/useVendorSearch';
 import { Colors } from '../constants/theme';
 import { PlanningStackParamList } from '../navigation/PlanningStackNavigator';
 import {
@@ -111,6 +114,9 @@ export function KakeScreen() {
   // Budget modal state
   const [showBudgetModal, setShowBudgetModal] = useState(false);
   const [budgetInput, setBudgetInput] = useState('');
+
+  // Vendor search for bakery autocomplete
+  const bakerySearch = useVendorSearch({ category: 'bakery' });
 
   // Date parsing helper for sorting (handles YYYY-MM-DD and DD.MM.YYYY)
   const parseDate = (dateStr: string | undefined): Date => {
@@ -1036,10 +1042,41 @@ export function KakeScreen() {
               </ThemedText>
               <TextInput
                 style={[styles.input, { backgroundColor: theme.background, color: theme.text, borderColor: theme.border }]}
-                value={bakeryName}
-                onChangeText={setBakeryName}
-                placeholder="F.eks. Bakeriet i Sentrum"
+                value={bakerySearch.searchText || bakeryName}
+                onChangeText={(text) => {
+                  setBakeryName(text);
+                  bakerySearch.onChangeText(text);
+                }}
+                placeholder="Søk etter registrert bakeri..."
                 placeholderTextColor={theme.textSecondary}
+              />
+              {bakerySearch.selectedVendor && (
+                <VendorActionBar
+                  vendor={bakerySearch.selectedVendor}
+                  vendorCategory="bakery"
+                  onClear={() => {
+                    bakerySearch.clearSelection();
+                    setBakeryName('');
+                  }}
+                  icon="gift"
+                />
+              )}
+              <VendorSuggestions
+                suggestions={bakerySearch.suggestions}
+                isLoading={bakerySearch.isLoading}
+                onSelect={(v) => {
+                  bakerySearch.onSelectVendor(v);
+                  setBakeryName(v.businessName);
+                }}
+                onViewProfile={(v) => navigation.navigate('VendorDetail', {
+                  vendorId: v.id,
+                  vendorName: v.businessName,
+                  vendorDescription: v.description || '',
+                  vendorLocation: v.location || '',
+                  vendorPriceRange: v.priceRange || '',
+                  vendorCategory: 'bakery',
+                })}
+                icon="gift"
               />
 
               <ThemedText style={[styles.inputLabel, { color: theme.textSecondary }]}>

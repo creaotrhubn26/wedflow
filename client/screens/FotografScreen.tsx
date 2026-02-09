@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Pressable, RefreshControl, Alert, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ScrollView, Pressable, RefreshControl, Alert, TouchableOpacity, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -26,7 +26,10 @@ import {
 import { ThemedText } from '../components/ThemedText';
 import { Button } from '../components/Button';
 import { SwipeableRow } from '../components/SwipeableRow';
+import { VendorSuggestions } from '@/components/VendorSuggestions';
+import { VendorActionBar } from '@/components/VendorActionBar';
 import { useTheme } from '../hooks/useTheme';
+import { useVendorSearch } from '@/hooks/useVendorSearch';
 import { Colors, Spacing, BorderRadius } from '../constants/theme';
 import { PlanningStackParamList } from '../navigation/PlanningStackNavigator';
 
@@ -84,6 +87,9 @@ export function FotografScreen() {
     depositPaid: false,
     budget: 0,
   };
+
+  // Vendor search for photographer autocomplete
+  const photographerSearch = useVendorSearch({ category: 'photographer' });
 
   // Mutations
   const createSessionMutation = useMutation({
@@ -222,6 +228,40 @@ export function FotografScreen() {
             <ThemedText style={[styles.emptyText, { color: theme.textMuted }]}>
               La oss finne fotografen som forteller historien deres.
             </ThemedText>
+
+            <View style={{ width: '100%', marginTop: Spacing.md }}>
+              <ThemedText style={[styles.searchLabel, { color: theme.textSecondary }]}>Søk etter fotograf</ThemedText>
+              <TextInput
+                style={[styles.searchInput, { backgroundColor: theme.backgroundDefault, borderColor: theme.border, color: theme.text }]}
+                value={photographerSearch.searchText}
+                onChangeText={photographerSearch.onChangeText}
+                placeholder="Søk etter registrert fotograf..."
+                placeholderTextColor={theme.textSecondary}
+              />
+              {photographerSearch.selectedVendor && (
+                <VendorActionBar
+                  vendor={photographerSearch.selectedVendor}
+                  vendorCategory="photographer"
+                  onClear={photographerSearch.clearSelection}
+                  icon="camera"
+                />
+              )}
+              <VendorSuggestions
+                suggestions={photographerSearch.suggestions}
+                isLoading={photographerSearch.isLoading}
+                onSelect={photographerSearch.onSelectVendor}
+                onViewProfile={(v) => navigation.navigate('VendorDetail', {
+                  vendorId: v.id,
+                  vendorName: v.businessName,
+                  vendorDescription: v.description || '',
+                  vendorLocation: v.location || '',
+                  vendorPriceRange: v.priceRange || '',
+                  vendorCategory: 'photographer',
+                })}
+                icon="camera"
+              />
+            </View>
+
             <Button onPress={handleFindPhotographer} style={styles.findButton}>
               Finn fotograf
             </Button>
@@ -298,6 +338,14 @@ const styles = StyleSheet.create({
   emptyTitle: { fontSize: 20, fontWeight: '600', textAlign: 'center' },
   emptyText: { fontSize: 14, textAlign: 'center', maxWidth: 280 },
   findButton: { marginTop: Spacing.md },
+  searchLabel: { fontSize: 14, fontWeight: '600', marginBottom: Spacing.xs },
+  searchInput: {
+    height: 44,
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: Spacing.md,
+    fontSize: 15,
+  },
   timelineContainer: { gap: Spacing.lg },
   timelineItem: {
     flexDirection: 'row',

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, ScrollView, Pressable, RefreshControl } from 'react-native';
+import { View, StyleSheet, ScrollView, Pressable, RefreshControl, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -9,7 +9,10 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 
 import { ThemedText } from '../components/ThemedText';
 import { Button } from '../components/Button';
+import { VendorSuggestions } from '@/components/VendorSuggestions';
+import { VendorActionBar } from '@/components/VendorActionBar';
 import { useTheme } from '../hooks/useTheme';
+import { useVendorSearch } from '@/hooks/useVendorSearch';
 import { Colors, Spacing } from '../constants/theme';
 import { PlanningStackParamList } from '../navigation/PlanningStackNavigator';
 
@@ -29,6 +32,9 @@ export function FotoVideografScreen() {
   const { theme } = useTheme();
   const [activeTab, setActiveTab] = useState<TabType>('sessions');
   const [refreshing, setRefreshing] = useState(false);
+
+  // Vendor search for photo-video autocomplete
+  const photoVideoSearch = useVendorSearch({ category: 'photo-video' });
 
   const onRefresh = async () => {
     setRefreshing(true);
@@ -104,6 +110,40 @@ export function FotoVideografScreen() {
             <ThemedText style={[styles.emptyText, { color: theme.textMuted }]}>
               Start med å finne en leverandør som tilbyr både foto og video
             </ThemedText>
+
+            <View style={{ width: '100%', marginTop: Spacing.md }}>
+              <ThemedText style={[styles.searchLabel, { color: theme.textSecondary }]}>Søk etter leverandør</ThemedText>
+              <TextInput
+                style={[styles.searchInput, { backgroundColor: theme.backgroundDefault, borderColor: theme.border, color: theme.text }]}
+                value={photoVideoSearch.searchText}
+                onChangeText={photoVideoSearch.onChangeText}
+                placeholder="Søk etter registrert foto & video..."
+                placeholderTextColor={theme.textSecondary}
+              />
+              {photoVideoSearch.selectedVendor && (
+                <VendorActionBar
+                  vendor={photoVideoSearch.selectedVendor}
+                  vendorCategory="photo-video"
+                  onClear={photoVideoSearch.clearSelection}
+                  icon="camera"
+                />
+              )}
+              <VendorSuggestions
+                suggestions={photoVideoSearch.suggestions}
+                isLoading={photoVideoSearch.isLoading}
+                onSelect={photoVideoSearch.onSelectVendor}
+                onViewProfile={(v) => navigation.navigate('VendorDetail', {
+                  vendorId: v.id,
+                  vendorName: v.businessName,
+                  vendorDescription: v.description || '',
+                  vendorLocation: v.location || '',
+                  vendorPriceRange: v.priceRange || '',
+                  vendorCategory: 'photo-video',
+                })}
+                icon="camera"
+              />
+            </View>
+
             <Button onPress={handleFindProvider} style={styles.findButton}>
               Finn foto & video
             </Button>
@@ -190,6 +230,14 @@ const styles = StyleSheet.create({
   emptyTitle: { fontSize: 20, fontWeight: '600', textAlign: 'center' },
   emptyText: { fontSize: 14, textAlign: 'center', maxWidth: 280 },
   findButton: { marginTop: Spacing.md },
+  searchLabel: { fontSize: 14, fontWeight: '600', marginBottom: Spacing.xs },
+  searchInput: {
+    height: 44,
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: Spacing.md,
+    fontSize: 15,
+  },
   timelineContainer: { gap: Spacing.lg },
   timelineItem: {
     flexDirection: 'row',

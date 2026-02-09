@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, StyleSheet, ScrollView, Pressable, RefreshControl, Alert, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ScrollView, Pressable, RefreshControl, Alert, TouchableOpacity, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -25,7 +25,10 @@ import {
 } from '@/lib/api-couple-data';
 import { ThemedText } from '../components/ThemedText';
 import { Button } from '../components/Button';
+import { VendorSuggestions } from '@/components/VendorSuggestions';
+import { VendorActionBar } from '@/components/VendorActionBar';
 import { useTheme } from '../hooks/useTheme';
+import { useVendorSearch } from '@/hooks/useVendorSearch';
 import { Colors, Spacing } from '../constants/theme';
 import { PlanningStackParamList } from '../navigation/PlanningStackNavigator';
 import { getSpeeches } from '@/lib/storage';
@@ -49,6 +52,9 @@ export function MusikkScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [speeches, setSpeeches] = useState<Speech[]>([]);
   const [sessionToken, setSessionToken] = useState<string | null>(null);
+
+  // Vendor search for music autocomplete
+  const musicSearch = useVendorSearch({ category: 'music' });
 
   const COUPLE_STORAGE_KEY = 'wedflow_couple_session';
 
@@ -227,6 +233,40 @@ export function MusikkScreen() {
             <ThemedText style={[styles.emptyText, { color: theme.textMuted }]}>
               La oss finne musikken som får dere til å danse.
             </ThemedText>
+
+            <View style={{ width: '100%', marginTop: Spacing.md }}>
+              <ThemedText style={[styles.searchLabel, { color: theme.textSecondary }]}>Søk etter musikk/DJ</ThemedText>
+              <TextInput
+                style={[styles.searchInput, { backgroundColor: theme.backgroundDefault, borderColor: theme.border, color: theme.text }]}
+                value={musicSearch.searchText}
+                onChangeText={musicSearch.onChangeText}
+                placeholder="Søk etter registrert musikk/DJ..."
+                placeholderTextColor={theme.textSecondary}
+              />
+              {musicSearch.selectedVendor && (
+                <VendorActionBar
+                  vendor={musicSearch.selectedVendor}
+                  vendorCategory="music"
+                  onClear={musicSearch.clearSelection}
+                  icon="music"
+                />
+              )}
+              <VendorSuggestions
+                suggestions={musicSearch.suggestions}
+                isLoading={musicSearch.isLoading}
+                onSelect={musicSearch.onSelectVendor}
+                onViewProfile={(v) => navigation.navigate('VendorDetail', {
+                  vendorId: v.id,
+                  vendorName: v.businessName,
+                  vendorDescription: v.description || '',
+                  vendorLocation: v.location || '',
+                  vendorPriceRange: v.priceRange || '',
+                  vendorCategory: 'music',
+                })}
+                icon="music"
+              />
+            </View>
+
             <Button onPress={handleFindMusic} style={styles.findButton}>
               Finn musikk
             </Button>
@@ -362,6 +402,14 @@ const styles = StyleSheet.create({
   emptyTitle: { fontSize: 20, fontWeight: '600', textAlign: 'center' },
   emptyText: { fontSize: 14, textAlign: 'center', maxWidth: 280 },
   findButton: { marginTop: Spacing.md },
+  searchLabel: { fontSize: 14, fontWeight: '600', marginBottom: Spacing.xs },
+  searchInput: {
+    height: 44,
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingHorizontal: Spacing.md,
+    fontSize: 15,
+  },
   timelineContainer: { gap: Spacing.lg },
   timelineItem: {
     flexDirection: 'row',
