@@ -7,7 +7,7 @@ import bcrypt from "bcryptjs";
 import { registerSubscriptionRoutes } from "./subscription-routes";
 import { registerCreatorhubRoutes } from "./creatorhub-routes";
 import { TIMELINE_TEMPLATES, DEFAULT_TIMELINE, TimelineTemplate, resolveTraditionKey } from "./timeline-templates";
-import { vendors, vendorCategories, vendorRegistrationSchema, vendorSessions, deliveries, deliveryItems, createDeliverySchema, inspirationCategories, inspirations, inspirationMedia, createInspirationSchema, vendorFeatures, vendorInspirationCategories, inspirationInquiries, createInquirySchema, coupleProfiles, coupleSessions, conversations, messages, coupleLoginSchema, sendMessageSchema, reminders, createReminderSchema, vendorProducts, createVendorProductSchema, vendorOffers, vendorOfferItems, createOfferSchema, appSettings, speeches, createSpeechSchema, messageReminders, scheduleEvents, coordinatorInvitations, guestInvitations, createGuestInvitationSchema, coupleVendorContracts, notifications, activityLogs, weddingTables, weddingGuests, insertWeddingGuestSchema, updateWeddingGuestSchema, tableGuestAssignments, appFeedback, vendorReviews, vendorReviewResponses, checklistTasks, createChecklistTaskSchema, adminConversations, adminMessages, sendAdminMessageSchema, faqItems, insertFaqItemSchema, updateFaqItemSchema, insertAppSettingSchema, updateAppSettingSchema, whatsNewItems, insertWhatsNewSchema, updateWhatsNewSchema, videoGuides, insertVideoGuideSchema, updateVideoGuideSchema, vendorSubscriptions, subscriptionTiers, vendorCategoryDetails, vendorAvailability, createVendorAvailabilitySchema, coupleBudgetItems, coupleBudgetSettings, createBudgetItemSchema, coupleDressAppointments, coupleDressFavorites, coupleDressTimeline, createDressAppointmentSchema, createDressFavoriteSchema, coupleImportantPeople, createImportantPersonSchema, couplePhotoShots, createPhotoShotSchema, coupleHairMakeupAppointments, coupleHairMakeupLooks, coupleHairMakeupTimeline, coupleTransportBookings, coupleTransportTimeline, coupleFlowerAppointments, coupleFlowerSelections, coupleFlowerTimeline, coupleCateringTastings, coupleCateringMenu, coupleCateringDietaryNeeds, coupleCateringTimeline, coupleCakeTastings, coupleCakeDesigns, coupleCakeTimeline, coupleVenueBookings, coupleVenueTimelines, vendorVenueBookings, vendorVenueAvailability, vendorVenueTimelines, creatorhubProjects } from "@shared/schema";
+import { vendors, vendorCategories, vendorRegistrationSchema, vendorSessions, deliveries, deliveryItems, createDeliverySchema, inspirationCategories, inspirations, inspirationMedia, createInspirationSchema, vendorFeatures, vendorInspirationCategories, inspirationInquiries, createInquirySchema, coupleProfiles, coupleSessions, conversations, messages, coupleLoginSchema, sendMessageSchema, reminders, createReminderSchema, vendorProducts, createVendorProductSchema, vendorOffers, vendorOfferItems, createOfferSchema, appSettings, speeches, createSpeechSchema, messageReminders, scheduleEvents, coordinatorInvitations, guestInvitations, createGuestInvitationSchema, coupleVendorContracts, notifications, activityLogs, weddingTables, weddingGuests, insertWeddingGuestSchema, updateWeddingGuestSchema, tableGuestAssignments, appFeedback, vendorReviews, vendorReviewResponses, checklistTasks, createChecklistTaskSchema, adminConversations, adminMessages, sendAdminMessageSchema, faqItems, insertFaqItemSchema, updateFaqItemSchema, insertAppSettingSchema, updateAppSettingSchema, whatsNewItems, insertWhatsNewSchema, updateWhatsNewSchema, videoGuides, insertVideoGuideSchema, updateVideoGuideSchema, vendorSubscriptions, subscriptionTiers, vendorCategoryDetails, vendorAvailability, createVendorAvailabilitySchema, coupleBudgetItems, coupleBudgetSettings, createBudgetItemSchema, coupleDressAppointments, coupleDressFavorites, coupleDressTimeline, createDressAppointmentSchema, createDressFavoriteSchema, coupleImportantPeople, createImportantPersonSchema, couplePhotoShots, createPhotoShotSchema, coupleHairMakeupAppointments, coupleHairMakeupLooks, coupleHairMakeupTimeline, coupleTransportBookings, coupleTransportTimeline, coupleFlowerAppointments, coupleFlowerSelections, coupleFlowerTimeline, coupleCateringTastings, coupleCateringMenu, coupleCateringDietaryNeeds, coupleCateringTimeline, coupleCakeTastings, coupleCakeDesigns, coupleCakeTimeline, coupleVenueBookings, coupleVenueTimelines, vendorVenueBookings, vendorVenueAvailability, vendorVenueTimelines, creatorhubProjects, couplePhotographerSessions, couplePhotographerShots, couplePhotographerTimeline, coupleVideographerSessions, coupleVideographerDeliverables, coupleVideographerTimeline, coupleMusicPerformances, coupleMusicSetlists, coupleMusicTimeline } from "@shared/schema";
 import { eq, and, desc, sql, inArray, or, gte, lte, isNotNull } from "drizzle-orm";
 
 function generateAccessCode(): string {
@@ -10766,6 +10766,378 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const [timeline] = await db.insert(coupleCakeTimeline).values({
           coupleId, ...req.body
         }).returning();
+        res.json(timeline);
+      }
+    } catch (error) {
+      console.error("Error updating timeline:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere tidslinje" });
+    }
+  });
+
+  // ===== PHOTOGRAPHER ROUTES =====
+
+  app.get("/api/couple/photographer", async (req: Request, res: Response) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [sessions, shots, timelineRows] = await Promise.all([
+        db.select().from(couplePhotographerSessions).where(eq(couplePhotographerSessions.coupleId, coupleId)).orderBy(couplePhotographerSessions.date),
+        db.select().from(couplePhotographerShots).where(eq(couplePhotographerShots.coupleId, coupleId)),
+        db.select().from(couplePhotographerTimeline).where(eq(couplePhotographerTimeline.coupleId, coupleId)),
+      ]);
+      const timeline = timelineRows[0] || { photographerSelected: false, sessionBooked: false, contractSigned: false, depositPaid: false, budget: 0 };
+      res.json({ sessions, shots, timeline });
+    } catch (error) {
+      console.error("Error fetching photographer data:", error);
+      res.status(500).json({ error: "Kunne ikke hente fotograf data" });
+    }
+  });
+
+  app.post("/api/couple/photographer/sessions", async (req: Request, res: Response) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [session] = await db.insert(couplePhotographerSessions).values({ coupleId, ...req.body }).returning();
+      res.json(session);
+    } catch (error) {
+      console.error("Error creating session:", error);
+      res.status(500).json({ error: "Kunne ikke opprette session" });
+    }
+  });
+
+  app.patch("/api/couple/photographer/sessions/:id", async (req: Request, res: Response) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      const [session] = await db.update(couplePhotographerSessions)
+        .set({ ...req.body, updatedAt: new Date() })
+        .where(and(eq(couplePhotographerSessions.id, id), eq(couplePhotographerSessions.coupleId, coupleId)))
+        .returning();
+      res.json(session);
+    } catch (error) {
+      console.error("Error updating session:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere session" });
+    }
+  });
+
+  app.delete("/api/couple/photographer/sessions/:id", async (req: Request, res: Response) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      await db.delete(couplePhotographerSessions)
+        .where(and(eq(couplePhotographerSessions.id, id), eq(couplePhotographerSessions.coupleId, coupleId)));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting session:", error);
+      res.status(500).json({ error: "Kunne ikke slette session" });
+    }
+  });
+
+  app.post("/api/couple/photographer/shots", async (req: Request, res: Response) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [shot] = await db.insert(couplePhotographerShots).values({ coupleId, ...req.body }).returning();
+      res.json(shot);
+    } catch (error) {
+      console.error("Error creating shot:", error);
+      res.status(500).json({ error: "Kunne ikke opprette bildeidé" });
+    }
+  });
+
+  app.patch("/api/couple/photographer/shots/:id", async (req: Request, res: Response) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      const [shot] = await db.update(couplePhotographerShots)
+        .set({ ...req.body, updatedAt: new Date() })
+        .where(and(eq(couplePhotographerShots.id, id), eq(couplePhotographerShots.coupleId, coupleId)))
+        .returning();
+      res.json(shot);
+    } catch (error) {
+      console.error("Error updating shot:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere bildeidé" });
+    }
+  });
+
+  app.delete("/api/couple/photographer/shots/:id", async (req: Request, res: Response) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      await db.delete(couplePhotographerShots)
+        .where(and(eq(couplePhotographerShots.id, id), eq(couplePhotographerShots.coupleId, coupleId)));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting shot:", error);
+      res.status(500).json({ error: "Kunne ikke slette bildeidé" });
+    }
+  });
+
+  app.put("/api/couple/photographer/timeline", async (req: Request, res: Response) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const existing = await db.select().from(couplePhotographerTimeline).where(eq(couplePhotographerTimeline.coupleId, coupleId));
+      if (existing.length > 0) {
+        const [timeline] = await db.update(couplePhotographerTimeline)
+          .set({ ...req.body, updatedAt: new Date() })
+          .where(eq(couplePhotographerTimeline.coupleId, coupleId))
+          .returning();
+        res.json(timeline);
+      } else {
+        const [timeline] = await db.insert(couplePhotographerTimeline).values({ coupleId, ...req.body }).returning();
+        res.json(timeline);
+      }
+    } catch (error) {
+      console.error("Error updating timeline:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere tidslinje" });
+    }
+  });
+
+  // ===== VIDEOGRAPHER ROUTES =====
+
+  app.get("/api/couple/videographer", async (req: Request, res: Response) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [sessions, deliverables, timelineRows] = await Promise.all([
+        db.select().from(coupleVideographerSessions).where(eq(coupleVideographerSessions.coupleId, coupleId)).orderBy(coupleVideographerSessions.date),
+        db.select().from(coupleVideographerDeliverables).where(eq(coupleVideographerDeliverables.coupleId, coupleId)),
+        db.select().from(coupleVideographerTimeline).where(eq(coupleVideographerTimeline.coupleId, coupleId)),
+      ]);
+      const timeline = timelineRows[0] || { videographerSelected: false, sessionBooked: false, contractSigned: false, depositPaid: false, budget: 0 };
+      res.json({ sessions, deliverables, timeline });
+    } catch (error) {
+      console.error("Error fetching videographer data:", error);
+      res.status(500).json({ error: "Kunne ikke hente videograf data" });
+    }
+  });
+
+  app.post("/api/couple/videographer/sessions", async (req: Request, res: Response) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [session] = await db.insert(coupleVideographerSessions).values({ coupleId, ...req.body }).returning();
+      res.json(session);
+    } catch (error) {
+      console.error("Error creating session:", error);
+      res.status(500).json({ error: "Kunne ikke opprette session" });
+    }
+  });
+
+  app.patch("/api/couple/videographer/sessions/:id", async (req: Request, res: Response) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      const [session] = await db.update(coupleVideographerSessions)
+        .set({ ...req.body, updatedAt: new Date() })
+        .where(and(eq(coupleVideographerSessions.id, id), eq(coupleVideographerSessions.coupleId, coupleId)))
+        .returning();
+      res.json(session);
+    } catch (error) {
+      console.error("Error updating session:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere session" });
+    }
+  });
+
+  app.delete("/api/couple/videographer/sessions/:id", async (req: Request, res: Response) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      await db.delete(coupleVideographerSessions)
+        .where(and(eq(coupleVideographerSessions.id, id), eq(coupleVideographerSessions.coupleId, coupleId)));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting session:", error);
+      res.status(500).json({ error: "Kunne ikke slette session" });
+    }
+  });
+
+  app.post("/api/couple/videographer/deliverables", async (req: Request, res: Response) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [deliverable] = await db.insert(coupleVideographerDeliverables).values({ coupleId, ...req.body }).returning();
+      res.json(deliverable);
+    } catch (error) {
+      console.error("Error creating deliverable:", error);
+      res.status(500).json({ error: "Kunne ikke opprette leveranse" });
+    }
+  });
+
+  app.patch("/api/couple/videographer/deliverables/:id", async (req: Request, res: Response) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      const [deliverable] = await db.update(coupleVideographerDeliverables)
+        .set({ ...req.body, updatedAt: new Date() })
+        .where(and(eq(coupleVideographerDeliverables.id, id), eq(coupleVideographerDeliverables.coupleId, coupleId)))
+        .returning();
+      res.json(deliverable);
+    } catch (error) {
+      console.error("Error updating deliverable:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere leveranse" });
+    }
+  });
+
+  app.delete("/api/couple/videographer/deliverables/:id", async (req: Request, res: Response) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      await db.delete(coupleVideographerDeliverables)
+        .where(and(eq(coupleVideographerDeliverables.id, id), eq(coupleVideographerDeliverables.coupleId, coupleId)));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting deliverable:", error);
+      res.status(500).json({ error: "Kunne ikke slette leveranse" });
+    }
+  });
+
+  app.put("/api/couple/videographer/timeline", async (req: Request, res: Response) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const existing = await db.select().from(coupleVideographerTimeline).where(eq(coupleVideographerTimeline.coupleId, coupleId));
+      if (existing.length > 0) {
+        const [timeline] = await db.update(coupleVideographerTimeline)
+          .set({ ...req.body, updatedAt: new Date() })
+          .where(eq(coupleVideographerTimeline.coupleId, coupleId))
+          .returning();
+        res.json(timeline);
+      } else {
+        const [timeline] = await db.insert(coupleVideographerTimeline).values({ coupleId, ...req.body }).returning();
+        res.json(timeline);
+      }
+    } catch (error) {
+      console.error("Error updating timeline:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere tidslinje" });
+    }
+  });
+
+  // ===== MUSIC/DJ ROUTES =====
+
+  app.get("/api/couple/music", async (req: Request, res: Response) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [performances, setlists, timelineRows] = await Promise.all([
+        db.select().from(coupleMusicPerformances).where(eq(coupleMusicPerformances.coupleId, coupleId)).orderBy(coupleMusicPerformances.date),
+        db.select().from(coupleMusicSetlists).where(eq(coupleMusicSetlists.coupleId, coupleId)),
+        db.select().from(coupleMusicTimeline).where(eq(coupleMusicTimeline.coupleId, coupleId)),
+      ]);
+      const timeline = timelineRows[0] || { musicianSelected: false, setlistDiscussed: false, contractSigned: false, depositPaid: false, budget: 0 };
+      res.json({ performances, setlists, timeline });
+    } catch (error) {
+      console.error("Error fetching music data:", error);
+      res.status(500).json({ error: "Kunne ikke hente musikk data" });
+    }
+  });
+
+  app.post("/api/couple/music/performances", async (req: Request, res: Response) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [performance] = await db.insert(coupleMusicPerformances).values({ coupleId, ...req.body }).returning();
+      res.json(performance);
+    } catch (error) {
+      console.error("Error creating performance:", error);
+      res.status(500).json({ error: "Kunne ikke opprette opptreden" });
+    }
+  });
+
+  app.patch("/api/couple/music/performances/:id", async (req: Request, res: Response) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      const [performance] = await db.update(coupleMusicPerformances)
+        .set({ ...req.body, updatedAt: new Date() })
+        .where(and(eq(coupleMusicPerformances.id, id), eq(coupleMusicPerformances.coupleId, coupleId)))
+        .returning();
+      res.json(performance);
+    } catch (error) {
+      console.error("Error updating performance:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere opptreden" });
+    }
+  });
+
+  app.delete("/api/couple/music/performances/:id", async (req: Request, res: Response) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      await db.delete(coupleMusicPerformances)
+        .where(and(eq(coupleMusicPerformances.id, id), eq(coupleMusicPerformances.coupleId, coupleId)));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting performance:", error);
+      res.status(500).json({ error: "Kunne ikke slette opptreden" });
+    }
+  });
+
+  app.post("/api/couple/music/setlists", async (req: Request, res: Response) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [setlist] = await db.insert(coupleMusicSetlists).values({ coupleId, ...req.body }).returning();
+      res.json(setlist);
+    } catch (error) {
+      console.error("Error creating setlist:", error);
+      res.status(500).json({ error: "Kunne ikke opprette spilleliste" });
+    }
+  });
+
+  app.patch("/api/couple/music/setlists/:id", async (req: Request, res: Response) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      const [setlist] = await db.update(coupleMusicSetlists)
+        .set({ ...req.body, updatedAt: new Date() })
+        .where(and(eq(coupleMusicSetlists.id, id), eq(coupleMusicSetlists.coupleId, coupleId)))
+        .returning();
+      res.json(setlist);
+    } catch (error) {
+      console.error("Error updating setlist:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere spilleliste" });
+    }
+  });
+
+  app.delete("/api/couple/music/setlists/:id", async (req: Request, res: Response) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      await db.delete(coupleMusicSetlists)
+        .where(and(eq(coupleMusicSetlists.id, id), eq(coupleMusicSetlists.coupleId, coupleId)));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting setlist:", error);
+      res.status(500).json({ error: "Kunne ikke slette spilleliste" });
+    }
+  });
+
+  app.put("/api/couple/music/timeline", async (req: Request, res: Response) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const existing = await db.select().from(coupleMusicTimeline).where(eq(coupleMusicTimeline.coupleId, coupleId));
+      if (existing.length > 0) {
+        const [timeline] = await db.update(coupleMusicTimeline)
+          .set({ ...req.body, updatedAt: new Date() })
+          .where(eq(coupleMusicTimeline.coupleId, coupleId))
+          .returning();
+        res.json(timeline);
+      } else {
+        const [timeline] = await db.insert(coupleMusicTimeline).values({ coupleId, ...req.body }).returning();
         res.json(timeline);
       }
     } catch (error) {

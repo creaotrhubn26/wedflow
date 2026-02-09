@@ -1951,6 +1951,145 @@ export type CoupleFlowerAppointment = typeof coupleFlowerAppointments.$inferSele
 export type CoupleFlowerSelection = typeof coupleFlowerSelections.$inferSelect;
 export type CoupleFlowerTimeline = typeof coupleFlowerTimeline.$inferSelect;
 
+// ===== PHOTOGRAPHER PLANNING =====
+
+export const couplePhotographerSessions = pgTable("couple_photographer_sessions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  date: text("date").notNull(),
+  time: text("time"),
+  location: text("location"),
+  duration: text("duration"),
+  photographerName: text("photographer_name"),
+  notes: text("notes"),
+  completed: boolean("completed").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const couplePhotographerShots = pgTable("couple_photographer_shots", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  description: text("description"),
+  category: text("category"),
+  isSelected: boolean("is_selected").default(false),
+  priority: integer("priority"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const couplePhotographerTimeline = pgTable("couple_photographer_timeline", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }).unique(),
+  photographerSelected: boolean("photographer_selected").default(false),
+  sessionBooked: boolean("session_booked").default(false),
+  contractSigned: boolean("contract_signed").default(false),
+  depositPaid: boolean("deposit_paid").default(false),
+  budget: integer("budget").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type CouplePhotographerSession = typeof couplePhotographerSessions.$inferSelect;
+export type CouplePhotographerShot = typeof couplePhotographerShots.$inferSelect;
+export type CouplePhotographerTimeline = typeof couplePhotographerTimeline.$inferSelect;
+
+// ===== VIDEOGRAPHER PLANNING =====
+
+export const coupleVideographerSessions = pgTable("couple_videographer_sessions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  date: text("date").notNull(),
+  time: text("time"),
+  location: text("location"),
+  duration: text("duration"),
+  videographerName: text("videographer_name"),
+  notes: text("notes"),
+  completed: boolean("completed").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const coupleVideographerDeliverables = pgTable("couple_videographer_deliverables", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  description: text("description"),
+  format: text("format"),
+  duration: text("duration"),
+  isConfirmed: boolean("is_confirmed").default(false),
+  deliveryDate: text("delivery_date"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const coupleVideographerTimeline = pgTable("couple_videographer_timeline", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }).unique(),
+  videographerSelected: boolean("videographer_selected").default(false),
+  sessionBooked: boolean("session_booked").default(false),
+  contractSigned: boolean("contract_signed").default(false),
+  depositPaid: boolean("deposit_paid").default(false),
+  budget: integer("budget").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type CoupleVideographerSession = typeof coupleVideographerSessions.$inferSelect;
+export type CoupleVideographerDeliverable = typeof coupleVideographerDeliverables.$inferSelect;
+export type CoupleVideographerTimeline = typeof coupleVideographerTimeline.$inferSelect;
+
+// ===== MUSIC/DJ PLANNING =====
+
+export const coupleMusicPerformances = pgTable("couple_music_performances", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  date: text("date").notNull(),
+  time: text("time"),
+  duration: text("duration"),
+  musicianName: text("musician_name"),
+  performanceType: text("performance_type"),
+  notes: text("notes"),
+  completed: boolean("completed").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const coupleMusicSetlists = pgTable("couple_music_setlists", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  songs: text("songs"),
+  genre: text("genre"),
+  duration: text("duration"),
+  mood: text("mood"),
+  notes: text("notes"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const coupleMusicTimeline = pgTable("couple_music_timeline", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }).unique(),
+  musicianSelected: boolean("musician_selected").default(false),
+  setlistDiscussed: boolean("setlist_discussed").default(false),
+  contractSigned: boolean("contract_signed").default(false),
+  depositPaid: boolean("deposit_paid").default(false),
+  budget: integer("budget").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export type CoupleMusicPerformance = typeof coupleMusicPerformances.$inferSelect;
+export type CoupleMusicSetlist = typeof coupleMusicSetlists.$inferSelect;
+export type CoupleMusicTimeline = typeof coupleMusicTimeline.$inferSelect;
+
 // ===== CATERING PLANNING =====
 
 export const coupleCateringTastings = pgTable("couple_catering_tastings", {

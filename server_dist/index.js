@@ -39,7 +39,13 @@ __export(schema_exports, {
   coupleHairMakeupTimeline: () => coupleHairMakeupTimeline,
   coupleImportantPeople: () => coupleImportantPeople,
   coupleLoginSchema: () => coupleLoginSchema,
+  coupleMusicPerformances: () => coupleMusicPerformances,
+  coupleMusicSetlists: () => coupleMusicSetlists,
+  coupleMusicTimeline: () => coupleMusicTimeline,
   couplePhotoShots: () => couplePhotoShots,
+  couplePhotographerSessions: () => couplePhotographerSessions,
+  couplePhotographerShots: () => couplePhotographerShots,
+  couplePhotographerTimeline: () => couplePhotographerTimeline,
   coupleProfiles: () => coupleProfiles,
   coupleSessions: () => coupleSessions,
   coupleTransportBookings: () => coupleTransportBookings,
@@ -47,6 +53,9 @@ __export(schema_exports, {
   coupleVendorContracts: () => coupleVendorContracts,
   coupleVenueBookings: () => coupleVenueBookings,
   coupleVenueTimelines: () => coupleVenueTimelines,
+  coupleVideographerDeliverables: () => coupleVideographerDeliverables,
+  coupleVideographerSessions: () => coupleVideographerSessions,
+  coupleVideographerTimeline: () => coupleVideographerTimeline,
   createBudgetItemSchema: () => createBudgetItemSchema,
   createChecklistTaskSchema: () => createChecklistTaskSchema,
   createCoordinatorInvitationSchema: () => createCoordinatorInvitationSchema,
@@ -168,7 +177,7 @@ import { sql } from "drizzle-orm";
 import { pgTable, text, varchar, timestamp, integer, boolean, date, index, uniqueIndex } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
-var users, insertUserSchema, vendorCategories, vendors, vendorSessions, insertVendorCategorySchema, insertVendorSchema, vendorRegistrationSchema, vendorFeatures, vendorInspirationCategories, vendorCategoryDetails, deliveries, deliveryItems, insertDeliverySchema, insertDeliveryItemSchema, createDeliverySchema, inspirationCategories, inspirations, inspirationMedia, insertInspirationCategorySchema, insertInspirationSchema, insertInspirationMediaSchema, createInspirationSchema, inspirationInquiries, createInquirySchema, checklistTasks, insertChecklistTaskSchema, createChecklistTaskSchema, coupleProfiles, coupleSessions, coupleBudgetItems, coupleBudgetSettings, coupleDressAppointments, coupleDressFavorites, coupleDressTimeline, coupleImportantPeople, couplePhotoShots, createBudgetItemSchema, createDressAppointmentSchema, createDressFavoriteSchema, createImportantPersonSchema, createPhotoShotSchema, conversations, messages, adminConversations, adminMessages, sendAdminMessageSchema, insertCoupleProfileSchema, coupleLoginSchema, sendMessageSchema, reminders, insertReminderSchema, createReminderSchema, vendorProducts, vendorAvailability, insertVendorAvailabilitySchema, insertVendorProductSchema, createVendorProductSchema, createVendorAvailabilitySchema, coupleVenueBookings, coupleVenueTimelines, vendorVenueBookings, vendorVenueAvailability, vendorVenueTimelines, insertCoupleVenueBookingSchema, insertCoupleVenueTimelineSchema, insertVendorVenueBookingSchema, insertVendorVenueAvailabilitySchema, insertVendorVenueTimelineSchema, vendorOffers, vendorOfferItems, insertVendorOfferSchema, insertVendorOfferItemSchema, createOfferSchema, speeches, insertSpeechSchema, createSpeechSchema, messageReminders, appSettings, insertAppSettingSchema, updateAppSettingSchema, whatsNewItems, insertWhatsNewSchema, updateWhatsNewSchema, scheduleEvents, insertScheduleEventSchema, coordinatorInvitations, insertCoordinatorInvitationSchema, createCoordinatorInvitationSchema, guestInvitations, insertGuestInvitationSchema, createGuestInvitationSchema, coupleVendorContracts, insertCoupleVendorContractSchema, notifications, insertNotificationSchema, activityLogs, weddingGuests, insertWeddingGuestSchema, updateWeddingGuestSchema, weddingTables, insertWeddingTableSchema, tableGuestAssignments, tableSeatingInvitations, insertTableSeatingInvitationSchema, appFeedback, insertAppFeedbackSchema, vendorReviews, insertVendorReviewSchema, vendorReviewResponses, insertVendorReviewResponseSchema, faqItems, insertFaqItemSchema, updateFaqItemSchema, videoGuides, insertVideoGuideSchema, updateVideoGuideSchema, subscriptionTiers, vendorSubscriptions, vendorUsageMetrics, vendorPayments, insertSubscriptionTierSchema, updateSubscriptionTierSchema, insertVendorSubscriptionSchema, insertVendorUsageSchema, insertVendorPaymentSchema, coupleHairMakeupAppointments, coupleHairMakeupLooks, coupleHairMakeupTimeline, coupleTransportBookings, coupleTransportTimeline, coupleFlowerAppointments, coupleFlowerSelections, coupleFlowerTimeline, coupleCateringTastings, coupleCateringMenu, coupleCateringDietaryNeeds, coupleCateringTimeline, coupleCakeTastings, coupleCakeDesigns, coupleCakeTimeline, creatorhubProjects, creatorhubUsers, creatorhubInvitations, creatorhubBookings, creatorhubCrmNotes, creatorhubAnalyticsEvents, creatorhubApiAuditLog, createCreatorhubProjectSchema, createCreatorhubInvitationSchema, createCreatorhubBookingSchema, createCreatorhubCrmNoteSchema;
+var users, insertUserSchema, vendorCategories, vendors, vendorSessions, insertVendorCategorySchema, insertVendorSchema, vendorRegistrationSchema, vendorFeatures, vendorInspirationCategories, vendorCategoryDetails, deliveries, deliveryItems, insertDeliverySchema, insertDeliveryItemSchema, createDeliverySchema, inspirationCategories, inspirations, inspirationMedia, insertInspirationCategorySchema, insertInspirationSchema, insertInspirationMediaSchema, createInspirationSchema, inspirationInquiries, createInquirySchema, checklistTasks, insertChecklistTaskSchema, createChecklistTaskSchema, coupleProfiles, coupleSessions, coupleBudgetItems, coupleBudgetSettings, coupleDressAppointments, coupleDressFavorites, coupleDressTimeline, coupleImportantPeople, couplePhotoShots, createBudgetItemSchema, createDressAppointmentSchema, createDressFavoriteSchema, createImportantPersonSchema, createPhotoShotSchema, conversations, messages, adminConversations, adminMessages, sendAdminMessageSchema, insertCoupleProfileSchema, coupleLoginSchema, sendMessageSchema, reminders, insertReminderSchema, createReminderSchema, vendorProducts, vendorAvailability, insertVendorAvailabilitySchema, insertVendorProductSchema, createVendorProductSchema, createVendorAvailabilitySchema, coupleVenueBookings, coupleVenueTimelines, vendorVenueBookings, vendorVenueAvailability, vendorVenueTimelines, insertCoupleVenueBookingSchema, insertCoupleVenueTimelineSchema, insertVendorVenueBookingSchema, insertVendorVenueAvailabilitySchema, insertVendorVenueTimelineSchema, vendorOffers, vendorOfferItems, insertVendorOfferSchema, insertVendorOfferItemSchema, createOfferSchema, speeches, insertSpeechSchema, createSpeechSchema, messageReminders, appSettings, insertAppSettingSchema, updateAppSettingSchema, whatsNewItems, insertWhatsNewSchema, updateWhatsNewSchema, scheduleEvents, insertScheduleEventSchema, coordinatorInvitations, insertCoordinatorInvitationSchema, createCoordinatorInvitationSchema, guestInvitations, insertGuestInvitationSchema, createGuestInvitationSchema, coupleVendorContracts, insertCoupleVendorContractSchema, notifications, insertNotificationSchema, activityLogs, weddingGuests, insertWeddingGuestSchema, updateWeddingGuestSchema, weddingTables, insertWeddingTableSchema, tableGuestAssignments, tableSeatingInvitations, insertTableSeatingInvitationSchema, appFeedback, insertAppFeedbackSchema, vendorReviews, insertVendorReviewSchema, vendorReviewResponses, insertVendorReviewResponseSchema, faqItems, insertFaqItemSchema, updateFaqItemSchema, videoGuides, insertVideoGuideSchema, updateVideoGuideSchema, subscriptionTiers, vendorSubscriptions, vendorUsageMetrics, vendorPayments, insertSubscriptionTierSchema, updateSubscriptionTierSchema, insertVendorSubscriptionSchema, insertVendorUsageSchema, insertVendorPaymentSchema, coupleHairMakeupAppointments, coupleHairMakeupLooks, coupleHairMakeupTimeline, coupleTransportBookings, coupleTransportTimeline, coupleFlowerAppointments, coupleFlowerSelections, coupleFlowerTimeline, couplePhotographerSessions, couplePhotographerShots, couplePhotographerTimeline, coupleVideographerSessions, coupleVideographerDeliverables, coupleVideographerTimeline, coupleMusicPerformances, coupleMusicSetlists, coupleMusicTimeline, coupleCateringTastings, coupleCateringMenu, coupleCateringDietaryNeeds, coupleCateringTimeline, coupleCakeTastings, coupleCakeDesigns, coupleCakeTimeline, creatorhubProjects, creatorhubUsers, creatorhubInvitations, creatorhubBookings, creatorhubCrmNotes, creatorhubAnalyticsEvents, creatorhubApiAuditLog, createCreatorhubProjectSchema, createCreatorhubInvitationSchema, createCreatorhubBookingSchema, createCreatorhubCrmNoteSchema;
 var init_schema = __esm({
   "shared/schema.ts"() {
     "use strict";
@@ -1709,6 +1718,118 @@ var init_schema = __esm({
       mockupApproved: boolean("mockup_approved").default(false),
       mockupApprovedDate: text("mockup_approved_date"),
       deliveryConfirmed: boolean("delivery_confirmed").default(false),
+      budget: integer("budget").default(0),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    couplePhotographerSessions = pgTable("couple_photographer_sessions", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      title: text("title").notNull(),
+      date: text("date").notNull(),
+      time: text("time"),
+      location: text("location"),
+      duration: text("duration"),
+      photographerName: text("photographer_name"),
+      notes: text("notes"),
+      completed: boolean("completed").default(false),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    couplePhotographerShots = pgTable("couple_photographer_shots", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      title: text("title").notNull(),
+      description: text("description"),
+      category: text("category"),
+      isSelected: boolean("is_selected").default(false),
+      priority: integer("priority"),
+      notes: text("notes"),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    couplePhotographerTimeline = pgTable("couple_photographer_timeline", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }).unique(),
+      photographerSelected: boolean("photographer_selected").default(false),
+      sessionBooked: boolean("session_booked").default(false),
+      contractSigned: boolean("contract_signed").default(false),
+      depositPaid: boolean("deposit_paid").default(false),
+      budget: integer("budget").default(0),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    coupleVideographerSessions = pgTable("couple_videographer_sessions", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      title: text("title").notNull(),
+      date: text("date").notNull(),
+      time: text("time"),
+      location: text("location"),
+      duration: text("duration"),
+      videographerName: text("videographer_name"),
+      notes: text("notes"),
+      completed: boolean("completed").default(false),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    coupleVideographerDeliverables = pgTable("couple_videographer_deliverables", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      title: text("title").notNull(),
+      description: text("description"),
+      format: text("format"),
+      duration: text("duration"),
+      isConfirmed: boolean("is_confirmed").default(false),
+      deliveryDate: text("delivery_date"),
+      notes: text("notes"),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    coupleVideographerTimeline = pgTable("couple_videographer_timeline", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }).unique(),
+      videographerSelected: boolean("videographer_selected").default(false),
+      sessionBooked: boolean("session_booked").default(false),
+      contractSigned: boolean("contract_signed").default(false),
+      depositPaid: boolean("deposit_paid").default(false),
+      budget: integer("budget").default(0),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    coupleMusicPerformances = pgTable("couple_music_performances", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      title: text("title").notNull(),
+      date: text("date").notNull(),
+      time: text("time"),
+      duration: text("duration"),
+      musicianName: text("musician_name"),
+      performanceType: text("performance_type"),
+      notes: text("notes"),
+      completed: boolean("completed").default(false),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    coupleMusicSetlists = pgTable("couple_music_setlists", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }),
+      title: text("title").notNull(),
+      songs: text("songs"),
+      genre: text("genre"),
+      duration: text("duration"),
+      mood: text("mood"),
+      notes: text("notes"),
+      createdAt: timestamp("created_at").defaultNow(),
+      updatedAt: timestamp("updated_at").defaultNow()
+    });
+    coupleMusicTimeline = pgTable("couple_music_timeline", {
+      id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+      coupleId: varchar("couple_id").notNull().references(() => coupleProfiles.id, { onDelete: "cascade" }).unique(),
+      musicianSelected: boolean("musician_selected").default(false),
+      setlistDiscussed: boolean("setlist_discussed").default(false),
+      contractSigned: boolean("contract_signed").default(false),
+      depositPaid: boolean("deposit_paid").default(false),
       budget: integer("budget").default(0),
       createdAt: timestamp("created_at").defaultNow(),
       updatedAt: timestamp("updated_at").defaultNow()
@@ -3624,7 +3745,8 @@ function registerCreatorhubRoutes(app2) {
 
 // server/timeline-templates.ts
 var TIMELINE_TEMPLATES = {
-  norway: [
+  // === NORSK (was: norway) ===
+  norsk: [
     { time: "10:00", title: "Forberedelser", icon: "heart", description: "Brudens og brudgommens forberedelser" },
     { time: "14:00", title: "Vielse", icon: "users", description: "Kirkelig vielse" },
     { time: "14:30", title: "Gratulering", icon: "heart", description: "Gratulasjon utenfor kirken" },
@@ -3636,31 +3758,22 @@ var TIMELINE_TEMPLATES = {
     { time: "20:30", title: "Brudevalsen", icon: "music", description: "F\xF8rste dans" },
     { time: "21:00", title: "Dans og fest", icon: "music", description: "Feiring til sent p\xE5 kvelden" }
   ],
-  sweden: [
-    { time: "10:00", title: "F\xF6rberedelser", icon: "heart", description: "F\xF6rberedelser" },
-    { time: "14:00", title: "Vigsel", icon: "users", description: "Vigselceremoni" },
-    { time: "14:30", title: "Gratulationer", icon: "heart", description: "Gratulationer utanf\xF6r" },
-    { time: "15:00", title: "Fotosession", icon: "camera", description: "Brudpar- och familjefoton" },
-    { time: "16:00", title: "Mingel", icon: "coffee", description: "Mingel och f\xF6rfriskningar" },
-    { time: "17:00", title: "Middag", icon: "coffee", description: "Bryllupsmiddag" },
-    { time: "19:00", title: "Tal", icon: "users", description: "Tal och sk\xE5lar" },
-    { time: "20:00", title: "Prinsesst\xE5rta", icon: "heart", description: "Br\xF6llopst\xE5rta" },
-    { time: "20:30", title: "F\xF6rsta dansen", icon: "music", description: "Brudparets f\xF6rsta dans" },
-    { time: "21:00", title: "Dans", icon: "music", description: "Dans och fest" }
+  // === SIKH (stays same) ===
+  sikh: [
+    { time: "06:00", title: "Ganesh Puja", icon: "star", description: "B\xF8nn for \xE5 fjerne hindringer" },
+    { time: "07:00", title: "Madhuparka", icon: "coffee", description: "Brudgommens velkomst" },
+    { time: "08:00", title: "Kanyadaan", icon: "users", description: "Farens gave av bruden" },
+    { time: "09:00", title: "Agni Poojan", icon: "sun", description: "Hellig ildseremoni" },
+    { time: "10:00", title: "Saptapadi", icon: "heart", description: "De syv skritt rundt ilden" },
+    { time: "11:00", title: "Mangalsutra", icon: "heart", description: "Hellig halskjede" },
+    { time: "12:00", title: "Sindoor", icon: "star", description: "R\xF8d farge i h\xE5rskillen" },
+    { time: "13:00", title: "Lunch & Velsignelser", icon: "coffee", description: "M\xE5ltid og velsignelser fra eldre" },
+    { time: "14:00", title: "Fotosession", icon: "camera", description: "Familie- og brudepar-bilder" },
+    { time: "16:00", title: "Reception", icon: "users", description: "Reception for gjester" },
+    { time: "18:00", title: "Middag", icon: "coffee", description: "Festmiddag" }
   ],
-  denmark: [
-    { time: "10:00", title: "Forberedelser", icon: "heart", description: "Brudens og gommens forberedelser" },
-    { time: "14:00", title: "Vielse", icon: "users", description: "Vielsesceremoni" },
-    { time: "14:30", title: "Lyk\xF8nskning", icon: "heart", description: "Tillykke udenfor" },
-    { time: "15:00", title: "Fotosession", icon: "camera", description: "Brudepar- og familiebilleder" },
-    { time: "16:00", title: "Reception", icon: "coffee", description: "Reception og forfriskninger" },
-    { time: "17:00", title: "Middag", icon: "coffee", description: "Bryllupsmiddag" },
-    { time: "19:00", title: "Taler og sange", icon: "users", description: "Bryllupstaler og sange" },
-    { time: "20:00", title: "Bryllupskage", icon: "heart", description: "Bryllupskringle" },
-    { time: "20:30", title: "Brudevals", icon: "music", description: "F\xF8rste dans" },
-    { time: "21:00", title: "Dans", icon: "music", description: "Dans og fest" }
-  ],
-  hindu: [
+  // === INDISK (was: hindu) ===
+  indisk: [
     { time: "06:00", title: "Ganesh Puja", icon: "star", description: "B\xF8nn for \xE5 fjerne hindringer" },
     { time: "07:00", title: "Madhuparka", icon: "coffee", description: "Brudgommens velkomst" },
     { time: "08:00", title: "Kanyadaan", icon: "users", description: "Farens gave av bruden" },
@@ -3689,7 +3802,83 @@ var TIMELINE_TEMPLATES = {
     { time: "18:00", title: "Reception", icon: "users", description: "Kveldsmottak for gjester" },
     { time: "20:00", title: "Doli", icon: "moon", description: "Brudens avreise" }
   ],
-  muslim: [
+  // === PAKISTANSK (new) ===
+  pakistansk: [
+    { time: "16:00", title: "Mehndi forberedelse", icon: "heart", description: "Forberedelser til Mehndi-kveld" },
+    { time: "17:00", title: "Mehndi-seremoni", icon: "star", description: "Henna-p\xE5f\xF8ring med tradisjonelle sanger" },
+    { time: "18:00", title: "Sangeet", icon: "music", description: "Musikk, dans og opptredener" },
+    { time: "20:00", title: "Mehndi-fest", icon: "coffee", description: "Mat og feiring" },
+    { time: "09:00", title: "Baraat forberedelse", icon: "sun", description: "Brudgommens forberedelser" },
+    { time: "11:00", title: "Baraat", icon: "users", description: "Brudgommens storsl\xE5tte prosesjon" },
+    { time: "12:00", title: "Nikkah", icon: "heart", description: "Islamsk vielsesseremoni med kontrakt" },
+    { time: "13:00", title: "Fotosession", icon: "camera", description: "Familie- og brudepar-bilder" },
+    { time: "14:00", title: "Rukhsati", icon: "moon", description: "Brudens avskjed fra hjemmet" },
+    { time: "18:00", title: "Walima", icon: "coffee", description: "Brudgommens familieresepsjon" },
+    { time: "20:00", title: "Walima middag", icon: "coffee", description: "Storsl\xE5tt festmiddag" }
+  ],
+  // === TYRKISK (new) ===
+  tyrkisk: [
+    { time: "18:00", title: "K\u0131na Gecesi forberedelse", icon: "heart", description: "Forberedelse til henna-kveld" },
+    { time: "19:00", title: "K\u0131na Gecesi", icon: "star", description: "Tradisjonell henna-kveld med sanger" },
+    { time: "20:00", title: "Henna-p\xE5f\xF8ring", icon: "heart", description: "Bruden f\xE5r henna med gullmynt i h\xE5ndflaten" },
+    { time: "21:00", title: "Dans og feiring", icon: "music", description: "Tradisjonell tyrkisk dans og feiring" },
+    { time: "10:00", title: "Gelin Alma", icon: "users", description: "Brudgommen henter bruden" },
+    { time: "12:00", title: "D\xFC\u011F\xFCn seremoni", icon: "heart", description: "Bryllupsseremoni" },
+    { time: "13:00", title: "Fotosession", icon: "camera", description: "Brudepar- og familiebilder" },
+    { time: "14:00", title: "Tak\u0131 T\xF6reni", icon: "star", description: "Gullsmykke-seremoni" },
+    { time: "15:00", title: "D\xFC\u011F\xFCn fest", icon: "coffee", description: "Storsl\xE5tt bryllupsmiddag" },
+    { time: "17:00", title: "Halay dans", icon: "music", description: "Tradisjonell gruppedan i ring" }
+  ],
+  // === ARABISK (new) ===
+  arabisk: [
+    { time: "18:00", title: "Henna-kveld", icon: "star", description: "Tradisjonell henna-feiring for kvinner" },
+    { time: "19:00", title: "Henna-p\xE5f\xF8ring", icon: "heart", description: "Kunstferdie henna-m\xF8nstre" },
+    { time: "20:00", title: "Henna-fest", icon: "music", description: "Tradisjonell musikk og dans" },
+    { time: "14:00", title: "Nikah forberedelse", icon: "sun", description: "Forberedelser til vielsen" },
+    { time: "15:00", title: "Nikah", icon: "heart", description: "Islamsk vielse med kontrakt" },
+    { time: "16:00", title: "Zaffe innmarsj", icon: "music", description: "Spektakul\xE6r prosesjon med trommer" },
+    { time: "17:00", title: "Fotosession", icon: "camera", description: "Familie- og brudepar-bilder" },
+    { time: "18:00", title: "Walima middag", icon: "coffee", description: "Storsl\xE5tt bryllupsmiddag" },
+    { time: "20:00", title: "Dabke-dans", icon: "music", description: "Tradisjonell gruppedans" },
+    { time: "22:00", title: "Avslutning", icon: "moon", description: "Avskjed og velsignelser" }
+  ],
+  // === SOMALISK (new) ===
+  somalisk: [
+    { time: "14:00", title: "Nikah forberedelse", icon: "sun", description: "Forberedelser til vielsen" },
+    { time: "15:00", title: "Nikah seremoni", icon: "heart", description: "Islamsk vielse med Koran-resitasjon" },
+    { time: "16:00", title: "Duaa og velsignelse", icon: "star", description: "B\xF8nner for brudeparet" },
+    { time: "17:00", title: "Fotosession", icon: "camera", description: "Familie- og brudepar-bilder" },
+    { time: "18:00", title: "Aroos feiring", icon: "music", description: "Tradisjonell somalisk feiring" },
+    { time: "19:00", title: "Aroos middag", icon: "coffee", description: "Autentisk somalisk mat" },
+    { time: "20:00", title: "Niiko dans", icon: "music", description: "Tradisjonell somalisk dans" },
+    { time: "22:00", title: "Shaash Saar", icon: "heart", description: "Sl\xF8r-seremoni" }
+  ],
+  // === ETIOPISK (new) ===
+  etiopisk: [
+    { time: "10:00", title: "Telosh forberedelse", icon: "sun", description: "Morgenforberedelser" },
+    { time: "12:00", title: "Telosh seremoni", icon: "heart", description: "Tradisjonell f\xF8rbryllups-seremoni" },
+    { time: "13:00", title: "Velsignelse fra eldre", icon: "users", description: "Eldre gir r\xE5d og velsignelser" },
+    { time: "14:00", title: "Vielsesseremoni", icon: "heart", description: "Ortodoks eller sivil vielse" },
+    { time: "15:00", title: "Fotosession", icon: "camera", description: "Familie- og brudepar-bilder" },
+    { time: "16:00", title: "Kaffe-seremoni", icon: "coffee", description: "Tradisjonell etiopisk kaffe-seremoni" },
+    { time: "17:00", title: "Melse resepsjon", icon: "coffee", description: "Injera og tradisjonell mat" },
+    { time: "19:00", title: "Eskista dans", icon: "music", description: "Tradisjonell etiopisk dans" },
+    { time: "21:00", title: "Avslutning", icon: "moon", description: "Velsignelser og avskjed" }
+  ],
+  // === NIGERIANSK (new) ===
+  nigeriansk: [
+    { time: "10:00", title: "White Wedding forberedelser", icon: "heart", description: "Forberedelser til kirkelig vielse" },
+    { time: "12:00", title: "White Wedding", icon: "users", description: "Kirkelig vielsesseremoni" },
+    { time: "13:00", title: "Fotosession", icon: "camera", description: "Brudepar- og familiebilder" },
+    { time: "14:00", title: "Cocktail", icon: "coffee", description: "Mingling etter kirken" },
+    { time: "16:00", title: "Traditional Wedding", icon: "star", description: "Tradisjonell kulturell seremoni" },
+    { time: "17:00", title: "Palmvin-test", icon: "coffee", description: "Bruden finner brudgommen med palmvin" },
+    { time: "18:00", title: "Tradisjonell middag", icon: "coffee", description: "Jollof ris og tradisjonell mat" },
+    { time: "20:00", title: "Aso-Oke dans", icon: "music", description: "Dans i matchende tradisjonelle kl\xE6r" },
+    { time: "22:00", title: "Spraying", icon: "star", description: "Gjester kaster pengesedler p\xE5 dansegulvet" }
+  ],
+  // === MUSLIMSK (was: muslim) ===
+  muslimsk: [
     { time: "10:00", title: "Forberedelser", icon: "heart", description: "Brudens og brudgommens forberedelser" },
     { time: "14:00", title: "Mehndi (valgfritt)", icon: "star", description: "Henna-seremoni for bruden" },
     { time: "16:00", title: "Nikah forberedelse", icon: "users", description: "Forberedelse til vielse" },
@@ -3702,23 +3891,34 @@ var TIMELINE_TEMPLATES = {
     { time: "21:00", title: "Middag", icon: "coffee", description: "Festm\xE5ltid for alle gjester" },
     { time: "23:00", title: "Rukhsati", icon: "moon", description: "Brudens avskjed fra familien" }
   ],
-  jewish: [
-    { time: "10:00", title: "Forberedelser", icon: "heart", description: "Brudens og brudgommens forberedelser" },
-    { time: "14:00", title: "Kabbalat Panim", icon: "users", description: "Gjeste-mottakelse" },
-    { time: "15:00", title: "Tisch", icon: "coffee", description: "Brudgommens bord" },
-    { time: "15:30", title: "Bedeken", icon: "heart", description: "Sl\xF8rlegging av bruden" },
-    { time: "16:00", title: "Prosesjon", icon: "users", description: "Prosesjon til Chuppah" },
-    { time: "16:15", title: "Circling", icon: "star", description: "Bruden g\xE5r rundt brudgommen 7 ganger" },
-    { time: "16:30", title: "Ketubah-signering", icon: "heart", description: "Ekteskapskontrakten leses og signeres" },
-    { time: "16:45", title: "Sheva Brachot", icon: "sun", description: "De syv velsignelsene" },
-    { time: "17:00", title: "Glass-knusing", icon: "star", description: "Brudgommen knuser glasset" },
-    { time: "17:15", title: "Yichud", icon: "heart", description: "Privat\xF8yeblikk for brudeparet" },
-    { time: "18:00", title: "Fotosession", icon: "camera", description: "Familie- og brudepar-bilder" },
-    { time: "19:00", title: "Reception", icon: "users", description: "Festmottak" },
-    { time: "20:00", title: "Middag", icon: "coffee", description: "Bryllupsmiddag" },
-    { time: "22:00", title: "Hora-dans", icon: "music", description: "Tradisjonell j\xF8disk dans" }
+  // === LIBANESISK (new) ===
+  libanesisk: [
+    { time: "18:00", title: "Henna Party", icon: "star", description: "Tradisjonell henna-feiring" },
+    { time: "19:00", title: "Henna-p\xE5f\xF8ring", icon: "heart", description: "Eldre kvinner p\xE5f\xF8rer henna" },
+    { time: "20:00", title: "Libanesisk fest", icon: "music", description: "Tradisjonell musikk og dabke" },
+    { time: "12:00", title: "Vielsesseremoni", icon: "heart", description: "Kirkelig eller sivil vielse" },
+    { time: "13:00", title: "Fotosession", icon: "camera", description: "Brudepar- og familiebilder" },
+    { time: "15:00", title: "Zaffe innmarsj", icon: "music", description: "Spektakul\xE6r prosesjon med trommer" },
+    { time: "16:00", title: "Meze-bord", icon: "coffee", description: "Tradisjonell libanesisk mat" },
+    { time: "18:00", title: "Middag", icon: "coffee", description: "Storsl\xE5tt libanesisk festmiddag" },
+    { time: "20:00", title: "Dabke-dans", icon: "music", description: "Tradisjonell libanesisk gruppedans" },
+    { time: "22:00", title: "Avslutning", icon: "moon", description: "Velsignelser og avskjed" }
   ],
-  chinese: [
+  // === FILIPINO (new) ===
+  filipino: [
+    { time: "18:00", title: "Despedida de Soltera", icon: "star", description: "Avskjedsfest for singel-livet" },
+    { time: "19:00", title: "Despedida feiring", icon: "music", description: "Leker, mat og gaver" },
+    { time: "10:00", title: "Forberedelser", icon: "heart", description: "Brudens og brudgommens forberedelser" },
+    { time: "12:00", title: "Katolsk vielse", icon: "users", description: "Vielse med tradisjonelle elementer" },
+    { time: "12:30", title: "Arras mynter", icon: "star", description: "13 mynter som symbol p\xE5 fors\xF8rgelse" },
+    { time: "12:45", title: "Veil & Cord", icon: "heart", description: "Sl\xF8r og ledning som symbol p\xE5 enhet" },
+    { time: "13:00", title: "Unity Candle", icon: "sun", description: "Enhetslys-seremoni" },
+    { time: "14:00", title: "Fotosession", icon: "camera", description: "Familie- og brudepar-bilder" },
+    { time: "16:00", title: "Reception", icon: "coffee", description: "Resepsjon med tradisjonell mat" },
+    { time: "18:00", title: "Money Dance", icon: "music", description: "Gjester fester penger p\xE5 brudeparet" }
+  ],
+  // === KINESISK (was: chinese) ===
+  kinesisk: [
     { time: "07:00", title: "H\xE5rpynt-seremoni", icon: "heart", description: "Brudens h\xE5r og sminke" },
     { time: "08:00", title: "Brudgommen henter bruden", icon: "users", description: "D\xF8r-spill og hindringer" },
     { time: "09:00", title: "Te-seremoni", icon: "coffee", description: "Servering av te til eldre familiemedlemmer" },
@@ -3731,6 +3931,54 @@ var TIMELINE_TEMPLATES = {
     { time: "17:00", title: "Sk\xE5ler rundt bordene", icon: "users", description: "Brudeparet sk\xE5ler med gjestene" },
     { time: "18:00", title: "Lykke-spill", icon: "star", description: "Tradisjonelle bryllupsleker" },
     { time: "19:00", title: "Avskjed", icon: "moon", description: "Takk til gjestene" }
+  ],
+  // === KOREANSK (new) ===
+  koreansk: [
+    { time: "10:00", title: "Forberedelser", icon: "heart", description: "Brudeparet gj\xF8res klare" },
+    { time: "12:00", title: "Moderne vielse", icon: "users", description: "Vielse i Wedding Hall" },
+    { time: "12:30", title: "Pyebaek-forberedelse", icon: "star", description: "Skifte til Hanbok" },
+    { time: "13:00", title: "Pyebaek", icon: "heart", description: "Tradisjonell familieseremoni" },
+    { time: "13:30", title: "Jujube-kasting", icon: "star", description: "Fruktbarhetsritual" },
+    { time: "14:00", title: "Fotosession", icon: "camera", description: "Bilder i Hanbok" },
+    { time: "15:00", title: "Koreansk buffet", icon: "coffee", description: "Tradisjonelt koreansk festm\xE5ltid" },
+    { time: "17:00", title: "Avslutning", icon: "moon", description: "Takk til gjestene" }
+  ],
+  // === THAI (new) ===
+  thai: [
+    { time: "06:00", title: "Tak Bat", icon: "sun", description: "Almisse-runde med munker" },
+    { time: "08:00", title: "Khan Maak prosesjon", icon: "music", description: "Brudgommens storsl\xE5tte prosesjon" },
+    { time: "09:00", title: "Gate-penger", icon: "star", description: "Brudgommen betaler for \xE5 passere" },
+    { time: "09:30", title: "Sinsod-seremoni", icon: "heart", description: "Brudepris-seremoni" },
+    { time: "10:00", title: "Sai Sin", icon: "heart", description: "Hellig tr\xE5d bindes rundt hendene" },
+    { time: "10:30", title: "Rod Nam Sang", icon: "coffee", description: "Vann-velsignelse fra eldre" },
+    { time: "11:00", title: "Fotosession", icon: "camera", description: "Familie- og brudepar-bilder" },
+    { time: "12:00", title: "Bryllupsmiddag", icon: "coffee", description: "Tradisjonelt thai festm\xE5ltid" },
+    { time: "14:00", title: "Tradisjonell dans", icon: "music", description: "Thai kulturell dans" }
+  ],
+  // === IRANSK (new) ===
+  iransk: [
+    { time: "10:00", title: "Forberedelser", icon: "heart", description: "Bruden og brudgommens forberedelser" },
+    { time: "14:00", title: "Sofreh-e Aghd oppdekning", icon: "star", description: "Det hellige bordet dekkes" },
+    { time: "15:00", title: "Gjestenes ankomst", icon: "users", description: "Gjester samles rundt Sofreh" },
+    { time: "15:30", title: "Aghd seremoni", icon: "heart", description: "Vielsesseremoni med tre samtykker" },
+    { time: "16:00", title: "Sukker-maling", icon: "star", description: "Sukker males over silkeklede" },
+    { time: "16:30", title: "Honning-ritual", icon: "coffee", description: "Brudeparet mater hverandre honning" },
+    { time: "17:00", title: "Fotosession", icon: "camera", description: "Bilder ved Sofreh-e Aghd" },
+    { time: "18:00", title: "Aroosi resepsjon", icon: "coffee", description: "Storsl\xE5tt persisk festmiddag" },
+    { time: "20:00", title: "Knife Dance", icon: "music", description: "Morsom kake-dans tradisjon" },
+    { time: "22:00", title: "Persisk dans", icon: "music", description: "Feiring til sent p\xE5 kvelden" }
+  ],
+  // === ANNET (new) ===
+  annet: [
+    { time: "10:00", title: "Forberedelser", icon: "heart", description: "Brudeparets forberedelser" },
+    { time: "13:00", title: "Seremoni", icon: "heart", description: "Tilpasset vielsesseremoni" },
+    { time: "14:00", title: "Gratulasjon", icon: "users", description: "Gratulasjon fra gjester" },
+    { time: "15:00", title: "Fotosession", icon: "camera", description: "Bilder av brudeparet" },
+    { time: "16:00", title: "Resepsjon", icon: "coffee", description: "Cocktail og mingling" },
+    { time: "17:00", title: "Middag", icon: "coffee", description: "Festmiddag" },
+    { time: "19:00", title: "Taler", icon: "users", description: "Taler og sk\xE5ler" },
+    { time: "20:00", title: "F\xF8rste dans", icon: "music", description: "Brudeparets f\xF8rste dans" },
+    { time: "21:00", title: "Fest", icon: "music", description: "Fest og dans" }
   ]
 };
 var DEFAULT_TIMELINE = [
@@ -3745,6 +3993,20 @@ var DEFAULT_TIMELINE = [
   { time: "20:30", title: "F\xF8rste dans", icon: "music", description: "Brudeparets f\xF8rste dans" },
   { time: "21:00", title: "Dans og fest", icon: "music", description: "Fest" }
 ];
+var LEGACY_KEY_MAP = {
+  norway: "norsk",
+  hindu: "indisk",
+  muslim: "muslimsk",
+  jewish: "j\xF8disk",
+  chinese: "kinesisk",
+  sweden: "norsk",
+  // fallback to closest
+  denmark: "norsk"
+  // fallback to closest
+};
+function resolveTraditionKey(key) {
+  return LEGACY_KEY_MAP[key] || key;
+}
 
 // server/routes.ts
 init_schema();
@@ -4405,8 +4667,9 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
   });
   app2.get("/api/vendors/matching", async (req, res) => {
     try {
-      const { category, guestCount, location, cuisineTypes } = req.query;
+      const { category, guestCount, location, cuisineTypes, search } = req.query;
       const guestCountNum = guestCount ? parseInt(guestCount) : void 0;
+      const searchTerm = search && typeof search === "string" ? search.trim().toLowerCase() : void 0;
       const requestedCuisines = cuisineTypes && typeof cuisineTypes === "string" ? cuisineTypes.split(",").map((c) => c.trim().toLowerCase()) : [];
       const vendorsWithSubs = await db.select({
         id: vendors.id,
@@ -4430,6 +4693,13 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
         )
       ).leftJoin(subscriptionTiers, eq3(subscriptionTiers.id, vendorSubscriptions.tierId)).where(eq3(vendors.status, "approved"));
       let filtered = category ? vendorsWithSubs.filter((v) => v.categoryId === category) : vendorsWithSubs;
+      if (searchTerm) {
+        filtered = filtered.filter((v) => {
+          const name = (v.businessName || "").toLowerCase();
+          const desc3 = (v.description || "").toLowerCase();
+          return name.includes(searchTerm) || desc3.includes(searchTerm);
+        });
+      }
       const vendorIds = filtered.map((v) => v.id);
       let categoryDetails = [];
       if (vendorIds.length > 0) {
@@ -5489,13 +5759,14 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
         if (!passwordMatch) {
           return res.status(401).json({ error: "Ugyldig e-post eller passord" });
         }
-        if (couple.displayName !== displayName) {
-          await db.update(coupleProfiles).set({ displayName, updatedAt: /* @__PURE__ */ new Date() }).where(eq3(coupleProfiles.id, couple.id));
-          couple.displayName = displayName;
+        const explicitDisplayName = req.body.displayName;
+        if (explicitDisplayName && couple.displayName !== explicitDisplayName) {
+          await db.update(coupleProfiles).set({ displayName: explicitDisplayName, updatedAt: /* @__PURE__ */ new Date() }).where(eq3(coupleProfiles.id, couple.id));
+          couple.displayName = explicitDisplayName;
         }
       }
       if (isNewRegistration && selectedTraditions && selectedTraditions.length > 0) {
-        const primaryTradition = selectedTraditions[0];
+        const primaryTradition = resolveTraditionKey(selectedTraditions[0]);
         const template = TIMELINE_TEMPLATES[primaryTradition] || DEFAULT_TIMELINE;
         const timelineValues = template.map((event) => ({
           coupleId: couple.id,
@@ -5515,7 +5786,8 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
         expiresAt
       });
       COUPLE_SESSIONS.set(token, { coupleId: couple.id, expiresAt });
-      res.json({ couple, sessionToken: token });
+      const { password: _pw, ...coupleWithoutPassword } = couple;
+      res.json({ couple: coupleWithoutPassword, sessionToken: token });
     } catch (error) {
       console.error("[CoupleLogin] Error:", error);
       if (error instanceof Error) {
@@ -5542,7 +5814,8 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
       if (!couple) {
         return res.status(404).json({ error: "Profil ikke funnet" });
       }
-      res.json(couple);
+      const { password: _pw, ...coupleWithoutPassword } = couple;
+      res.json(coupleWithoutPassword);
     } catch (error) {
       console.error("Error fetching couple profile:", error);
       res.status(500).json({ error: "Kunne ikke hente profil" });
@@ -5562,6 +5835,140 @@ Sikre tilgang n\xE5 for ${tier.priceNok} NOK/mnd og fortsett \xE5 motta henvende
     } catch (error) {
       console.error("Error updating couple profile:", error);
       res.status(500).json({ error: "Kunne ikke oppdatere profil" });
+    }
+  });
+  app2.get("/api/couples/projects", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [couple] = await db.select().from(coupleProfiles).where(eq3(coupleProfiles.id, coupleId));
+      if (!couple) {
+        return res.status(404).json({ error: "Profil ikke funnet" });
+      }
+      const projects = await db.execute(sql4`
+        SELECT 
+          p.id, p.name, p.description, p.status, p.event_date,
+          p.category, p.location, p.client_email,
+          p.budget, p.created_at, p.updated_at,
+          u.email as vendor_email,
+          v.business_name as vendor_name, vc.name as vendor_category,
+          v.phone as vendor_phone, v.location as vendor_location
+        FROM legacy.projects p
+        LEFT JOIN users u ON u.id = p.user_id
+        LEFT JOIN vendors v ON v.email = u.email
+        LEFT JOIN vendor_categories vc ON vc.id = v.category_id
+        WHERE p.client_email = ${couple.email}
+        ORDER BY p.event_date DESC
+      `);
+      res.json({ projects: projects.rows || [] });
+    } catch (error) {
+      console.error("Error fetching couple projects:", error);
+      res.status(500).json({ error: "Kunne ikke hente prosjekter" });
+    }
+  });
+  app2.get("/api/couples/projects/:projectId", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [couple] = await db.select().from(coupleProfiles).where(eq3(coupleProfiles.id, coupleId));
+      if (!couple) {
+        return res.status(404).json({ error: "Profil ikke funnet" });
+      }
+      const result = await db.execute(sql4`
+        SELECT 
+          p.id, p.name, p.description, p.status, p.event_date,
+          p.category, p.location, p.client_email,
+          p.budget, p.created_at, p.updated_at,
+          u.email as vendor_email,
+          v.business_name as vendor_name, vc.name as vendor_category,
+          v.phone as vendor_phone, v.location as vendor_location,
+          v.id as vendor_id
+        FROM legacy.projects p
+        LEFT JOIN users u ON u.id = p.user_id
+        LEFT JOIN vendors v ON v.email = u.email
+        LEFT JOIN vendor_categories vc ON vc.id = v.category_id
+        WHERE p.id = ${req.params.projectId}
+          AND p.client_email = ${couple.email}
+      `);
+      if (!result.rows || result.rows.length === 0) {
+        return res.status(404).json({ error: "Prosjekt ikke funnet" });
+      }
+      res.json({ project: result.rows[0] });
+    } catch (error) {
+      console.error("Error fetching project:", error);
+      res.status(500).json({ error: "Kunne ikke hente prosjekt" });
+    }
+  });
+  app2.get("/api/couples/dashboard", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [couple] = await db.select().from(coupleProfiles).where(eq3(coupleProfiles.id, coupleId));
+      if (!couple) {
+        return res.status(404).json({ error: "Profil ikke funnet" });
+      }
+      const { password: _pw, ...coupleData } = couple;
+      const projects = await db.execute(sql4`
+        SELECT p.id, p.name, p.status, p.event_date, p.location, p.budget,
+               v.business_name as vendor_name, vc.name as vendor_category
+        FROM legacy.projects p
+        LEFT JOIN users u ON u.id = p.user_id
+        LEFT JOIN vendors v ON v.email = u.email
+        LEFT JOIN vendor_categories vc ON vc.id = v.category_id
+        WHERE p.client_email = ${couple.email}
+        ORDER BY p.event_date DESC
+      `);
+      const bookings = await db.execute(sql4`
+        SELECT id, client_name, date, event_type, location, status, created_at
+        FROM bookings
+        WHERE client_email = ${couple.email}
+        ORDER BY date DESC
+      `);
+      const vendorList = await db.execute(sql4`
+        SELECT DISTINCT v.id, v.business_name, vc.name as category, v.email, v.phone, v.location
+        FROM legacy.projects p
+        JOIN users u ON u.id = p.user_id
+        JOIN vendors v ON v.email = u.email
+        LEFT JOIN vendor_categories vc ON vc.id = v.category_id
+        WHERE p.client_email = ${couple.email}
+      `);
+      res.json({
+        couple: coupleData,
+        projects: projects.rows || [],
+        bookings: bookings.rows || [],
+        vendors: vendorList.rows || [],
+        stats: {
+          totalProjects: (projects.rows || []).length,
+          totalVendors: (vendorList.rows || []).length,
+          totalBookings: (bookings.rows || []).length
+        }
+      });
+    } catch (error) {
+      console.error("Error fetching couple dashboard:", error);
+      res.status(500).json({ error: "Kunne ikke hente dashboard" });
+    }
+  });
+  app2.get("/api/couples/vendors", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [couple] = await db.select().from(coupleProfiles).where(eq3(coupleProfiles.id, coupleId));
+      if (!couple) {
+        return res.status(404).json({ error: "Profil ikke funnet" });
+      }
+      const vendorList = await db.execute(sql4`
+        SELECT DISTINCT v.id, v.business_name, vc.name as category, v.email, v.phone, v.location,
+               p.name as project_name, p.event_date
+        FROM legacy.projects p
+        JOIN users u ON u.id = p.user_id
+        JOIN vendors v ON v.email = u.email
+        LEFT JOIN vendor_categories vc ON vc.id = v.category_id
+        WHERE p.client_email = ${couple.email}
+      `);
+      res.json({ vendors: vendorList.rows || [] });
+    } catch (error) {
+      console.error("Error fetching couple vendors:", error);
+      res.status(500).json({ error: "Kunne ikke hente leverand\xF8rer" });
     }
   });
   app2.get("/api/couples/conversations", async (req, res) => {
@@ -11456,6 +11863,315 @@ Totalt: ${(totalAmount / 100).toLocaleString("nb-NO")} kr`
           coupleId,
           ...req.body
         }).returning();
+        res.json(timeline);
+      }
+    } catch (error) {
+      console.error("Error updating timeline:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere tidslinje" });
+    }
+  });
+  app2.get("/api/couple/photographer", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [sessions, shots, timelineRows] = await Promise.all([
+        db.select().from(couplePhotographerSessions).where(eq3(couplePhotographerSessions.coupleId, coupleId)).orderBy(couplePhotographerSessions.date),
+        db.select().from(couplePhotographerShots).where(eq3(couplePhotographerShots.coupleId, coupleId)),
+        db.select().from(couplePhotographerTimeline).where(eq3(couplePhotographerTimeline.coupleId, coupleId))
+      ]);
+      const timeline = timelineRows[0] || { photographerSelected: false, sessionBooked: false, contractSigned: false, depositPaid: false, budget: 0 };
+      res.json({ sessions, shots, timeline });
+    } catch (error) {
+      console.error("Error fetching photographer data:", error);
+      res.status(500).json({ error: "Kunne ikke hente fotograf data" });
+    }
+  });
+  app2.post("/api/couple/photographer/sessions", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [session] = await db.insert(couplePhotographerSessions).values({ coupleId, ...req.body }).returning();
+      res.json(session);
+    } catch (error) {
+      console.error("Error creating session:", error);
+      res.status(500).json({ error: "Kunne ikke opprette session" });
+    }
+  });
+  app2.patch("/api/couple/photographer/sessions/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      const [session] = await db.update(couplePhotographerSessions).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and3(eq3(couplePhotographerSessions.id, id), eq3(couplePhotographerSessions.coupleId, coupleId))).returning();
+      res.json(session);
+    } catch (error) {
+      console.error("Error updating session:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere session" });
+    }
+  });
+  app2.delete("/api/couple/photographer/sessions/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      await db.delete(couplePhotographerSessions).where(and3(eq3(couplePhotographerSessions.id, id), eq3(couplePhotographerSessions.coupleId, coupleId)));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting session:", error);
+      res.status(500).json({ error: "Kunne ikke slette session" });
+    }
+  });
+  app2.post("/api/couple/photographer/shots", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [shot] = await db.insert(couplePhotographerShots).values({ coupleId, ...req.body }).returning();
+      res.json(shot);
+    } catch (error) {
+      console.error("Error creating shot:", error);
+      res.status(500).json({ error: "Kunne ikke opprette bildeid\xE9" });
+    }
+  });
+  app2.patch("/api/couple/photographer/shots/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      const [shot] = await db.update(couplePhotographerShots).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and3(eq3(couplePhotographerShots.id, id), eq3(couplePhotographerShots.coupleId, coupleId))).returning();
+      res.json(shot);
+    } catch (error) {
+      console.error("Error updating shot:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere bildeid\xE9" });
+    }
+  });
+  app2.delete("/api/couple/photographer/shots/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      await db.delete(couplePhotographerShots).where(and3(eq3(couplePhotographerShots.id, id), eq3(couplePhotographerShots.coupleId, coupleId)));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting shot:", error);
+      res.status(500).json({ error: "Kunne ikke slette bildeid\xE9" });
+    }
+  });
+  app2.put("/api/couple/photographer/timeline", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const existing = await db.select().from(couplePhotographerTimeline).where(eq3(couplePhotographerTimeline.coupleId, coupleId));
+      if (existing.length > 0) {
+        const [timeline] = await db.update(couplePhotographerTimeline).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(eq3(couplePhotographerTimeline.coupleId, coupleId)).returning();
+        res.json(timeline);
+      } else {
+        const [timeline] = await db.insert(couplePhotographerTimeline).values({ coupleId, ...req.body }).returning();
+        res.json(timeline);
+      }
+    } catch (error) {
+      console.error("Error updating timeline:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere tidslinje" });
+    }
+  });
+  app2.get("/api/couple/videographer", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [sessions, deliverables, timelineRows] = await Promise.all([
+        db.select().from(coupleVideographerSessions).where(eq3(coupleVideographerSessions.coupleId, coupleId)).orderBy(coupleVideographerSessions.date),
+        db.select().from(coupleVideographerDeliverables).where(eq3(coupleVideographerDeliverables.coupleId, coupleId)),
+        db.select().from(coupleVideographerTimeline).where(eq3(coupleVideographerTimeline.coupleId, coupleId))
+      ]);
+      const timeline = timelineRows[0] || { videographerSelected: false, sessionBooked: false, contractSigned: false, depositPaid: false, budget: 0 };
+      res.json({ sessions, deliverables, timeline });
+    } catch (error) {
+      console.error("Error fetching videographer data:", error);
+      res.status(500).json({ error: "Kunne ikke hente videograf data" });
+    }
+  });
+  app2.post("/api/couple/videographer/sessions", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [session] = await db.insert(coupleVideographerSessions).values({ coupleId, ...req.body }).returning();
+      res.json(session);
+    } catch (error) {
+      console.error("Error creating session:", error);
+      res.status(500).json({ error: "Kunne ikke opprette session" });
+    }
+  });
+  app2.patch("/api/couple/videographer/sessions/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      const [session] = await db.update(coupleVideographerSessions).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and3(eq3(coupleVideographerSessions.id, id), eq3(coupleVideographerSessions.coupleId, coupleId))).returning();
+      res.json(session);
+    } catch (error) {
+      console.error("Error updating session:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere session" });
+    }
+  });
+  app2.delete("/api/couple/videographer/sessions/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      await db.delete(coupleVideographerSessions).where(and3(eq3(coupleVideographerSessions.id, id), eq3(coupleVideographerSessions.coupleId, coupleId)));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting session:", error);
+      res.status(500).json({ error: "Kunne ikke slette session" });
+    }
+  });
+  app2.post("/api/couple/videographer/deliverables", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [deliverable] = await db.insert(coupleVideographerDeliverables).values({ coupleId, ...req.body }).returning();
+      res.json(deliverable);
+    } catch (error) {
+      console.error("Error creating deliverable:", error);
+      res.status(500).json({ error: "Kunne ikke opprette leveranse" });
+    }
+  });
+  app2.patch("/api/couple/videographer/deliverables/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      const [deliverable] = await db.update(coupleVideographerDeliverables).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and3(eq3(coupleVideographerDeliverables.id, id), eq3(coupleVideographerDeliverables.coupleId, coupleId))).returning();
+      res.json(deliverable);
+    } catch (error) {
+      console.error("Error updating deliverable:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere leveranse" });
+    }
+  });
+  app2.delete("/api/couple/videographer/deliverables/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      await db.delete(coupleVideographerDeliverables).where(and3(eq3(coupleVideographerDeliverables.id, id), eq3(coupleVideographerDeliverables.coupleId, coupleId)));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting deliverable:", error);
+      res.status(500).json({ error: "Kunne ikke slette leveranse" });
+    }
+  });
+  app2.put("/api/couple/videographer/timeline", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const existing = await db.select().from(coupleVideographerTimeline).where(eq3(coupleVideographerTimeline.coupleId, coupleId));
+      if (existing.length > 0) {
+        const [timeline] = await db.update(coupleVideographerTimeline).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(eq3(coupleVideographerTimeline.coupleId, coupleId)).returning();
+        res.json(timeline);
+      } else {
+        const [timeline] = await db.insert(coupleVideographerTimeline).values({ coupleId, ...req.body }).returning();
+        res.json(timeline);
+      }
+    } catch (error) {
+      console.error("Error updating timeline:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere tidslinje" });
+    }
+  });
+  app2.get("/api/couple/music", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [performances, setlists, timelineRows] = await Promise.all([
+        db.select().from(coupleMusicPerformances).where(eq3(coupleMusicPerformances.coupleId, coupleId)).orderBy(coupleMusicPerformances.date),
+        db.select().from(coupleMusicSetlists).where(eq3(coupleMusicSetlists.coupleId, coupleId)),
+        db.select().from(coupleMusicTimeline).where(eq3(coupleMusicTimeline.coupleId, coupleId))
+      ]);
+      const timeline = timelineRows[0] || { musicianSelected: false, setlistDiscussed: false, contractSigned: false, depositPaid: false, budget: 0 };
+      res.json({ performances, setlists, timeline });
+    } catch (error) {
+      console.error("Error fetching music data:", error);
+      res.status(500).json({ error: "Kunne ikke hente musikk data" });
+    }
+  });
+  app2.post("/api/couple/music/performances", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [performance] = await db.insert(coupleMusicPerformances).values({ coupleId, ...req.body }).returning();
+      res.json(performance);
+    } catch (error) {
+      console.error("Error creating performance:", error);
+      res.status(500).json({ error: "Kunne ikke opprette opptreden" });
+    }
+  });
+  app2.patch("/api/couple/music/performances/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      const [performance] = await db.update(coupleMusicPerformances).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and3(eq3(coupleMusicPerformances.id, id), eq3(coupleMusicPerformances.coupleId, coupleId))).returning();
+      res.json(performance);
+    } catch (error) {
+      console.error("Error updating performance:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere opptreden" });
+    }
+  });
+  app2.delete("/api/couple/music/performances/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      await db.delete(coupleMusicPerformances).where(and3(eq3(coupleMusicPerformances.id, id), eq3(coupleMusicPerformances.coupleId, coupleId)));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting performance:", error);
+      res.status(500).json({ error: "Kunne ikke slette opptreden" });
+    }
+  });
+  app2.post("/api/couple/music/setlists", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const [setlist] = await db.insert(coupleMusicSetlists).values({ coupleId, ...req.body }).returning();
+      res.json(setlist);
+    } catch (error) {
+      console.error("Error creating setlist:", error);
+      res.status(500).json({ error: "Kunne ikke opprette spilleliste" });
+    }
+  });
+  app2.patch("/api/couple/music/setlists/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      const [setlist] = await db.update(coupleMusicSetlists).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(and3(eq3(coupleMusicSetlists.id, id), eq3(coupleMusicSetlists.coupleId, coupleId))).returning();
+      res.json(setlist);
+    } catch (error) {
+      console.error("Error updating setlist:", error);
+      res.status(500).json({ error: "Kunne ikke oppdatere spilleliste" });
+    }
+  });
+  app2.delete("/api/couple/music/setlists/:id", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const { id } = req.params;
+      await db.delete(coupleMusicSetlists).where(and3(eq3(coupleMusicSetlists.id, id), eq3(coupleMusicSetlists.coupleId, coupleId)));
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Error deleting setlist:", error);
+      res.status(500).json({ error: "Kunne ikke slette spilleliste" });
+    }
+  });
+  app2.put("/api/couple/music/timeline", async (req, res) => {
+    const coupleId = await checkCoupleAuth(req, res);
+    if (!coupleId) return;
+    try {
+      const existing = await db.select().from(coupleMusicTimeline).where(eq3(coupleMusicTimeline.coupleId, coupleId));
+      if (existing.length > 0) {
+        const [timeline] = await db.update(coupleMusicTimeline).set({ ...req.body, updatedAt: /* @__PURE__ */ new Date() }).where(eq3(coupleMusicTimeline.coupleId, coupleId)).returning();
+        res.json(timeline);
+      } else {
+        const [timeline] = await db.insert(coupleMusicTimeline).values({ coupleId, ...req.body }).returning();
         res.json(timeline);
       }
     } catch (error) {
