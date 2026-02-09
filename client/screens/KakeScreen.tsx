@@ -26,6 +26,10 @@ import { Button } from '../components/Button';
 import { SwipeableRow } from '../components/SwipeableRow';
 import { VendorSuggestions } from '@/components/VendorSuggestions';
 import { VendorActionBar } from '@/components/VendorActionBar';
+import { TraditionHintBanner } from '@/components/TraditionHintBanner';
+import { getCoupleProfile } from '@/lib/api-couples';
+import { getCakeSizingSuggestion } from '@/constants/tradition-data';
+import { getCoupleSession } from '@/lib/storage';
 import { useTheme } from '../hooks/useTheme';
 import { useVendorSearch } from '@/hooks/useVendorSearch';
 import { Colors } from '../constants/theme';
@@ -70,6 +74,21 @@ export function KakeScreen() {
   const navigation = useNavigation<NavigationProp>();
   const { theme } = useTheme();
   const queryClient = useQueryClient();
+
+  const [sessionToken, setSessionToken] = useState<string | null>(null);
+  React.useEffect(() => {
+    getCoupleSession().then(s => setSessionToken(s?.sessionToken || null));
+  }, []);
+
+  // Couple profile for traditions + guest count
+  const { data: coupleProfile } = useQuery({
+    queryKey: ['coupleProfile'],
+    queryFn: async () => {
+      if (!sessionToken) throw new Error('No session');
+      return getCoupleProfile(sessionToken);
+    },
+    enabled: !!sessionToken,
+  });
 
   const [activeTab, setActiveTab] = useState<TabType>('tastings');
   const [refreshing, setRefreshing] = useState(false);
@@ -813,6 +832,24 @@ export function KakeScreen() {
 
   const renderTimelineTab = () => (
     <View style={styles.tabContent}>
+      {/* Cake sizing suggestion based on guest count */}
+      {(coupleProfile?.expectedGuests ?? 0) > 0 && (
+        <View style={{ backgroundColor: theme.backgroundDefault, borderWidth: 1, borderColor: '#FFB300', borderRadius: 12, padding: 14, marginBottom: 16, flexDirection: 'row', alignItems: 'center' }}>
+          <Feather name="users" size={16} color="#FFB300" />
+          <ThemedText style={{ color: theme.text, marginLeft: 10, flex: 1, fontSize: 13 }}>
+            {getCakeSizingSuggestion(coupleProfile!.expectedGuests!)}
+          </ThemedText>
+        </View>
+      )}
+
+      {/* Tradition hints for cake */}
+      {(coupleProfile?.selectedTraditions?.length ?? 0) > 0 && (
+        <TraditionHintBanner
+          traditions={coupleProfile?.selectedTraditions || []}
+          category="cake"
+        />
+      )}
+
       {/* Summary Card with clickable budget */}
       <View style={[styles.summaryCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
         <View style={styles.summaryRow}>

@@ -4,6 +4,7 @@ export interface CoupleProfile {
   email: string;
   weddingDate?: string | null;
   selectedTraditions?: string[] | null;
+  expectedGuests?: number | null;
 }
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://localhost:5000";
@@ -29,6 +30,7 @@ export async function updateCoupleProfile(
     displayName?: string;
     weddingDate?: string;
     selectedTraditions?: string[];
+    expectedGuests?: number;
   }
 ): Promise<CoupleProfile> {
   const res = await fetch(`${API_URL}/api/couples/me`, {

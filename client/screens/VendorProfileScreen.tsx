@@ -33,6 +33,17 @@ const CULTURAL_TRADITIONS = [
   { key: "muslim", name: "Muslim", color: "#1B5E20" },
   { key: "jewish", name: "Jødisk", color: "#1565C0" },
   { key: "chinese", name: "Kinesisk", color: "#D32F2F" },
+  { key: "pakistansk", name: "Pakistansk", color: "#01411C" },
+  { key: "tyrkisk", name: "Tyrkisk", color: "#E30A17" },
+  { key: "arabisk", name: "Arabisk", color: "#006C35" },
+  { key: "somalisk", name: "Somalisk", color: "#4189DD" },
+  { key: "etiopisk", name: "Etiopisk", color: "#009B3A" },
+  { key: "nigeriansk", name: "Nigeriansk", color: "#008751" },
+  { key: "libanesisk", name: "Libanesisk", color: "#EE161F" },
+  { key: "filipino", name: "Filippinsk", color: "#0038A8" },
+  { key: "koreansk", name: "Koreansk", color: "#003478" },
+  { key: "thai", name: "Thai", color: "#A51931" },
+  { key: "iransk", name: "Iransk / Persisk", color: "#239F40" },
 ];
 
 interface VendorProfile {

@@ -21,6 +21,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { getCoupleProfile } from '@/lib/api-couples';
+import { TraditionHintBanner } from '@/components/TraditionHintBanner';
 import { ThemedText } from '../components/ThemedText';
 import { Button } from '../components/Button';
 import { SwipeableRow } from '../components/SwipeableRow';
@@ -452,8 +453,35 @@ export function VenueScreen() {
     });
   };
 
-  const renderBookingsTab = () => (
+  const renderBookingsTab = () => {
+    const guestCount = coupleProfile?.expectedGuests || 0;
+    // Find the primary booking's capacity
+    const primaryBooking = bookings.find(b => b.isPrimary);
+    const venueCapacity = primaryBooking?.capacity ? parseInt(String(primaryBooking.capacity)) : 0;
+    const capacityWarning = guestCount > 0 && venueCapacity > 0 && guestCount > venueCapacity;
+
+    return (
     <View style={styles.tabContent}>
+      {/* Tradition hints for venue */}
+      {(coupleProfile?.selectedTraditions?.length ?? 0) > 0 && (
+        <TraditionHintBanner
+          traditions={coupleProfile?.selectedTraditions || []}
+          category="venue"
+        />
+      )}
+
+      {/* Capacity warning */}
+      {capacityWarning && (
+        <View style={[styles.emptyState, { backgroundColor: '#DC354520', borderWidth: 1, borderColor: '#DC3545', marginBottom: Spacing.md, padding: Spacing.md }]}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Feather name="alert-triangle" size={18} color="#DC3545" />
+            <ThemedText style={{ color: '#DC3545', fontWeight: '600', marginLeft: Spacing.sm, flex: 1, fontSize: 14 }}>
+              Kapasitetsadvarsel: {guestCount} gjester, men lokalet har plass til {venueCapacity}
+            </ThemedText>
+          </View>
+        </View>
+      )}
+
       <View style={styles.sectionHeader}>
         <ThemedText style={styles.sectionTitle}>Lokalereservasjoner</ThemedText>
         <Pressable onPress={() => openBookingModal()} style={[styles.addButton, { backgroundColor: theme.primary }]}>
@@ -623,6 +651,7 @@ export function VenueScreen() {
       )}
     </View>
   );
+  };
 
   const renderSeatingTab = () => (
     <View style={{ flex: 1 }}>

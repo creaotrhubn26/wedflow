@@ -20,6 +20,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { getCoupleProfile } from '@/lib/api-couples';
+import { TraditionHintBanner } from '@/components/TraditionHintBanner';
 import { getGuests } from "@/lib/api-guests";
 import { getCoupleSession } from "@/lib/storage";
 import type { WeddingGuest } from "@shared/schema";
@@ -1188,6 +1189,13 @@ export default function CateringScreen() {
         contentContainerStyle={[styles.scrollContent, { paddingBottom: tabBarHeight + Spacing.xl }]}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.primary} />}
       >
+        {/* Tradition hints for catering */}
+        {(coupleProfile?.selectedTraditions?.length ?? 0) > 0 && activeTab === "tastings" && (
+          <TraditionHintBanner
+            traditions={coupleProfile?.selectedTraditions || []}
+            category="catering"
+          />
+        )}
         {activeTab === "tastings" && renderTastingsTab()}
         {activeTab === "menu" && renderMenuTab()}
         {activeTab === "dietary" && renderDietaryTab()}

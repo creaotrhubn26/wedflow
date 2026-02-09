@@ -14,6 +14,8 @@ import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius, Colors } from "@/constants/theme";
 import { getWeddingDetails, getCoupleSession } from "@/lib/storage";
 import { getChecklistTasks, updateChecklistTask, createChecklistTask, deleteChecklistTask, seedDefaultChecklist } from "@/lib/api-checklist";
+import { getCoupleProfile } from "@/lib/api-couples";
+import { TRADITION_CHECKLIST_ITEMS, CULTURAL_LABELS } from "@/constants/tradition-data";
 import { migrateChecklistFromAsyncStorage, needsMigration } from "@/lib/checklist-migration";
 import type { ChecklistTask } from "@shared/schema";
 
@@ -124,6 +126,55 @@ export default function ChecklistScreen() {
       queryClient.invalidateQueries({ queryKey: ["checklist"] });
     },
   });
+
+  // Couple profile for traditions
+  const { data: coupleProfile } = useQuery({
+    queryKey: ['coupleProfile'],
+    queryFn: async () => {
+      if (!sessionToken) throw new Error('No session');
+      return getCoupleProfile(sessionToken);
+    },
+    enabled: !!sessionToken,
+  });
+
+  // Seed tradition-specific checklist tasks
+  const handleSeedTraditions = async () => {
+    const traditions = coupleProfile?.selectedTraditions || [];
+    if (traditions.length === 0) {
+      Alert.alert("Ingen tradisjoner", "Velg tradisjoner i profilen din først.");
+      return;
+    }
+    Alert.alert(
+      "Legg til tradisjonsoppgaver",
+      `Legger til oppgaver for: ${traditions.map(t => CULTURAL_LABELS[t] || t).join(', ')}`,
+      [
+        { text: "Avbryt", style: "cancel" },
+        {
+          text: "Legg til",
+          onPress: async () => {
+            try {
+              for (const t of traditions) {
+                const tItems = TRADITION_CHECKLIST_ITEMS[t.toLowerCase()] || [];
+                for (const item of tItems) {
+                  // Skip duplicates
+                  if (tasks.some(existing => existing.title === item.title)) continue;
+                  await createChecklistTask(sessionToken!, {
+                    title: item.title,
+                    monthsBefore: item.monthsBefore,
+                    category: item.category as any,
+                  });
+                }
+              }
+              queryClient.invalidateQueries({ queryKey: ["checklist"] });
+              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            } catch (e) {
+              Alert.alert("Feil", "Kunne ikke legge til tradisjonsoppgaver");
+            }
+          },
+        },
+      ]
+    );
+  };
 
   const createMutation = useMutation({
     mutationFn: (title: string) =>
@@ -331,6 +382,27 @@ export default function ChecklistScreen() {
           </ThemedText>
         </View>
       </Animated.View>
+
+      {/* Tradition checklist import */}
+      {(coupleProfile?.selectedTraditions?.length ?? 0) > 0 && (
+        <Animated.View entering={FadeInDown.delay(180).duration(300)}>
+          <Pressable
+            onPress={handleSeedTraditions}
+            style={[styles.urgentCard, { backgroundColor: '#FFB30020', borderColor: '#FFB300', flexDirection: 'row', alignItems: 'center' }]}
+          >
+            <Feather name="globe" size={18} color="#FFB300" />
+            <View style={{ marginLeft: Spacing.sm, flex: 1 }}>
+              <ThemedText style={{ color: '#FFB300', fontWeight: '600', fontSize: 14 }}>
+                Legg til tradisjonsoppgaver
+              </ThemedText>
+              <ThemedText style={{ color: theme.textSecondary, fontSize: 12, marginTop: 2 }}>
+                {coupleProfile?.selectedTraditions?.map(t => CULTURAL_LABELS[t] || t).join(', ')}
+              </ThemedText>
+            </View>
+            <Feather name="plus-circle" size={18} color="#FFB300" />
+          </Pressable>
+        </Animated.View>
+      )}
 
       {urgentItems.length > 0 ? (
         <Animated.View entering={FadeInDown.delay(200).duration(400)}>

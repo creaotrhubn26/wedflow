@@ -10,6 +10,7 @@ import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { getCoupleProfile } from '@/lib/api-couples';
+import { TraditionHintBanner } from '@/components/TraditionHintBanner';
 import {
   getMusicData,
   createMusicPerformance,
@@ -224,6 +225,13 @@ export function MusikkScreen() {
         contentContainerStyle={styles.scrollContent}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       >
+        {/* Tradition hints for music */}
+        {(coupleProfile?.selectedTraditions?.length ?? 0) > 0 && (
+          <TraditionHintBanner
+            traditions={coupleProfile?.selectedTraditions || []}
+            category="music"
+          />
+        )}
         {activeTab === 'bookings' ? (
           <Animated.View entering={FadeInDown.duration(300)} style={styles.emptyState}>
             <Feather name="heart" size={48} color={theme.primary} style={{ opacity: 0.6 }} />

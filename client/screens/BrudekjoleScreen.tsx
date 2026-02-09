@@ -26,6 +26,9 @@ import { Button } from "@/components/Button";
 import { SwipeableRow } from "@/components/SwipeableRow";
 import { VendorSuggestions } from "@/components/VendorSuggestions";
 import { VendorActionBar } from "@/components/VendorActionBar";
+import { TraditionHintBanner } from "@/components/TraditionHintBanner";
+import { getCoupleProfile } from "@/lib/api-couples";
+import { getCoupleSession } from "@/lib/storage";
 import { useTheme } from "@/hooks/useTheme";
 import { useVendorSearch } from "@/hooks/useVendorSearch";
 import { Spacing, BorderRadius, Colors } from "@/constants/theme";
@@ -61,6 +64,21 @@ export default function BrudekjoleScreen() {
   const { theme } = useTheme();
   const navigation = useNavigation<NavigationProp>();
   const queryClient = useQueryClient();
+
+  const [sessionToken, setSessionToken] = useState<string | null>(null);
+  useEffect(() => {
+    getCoupleSession().then(s => setSessionToken(s?.sessionToken || null));
+  }, []);
+
+  // Couple profile for tradition hints
+  const { data: coupleProfile } = useQuery({
+    queryKey: ['coupleProfile'],
+    queryFn: async () => {
+      if (!sessionToken) throw new Error('No session');
+      return getCoupleProfile(sessionToken);
+    },
+    enabled: !!sessionToken,
+  });
 
   const [activeTab, setActiveTab] = useState<"appointments" | "favorites" | "timeline">("appointments");
   const [refreshing, setRefreshing] = useState(false);
@@ -377,6 +395,13 @@ export default function BrudekjoleScreen() {
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={Colors.dark.accent} />}
       >
         {/* Budget Overview */}
+        {/* Tradition hints for dress */}
+        {(coupleProfile?.selectedTraditions?.length ?? 0) > 0 && (
+          <TraditionHintBanner
+            traditions={coupleProfile?.selectedTraditions || []}
+            category="dress"
+          />
+        )}
         <Animated.View entering={FadeInDown.delay(50).duration(400)}>
           <Pressable onPress={() => {
             setBudgetInput(dressBudget.toString());

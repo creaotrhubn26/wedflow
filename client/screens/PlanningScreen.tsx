@@ -257,8 +257,12 @@ export default function PlanningScreen() {
     if (schedule.length > 0) completed++;
     if (budgetUsed > 0) completed++;
     if (budgetPercent <= 100) completed++; // Budget under control
-    // Add more checks as needed (checklist items, vendors, etc.)
-    completed += 5; // Placeholder for other sections
+    // Remaining 5 items tracked by actual data
+    if (schedule.length >= 5) completed++; // Good amount of timeline events
+    if (schedule.length >= 10) completed++; // Well-planned timeline
+    if (budgetUsed >= 3) completed++; // At least 3 budget items
+    if (wedding && wedding.weddingDate) completed++; // Wedding date set
+    if (budgetPercent > 0 && budgetPercent <= 80) completed++; // Budget well managed
     return { completed, total, percentage: Math.round((completed / total) * 100) };
   }, [wedding, schedule.length, budgetUsed, budgetPercent]);
 

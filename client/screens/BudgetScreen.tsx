@@ -32,7 +32,10 @@ import {
   deleteBudgetItem,
   BudgetItem,
 } from "@/lib/api-couple-data";
-import { generateId } from "@/lib/storage";
+import { generateId, getCoupleSession } from "@/lib/storage";
+import { getCoupleProfile } from "@/lib/api-couples";
+import { TRADITION_BUDGET_ITEMS, getPerPersonBudget, CULTURAL_LABELS } from "@/constants/tradition-data";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const useFieldValidation = () => {
   const [touched, setTouched] = useState<Record<string, boolean>>({});
@@ -106,6 +109,21 @@ export default function BudgetScreen() {
   const { theme } = useTheme();
   const { touched, errors, handleBlur, getFieldStyle, resetValidation } = useFieldValidation();
   const queryClient = useQueryClient();
+
+  const [sessionToken, setSessionToken] = useState<string | null>(null);
+  useEffect(() => {
+    getCoupleSession().then(s => setSessionToken(s?.sessionToken || null));
+  }, []);
+
+  // Fetch couple profile for traditions + guest count
+  const { data: coupleProfile } = useQuery({
+    queryKey: ['coupleProfile'],
+    queryFn: async () => {
+      if (!sessionToken) throw new Error('No session');
+      return getCoupleProfile(sessionToken);
+    },
+    enabled: !!sessionToken,
+  });
 
   // Query for budget settings
   const { data: budgetSettings, isLoading: loadingSettings, isError: isSettingsError, error: settingsError, refetch: refetchSettings } = useQuery({
@@ -312,6 +330,40 @@ export default function BudgetScreen() {
     }
   };
 
+  // Import tradition-specific budget items
+  const handleImportTraditionBudget = async () => {
+    const traditions = coupleProfile?.selectedTraditions || [];
+    if (traditions.length === 0) {
+      Alert.alert("Ingen tradisjoner", "Velg tradisjoner i profilen din først.");
+      return;
+    }
+    try {
+      setIsSaving(true);
+      for (const t of traditions) {
+        const tItems = TRADITION_BUDGET_ITEMS[t.toLowerCase()] || [];
+        for (const item of tItems) {
+          // Skip if already exists
+          if (items.some(existing => existing.label === item.label)) continue;
+          await createItemMutation.mutateAsync({
+            category: item.category,
+            label: item.label,
+            estimatedCost: item.estimatedCost,
+            actualCost: 0,
+            isPaid: false,
+          });
+        }
+      }
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } catch (e) {
+      Alert.alert("Feil", "Kunne ikke importere tradisjonsbudsjett");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const guestCount = coupleProfile?.expectedGuests || 0;
+  const perPerson = guestCount > 0 ? getPerPersonBudget(totalBudget, guestCount) : 0;
+
   if (loading) {
     return (
       <View
@@ -435,6 +487,42 @@ export default function BudgetScreen() {
           </View>
         </View>
       </Animated.View>
+
+      {/* Per-person budget & guest count badge */}
+      {guestCount > 0 && (
+        <Animated.View entering={FadeInDown.delay(150).duration(300)}>
+          <View style={[styles.summaryCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border, marginTop: Spacing.sm }]}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+              <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <Feather name="users" size={16} color={Colors.dark.accent} />
+                <ThemedText style={{ color: theme.text, marginLeft: Spacing.xs, fontWeight: '600' }}>
+                  {guestCount} gjester
+                </ThemedText>
+              </View>
+              <ThemedText style={{ color: theme.textSecondary, fontSize: 13 }}>
+                ca. {perPerson.toLocaleString('nb-NO')} kr per person
+              </ThemedText>
+            </View>
+          </View>
+        </Animated.View>
+      )}
+
+      {/* Tradition budget import button */}
+      {(coupleProfile?.selectedTraditions?.length ?? 0) > 0 && items.length > 0 && (
+        <Animated.View entering={FadeInDown.delay(180).duration(300)}>
+          <Pressable
+            onPress={handleImportTraditionBudget}
+            disabled={isSaving}
+            style={[styles.summaryCard, { backgroundColor: theme.backgroundDefault, borderColor: '#FFB300', borderWidth: 1, marginTop: Spacing.sm, flexDirection: 'row', alignItems: 'center' }]}
+          >
+            <Feather name="globe" size={16} color="#FFB300" />
+            <ThemedText style={{ color: theme.text, marginLeft: Spacing.sm, flex: 1, fontSize: 14 }}>
+              Importer tradisjonsbudsjett ({coupleProfile?.selectedTraditions?.map(t => CULTURAL_LABELS[t] || t).join(', ')})
+            </ThemedText>
+            <Feather name="plus-circle" size={18} color="#FFB300" />
+          </Pressable>
+        </Animated.View>
+      )}
 
       {items.length > 0 && (
         <ThemedText style={[styles.swipeHint, { color: theme.textMuted }]}>

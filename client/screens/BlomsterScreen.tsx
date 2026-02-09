@@ -22,6 +22,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { getCoupleProfile } from '@/lib/api-couples';
+import { TraditionHintBanner } from '@/components/TraditionHintBanner';
 import { ThemedText } from "@/components/ThemedText";
 import { Button } from "@/components/Button";
 import { SwipeableRow } from "@/components/SwipeableRow";
@@ -829,6 +830,13 @@ export default function BlomsterScreen() {
         ]}
         refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.primary} />}
       >
+        {/* Tradition hints for flowers */}
+        {(coupleProfile?.selectedTraditions?.length ?? 0) > 0 && activeTab === "appointments" && (
+          <TraditionHintBanner
+            traditions={coupleProfile?.selectedTraditions || []}
+            category="flowers"
+          />
+        )}
         {activeTab === "appointments" && renderAppointmentsTab()}
         {activeTab === "selections" && renderSelectionsTab()}
         {activeTab === "timeline" && renderTimelineTab()}

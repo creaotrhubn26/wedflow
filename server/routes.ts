@@ -2393,12 +2393,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (!coupleId) return;
 
     try {
-      const { displayName, weddingDate, selectedTraditions } = req.body;
+      const { displayName, weddingDate, selectedTraditions, expectedGuests } = req.body;
       
       const updateData: any = { updatedAt: new Date() };
       if (displayName !== undefined) updateData.displayName = displayName;
       if (weddingDate !== undefined) updateData.weddingDate = weddingDate;
       if (selectedTraditions !== undefined) updateData.selectedTraditions = selectedTraditions;
+      if (expectedGuests !== undefined) updateData.expectedGuests = expectedGuests;
 
       const [updated] = await db.update(coupleProfiles)
         .set(updateData)

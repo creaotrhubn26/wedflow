@@ -241,10 +241,13 @@ export default function TimelineScreen() {
       hindu: {
         "Saptapadi": "De syv skritt er hellige. Planlegg 15-20 min for denne sentrale seremonien.",
         "Sindoor": "Sindoor-seremonien er kort men betydningsfull. 5 min er nok.",
+        "Sangeet": "Sangeet-festen med dans og musikk. Gi 60-90 min.",
+        "Mehndi": "Mehndi-kveld for bruden. Planlegg 2-3 timer.",
       },
       sikh: {
         "Laavan": "De fire runder er kjernen. Planlegg 20-30 min med hymner og ritualer.",
         "Milni": "Familiene møtes formelt. 10-15 min for presentasjoner og girlander.",
+        "Anand Karaj": "Vigselen i gurdwaraen. Planlegg 45-60 min.",
       },
       jewish: {
         "Chuppah": "Vielsen under baldakinen er sentral. Gi 15-20 min.",
@@ -253,6 +256,59 @@ export default function TimelineScreen() {
       muslim: {
         "Nikah": "Nikah-seremonien med imam. Planlegg 15-25 min.",
         "Walima": "Bryllupsmiddagen markerer ekteskapet. Gi tilstrekkelig tid.",
+      },
+      pakistansk: {
+        "Mehndi": "Mehndi-kvelden med henna og dans. Planlegg 2-3 timer.",
+        "Baraat": "Brudgommens prosesjon. Gi 30-45 min for ankomst.",
+        "Nikah": "Nikah-seremonien. Planlegg 20-30 min.",
+        "Walima": "Walima-middagen. Planlegg full kveld.",
+      },
+      tyrkisk: {
+        "Kına": "Kına gecesi er følelsesladet. Planlegg 2-3 timer kvelden før.",
+        "Gelin Alma": "Å hente bruden. Gi 30-45 min med dans og musikk.",
+        "Takı": "Takı-seremonien med gullgaver. Planlegg 30-45 min.",
+      },
+      arabisk: {
+        "Zaffa": "Zaffa-prosesjonen med trommer og dans. Gi 15-20 min.",
+        "Kosha": "Brudeparet sitter på kosha. Planlegg 30 min for bilder og mottakelse.",
+      },
+      somalisk: {
+        "Nikah": "Nikah med imam og familier. Planlegg 20-30 min.",
+        "Aroos": "Bryllupsfesten. Planlegg full kveld med mat og dans.",
+      },
+      etiopisk: {
+        "Telosh": "Telosh-seremoni med eldste. Planlegg 30-45 min.",
+        "Kaffe": "Kaffeseremonien er hellig. Gi 20-30 min.",
+        "Melse": "Melse-festen etter bryllupet. Planlegg en hel ettermiddag.",
+      },
+      nigeriansk: {
+        "Tradisjonell vigsel": "Tradisjonell vigsel med stammeeldste. Planlegg 60-90 min.",
+        "Jollof": "Jollof rice-servering er sentral. Planlegg catering-tid.",
+      },
+      libanesisk: {
+        "Dabke": "Dabke-dansen samler alle. Planlegg 20-30 min.",
+        "Zaffe": "Zaffe-inngang med trommer. Gi 15-20 min.",
+      },
+      filipino: {
+        "Unity Candle": "Unity Candle og Arras-seremoni. Planlegg 15-20 min.",
+        "Snoroppheng": "Snor- og slørseremonien. Gi 10-15 min.",
+      },
+      kinesisk: {
+        "Teseremoni": "Teseremonien for begge familier. Planlegg 30-45 min totalt.",
+        "Door Games": "Door Games for brudgommen. Gi 20-30 min.",
+        "Bankett": "Kinesisk bryllupsbankett med mange retter. Planlegg 2-3 timer.",
+      },
+      koreansk: {
+        "Pyebaek": "Pyebaek-seremonien med bukk og kastanjer. Planlegg 20-30 min.",
+        "Hanbok": "Skifte til hanbok. Gi 15-20 min.",
+      },
+      thai: {
+        "Khan Maak": "Khan Maak-prosesjonen. Gi 20-30 min.",
+        "Munkevelsignelse": "Munkene velsigner paret. Planlegg 30-45 min tidlig morgen.",
+      },
+      iransk: {
+        "Sofreh Aghd": "Sofreh Aghd-oppsettet er detaljert. Planlegg 45-60 min for seremoni.",
+        "Aghd": "Aghd-seremonien med sukkerknusing. Gi 30-40 min.",
       },
     };
 
