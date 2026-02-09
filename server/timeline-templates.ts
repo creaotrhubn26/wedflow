@@ -36,6 +36,7 @@ export const TIMELINE_TEMPLATES: Record<string, TimelineTemplate[]> = {
     { time: "14:00", title: "Fotosession", icon: "camera", description: "Familie- og brudepar-bilder" },
     { time: "16:00", title: "Reception", icon: "users", description: "Reception for gjester" },
     { time: "18:00", title: "Middag", icon: "coffee", description: "Festmiddag" },
+  ],
   // === INDISK (was: hindu) ===
   indisk: [
     { time: "06:00", title: "Ganesh Puja", icon: "star", description: "Bønn for å fjerne hindringer" },
