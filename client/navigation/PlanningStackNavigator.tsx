@@ -67,7 +67,7 @@ export type PlanningStackParamList = {
   Reminders: undefined;
   VendorRegistration: undefined;
   AdminVendors: undefined;
-  DeliveryAccess: undefined;
+  DeliveryAccess: { prefillCode?: string; deliveryId?: string; fromShowcase?: boolean } | undefined;
   Messages: undefined;
   CoupleLogin: undefined;
   Chat: { conversationId: string; vendorName: string };

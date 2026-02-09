@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -17,12 +17,21 @@ import { Feather } from "@expo/vector-icons";
 import { useMutation } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import * as WebBrowser from "expo-web-browser";
+import { useRoute, RouteProp } from "@react-navigation/native";
 
 import { ThemedText } from "@/components/ThemedText";
 import { KeyboardAwareScrollViewCompat } from "@/components/KeyboardAwareScrollViewCompat";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius, Colors } from "@/constants/theme";
 import { getApiUrl } from "@/lib/query-client";
+
+type DeliveryAccessParams = {
+  DeliveryAccess: {
+    prefillCode?: string;
+    deliveryId?: string;
+    fromShowcase?: boolean;
+  } | undefined;
+};
 
 interface DeliveryItem {
   id: string;
@@ -51,8 +60,12 @@ export default function DeliveryAccessScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const { theme } = useTheme();
+  const route = useRoute<RouteProp<DeliveryAccessParams, 'DeliveryAccess'>>();
+  const prefillCode = route.params?.prefillCode;
+  const deliveryId = route.params?.deliveryId;
+  const fromShowcase = route.params?.fromShowcase;
 
-  const [accessCode, setAccessCode] = useState("");
+  const [accessCode, setAccessCode] = useState(prefillCode || "");
   const [deliveryData, setDeliveryData] = useState<DeliveryData | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -127,6 +140,17 @@ export default function DeliveryAccessScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     fetchMutation.mutate();
   }, [accessCode, fetchMutation]);
+
+  // Auto-fetch when prefillCode is provided from showcase bridge
+  useEffect(() => {
+    if (prefillCode && prefillCode.length > 0) {
+      setAccessCode(prefillCode);
+      const timer = setTimeout(() => {
+        fetchMutation.mutate();
+      }, 300);
+      return () => clearTimeout(timer);
+    }
+  }, [prefillCode]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const openLink = useCallback(async (url: string) => {
     if (!isValidUrlScheme(url)) {
