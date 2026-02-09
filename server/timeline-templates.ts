@@ -23,20 +23,6 @@ export const TIMELINE_TEMPLATES: Record<string, TimelineTemplate[]> = {
     { time: "20:30", title: "Brudevalsen", icon: "music", description: "Første dans" },
     { time: "21:00", title: "Dans og fest", icon: "music", description: "Feiring til sent på kvelden" },
   ],
-  // === SIKH (stays same) ===
-  sikh: [
-    { time: "06:00", title: "Ganesh Puja", icon: "star", description: "Bønn for å fjerne hindringer" },
-    { time: "07:00", title: "Madhuparka", icon: "coffee", description: "Brudgommens velkomst" },
-    { time: "08:00", title: "Kanyadaan", icon: "users", description: "Farens gave av bruden" },
-    { time: "09:00", title: "Agni Poojan", icon: "sun", description: "Hellig ildseremoni" },
-    { time: "10:00", title: "Saptapadi", icon: "heart", description: "De syv skritt rundt ilden" },
-    { time: "11:00", title: "Mangalsutra", icon: "heart", description: "Hellig halskjede" },
-    { time: "12:00", title: "Sindoor", icon: "star", description: "Rød farge i hårskillen" },
-    { time: "13:00", title: "Lunch & Velsignelser", icon: "coffee", description: "Måltid og velsignelser fra eldre" },
-    { time: "14:00", title: "Fotosession", icon: "camera", description: "Familie- og brudepar-bilder" },
-    { time: "16:00", title: "Reception", icon: "users", description: "Reception for gjester" },
-    { time: "18:00", title: "Middag", icon: "coffee", description: "Festmiddag" },
-  ],
   // === INDISK (was: hindu) ===
   indisk: [
     { time: "06:00", title: "Ganesh Puja", icon: "star", description: "Bønn for å fjerne hindringer" },

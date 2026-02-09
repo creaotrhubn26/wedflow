@@ -1182,7 +1182,7 @@ export function registerCreatorhubRoutes(app: Express) {
         categoryId: vendors.categoryId,
         description: vendors.description,
         status: vendors.status,
-        city: vendors.city,
+        location: vendors.location,
         phone: vendors.phone,
         website: vendors.website,
         createdAt: vendors.createdAt,
@@ -1324,18 +1324,17 @@ export function registerCreatorhubRoutes(app: Express) {
 
       const [message] = await db.insert(messages).values({
         conversationId,
-        content,
+        body: content,
         senderType, // "couple" or "vendor"
         senderId,
         attachmentUrl: attachmentUrl || null,
         attachmentType: attachmentType || null,
       }).returning();
 
-      // Update conversation last message
+      // Update conversation last message timestamp
       await db.update(conversations)
         .set({
           lastMessageAt: new Date(),
-          lastMessage: content.substring(0, 200),
         })
         .where(eq(conversations.id, conversationId));
 
