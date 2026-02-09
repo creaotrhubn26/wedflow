@@ -1476,6 +1476,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { items, ...deliveryData } = validation.data;
       const accessCode = generateAccessCode();
 
+      // Auto-link to project/timeline if coupleId provided but projectId missing
+      let projectId = deliveryData.projectId || null;
+      let timelineId = deliveryData.timelineId || null;
+      if (deliveryData.coupleId && !projectId) {
+        try {
+          const coupleRes = await db.execute(sql`SELECT email FROM couple_profiles WHERE id = ${deliveryData.coupleId}`);
+          const coupleEmail = (coupleRes.rows[0] as any)?.email;
+          if (coupleEmail) {
+            const projRes = await db.execute(sql`
+              SELECT p.id as project_id, wt.id as timeline_id
+              FROM creatorhub_projects p
+              LEFT JOIN wedding_timelines wt ON wt.project_id = p.id
+              WHERE LOWER(p.owner_id) IN (
+                SELECT id FROM users WHERE LOWER(email) = LOWER(${coupleEmail})
+              )
+              ORDER BY p.created_at DESC LIMIT 1
+            `);
+            const link = projRes.rows[0] as any;
+            if (link) {
+              projectId = link.project_id || projectId;
+              timelineId = link.timeline_id || timelineId;
+            }
+          }
+        } catch (e) { /* non-critical */ }
+      }
+
       const [newDelivery] = await db.insert(deliveries).values({
         vendorId,
         coupleName: deliveryData.coupleName,
@@ -1483,6 +1509,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         title: deliveryData.title,
         description: deliveryData.description || null,
         weddingDate: deliveryData.weddingDate || null,
+        projectId,
+        timelineId,
+        coupleId: deliveryData.coupleId || null,
         accessCode,
       }).returning();
 

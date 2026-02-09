@@ -147,6 +147,9 @@ export const deliveries = pgTable("deliveries", {
   description: text("description"),
   weddingDate: text("wedding_date"),
   status: text("status").notNull().default("active"),
+  projectId: varchar("project_id"),
+  timelineId: varchar("timeline_id"),
+  coupleId: varchar("couple_id"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -183,6 +186,9 @@ export const createDeliverySchema = z.object({
   title: z.string().min(2, "Tittel må være minst 2 tegn"),
   description: z.string().optional(),
   weddingDate: z.string().optional(),
+  projectId: z.string().optional(),
+  timelineId: z.string().optional(),
+  coupleId: z.string().optional(),
   items: z.array(z.object({
     type: z.enum(["gallery", "video", "website", "download", "other"]),
     label: z.string().min(1, "Etikett er påkrevd"),

@@ -90,7 +90,7 @@ export type RootStackParamList = {
   BeautyDetails: undefined;
   TransportDetails: undefined;
   PlannerDetails: undefined;
-  DeliveryCreate: { delivery?: any };
+  DeliveryCreate: { delivery?: any; coupleId?: string; coupleName?: string; coupleEmail?: string; weddingDate?: string; projectId?: string; timelineId?: string };
   InspirationCreate: undefined;
   ProductCreate: { product?: any };
   OfferCreate: undefined;

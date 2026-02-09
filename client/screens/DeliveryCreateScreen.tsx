@@ -65,12 +65,20 @@ export default function DeliveryCreateScreen({ navigation, route }: Props) {
   const editingDelivery = route.params?.delivery;
   const isEditMode = !!editingDelivery;
 
+  // Bridge params — auto-fill from couple/project data
+  const bridgeCoupleId = route.params?.coupleId;
+  const bridgeProjectId = route.params?.projectId;
+  const bridgeTimelineId = route.params?.timelineId;
+
   const [sessionToken, setSessionToken] = useState<string | null>(null);
-  const [coupleName, setCoupleName] = useState("");
-  const [coupleEmail, setCoupleEmail] = useState("");
+  const [coupleName, setCoupleName] = useState(route.params?.coupleName || "");
+  const [coupleEmail, setCoupleEmail] = useState(route.params?.coupleEmail || "");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [weddingDate, setWeddingDate] = useState("");
+  const [weddingDate, setWeddingDate] = useState(route.params?.weddingDate || "");
+  const [linkedProject, setLinkedProject] = useState<string | null>(bridgeProjectId || null);
+  const [linkedTimeline, setLinkedTimeline] = useState<string | null>(bridgeTimelineId || null);
+  const [linkedCouple, setLinkedCouple] = useState<string | null>(bridgeCoupleId || null);
   const [items, setItems] = useState<DeliveryItemInput[]>([
     { id: `item-${Date.now()}`, type: "gallery", label: "", url: "", description: "" },
   ]);
@@ -214,6 +222,9 @@ export default function DeliveryCreateScreen({ navigation, route }: Props) {
           title,
           description: description || undefined,
           weddingDate: weddingDate || undefined,
+          projectId: linkedProject || undefined,
+          timelineId: linkedTimeline || undefined,
+          coupleId: linkedCouple || undefined,
           items: items.filter((i) => i.label && i.url).map(({ id, ...rest }) => rest),
         }),
       });
@@ -515,6 +526,38 @@ export default function DeliveryCreateScreen({ navigation, route }: Props) {
           </View>
           </View>
         </View>
+
+        {/* Bridge indicator — shows when delivery is linked to a project/timeline */}
+        {(linkedProject || linkedTimeline || linkedCouple) && (
+          <View style={[styles.sectionCard, { backgroundColor: theme.accent + "08", borderColor: theme.accent + "30" }]}>
+            <View style={styles.sectionHeader}>
+              <View style={[styles.sectionIconCircle, { backgroundColor: theme.accent + "20" }]}>
+                <Feather name="link" size={16} color={theme.accent} />
+              </View>
+              <ThemedText style={[styles.sectionTitle, { color: theme.accent }]}>Koblet til prosjekt</ThemedText>
+            </View>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, paddingHorizontal: 16, paddingBottom: 12 }}>
+              {linkedProject && (
+                <View style={{ flexDirection: "row", alignItems: "center", backgroundColor: theme.accent + "15", borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4 }}>
+                  <Feather name="briefcase" size={12} color={theme.accent} />
+                  <ThemedText style={{ fontSize: 12, color: theme.accent, marginLeft: 4 }}>Prosjekt</ThemedText>
+                </View>
+              )}
+              {linkedTimeline && (
+                <View style={{ flexDirection: "row", alignItems: "center", backgroundColor: "#7C3AED20", borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4 }}>
+                  <Feather name="clock" size={12} color="#7C3AED" />
+                  <ThemedText style={{ fontSize: 12, color: "#7C3AED", marginLeft: 4 }}>Tidslinje</ThemedText>
+                </View>
+              )}
+              {linkedCouple && (
+                <View style={{ flexDirection: "row", alignItems: "center", backgroundColor: "#EC489920", borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4 }}>
+                  <Feather name="heart" size={12} color="#EC4899" />
+                  <ThemedText style={{ fontSize: 12, color: "#EC4899", marginLeft: 4 }}>Brudepar</ThemedText>
+                </View>
+              )}
+            </View>
+          </View>
+        )}
 
         <View style={[styles.sectionCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
           <View style={styles.sectionHeader}>

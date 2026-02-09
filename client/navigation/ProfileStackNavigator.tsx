@@ -29,7 +29,7 @@ export type ProfileStackParamList = {
   Settings: undefined;
   VendorLogin: undefined;
   VendorDashboard: undefined;
-  DeliveryCreate: { delivery?: any } | undefined;
+  DeliveryCreate: { delivery?: any; coupleId?: string; coupleName?: string; coupleEmail?: string; weddingDate?: string; projectId?: string; timelineId?: string } | undefined;
   InspirationCreate: { inspiration?: any } | undefined;
   ProductCreate: { product?: any } | undefined;
   OfferCreate: { offer?: any } | undefined;
