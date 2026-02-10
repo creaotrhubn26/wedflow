@@ -56,26 +56,26 @@ function verifyPassword(password: string, hash: string): boolean {
 }
 
 const DEFAULT_CATEGORIES = [
-  { name: "Fotograf", icon: "camera", description: "Bryllupsfotografer" },
-  { name: "Videograf", icon: "film", description: "Bryllupsvideofilmer" },
+  { name: "Fotograf", icon: "camera", description: "Profesjonelle fotografer" },
+  { name: "Videograf", icon: "film", description: "Profesjonell filmtjeneste" },
   { name: "Blomster", icon: "flower", description: "Blomsterdekoratører" },
   { name: "Catering", icon: "coffee", description: "Mat og drikke" },
   { name: "Musikk", icon: "music", description: "Band, DJ og musikere" },
-  { name: "Venue", icon: "venue", description: "Bryllupslokaler" },
-  { name: "Kake", icon: "cake", description: "Bryllupskaker" },
-  { name: "Planlegger", icon: "clipboard", description: "Bryllupsplanleggere" },
+  { name: "Venue", icon: "venue", description: "Festlokaler og arenaer" },
+  { name: "Kake", icon: "cake", description: "Festkaker og bestilling" },
+  { name: "Planlegger", icon: "clipboard", description: "Arrangementplanleggere" },
   { name: "Hår & Makeup", icon: "scissors", description: "Styling og sminke" },
-  { name: "Transport", icon: "car", description: "Bryllupstransport" },
+  { name: "Transport", icon: "car", description: "Transport og kjøretøy" },
   { name: "Invitasjoner", icon: "mail", description: "Invitasjoner og trykkeri" },
   { name: "Underholdning", icon: "sparkles", description: "Artister og show" },
   { name: "Dekorasjon", icon: "star", description: "Dekorasjon og pynt" },
   { name: "Konfektyrer", icon: "gift", description: "Sjokolade og godteri" },
   { name: "Bar & Drikke", icon: "cocktail", description: "Bartjenester og drikke" },
   { name: "Fotoboks", icon: "aperture", description: "Fotoboks og moro" },
-  { name: "Ringer", icon: "diamond", description: "Vielsesringer og smykker" },
-  { name: "Drakt & Dress", icon: "suit", description: "Brudgom antrekk" },
+  { name: "Ringer", icon: "diamond", description: "Ringer og smykker" },
+  { name: "Drakt & Dress", icon: "suit", description: "Antrekk og klær" },
   { name: "Overnatting", icon: "bed", description: "Hotell og overnatting" },
-  { name: "Husdyr", icon: "heart", description: "Kjæledyr på bryllupet" },
+  { name: "Husdyr", icon: "heart", description: "Kjæledyr på arrangementet" },
 ];
 
 const DEFAULT_INSPIRATION_CATEGORIES = [
@@ -981,6 +981,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ? cuisineTypes.split(",").map(c => c.trim().toLowerCase())
         : [];
 
+      // Map client-side category slugs to DB category names
+      const CATEGORY_SLUG_MAP: Record<string, string> = {
+        "venue": "Venue",
+        "photographer": "Fotograf",
+        "videographer": "Videograf",
+        "catering": "Catering",
+        "florist": "Blomster",
+        "music": "Musikk",
+        "cake": "Kake",
+        "attire": "Drakt & Dress",
+        "beauty": "Hår & Makeup",
+        "transport": "Transport",
+        "planner": "Planlegger",
+      };
+
+      // Resolve category slug to DB category ID
+      let resolvedCategoryId: string | null = null;
+      if (category && typeof category === "string") {
+        const categoryName = CATEGORY_SLUG_MAP[category];
+        if (categoryName) {
+          const [dbCat] = await db.select().from(vendorCategories).where(eq(vendorCategories.name, categoryName)).limit(1);
+          if (dbCat) resolvedCategoryId = dbCat.id;
+        } else {
+          // Assume it's already a DB ID (UUID)
+          resolvedCategoryId = category;
+        }
+      }
+
       // Fetch approved vendors with their subscription details for prioritization
       const vendorsWithSubs = await db.select({
         id: vendors.id,
@@ -1007,9 +1035,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .leftJoin(subscriptionTiers, eq(subscriptionTiers.id, vendorSubscriptions.tierId))
         .where(eq(vendors.status, "approved"));
 
-      // Filter by category if specified
-      let filtered = category 
-        ? vendorsWithSubs.filter(v => v.categoryId === category)
+      // Filter by category if specified (using resolved DB ID)
+      let filtered = resolvedCategoryId 
+        ? vendorsWithSubs.filter(v => v.categoryId === resolvedCategoryId)
         : vendorsWithSubs;
 
       // Filter by search term (business name match) if specified

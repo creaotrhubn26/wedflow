@@ -19,6 +19,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
+import { useEventType } from "@/hooks/useEventType";
+import { isVendorCategoryApplicable, type EventType, type EventTypeConfig } from "@shared/event-types";
 import { Spacing, BorderRadius, Colors } from "@/constants/theme";
 import { PlanningStackParamList } from "@/navigation/PlanningStackNavigator";
 import { getApiUrl } from "@/lib/query-client";
@@ -27,19 +29,35 @@ import { useVendorLocationIntelligence } from "@/hooks/useVendorLocationIntellig
 
 const COUPLE_STORAGE_KEY = "wedflow_couple_session";
 
-// Category configuration with icons and labels
-const VENDOR_CATEGORIES = [
-  { id: "venue", name: "Lokale", icon: "home", description: "Finn det perfekte stedet" },
-  { id: "photographer", name: "Fotograf", icon: "camera", description: "Fang de beste øyeblikkene" },
-  { id: "videographer", name: "Videograf", icon: "video", description: "Film fra deres dag" },
-  { id: "catering", name: "Catering", icon: "coffee", description: "Mat til gjestene" },
-  { id: "florist", name: "Blomster", icon: "sun", description: "Dekorasjon og buketter" },
-  { id: "music", name: "Musikk/DJ", icon: "music", description: "Stemning hele kvelden" },
-  { id: "cake", name: "Kake", icon: "gift", description: "Bryllupskaken" },
-  { id: "beauty", name: "Hår & Makeup", icon: "scissors", description: "Se fantastisk ut" },
-  { id: "transport", name: "Transport", icon: "truck", description: "Reise med stil" },
-  { id: "planner", name: "Planlegger", icon: "clipboard", description: "Profesjonell hjelp" },
-] as const;
+// Category configuration with icons and labels — event-type-aware
+// Maps internal category IDs to their vendor category names in VENDOR_CATEGORY_EVENT_MAP
+function getVendorCategories(eventType: EventType, isWedding: boolean, config: EventTypeConfig) {
+  // Build a dynamic attire description from hints
+  const attireHints = config.attireVendorHints?.storesNo;
+  const attireDescription = isWedding
+    ? "Brudekjole og dress"
+    : attireHints && attireHints.length > 0
+      ? `F.eks. ${attireHints.slice(0, 3).join(", ")}`
+      : "Dresscode & antrekk";
+
+  const attireLabel = config.featureLabels?.dressTracking?.no || (isWedding ? "Drakt & Dress" : "Antrekk");
+
+  const allCategories = [
+    { id: "venue", name: "Lokale", icon: "home" as const, description: "Finn det perfekte stedet", mapName: "Venue" },
+    { id: "photographer", name: "Fotograf", icon: "camera" as const, description: "Fang de beste øyeblikkene", mapName: "Fotograf" },
+    { id: "videographer", name: "Videograf", icon: "video" as const, description: isWedding ? "Film fra deres dag" : "Profesjonell film", mapName: "Videograf" },
+    { id: "catering", name: "Catering", icon: "coffee" as const, description: "Mat til gjestene", mapName: "Catering" },
+    { id: "florist", name: "Blomster", icon: "sun" as const, description: "Dekorasjon og buketter", mapName: "Blomster" },
+    { id: "music", name: "Musikk/DJ", icon: "music" as const, description: "Stemning hele kvelden", mapName: "Musikk" },
+    { id: "cake", name: "Kake", icon: "gift" as const, description: isWedding ? "Bryllupskaken" : "Festkaken", mapName: "Kake" },
+    { id: "attire", name: attireLabel, icon: "shopping-bag" as const, description: attireDescription, mapName: "Drakt & Dress" },
+    { id: "beauty", name: "Hår & Makeup", icon: "scissors" as const, description: "Se fantastisk ut", mapName: "Hår & Makeup" },
+    { id: "transport", name: "Transport", icon: "truck" as const, description: "Reise med stil", mapName: "Transport" },
+    { id: "planner", name: "Planlegger", icon: "clipboard" as const, description: "Profesjonell hjelp", mapName: "Planlegger" },
+  ];
+
+  return allCategories.filter(cat => isVendorCategoryApplicable(cat.mapName, eventType));
+}
 
 interface WeddingPreferences {
   guestCount: number | null;
@@ -116,6 +134,7 @@ const CUISINE_TYPES_MAP: Record<string, string[]> = {
 export default function VendorMatchingScreen() {
   const insets = useSafeAreaInsets();
   const { theme } = useTheme();
+  const { eventType, isWedding, config } = useEventType();
   const navigation = useNavigation<NativeStackNavigationProp<PlanningStackParamList>>();
   const route = useRoute<RouteProp<RouteParams, "VendorMatching">>();
   
@@ -170,6 +189,9 @@ export default function VendorMatchingScreen() {
 
   // Location intelligence
   const locationIntel = useVendorLocationIntelligence();
+
+  // Event-type-aware vendor categories
+  const vendorCategories = useMemo(() => getVendorCategories(eventType, isWedding, config), [eventType, isWedding, config]);
 
   useEffect(() => {
     loadSessionAndPreferences();
@@ -481,7 +503,7 @@ export default function VendorMatchingScreen() {
           reasons.push(`Stor kake for ~${preferences.guestCount} personer`);
           score += 15;
         } else {
-          reasons.push(`Bryllupskake for ${preferences.guestCount}+ gjester`);
+          reasons.push(`Kake for ${preferences.guestCount}+ gjester`);
           score += 15;
         }
       }
@@ -498,9 +520,9 @@ export default function VendorMatchingScreen() {
       // Photography/Videography - match based on event size
       if (preferences.guestCount && (selectedCategory === "photographer" || selectedCategory === "videographer")) {
         if (preferences.guestCount > 100) {
-          reasons.push("Erfaring med store bryllup");
+          reasons.push("Erfaring med store arrangementer");
         } else if (preferences.guestCount < 30) {
-          reasons.push("Intimt bryllup");
+          reasons.push("Intimt arrangement");
         }
         score += 15;
       }
@@ -537,7 +559,7 @@ export default function VendorMatchingScreen() {
           reasons.push("Erfaring med store arrangementer");
           score += 20;
         } else if (preferences.guestCount > 50) {
-          reasons.push("Mellomstort bryllup");
+          reasons.push("Mellomstort arrangement");
           score += 15;
         }
       }
@@ -552,10 +574,10 @@ export default function VendorMatchingScreen() {
         }
       }
       
-      // Wedding date relevance (if vendor has availability info in the future)
+      // Event date relevance (if vendor has availability info in the future)
       if (preferences.weddingDate) {
-        const weddingMonth = new Date(preferences.weddingDate).toLocaleDateString("nb-NO", { month: "long" });
-        reasons.push(`Bryllup i ${weddingMonth}`);
+        const eventMonth = new Date(preferences.weddingDate).toLocaleDateString("nb-NO", { month: "long" });
+        reasons.push(`${config.labelNo} i ${eventMonth}`);
       }
       
       return { ...vendor, matchScore: score, matchReasons: reasons };
@@ -591,7 +613,7 @@ export default function VendorMatchingScreen() {
   ]);
 
   const getCategoryConfig = (categoryId: string) => {
-    return VENDOR_CATEGORIES.find(c => c.id === categoryId) || VENDOR_CATEGORIES[0];
+    return vendorCategories.find(c => c.id === categoryId) || vendorCategories[0];
   };
 
   const handleCategorySelect = (categoryId: string) => {
@@ -633,7 +655,7 @@ export default function VendorMatchingScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
   };
 
-  const renderCategoryCard = (category: typeof VENDOR_CATEGORIES[number], index: number) => {
+  const renderCategoryCard = (category: ReturnType<typeof getVendorCategories>[number], index: number) => {
     const isSelected = selectedCategory === category.id;
     const hasGuestCount = preferences.guestCount && preferences.guestCount > 0;
     const hasLocation = preferences.location && preferences.location.length > 0;
@@ -649,11 +671,12 @@ export default function VendorMatchingScreen() {
         case "cake": return gc > 100 ? "Stor kake" : gc > 50 ? "Mellomstor" : "Liten kake";
         case "florist": return `~${Math.ceil(gc / 8)} bord`;
         case "transport": return gc > 50 ? `${Math.ceil(gc / 50)} kjøretøy` : null;
-        case "photographer": return gc > 100 ? "Stort bryllup" : gc < 30 ? "Intimt" : null;
-        case "videographer": return gc > 100 ? "Stort bryllup" : gc < 30 ? "Intimt" : null;
+        case "photographer": return gc > 100 ? "Stort arrangement" : gc < 30 ? "Intimt" : null;
+        case "videographer": return gc > 100 ? "Stort arrangement" : gc < 30 ? "Intimt" : null;
         case "music": return gc > 80 ? "Stort selskap" : gc < 40 ? "Intimt" : null;
         case "beauty": return Math.ceil(gc / 20) > 3 ? `${Math.ceil(gc / 20)} personer` : null;
         case "planner": return gc > 100 ? "Komplekst" : null;
+        case "attire": return config.attireVendorHints?.storesNo?.[0] || null;
         default: return null;
       }
     };
@@ -1136,7 +1159,7 @@ export default function VendorMatchingScreen() {
       {/* Category Selection */}
       {!selectedCategory ? (
         <FlatList
-          data={VENDOR_CATEGORIES}
+          data={vendorCategories}
           keyExtractor={(item) => item.id}
           renderItem={({ item, index }) => renderCategoryCard(item, index)}
           contentContainerStyle={[styles.categoryList, { paddingBottom: insets.bottom + Spacing.xl }]}
