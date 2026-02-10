@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { ScrollView, StyleSheet, View, Pressable, Modal, TextInput, Alert } from "react-native";
+import { ScrollView, StyleSheet, View, Pressable, Modal, TextInput, Alert, ActivityIndicator } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
@@ -17,6 +17,13 @@ import { getScheduleEvents, updateScheduleEvent } from "@/lib/api-schedule-event
 import { getCoupleProfile } from "@/lib/api-couples";
 import { ScheduleEvent, Speech } from "@/lib/types";
 import { useQuery } from "@tanstack/react-query";
+import {
+  getEventWeather,
+  getWeatherLocationData,
+  weatherSymbolToEmoji,
+  type EventWithWeather,
+  type TravelFromCity,
+} from "@/lib/api-weather-location-bridge";
 
 type ScheduleInterval = {
   id: string;
@@ -80,6 +87,14 @@ export default function TimelineScreen() {
   const [newIcon, setNewIcon] = useState<string>("star");
   const [newEventTime, setNewEventTime] = useState("");
 
+  // Weather/Location bridge state
+  const [eventWeatherMap, setEventWeatherMap] = useState<Map<string, EventWithWeather>>(new Map());
+  const [showWeatherOverlay, setShowWeatherOverlay] = useState(false);
+  const [venueWeatherSummary, setVenueWeatherSummary] = useState<{ avgTemp: number; maxPrecip: number; maxWind: number } | null>(null);
+  const [travelCities, setTravelCities] = useState<TravelFromCity[]>([]);
+  const [weatherLoading, setWeatherLoading] = useState(false);
+  const [venueName, setVenueName] = useState("");
+
   const loadData = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -141,6 +156,49 @@ export default function TimelineScreen() {
       loadData();
     }, [loadData])
   );
+
+  // Load weather data for timeline events
+  const loadWeatherData = useCallback(async () => {
+    try {
+      setWeatherLoading(true);
+      const session = await getCoupleSession();
+      if (!session?.coupleId) return;
+
+      // Get event-specific weather
+      const weddingDateStr = weddingDate ? new Date(weddingDate).toISOString().split('T')[0] : undefined;
+      const eventWeather = await getEventWeather(session.coupleId, weddingDateStr);
+      
+      const weatherMap = new Map<string, EventWithWeather>();
+      for (const evt of eventWeather.events || []) {
+        weatherMap.set(evt.id, evt);
+      }
+      setEventWeatherMap(weatherMap);
+      if (eventWeather.dailySummary) {
+        setVenueWeatherSummary({
+          avgTemp: eventWeather.dailySummary.avgTemperature,
+          maxPrecip: eventWeather.dailySummary.maxPrecipitation,
+          maxWind: eventWeather.dailySummary.maxWind,
+        });
+      }
+
+      // Get travel cities
+      try {
+        const bridgeData = await getWeatherLocationData(session.coupleId);
+        setTravelCities(bridgeData.travelFromCities?.slice(0, 5) || []);
+        if (bridgeData.venue?.name) setVenueName(bridgeData.venue.name);
+      } catch {}
+    } catch (err) {
+      console.log('Timeline weather data not available:', err);
+    } finally {
+      setWeatherLoading(false);
+    }
+  }, [weddingDate]);
+
+  useEffect(() => {
+    if (schedule.length > 0) {
+      loadWeatherData();
+    }
+  }, [schedule.length, loadWeatherData]);
 
   const getTimeDiff = (time1: string, time2: string): number => {
     const [h1, m1] = time1.split(":").map(Number);
@@ -475,6 +533,77 @@ export default function TimelineScreen() {
               </Pressable>
             ))}
           </View>
+
+          {/* Weather & Location Summary (from bridge) */}
+          {venueWeatherSummary && (
+            <Pressable
+              onPress={() => setShowWeatherOverlay(!showWeatherOverlay)}
+              style={[styles.weatherSummaryRow, { backgroundColor: theme.backgroundSecondary, borderColor: theme.border }]}
+            >
+              <Feather name="cloud" size={16} color={Colors.dark.accent} />
+              <ThemedText style={[styles.weatherSummaryText, { color: theme.text }]}>
+                {Math.round(venueWeatherSummary.avgTemp)}°C • {venueWeatherSummary.maxPrecip > 0 ? `${venueWeatherSummary.maxPrecip}mm nedbør` : 'Tørt'}
+                {venueWeatherSummary.maxWind > 8 ? ` • ${Math.round(venueWeatherSummary.maxWind)} m/s` : ''}
+              </ThemedText>
+              {venueName ? (
+                <ThemedText style={[styles.weatherVenue, { color: theme.textSecondary }]}>📍 {venueName}</ThemedText>
+              ) : null}
+              <Feather name={showWeatherOverlay ? "chevron-up" : "chevron-down"} size={14} color={theme.textSecondary} />
+            </Pressable>
+          )}
+          {weatherLoading && !venueWeatherSummary && (
+            <View style={[styles.weatherSummaryRow, { backgroundColor: theme.backgroundSecondary, borderColor: theme.border }]}>
+              <ActivityIndicator size="small" color={Colors.dark.accent} />
+              <ThemedText style={[styles.weatherSummaryText, { color: theme.textSecondary }]}>
+                Henter vær for hendelsene...
+              </ThemedText>
+            </View>
+          )}
+
+          {/* Expanded weather/travel details */}
+          {showWeatherOverlay && (
+            <View style={styles.weatherOverlayContent}>
+              {/* Travel times from cities */}
+              {travelCities.length > 0 && (
+                <View style={styles.travelCompact}>
+                  <ThemedText style={[styles.travelCompactTitle, { color: Colors.dark.accent }]}>
+                    🚗 Reisetid til bryllupsstedet
+                  </ThemedText>
+                  {travelCities.sort((a, b) => a.drivingMinutes - b.drivingMinutes).map((city, i) => (
+                    <View key={i} style={[styles.travelCompactRow, { borderColor: theme.border }]}>
+                      <ThemedText style={[styles.travelCompactCity, { color: theme.text }]}>{city.name}</ThemedText>
+                      <ThemedText style={[styles.travelCompactTime, { color: Colors.dark.accent }]}>{city.drivingFormatted}</ThemedText>
+                      <ThemedText style={[styles.travelCompactDist, { color: theme.textSecondary }]}>{city.roadDistanceKm} km</ThemedText>
+                    </View>
+                  ))}
+                </View>
+              )}
+
+              {/* Weather per event preview */}
+              {eventWeatherMap.size > 0 && (
+                <View style={styles.weatherPerEvent}>
+                  <ThemedText style={[styles.travelCompactTitle, { color: Colors.dark.accent }]}>
+                    🌤️ Vær per hendelse
+                  </ThemedText>
+                  {schedule.map((evt) => {
+                    const ew = eventWeatherMap.get(evt.id);
+                    if (!ew?.weather) return null;
+                    return (
+                      <View key={evt.id} style={[styles.travelCompactRow, { borderColor: theme.border }]}>
+                        <ThemedText style={[styles.travelCompactCity, { color: theme.text }]}>
+                          {evt.time} {evt.title}
+                        </ThemedText>
+                        <ThemedText style={{ fontSize: 14 }}>{weatherSymbolToEmoji(ew.weather.symbol)}</ThemedText>
+                        <ThemedText style={[styles.travelCompactTime, { color: theme.textSecondary }]}>
+                          {Math.round(ew.weather.temperature)}°
+                        </ThemedText>
+                      </View>
+                    );
+                  })}
+                </View>
+              )}
+            </View>
+          )}
         </View>
       </Animated.View>
 
@@ -510,6 +639,29 @@ export default function TimelineScreen() {
                   >
                     <Feather name="trash-2" size={14} color={theme.textSecondary} />
                   </Pressable>
+                  {/* Weather badge for this event */}
+                  {eventWeatherMap.has(event.id) && eventWeatherMap.get(event.id)?.weather && (
+                    <View style={styles.eventWeatherBadge}>
+                      <ThemedText style={{ fontSize: 14 }}>
+                        {weatherSymbolToEmoji(eventWeatherMap.get(event.id)?.weather?.symbol)}
+                      </ThemedText>
+                      <ThemedText style={[styles.eventWeatherTemp, { color: theme.textSecondary }]}>
+                        {Math.round(eventWeatherMap.get(event.id)!.weather!.temperature)}°
+                      </ThemedText>
+                      {(eventWeatherMap.get(event.id)?.weather?.precipitation || 0) > 0 && (
+                        <ThemedText style={[styles.eventWeatherPrecip, { color: '#64B5F6' }]}>
+                          {eventWeatherMap.get(event.id)!.weather!.precipitation}mm
+                        </ThemedText>
+                      )}
+                    </View>
+                  )}
+                  {/* Weather tip for this event */}
+                  {eventWeatherMap.get(event.id)?.weatherTip && 
+                   !eventWeatherMap.get(event.id)?.weatherTip?.startsWith('✅') && (
+                    <ThemedText style={[styles.eventWeatherTip, { color: Colors.dark.accent }]}>
+                      {eventWeatherMap.get(event.id)?.weatherTip}
+                    </ThemedText>
+                  )}
                   {nextEvent ? (
                     <ThemedText style={[styles.duration, { color: theme.textSecondary }]}>
                       {timeDiff} min til neste
@@ -1009,4 +1161,42 @@ const styles = StyleSheet.create({
   saveButton: { flex: 1, opacity: 1 },
   addFabContainer: { position: "absolute", right: Spacing.lg, bottom: Spacing.lg },
   addFab: { width: 56, height: 56, borderRadius: 28, justifyContent: "center", alignItems: "center" },
+  // Weather / Location bridge styles
+  weatherSummaryRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.sm,
+    marginTop: Spacing.md,
+    padding: Spacing.sm,
+    borderRadius: BorderRadius.sm,
+    borderWidth: 1,
+    flexWrap: "wrap",
+  },
+  weatherSummaryText: { fontSize: 13, fontWeight: "500" },
+  weatherVenue: { fontSize: 11, marginLeft: "auto" },
+  weatherOverlayContent: { marginTop: Spacing.sm },
+  travelCompact: { marginBottom: Spacing.md },
+  travelCompactTitle: { fontSize: 12, fontWeight: "600", marginBottom: Spacing.xs },
+  travelCompactRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.sm,
+    paddingVertical: 3,
+    borderBottomWidth: 0.5,
+  },
+  travelCompactCity: { fontSize: 12, flex: 1 },
+  travelCompactTime: { fontSize: 12, fontWeight: "600" },
+  travelCompactDist: { fontSize: 11, minWidth: 50, textAlign: "right" },
+  weatherPerEvent: { marginTop: Spacing.xs },
+  eventWeatherBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 4,
+    marginTop: 4,
+    paddingHorizontal: Spacing.xs,
+    paddingVertical: 2,
+  },
+  eventWeatherTemp: { fontSize: 12, fontWeight: "500" },
+  eventWeatherPrecip: { fontSize: 11 },
+  eventWeatherTip: { fontSize: 11, marginTop: 2, fontStyle: "italic" },
 });

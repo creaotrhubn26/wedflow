@@ -310,6 +310,93 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ── Weather/Location Bridge Proxy → CreatorHub backend ──────────────────────
+  // Proxies /api/wedflow/weather-location/* to CreatorHub API for couples
+  const CREATORHUB_BRIDGE_URL = process.env.CREATORHUB_API_URL || 'http://localhost:3001';
+
+  app.all("/api/wedflow/weather-location/*", async (req: Request, res: Response) => {
+    try {
+      const targetUrl = `${CREATORHUB_BRIDGE_URL}${req.originalUrl}`;
+      const fetchOptions: RequestInit = {
+        method: req.method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          ...(req.headers.authorization ? { 'Authorization': req.headers.authorization as string } : {}),
+        },
+      };
+      if (req.method !== 'GET' && req.method !== 'HEAD' && req.body) {
+        fetchOptions.body = JSON.stringify(req.body);
+      }
+      const response = await fetch(targetUrl, fetchOptions);
+      const data = await response.json();
+      res.status(response.status).json(data);
+    } catch (error) {
+      console.error('Weather-location bridge proxy error:', error);
+      res.status(502).json({ error: 'Bridge proxy feil — CreatorHub API ikke tilgjengelig' });
+    }
+  });
+
+  // ── Enhanced weather endpoint with travel time calculation ──────────────────
+  // GET /api/weather/travel — Calculate travel time between two points  
+  app.get("/api/weather/travel", async (req: Request, res: Response) => {
+    try {
+      const fromLat = parseFloat(req.query.fromLat as string);
+      const fromLon = parseFloat(req.query.fromLon as string);
+      const toLat = parseFloat(req.query.toLat as string);
+      const toLon = parseFloat(req.query.toLon as string);
+
+      if (isNaN(fromLat) || isNaN(fromLon) || isNaN(toLat) || isNaN(toLon)) {
+        return res.status(400).json({ error: 'Oppgi fromLat, fromLon, toLat, toLon' });
+      }
+
+      // Great-circle distance + road factor
+      const R = 6371;
+      const dLat = (toLat - fromLat) * Math.PI / 180;
+      const dLon = (toLon - fromLon) * Math.PI / 180;
+      const a = Math.sin(dLat / 2) ** 2 +
+        Math.cos(fromLat * Math.PI / 180) * Math.cos(toLat * Math.PI / 180) *
+        Math.sin(dLon / 2) ** 2;
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      const straightLine = R * c;
+      const roadDistance = straightLine * 1.35;
+      const drivingMinutes = Math.round(roadDistance / 70 * 60);
+
+      // Fetch weather at both locations
+      const [fromWeather, toWeather] = await Promise.all([
+        fetchYrWeather(fromLat, fromLon).catch(() => null),
+        fetchYrWeather(toLat, toLon).catch(() => null),
+      ]);
+
+      const getWeatherSummary = (data: any) => {
+        const now = data?.properties?.timeseries?.[0];
+        return now ? {
+          temperature: now.data?.instant?.details?.air_temperature,
+          windSpeed: now.data?.instant?.details?.wind_speed,
+          symbol: now.data?.next_1_hours?.summary?.symbol_code || now.data?.next_6_hours?.summary?.symbol_code,
+          precipitation: now.data?.next_1_hours?.details?.precipitation_amount || 0,
+        } : null;
+      };
+
+      res.json({
+        travel: {
+          straightLineKm: Math.round(straightLine * 10) / 10,
+          roadDistanceKm: Math.round(roadDistance * 10) / 10,
+          drivingMinutes,
+          drivingFormatted: drivingMinutes >= 60
+            ? `${Math.floor(drivingMinutes / 60)}t ${drivingMinutes % 60}min`
+            : `${drivingMinutes} min`,
+          fuelCostNok: Math.round(roadDistance * 1.8 * 10) / 10,
+        },
+        from: { lat: fromLat, lon: fromLon, weather: getWeatherSummary(fromWeather) },
+        to: { lat: toLat, lon: toLon, weather: getWeatherSummary(toWeather) },
+      });
+    } catch (error) {
+      console.error('Travel calculation error:', error);
+      res.status(500).json({ error: 'Kunne ikke beregne reisetid' });
+    }
+  });
+
   async function seedCategories() {
     const existing = await db.select().from(vendorCategories);
     if (existing.length === 0) {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { ScrollView, StyleSheet, View, ActivityIndicator } from "react-native";
+import { ScrollView, StyleSheet, View, ActivityIndicator, Pressable, TextInput } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
@@ -10,8 +10,20 @@ import { ThemedText } from "@/components/ThemedText";
 import { Button } from "@/components/Button";
 import { useTheme } from "@/hooks/useTheme";
 import { Spacing, BorderRadius, Colors } from "@/constants/theme";
-import { getWeddingDetails } from "@/lib/storage";
+import { getWeddingDetails, getCoupleSession } from "@/lib/storage";
 import { getApiUrl } from "@/lib/query-client";
+import {
+  getWeatherLocationData,
+  searchAddress,
+  updateVenueLocation,
+  calculateTravel,
+  weatherSymbolToEmoji,
+  getWeddingWeatherTips,
+  type WeatherLocationData,
+  type TravelFromCity,
+  type TravelResult,
+  type KartverketSearchResult,
+} from "@/lib/api-weather-location-bridge";
 
 interface WeatherData {
   current: {
@@ -105,6 +117,19 @@ export default function WeatherScreen() {
   const [venue, setVenue] = useState("Oslo");
   const [weddingDate, setWeddingDate] = useState("");
 
+  // Bridge state
+  const [bridgeData, setBridgeData] = useState<WeatherLocationData | null>(null);
+  const [travelCities, setTravelCities] = useState<TravelFromCity[]>([]);
+  const [showTravelSection, setShowTravelSection] = useState(false);
+  const [customTravelResult, setCustomTravelResult] = useState<TravelResult | null>(null);
+  const [travelSearchCity, setTravelSearchCity] = useState("");
+  const [travelLoading, setTravelLoading] = useState(false);
+  const [showVenueSearch, setShowVenueSearch] = useState(false);
+  const [venueSearchQuery, setVenueSearchQuery] = useState("");
+  const [venueSearchResults, setVenueSearchResults] = useState<KartverketSearchResult[]>([]);
+  const [venueSearchLoading, setVenueSearchLoading] = useState(false);
+  const [weddingDayTips, setWeddingDayTips] = useState<string[]>([]);
+
   const fetchWeather = useCallback(async () => {
     setLoading(true);
     setError(null);
@@ -130,6 +155,27 @@ export default function WeatherScreen() {
 
       const data = await response.json();
       setWeather(data);
+
+      // Also try to load bridge data for enhanced features
+      try {
+        const session = await getCoupleSession();
+        if (session?.coupleId) {
+          const bridge = await getWeatherLocationData(session.coupleId);
+          setBridgeData(bridge);
+          setTravelCities(bridge.travelFromCities || []);
+          if (bridge.venue?.name) setVenue(bridge.venue.name);
+          if (bridge.weather?.weddingDayForecast?.tips) {
+            setWeddingDayTips(bridge.weather.weddingDayForecast.tips);
+          }
+          if (bridge.weather?.current) {
+            const tips = getWeddingWeatherTips(bridge.weather.current);
+            if (tips.length > 0 && weddingDayTips.length === 0) setWeddingDayTips(tips);
+          }
+        }
+      } catch (bridgeErr) {
+        // Bridge is optional — basic weather still works
+        console.log('Bridge data not available:', bridgeErr);
+      }
     } catch (err) {
       console.error("Weather fetch error:", err);
       setError("Kunne ikke hente værdata fra YR. Prøv igjen senere.");
@@ -137,6 +183,59 @@ export default function WeatherScreen() {
       setLoading(false);
     }
   }, []);
+
+  const handleVenueSearch = useCallback(async (query: string) => {
+    setVenueSearchQuery(query);
+    if (query.length < 2) {
+      setVenueSearchResults([]);
+      return;
+    }
+    setVenueSearchLoading(true);
+    try {
+      const results = await searchAddress(query);
+      setVenueSearchResults(results);
+    } catch {
+      setVenueSearchResults([]);
+    } finally {
+      setVenueSearchLoading(false);
+    }
+  }, []);
+
+  const handleSelectVenue = useCallback(async (result: KartverketSearchResult) => {
+    try {
+      const session = await getCoupleSession();
+      if (session?.coupleId) {
+        await updateVenueLocation(session.coupleId, {
+          venueName: result.address,
+          lat: result.coordinates.lat,
+          lng: result.coordinates.lng,
+        });
+      }
+      setVenue(result.address);
+      setShowVenueSearch(false);
+      setVenueSearchQuery("");
+      setVenueSearchResults([]);
+      fetchWeather(); // Refresh with new location
+    } catch (err) {
+      console.error('Venue update error:', err);
+    }
+  }, [fetchWeather]);
+
+  const handleTravelSearch = useCallback(async () => {
+    if (!travelSearchCity.trim()) return;
+    setTravelLoading(true);
+    try {
+      const session = await getCoupleSession();
+      if (session?.coupleId) {
+        const result = await calculateTravel(session.coupleId, { city: travelSearchCity.trim() });
+        setCustomTravelResult(result);
+      }
+    } catch (err) {
+      console.error('Travel calc error:', err);
+    } finally {
+      setTravelLoading(false);
+    }
+  }, [travelSearchCity]);
 
   useEffect(() => {
     fetchWeather();
@@ -269,6 +368,204 @@ export default function WeatherScreen() {
         </View>
       </Animated.View>
 
+      {/* ── Wedding Day Forecast (from bridge) ── */}
+      {bridgeData?.weather?.weddingDayForecast ? (
+        <Animated.View entering={FadeInDown.delay(320).duration(400)}>
+          <View style={[styles.weddingDayCard, { backgroundColor: theme.backgroundDefault, borderColor: Colors.dark.accent }]}>
+            <View style={styles.weddingDayHeader}>
+              <Feather name="heart" size={20} color={Colors.dark.accent} />
+              <ThemedText type="h4" style={styles.weddingDayTitle}>Bryllupsdagen</ThemedText>
+              <ThemedText style={[styles.weddingDayDate, { color: theme.textSecondary }]}>
+                {bridgeData.weather.weddingDayForecast.date}
+              </ThemedText>
+            </View>
+            <View style={styles.weddingDayStats}>
+              <View style={styles.statItem}>
+                <Feather name="thermometer" size={18} color={getTempColor(bridgeData.weather.weddingDayForecast.avgTemperature)} />
+                <ThemedText style={[styles.statValue, { color: theme.text }]}>
+                  {bridgeData.weather.weddingDayForecast.avgTemperature}°C
+                </ThemedText>
+                <ThemedText style={[styles.statLabel, { color: theme.textMuted }]}>Snitt</ThemedText>
+              </View>
+              <View style={styles.statItem}>
+                <Feather name="cloud-rain" size={18} color="#64B5F6" />
+                <ThemedText style={[styles.statValue, { color: theme.text }]}>
+                  {bridgeData.weather.weddingDayForecast.maxPrecipitation} mm
+                </ThemedText>
+                <ThemedText style={[styles.statLabel, { color: theme.textMuted }]}>Maks nedbør</ThemedText>
+              </View>
+            </View>
+            {bridgeData.weather.weddingDayForecast.entries.length > 0 && (
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.hourlyScroll}>
+                {bridgeData.weather.weddingDayForecast.entries.map((entry, i) => (
+                  <View key={i} style={[styles.hourCard, { backgroundColor: theme.backgroundSecondary, borderColor: theme.border }]}>
+                    <ThemedText style={[styles.hourTime, { color: theme.textSecondary }]}>{formatTime(entry.time)}</ThemedText>
+                    <ThemedText style={{ fontSize: 18 }}>{weatherSymbolToEmoji(entry.symbol)}</ThemedText>
+                    <ThemedText style={[styles.hourTemp, { color: getTempColor(entry.temperature) }]}>{Math.round(entry.temperature)}°</ThemedText>
+                  </View>
+                ))}
+              </ScrollView>
+            )}
+            {weddingDayTips.length > 0 && (
+              <View style={styles.tipsContainer}>
+                {weddingDayTips.map((tip, i) => (
+                  <ThemedText key={i} style={[styles.weddingTip, { color: Colors.dark.accent }]}>{tip}</ThemedText>
+                ))}
+              </View>
+            )}
+          </View>
+        </Animated.View>
+      ) : weddingDayTips.length > 0 ? (
+        <Animated.View entering={FadeInDown.delay(320).duration(400)}>
+          <View style={[styles.weddingDayCard, { backgroundColor: theme.backgroundDefault, borderColor: Colors.dark.accent }]}>
+            <View style={styles.weddingDayHeader}>
+              <Feather name="alert-circle" size={20} color={Colors.dark.accent} />
+              <ThemedText type="h4" style={styles.weddingDayTitle}>Værtips</ThemedText>
+            </View>
+            <View style={styles.tipsContainer}>
+              {weddingDayTips.map((tip, i) => (
+                <ThemedText key={i} style={[styles.weddingTip, { color: Colors.dark.accent }]}>{tip}</ThemedText>
+              ))}
+            </View>
+          </View>
+        </Animated.View>
+      ) : null}
+
+      {/* ── Venue Location (Kartverket search) ── */}
+      <Animated.View entering={FadeInDown.delay(340).duration(400)}>
+        <View style={[styles.venueSection, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
+          <View style={styles.venueHeader}>
+            <Feather name="map-pin" size={20} color={Colors.dark.accent} />
+            <ThemedText type="h4" style={styles.sectionTitle}>Bryllupssted</ThemedText>
+            <Pressable onPress={() => setShowVenueSearch(!showVenueSearch)} style={styles.editVenueBtn}>
+              <Feather name={showVenueSearch ? "x" : "edit-2"} size={16} color={Colors.dark.accent} />
+            </Pressable>
+          </View>
+          <ThemedText style={[styles.venueName, { color: theme.text }]}>{venue}</ThemedText>
+          {bridgeData?.venue?.municipality && (
+            <ThemedText style={[styles.venueDetail, { color: theme.textSecondary }]}>
+              {bridgeData.venue.municipality}{bridgeData.venue.county ? `, ${bridgeData.venue.county}` : ''}
+            </ThemedText>
+          )}
+          {bridgeData?.venue?.coordinates && (
+            <ThemedText style={[styles.venueDetail, { color: theme.textMuted }]}>
+              📍 {bridgeData.venue.coordinates.lat.toFixed(4)}°N, {bridgeData.venue.coordinates.lng.toFixed(4)}°Ø
+            </ThemedText>
+          )}
+          {showVenueSearch && (
+            <View style={styles.venueSearchContainer}>
+              <TextInput
+                style={[styles.searchInput, { borderColor: theme.border, color: theme.text, backgroundColor: theme.backgroundSecondary }]}
+                placeholder="Søk adresse (Kartverket)..."
+                placeholderTextColor={theme.textMuted}
+                value={venueSearchQuery}
+                onChangeText={handleVenueSearch}
+              />
+              {venueSearchLoading && <ActivityIndicator size="small" color={Colors.dark.accent} style={{ marginTop: Spacing.xs }} />}
+              {venueSearchResults.map((result, i) => (
+                <Pressable
+                  key={i}
+                  onPress={() => handleSelectVenue(result)}
+                  style={[styles.searchResult, { borderColor: theme.border, backgroundColor: theme.backgroundSecondary }]}
+                >
+                  <Feather name="map-pin" size={14} color={Colors.dark.accent} />
+                  <View style={{ flex: 1, marginLeft: Spacing.sm }}>
+                    <ThemedText style={{ fontSize: 13 }}>{result.address}</ThemedText>
+                    <ThemedText style={[styles.searchResultSub, { color: theme.textSecondary }]}>
+                      {result.municipality}, {result.county} • {result.postalCode} {result.postalPlace}
+                    </ThemedText>
+                  </View>
+                </Pressable>
+              ))}
+            </View>
+          )}
+        </View>
+      </Animated.View>
+
+      {/* ── Travel Time to Venue ── */}
+      <Animated.View entering={FadeInDown.delay(360).duration(400)}>
+        <Pressable
+          onPress={() => setShowTravelSection(!showTravelSection)}
+          style={[styles.travelHeader, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}
+        >
+          <Feather name="navigation" size={20} color={Colors.dark.accent} />
+          <ThemedText type="h4" style={[styles.sectionTitle, { flex: 1 }]}>Reisetid til bryllupet</ThemedText>
+          <Feather name={showTravelSection ? "chevron-up" : "chevron-down"} size={20} color={theme.textSecondary} />
+        </Pressable>
+
+        {showTravelSection && (
+          <View style={[styles.travelContent, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
+            {/* Custom travel search */}
+            <View style={styles.travelSearchRow}>
+              <TextInput
+                style={[styles.travelInput, { borderColor: theme.border, color: theme.text, backgroundColor: theme.backgroundSecondary }]}
+                placeholder="Søk by eller sted..."
+                placeholderTextColor={theme.textMuted}
+                value={travelSearchCity}
+                onChangeText={setTravelSearchCity}
+                onSubmitEditing={handleTravelSearch}
+              />
+              <Pressable onPress={handleTravelSearch} style={[styles.travelSearchBtn, { backgroundColor: Colors.dark.accent }]}>
+                {travelLoading ? (
+                  <ActivityIndicator size="small" color="#1A1A1A" />
+                ) : (
+                  <Feather name="search" size={18} color="#1A1A1A" />
+                )}
+              </Pressable>
+            </View>
+
+            {customTravelResult && (
+              <View style={[styles.travelResultCard, { borderColor: Colors.dark.accent, backgroundColor: Colors.dark.accent + '10' }]}>
+                <ThemedText style={[styles.travelCity, { color: Colors.dark.accent }]}>
+                  {travelSearchCity} → {customTravelResult.venue.name}
+                </ThemedText>
+                <View style={styles.travelStats}>
+                  <View style={styles.travelStat}>
+                    <Feather name="clock" size={14} color={Colors.dark.accent} />
+                    <ThemedText style={styles.travelValue}>{customTravelResult.travel.drivingFormatted}</ThemedText>
+                  </View>
+                  <View style={styles.travelStat}>
+                    <Feather name="navigation" size={14} color={theme.textSecondary} />
+                    <ThemedText style={[styles.travelValue, { color: theme.textSecondary }]}>{customTravelResult.travel.roadDistanceKm} km</ThemedText>
+                  </View>
+                  <View style={styles.travelStat}>
+                    <Feather name="dollar-sign" size={14} color={theme.textSecondary} />
+                    <ThemedText style={[styles.travelValue, { color: theme.textSecondary }]}>~{Math.round(customTravelResult.travel.fuelCostNok)} kr</ThemedText>
+                  </View>
+                </View>
+                {customTravelResult.origin.weather && customTravelResult.venue.weather && (
+                  <View style={styles.travelWeatherRow}>
+                    <ThemedText style={[styles.travelWeather, { color: theme.textSecondary }]}>
+                      {weatherSymbolToEmoji(customTravelResult.origin.weather.symbol)} {Math.round(customTravelResult.origin.weather.temperature)}°C →{' '}
+                      {weatherSymbolToEmoji(customTravelResult.venue.weather.symbol)} {Math.round(customTravelResult.venue.weather.temperature)}°C
+                    </ThemedText>
+                  </View>
+                )}
+              </View>
+            )}
+
+            {/* Pre-calculated cities */}
+            {travelCities.length > 0 && (
+              <>
+                <ThemedText style={[styles.travelSubtitle, { color: theme.textSecondary }]}>Fra norske byer</ThemedText>
+                {travelCities
+                  .sort((a, b) => a.drivingMinutes - b.drivingMinutes)
+                  .map((city, i) => (
+                  <View key={i} style={[styles.travelRow, { borderColor: theme.border }]}>
+                    <ThemedText style={[styles.travelCityName, { color: theme.text }]}>{city.name}</ThemedText>
+                    <View style={styles.travelRowInfo}>
+                      <ThemedText style={[styles.travelTime, { color: Colors.dark.accent }]}>{city.drivingFormatted}</ThemedText>
+                      <ThemedText style={[styles.travelDist, { color: theme.textSecondary }]}>{city.roadDistanceKm} km</ThemedText>
+                      <ThemedText style={[styles.travelCost, { color: theme.textMuted }]}>~{Math.round(city.fuelCostNok)} kr</ThemedText>
+                    </View>
+                  </View>
+                ))}
+              </>
+            )}
+          </View>
+        )}
+      </Animated.View>
+
       <Animated.View entering={FadeInDown.delay(400).duration(400)}>
         <ThemedText type="h3" style={styles.sectionTitle}>Værplanlegging-tips</ThemedText>
         <View style={styles.tipsGrid}>
@@ -356,4 +653,120 @@ const styles = StyleSheet.create({
   },
   tipTitle: { fontSize: 14, fontWeight: "600" },
   tipDesc: { fontSize: 12, marginTop: 2 },
+  // Wedding day forecast
+  weddingDayCard: {
+    padding: Spacing.lg,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1.5,
+    marginBottom: Spacing.lg,
+  },
+  weddingDayHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.sm,
+    marginBottom: Spacing.md,
+  },
+  weddingDayTitle: { marginBottom: 0, flex: 1 },
+  weddingDayDate: { fontSize: 13 },
+  weddingDayStats: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginBottom: Spacing.md,
+  },
+  tipsContainer: { marginTop: Spacing.sm },
+  weddingTip: { fontSize: 13, marginBottom: Spacing.xs, lineHeight: 18 },
+  // Venue section
+  venueSection: {
+    padding: Spacing.lg,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    marginBottom: Spacing.md,
+  },
+  venueHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.sm,
+  },
+  editVenueBtn: { padding: Spacing.xs },
+  venueName: { fontSize: 15, fontWeight: "600", marginTop: Spacing.sm },
+  venueDetail: { fontSize: 12, marginTop: 2 },
+  venueSearchContainer: { marginTop: Spacing.md },
+  searchInput: {
+    borderWidth: 1,
+    borderRadius: BorderRadius.sm,
+    padding: Spacing.md,
+    fontSize: 14,
+  },
+  searchResult: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: Spacing.md,
+    borderWidth: 1,
+    borderRadius: BorderRadius.sm,
+    marginTop: Spacing.xs,
+  },
+  searchResultSub: { fontSize: 11, marginTop: 2 },
+  // Travel section
+  travelHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.sm,
+    padding: Spacing.lg,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    marginBottom: 1,
+  },
+  travelContent: {
+    padding: Spacing.lg,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    borderTopWidth: 0,
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    marginBottom: Spacing.lg,
+  },
+  travelSearchRow: {
+    flexDirection: "row",
+    gap: Spacing.sm,
+    marginBottom: Spacing.md,
+  },
+  travelInput: {
+    flex: 1,
+    borderWidth: 1,
+    borderRadius: BorderRadius.sm,
+    padding: Spacing.md,
+    fontSize: 14,
+  },
+  travelSearchBtn: {
+    width: 44,
+    height: 44,
+    borderRadius: BorderRadius.sm,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  travelResultCard: {
+    padding: Spacing.md,
+    borderRadius: BorderRadius.sm,
+    borderWidth: 1,
+    marginBottom: Spacing.md,
+  },
+  travelCity: { fontSize: 14, fontWeight: "600", marginBottom: Spacing.sm },
+  travelStats: { flexDirection: "row", gap: Spacing.lg },
+  travelStat: { flexDirection: "row", alignItems: "center", gap: 4 },
+  travelValue: { fontSize: 13, fontWeight: "500" },
+  travelWeatherRow: { marginTop: Spacing.sm },
+  travelWeather: { fontSize: 12 },
+  travelSubtitle: { fontSize: 12, fontWeight: "600", marginBottom: Spacing.sm },
+  travelRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingVertical: Spacing.sm,
+    borderBottomWidth: 0.5,
+  },
+  travelRowInfo: { flexDirection: "row", gap: Spacing.md, alignItems: "center" },
+  travelCityName: { fontSize: 13, fontWeight: "500" },
+  travelTime: { fontSize: 13, fontWeight: "600" },
+  travelDist: { fontSize: 12 },
+  travelCost: { fontSize: 11 },
 });
