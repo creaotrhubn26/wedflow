@@ -25,6 +25,7 @@ import { ThemedText } from "@/components/ThemedText";
 import { Button } from "@/components/Button";
 import { SwipeableRow } from "@/components/SwipeableRow";
 import { useTheme } from "@/hooks/useTheme";
+import { useEventType } from "@/hooks/useEventType";
 import { Spacing, BorderRadius, Colors } from "@/constants/theme";
 import {
   getImportantPeople,
@@ -55,6 +56,7 @@ export default function ImportantPeopleScreen() {
   const headerHeight = useHeaderHeight();
   const tabBarHeight = useBottomTabBarHeight();
   const { theme } = useTheme();
+  const { config } = useEventType();
   const queryClient = useQueryClient();
 
   // Query for important people
@@ -199,8 +201,11 @@ export default function ImportantPeopleScreen() {
 
   const handleShareInviteCode = async (code: string, personName: string) => {
     try {
+      const msg = config.shareLabel
+        ? config.shareLabel.shareMessageNo.replace("{name}", personName).replace("{code}", code)
+        : `Hei ${personName}! Du er invitert til bryllupet vårt på Wedflow. Din invitasjonskode: ${code}. Last ned Wedflow og skriv inn koden for å få tilgang.`;
       await Share.share({
-        message: `Hei ${personName}! Du er invitert til bryllupet vårt på Wedflow 💍\n\nDin invitasjonskode: ${code}\n\nLast ned Wedflow-appen og skriv inn koden for å få tilgang:\n• App Store: https://apps.apple.com/app/wedflow\n• Google Play: https://play.google.com/store/apps/details?id=com.wedflow`,
+        message: `${msg}\n\n• App Store: https://apps.apple.com/app/wedflow\n• Google Play: https://play.google.com/store/apps/details?id=com.wedflow`,
       });
     } catch {}
   };

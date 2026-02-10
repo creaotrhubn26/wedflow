@@ -127,6 +127,15 @@ export interface EventTypeConfig {
   };
   /** Date field label */
   dateLabel: { no: string; en: string };     // "Bryllupsdato" / "Konfirmasjonsdato" / "Arrangementsdato"
+  /** Share screen labels — what do we call "sharing" for this event type */
+  shareLabel: {
+    titleNo: string;      // "Del bryllupet" / "Del arrangementet"
+    titleEn: string;      // "Share wedding" / "Share event"
+    subtitleNo: string;   // "Inviter partner, toastmaster..."
+    subtitleEn: string;
+    shareMessageNo: string;  // SMS/share text template
+    shareMessageEn: string;
+  };
 }
 
 export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
@@ -156,6 +165,14 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
       guestLabel: { no: "Gjester", en: "Guests" },
     },
     dateLabel: { no: "Bryllupsdato", en: "Wedding Date" },
+    shareLabel: {
+      titleNo: "Del bryllupet",
+      titleEn: "Share Wedding",
+      subtitleNo: "Inviter partneren din, toastmaster og forlovere",
+      subtitleEn: "Invite your partner, toastmaster and best man/maid of honor",
+      shareMessageNo: "Hei {name}! Du er invitert til bryllupet vårt på Wedflow. Din invitasjonskode: {code}. Last ned Wedflow og skriv inn koden for å få tilgang.",
+      shareMessageEn: "Hi {name}! You're invited to our wedding on Wedflow. Your invitation code: {code}. Download Wedflow and enter the code to get access.",
+    },
   },
 
   confirmation: {
@@ -175,7 +192,7 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
       seating: true,
       coupleProfile: false,
       importantPeople: true,
-      sharePartner: false,
+      sharePartner: true,
     },
     roleLabels: {
       primary: { no: "Konfirmant", en: "Confirmand" },
@@ -183,6 +200,14 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
       guestLabel: { no: "Gjester", en: "Guests" },
     },
     dateLabel: { no: "Konfirmasjonsdato", en: "Confirmation Date" },
+    shareLabel: {
+      titleNo: "Del konfirmasjonen",
+      titleEn: "Share Confirmation",
+      subtitleNo: "Inviter den andre forelderen eller medarrangør",
+      subtitleEn: "Invite the other parent or co-organizer",
+      shareMessageNo: "Hei {name}! Du er invitert til konfirmasjonsfeiringen på Wedflow. Din invitasjonskode: {code}. Last ned Wedflow og skriv inn koden for å få tilgang.",
+      shareMessageEn: "Hi {name}! You're invited to the confirmation celebration on Wedflow. Your invitation code: {code}. Download Wedflow and enter the code to get access.",
+    },
   },
 
   birthday: {
@@ -202,7 +227,7 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
       seating: true,
       coupleProfile: false,
       importantPeople: true,
-      sharePartner: false,
+      sharePartner: true,
     },
     roleLabels: {
       primary: { no: "Jubilant", en: "Birthday Person" },
@@ -210,6 +235,14 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
       guestLabel: { no: "Gjester", en: "Guests" },
     },
     dateLabel: { no: "Bursdagsdato", en: "Birthday Date" },
+    shareLabel: {
+      titleNo: "Del bursdagen",
+      titleEn: "Share Birthday",
+      subtitleNo: "Inviter medarrangør til bursdagsfeiringen",
+      subtitleEn: "Invite a co-organizer to the birthday celebration",
+      shareMessageNo: "Hei {name}! Du er invitert til bursdagsfeiringen på Wedflow. Din invitasjonskode: {code}. Last ned Wedflow og skriv inn koden for å få tilgang.",
+      shareMessageEn: "Hi {name}! You're invited to the birthday celebration on Wedflow. Your invitation code: {code}. Download Wedflow and enter the code to get access.",
+    },
   },
 
   anniversary: {
@@ -237,6 +270,14 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
       guestLabel: { no: "Gjester", en: "Guests" },
     },
     dateLabel: { no: "Jubileumsdato", en: "Anniversary Date" },
+    shareLabel: {
+      titleNo: "Del jubileet",
+      titleEn: "Share Anniversary",
+      subtitleNo: "Inviter partneren din eller medarrangør",
+      subtitleEn: "Invite your partner or co-organizer",
+      shareMessageNo: "Hei {name}! Du er invitert til jubileumsfeiringen på Wedflow. Din invitasjonskode: {code}. Last ned Wedflow og skriv inn koden for å få tilgang.",
+      shareMessageEn: "Hi {name}! You're invited to the anniversary celebration on Wedflow. Your invitation code: {code}. Download Wedflow and enter the code to get access.",
+    },
   },
 
   engagement: {
@@ -264,6 +305,14 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
       guestLabel: { no: "Gjester", en: "Guests" },
     },
     dateLabel: { no: "Festdato", en: "Party Date" },
+    shareLabel: {
+      titleNo: "Del forlovelsen",
+      titleEn: "Share Engagement",
+      subtitleNo: "Inviter din forlovede",
+      subtitleEn: "Invite your fiancé(e)",
+      shareMessageNo: "Hei {name}! Du er invitert til forlovelsesfesten på Wedflow. Din invitasjonskode: {code}. Last ned Wedflow og skriv inn koden for å få tilgang.",
+      shareMessageEn: "Hi {name}! You're invited to the engagement party on Wedflow. Your invitation code: {code}. Download Wedflow and enter the code to get access.",
+    },
   },
 
   baby_shower: {
@@ -283,7 +332,7 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
       seating: true,
       coupleProfile: false,
       importantPeople: true,
-      sharePartner: false,
+      sharePartner: true,
     },
     roleLabels: {
       primary: { no: "Arrangør", en: "Host" },
@@ -291,6 +340,14 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
       guestLabel: { no: "Gjester", en: "Guests" },
     },
     dateLabel: { no: "Dato", en: "Date" },
+    shareLabel: {
+      titleNo: "Del arrangementet",
+      titleEn: "Share Event",
+      subtitleNo: "Inviter medarrangør til babyshoweren",
+      subtitleEn: "Invite a co-organizer to the baby shower",
+      shareMessageNo: "Hei {name}! Du er invitert til babyshoweren på Wedflow. Din invitasjonskode: {code}. Last ned Wedflow og skriv inn koden for å få tilgang.",
+      shareMessageEn: "Hi {name}! You're invited to the baby shower on Wedflow. Your invitation code: {code}. Download Wedflow and enter the code to get access.",
+    },
   },
 
   // ─── B2B: Professional & Strategic ──────────────────────────
@@ -306,15 +363,9 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
     typicalContentNo: ["Keynote speakers", "Paneldebatter", "Breakout sessions", "Sponsorstands"],
     typicalContentEn: ["Keynote speakers", "Panel debates", "Breakout sessions", "Sponsor booths"],
     features: {
-      traditions: false,
-      dressTracking: false,
-      weddingPartyRoles: false,
-      speeches: true,
-      photoplan: true,
-      seating: true,
-      coupleProfile: false,
-      importantPeople: true,
-      sharePartner: false,
+      traditions: false, dressTracking: false, weddingPartyRoles: false,
+      speeches: true, photoplan: true, seating: true,
+      coupleProfile: false, importantPeople: true, sharePartner: true,
     },
     roleLabels: {
       primary: { no: "Arrangør", en: "Organizer" },
@@ -322,6 +373,13 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
       guestLabel: { no: "Deltakere", en: "Delegates" },
     },
     dateLabel: { no: "Konferansedato", en: "Conference Date" },
+    shareLabel: {
+      titleNo: "Del arrangementet", titleEn: "Share Event",
+      subtitleNo: "Inviter medarrangør, programansvarlig eller kollega",
+      subtitleEn: "Invite a co-organizer, program lead or colleague",
+      shareMessageNo: "Hei {name}! Du er invitert til konferansen på Wedflow. Din invitasjonskode: {code}. Last ned Wedflow og skriv inn koden for å få tilgang.",
+      shareMessageEn: "Hi {name}! You're invited to the conference on Wedflow. Your invitation code: {code}. Download Wedflow and enter the code to get access.",
+    },
   },
 
   seminar: {
@@ -336,15 +394,9 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
     typicalContentNo: ["Presentasjoner", "Gruppearbeid", "Diskusjoner", "Nettverking"],
     typicalContentEn: ["Presentations", "Group work", "Discussions", "Networking"],
     features: {
-      traditions: false,
-      dressTracking: false,
-      weddingPartyRoles: false,
-      speeches: true,
-      photoplan: false,
-      seating: true,
-      coupleProfile: false,
-      importantPeople: true,
-      sharePartner: false,
+      traditions: false, dressTracking: false, weddingPartyRoles: false,
+      speeches: true, photoplan: false, seating: true,
+      coupleProfile: false, importantPeople: true, sharePartner: true,
     },
     roleLabels: {
       primary: { no: "Arrangør", en: "Organizer" },
@@ -352,6 +404,13 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
       guestLabel: { no: "Deltakere", en: "Participants" },
     },
     dateLabel: { no: "Seminardato", en: "Seminar Date" },
+    shareLabel: {
+      titleNo: "Del arrangementet", titleEn: "Share Event",
+      subtitleNo: "Inviter medarrangør eller fasilitator",
+      subtitleEn: "Invite a co-organizer or facilitator",
+      shareMessageNo: "Hei {name}! Du er invitert til seminaret på Wedflow. Din invitasjonskode: {code}. Last ned Wedflow og skriv inn koden for å få tilgang.",
+      shareMessageEn: "Hi {name}! You're invited to the seminar on Wedflow. Your invitation code: {code}. Download Wedflow and enter the code to get access.",
+    },
   },
 
   kickoff: {
@@ -366,15 +425,9 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
     typicalContentNo: ["Presentasjon av budsjett og mål", "Teambuilding", "Sosiale aktiviteter på kvelden"],
     typicalContentEn: ["Budget and goals presentation", "Team building", "Evening social activities"],
     features: {
-      traditions: false,
-      dressTracking: false,
-      weddingPartyRoles: false,
-      speeches: true,
-      photoplan: true,
-      seating: true,
-      coupleProfile: false,
-      importantPeople: true,
-      sharePartner: false,
+      traditions: false, dressTracking: false, weddingPartyRoles: false,
+      speeches: true, photoplan: true, seating: true,
+      coupleProfile: false, importantPeople: true, sharePartner: true,
     },
     roleLabels: {
       primary: { no: "Arrangør", en: "Organizer" },
@@ -382,6 +435,13 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
       guestLabel: { no: "Deltakere", en: "Attendees" },
     },
     dateLabel: { no: "Kickoff-dato", en: "Kickoff Date" },
+    shareLabel: {
+      titleNo: "Del arrangementet", titleEn: "Share Event",
+      subtitleNo: "Inviter medarrangør eller avdelingsleder",
+      subtitleEn: "Invite a co-organizer or department lead",
+      shareMessageNo: "Hei {name}! Du er invitert til kickoffen på Wedflow. Din invitasjonskode: {code}. Last ned Wedflow og skriv inn koden for å få tilgang.",
+      shareMessageEn: "Hi {name}! You're invited to the kickoff on Wedflow. Your invitation code: {code}. Download Wedflow and enter the code to get access.",
+    },
   },
 
   // ─── B2B: Social & Relationship Building ──────────────────
@@ -397,15 +457,9 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
     typicalContentNo: ["Uformell stemning", "Utendørs aktiviteter", "Grilling", "Underholdning"],
     typicalContentEn: ["Casual atmosphere", "Outdoor activities", "BBQ", "Entertainment"],
     features: {
-      traditions: false,
-      dressTracking: false,
-      weddingPartyRoles: false,
-      speeches: true,
-      photoplan: true,
-      seating: true,
-      coupleProfile: false,
-      importantPeople: true,
-      sharePartner: false,
+      traditions: false, dressTracking: false, weddingPartyRoles: false,
+      speeches: true, photoplan: true, seating: true,
+      coupleProfile: false, importantPeople: true, sharePartner: true,
     },
     roleLabels: {
       primary: { no: "Arrangør", en: "Organizer" },
@@ -413,6 +467,13 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
       guestLabel: { no: "Ansatte", en: "Employees" },
     },
     dateLabel: { no: "Festdato", en: "Party Date" },
+    shareLabel: {
+      titleNo: "Del arrangementet", titleEn: "Share Event",
+      subtitleNo: "Inviter sosialansvarlig eller medarrangør",
+      subtitleEn: "Invite social coordinator or co-organizer",
+      shareMessageNo: "Hei {name}! Du er invitert til sommerfesten på Wedflow. Din invitasjonskode: {code}. Last ned Wedflow og skriv inn koden for å få tilgang.",
+      shareMessageEn: "Hi {name}! You're invited to the summer party on Wedflow. Your invitation code: {code}. Download Wedflow and enter the code to get access.",
+    },
   },
 
   christmas_party: {
@@ -427,15 +488,9 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
     typicalContentNo: ["Felles middag", "Underholdning", "Quiz / tema", "Dans"],
     typicalContentEn: ["Shared dinner", "Entertainment", "Quiz / theme", "Dancing"],
     features: {
-      traditions: false,
-      dressTracking: false,
-      weddingPartyRoles: false,
-      speeches: true,
-      photoplan: true,
-      seating: true,
-      coupleProfile: false,
-      importantPeople: true,
-      sharePartner: false,
+      traditions: false, dressTracking: false, weddingPartyRoles: false,
+      speeches: true, photoplan: true, seating: true,
+      coupleProfile: false, importantPeople: true, sharePartner: true,
     },
     roleLabels: {
       primary: { no: "Arrangør", en: "Organizer" },
@@ -443,6 +498,13 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
       guestLabel: { no: "Ansatte", en: "Employees" },
     },
     dateLabel: { no: "Juleborddato", en: "Party Date" },
+    shareLabel: {
+      titleNo: "Del arrangementet", titleEn: "Share Event",
+      subtitleNo: "Inviter sosialkomité eller medarrangør",
+      subtitleEn: "Invite social committee or co-organizer",
+      shareMessageNo: "Hei {name}! Du er invitert til julebordet på Wedflow. Din invitasjonskode: {code}. Last ned Wedflow og skriv inn koden for å få tilgang.",
+      shareMessageEn: "Hi {name}! You're invited to the Christmas party on Wedflow. Your invitation code: {code}. Download Wedflow and enter the code to get access.",
+    },
   },
 
   team_building: {
@@ -457,15 +519,9 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
     typicalContentNo: ["Escape room", "Matlagingskurs", "Rafting / fjelltur", "Vinteraktiviteter"],
     typicalContentEn: ["Escape room", "Cooking class", "Rafting / hiking", "Winter activities"],
     features: {
-      traditions: false,
-      dressTracking: false,
-      weddingPartyRoles: false,
-      speeches: false,
-      photoplan: false,
-      seating: false,
-      coupleProfile: false,
-      importantPeople: true,
-      sharePartner: false,
+      traditions: false, dressTracking: false, weddingPartyRoles: false,
+      speeches: false, photoplan: false, seating: false,
+      coupleProfile: false, importantPeople: true, sharePartner: true,
     },
     roleLabels: {
       primary: { no: "Arrangør", en: "Organizer" },
@@ -473,6 +529,13 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
       guestLabel: { no: "Deltakere", en: "Participants" },
     },
     dateLabel: { no: "Dato", en: "Date" },
+    shareLabel: {
+      titleNo: "Del arrangementet", titleEn: "Share Event",
+      subtitleNo: "Inviter teamleder eller medarrangør",
+      subtitleEn: "Invite team lead or co-organizer",
+      shareMessageNo: "Hei {name}! Du er invitert til teambuildingen på Wedflow. Din invitasjonskode: {code}. Last ned Wedflow og skriv inn koden for å få tilgang.",
+      shareMessageEn: "Hi {name}! You're invited to the team building event on Wedflow. Your invitation code: {code}. Download Wedflow and enter the code to get access.",
+    },
   },
 
   // ─── B2B: External-facing ─────────────────────────────────
@@ -488,15 +551,9 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
     typicalContentNo: ["Sceneproduksjon", "Demo", "Mingling og nettverk", "Pressedekning"],
     typicalContentEn: ["Stage production", "Demo", "Mingling and networking", "Press coverage"],
     features: {
-      traditions: false,
-      dressTracking: false,
-      weddingPartyRoles: false,
-      speeches: true,
-      photoplan: true,
-      seating: true,
-      coupleProfile: false,
-      importantPeople: true,
-      sharePartner: false,
+      traditions: false, dressTracking: false, weddingPartyRoles: false,
+      speeches: true, photoplan: true, seating: true,
+      coupleProfile: false, importantPeople: true, sharePartner: true,
     },
     roleLabels: {
       primary: { no: "Arrangør", en: "Organizer" },
@@ -504,6 +561,13 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
       guestLabel: { no: "Inviterte", en: "Invitees" },
     },
     dateLabel: { no: "Lanseringsdato", en: "Launch Date" },
+    shareLabel: {
+      titleNo: "Del arrangementet", titleEn: "Share Event",
+      subtitleNo: "Inviter prosjektleder eller medarrangør",
+      subtitleEn: "Invite project lead or co-organizer",
+      shareMessageNo: "Hei {name}! Du er invitert til produktlanseringen på Wedflow. Din invitasjonskode: {code}. Last ned Wedflow og skriv inn koden for å få tilgang.",
+      shareMessageEn: "Hi {name}! You're invited to the product launch on Wedflow. Your invitation code: {code}. Download Wedflow and enter the code to get access.",
+    },
   },
 
   trade_fair: {
@@ -518,15 +582,9 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
     typicalContentNo: ["Standplass", "Kundemøter", "Nettverk", "Produktvisning"],
     typicalContentEn: ["Exhibition booth", "Client meetings", "Networking", "Product display"],
     features: {
-      traditions: false,
-      dressTracking: false,
-      weddingPartyRoles: false,
-      speeches: true,
-      photoplan: true,
-      seating: false,
-      coupleProfile: false,
-      importantPeople: true,
-      sharePartner: false,
+      traditions: false, dressTracking: false, weddingPartyRoles: false,
+      speeches: true, photoplan: true, seating: false,
+      coupleProfile: false, importantPeople: true, sharePartner: true,
     },
     roleLabels: {
       primary: { no: "Utstiller", en: "Exhibitor" },
@@ -534,6 +592,13 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
       guestLabel: { no: "Besøkende", en: "Visitors" },
     },
     dateLabel: { no: "Messedato", en: "Fair Date" },
+    shareLabel: {
+      titleNo: "Del arrangementet", titleEn: "Share Event",
+      subtitleNo: "Inviter standansvarlig eller kollega",
+      subtitleEn: "Invite booth manager or colleague",
+      shareMessageNo: "Hei {name}! Du er invitert til messen på Wedflow. Din invitasjonskode: {code}. Last ned Wedflow og skriv inn koden for å få tilgang.",
+      shareMessageEn: "Hi {name}! You're invited to the trade fair on Wedflow. Your invitation code: {code}. Download Wedflow and enter the code to get access.",
+    },
   },
 
   // ─── B2B: HR & Internal Celebrations ──────────────────────
@@ -549,15 +614,9 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
     typicalContentNo: ["Taler", "Tilbakeblikk / historikk", "Prisutdeling", "Festmiddag"],
     typicalContentEn: ["Speeches", "Retrospective / history", "Awards", "Gala dinner"],
     features: {
-      traditions: false,
-      dressTracking: false,
-      weddingPartyRoles: false,
-      speeches: true,
-      photoplan: true,
-      seating: true,
-      coupleProfile: false,
-      importantPeople: true,
-      sharePartner: false,
+      traditions: false, dressTracking: false, weddingPartyRoles: false,
+      speeches: true, photoplan: true, seating: true,
+      coupleProfile: false, importantPeople: true, sharePartner: true,
     },
     roleLabels: {
       primary: { no: "Arrangør", en: "Organizer" },
@@ -565,6 +624,13 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
       guestLabel: { no: "Gjester", en: "Guests" },
     },
     dateLabel: { no: "Jubileumsdato", en: "Anniversary Date" },
+    shareLabel: {
+      titleNo: "Del arrangementet", titleEn: "Share Event",
+      subtitleNo: "Inviter jubileumskomité eller medarrangør",
+      subtitleEn: "Invite anniversary committee or co-organizer",
+      shareMessageNo: "Hei {name}! Du er invitert til jubileumsfeiringen på Wedflow. Din invitasjonskode: {code}. Last ned Wedflow og skriv inn koden for å få tilgang.",
+      shareMessageEn: "Hi {name}! You're invited to the anniversary celebration on Wedflow. Your invitation code: {code}. Download Wedflow and enter the code to get access.",
+    },
   },
 
   awards_night: {
@@ -579,15 +645,9 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
     typicalContentNo: ["Prisutdeling", "Taler", "Festmiddag", "Underholdning"],
     typicalContentEn: ["Awards ceremony", "Speeches", "Gala dinner", "Entertainment"],
     features: {
-      traditions: false,
-      dressTracking: false,
-      weddingPartyRoles: false,
-      speeches: true,
-      photoplan: true,
-      seating: true,
-      coupleProfile: false,
-      importantPeople: true,
-      sharePartner: false,
+      traditions: false, dressTracking: false, weddingPartyRoles: false,
+      speeches: true, photoplan: true, seating: true,
+      coupleProfile: false, importantPeople: true, sharePartner: true,
     },
     roleLabels: {
       primary: { no: "Arrangør", en: "Organizer" },
@@ -595,6 +655,13 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
       guestLabel: { no: "Gjester", en: "Guests" },
     },
     dateLabel: { no: "Galladato", en: "Gala Date" },
+    shareLabel: {
+      titleNo: "Del arrangementet", titleEn: "Share Event",
+      subtitleNo: "Inviter seremonimester eller medarrangør",
+      subtitleEn: "Invite MC or co-organizer",
+      shareMessageNo: "Hei {name}! Du er invitert til gallaen på Wedflow. Din invitasjonskode: {code}. Last ned Wedflow og skriv inn koden for å få tilgang.",
+      shareMessageEn: "Hi {name}! You're invited to the awards night on Wedflow. Your invitation code: {code}. Download Wedflow and enter the code to get access.",
+    },
   },
 
   employee_day: {
@@ -609,15 +676,9 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
     typicalContentNo: ["Foredrag", "Workshops", "Kulturelle innslag", "Sosialt samvær"],
     typicalContentEn: ["Talks", "Workshops", "Cultural performances", "Social gathering"],
     features: {
-      traditions: false,
-      dressTracking: false,
-      weddingPartyRoles: false,
-      speeches: true,
-      photoplan: false,
-      seating: false,
-      coupleProfile: false,
-      importantPeople: true,
-      sharePartner: false,
+      traditions: false, dressTracking: false, weddingPartyRoles: false,
+      speeches: true, photoplan: false, seating: false,
+      coupleProfile: false, importantPeople: true, sharePartner: true,
     },
     roleLabels: {
       primary: { no: "HR-ansvarlig", en: "HR Lead" },
@@ -625,6 +686,13 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
       guestLabel: { no: "Ansatte", en: "Employees" },
     },
     dateLabel: { no: "Dato", en: "Date" },
+    shareLabel: {
+      titleNo: "Del arrangementet", titleEn: "Share Event",
+      subtitleNo: "Inviter HR-kollega eller medarrangør",
+      subtitleEn: "Invite HR colleague or co-organizer",
+      shareMessageNo: "Hei {name}! Du er invitert til ansattdagen på Wedflow. Din invitasjonskode: {code}. Last ned Wedflow og skriv inn koden for å få tilgang.",
+      shareMessageEn: "Hi {name}! You're invited to the employee day on Wedflow. Your invitation code: {code}. Download Wedflow and enter the code to get access.",
+    },
   },
 
   onboarding_day: {
@@ -639,15 +707,9 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
     typicalContentNo: ["Introduksjoner", "Kontoromvisning", "Teamlunsj", "Buddy-ordning"],
     typicalContentEn: ["Introductions", "Office tour", "Team lunch", "Buddy program"],
     features: {
-      traditions: false,
-      dressTracking: false,
-      weddingPartyRoles: false,
-      speeches: true,
-      photoplan: false,
-      seating: false,
-      coupleProfile: false,
-      importantPeople: true,
-      sharePartner: false,
+      traditions: false, dressTracking: false, weddingPartyRoles: false,
+      speeches: true, photoplan: false, seating: false,
+      coupleProfile: false, importantPeople: true, sharePartner: true,
     },
     roleLabels: {
       primary: { no: "HR-ansvarlig", en: "HR Lead" },
@@ -655,6 +717,13 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
       guestLabel: { no: "Nye ansatte", en: "New Employees" },
     },
     dateLabel: { no: "Onboarding-dato", en: "Onboarding Date" },
+    shareLabel: {
+      titleNo: "Del arrangementet", titleEn: "Share Event",
+      subtitleNo: "Inviter fadder eller HR-kollega",
+      subtitleEn: "Invite buddy or HR colleague",
+      shareMessageNo: "Hei {name}! Du er invitert til onboarding-dagen på Wedflow. Din invitasjonskode: {code}. Last ned Wedflow og skriv inn koden for å få tilgang.",
+      shareMessageEn: "Hi {name}! You're invited to the onboarding day on Wedflow. Your invitation code: {code}. Download Wedflow and enter the code to get access.",
+    },
   },
 
   // ─── B2B: General catch-all ───────────────────────────────
@@ -667,15 +736,9 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
     descriptionNo: "Planlegg et annet type bedriftsarrangement",
     descriptionEn: "Plan another type of corporate event",
     features: {
-      traditions: false,
-      dressTracking: false,
-      weddingPartyRoles: false,
-      speeches: true,
-      photoplan: true,
-      seating: true,
-      coupleProfile: false,
-      importantPeople: true,
-      sharePartner: false,
+      traditions: false, dressTracking: false, weddingPartyRoles: false,
+      speeches: true, photoplan: true, seating: true,
+      coupleProfile: false, importantPeople: true, sharePartner: true,
     },
     roleLabels: {
       primary: { no: "Arrangør", en: "Organizer" },
@@ -683,6 +746,13 @@ export const EVENT_TYPE_CONFIGS: Record<EventType, EventTypeConfig> = {
       guestLabel: { no: "Deltakere", en: "Attendees" },
     },
     dateLabel: { no: "Arrangementsdato", en: "Event Date" },
+    shareLabel: {
+      titleNo: "Del arrangementet", titleEn: "Share Event",
+      subtitleNo: "Inviter medarrangør eller kollega",
+      subtitleEn: "Invite co-organizer or colleague",
+      shareMessageNo: "Hei {name}! Du er invitert til arrangementet på Wedflow. Din invitasjonskode: {code}. Last ned Wedflow og skriv inn koden for å få tilgang.",
+      shareMessageEn: "Hi {name}! You're invited to the event on Wedflow. Your invitation code: {code}. Download Wedflow and enter the code to get access.",
+    },
   },
 };
 

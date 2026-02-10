@@ -11,6 +11,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
+import { useEventType } from "@/hooks/useEventType";
 import { Spacing, BorderRadius, Colors } from "@/constants/theme";
 import {
   getWeddingInvites,
@@ -34,6 +35,7 @@ export default function SharePartnerScreen() {
   const { theme } = useTheme();
   const navigation = useNavigation<any>();
   const queryClient = useQueryClient();
+  const { config } = useEventType();
 
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newName, setNewName] = useState("");
@@ -100,8 +102,11 @@ export default function SharePartnerScreen() {
 
   const handleShareCode = async (code: string, name: string) => {
     try {
+      const msg = config.shareLabel
+        ? config.shareLabel.shareMessageNo.replace("{name}", name).replace("{code}", code)
+        : `Hei ${name}! Du er invitert til bryllupet vårt på Wedflow. Din invitasjonskode: ${code}. Last ned Wedflow og skriv inn koden for å få tilgang.`;
       await Share.share({
-        message: `Hei ${name}! Du er invitert til bryllupet vårt på Wedflow 💍\n\nDin invitasjonskode: ${code}\n\nLast ned Wedflow og skriv inn koden for å få tilgang:\n• App Store: https://apps.apple.com/app/wedflow\n• Google Play: https://play.google.com/store/apps/details?id=no.norwedfilm.wedflow`,
+        message: `${msg}\n\n• App Store: https://apps.apple.com/app/wedflow\n• Google Play: https://play.google.com/store/apps/details?id=no.norwedfilm.wedflow`,
       });
     } catch {}
   };
@@ -178,9 +183,9 @@ export default function SharePartnerScreen() {
           <View style={[styles.iconCircle, { backgroundColor: Colors.dark.accent + "20" }]}>
             <Feather name="users" size={40} color={Colors.dark.accent} />
           </View>
-          <ThemedText style={styles.title}>Del bryllupet</ThemedText>
+          <ThemedText style={styles.title}>{config.shareLabel?.titleNo || "Del bryllupet"}</ThemedText>
           <ThemedText style={[styles.subtitle, { color: theme.textSecondary }]}>
-            Inviter partner, toastmaster, forlover og andre viktige personer
+            {config.shareLabel?.subtitleNo || "Inviter partner, toastmaster, forlover og andre viktige personer"}
           </ThemedText>
         </View>
       </Animated.View>
