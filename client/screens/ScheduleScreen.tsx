@@ -485,7 +485,7 @@ export default function ScheduleScreen() {
           <ThemedText
             style={[styles.emptySubtext, { color: theme.textMuted }]}
           >
-            {t("Legg til din første hendelse for bryllupsdagen", "Add your first event for the wedding day")}
+            {t("Legg til din første hendelse for dagen", "Add your first event for the day")}
           </ThemedText>
         </View>
       ) : (

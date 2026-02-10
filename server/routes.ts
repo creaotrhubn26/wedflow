@@ -502,9 +502,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/vendor-categories", async (_req: Request, res: Response) => {
+  app.get("/api/vendor-categories", async (req: Request, res: Response) => {
     try {
       const categories = await db.select().from(vendorCategories);
+      
+      // Optionally filter by event type
+      const eventType = req.query.eventType as string | undefined;
+      if (eventType) {
+        const filtered = categories.filter(cat => {
+          if (!cat.applicableEventTypes || cat.applicableEventTypes.length === 0) return true;
+          return cat.applicableEventTypes.includes(eventType);
+        });
+        return res.json(filtered);
+      }
+      
       res.json(categories);
     } catch (error) {
       console.error("Error fetching categories:", error);
@@ -2597,7 +2608,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const { email, displayName, password } = validation.data;
-      const { selectedTraditions } = req.body; // Optional traditions array
+      const { selectedTraditions, eventType, eventCategory } = req.body; // Optional fields
 
       console.log("[CoupleLogin] Starting lookup for email:", email);
 
@@ -2631,6 +2642,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
             displayName, 
             password: hashedPassword,
             selectedTraditions: selectedTraditions || null,
+            eventType: eventType || 'wedding',
+            eventCategory: eventCategory || 'personal',
           })
           .returning();
         couple = newCouple;
@@ -2736,13 +2749,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (!coupleId) return;
 
     try {
-      const { displayName, weddingDate, selectedTraditions, expectedGuests } = req.body;
+      const { displayName, weddingDate, selectedTraditions, expectedGuests, eventType, eventCategory } = req.body;
       
       const updateData: any = { updatedAt: new Date() };
       if (displayName !== undefined) updateData.displayName = displayName;
       if (weddingDate !== undefined) updateData.weddingDate = weddingDate;
       if (selectedTraditions !== undefined) updateData.selectedTraditions = selectedTraditions;
       if (expectedGuests !== undefined) updateData.expectedGuests = expectedGuests;
+      if (eventType !== undefined) updateData.eventType = eventType;
+      if (eventCategory !== undefined) updateData.eventCategory = eventCategory;
 
       const [updated] = await db.update(coupleProfiles)
         .set(updateData)

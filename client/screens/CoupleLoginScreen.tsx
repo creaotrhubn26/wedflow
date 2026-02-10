@@ -26,6 +26,12 @@ import { signInWithGoogle } from "@/lib/supabase-auth";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { showToast } from "@/lib/toast";
 import { showOptions } from "@/lib/dialogs";
+import { 
+  EVENT_TYPE_CONFIGS, 
+  getGroupedEventTypes, 
+  type EventType, 
+  type EventCategory 
+} from "@shared/event-types";
 
 const COUPLE_STORAGE_KEY = "wedflow_couple_session";
 
@@ -65,6 +71,9 @@ export default function CoupleLoginScreen({ navigation, onLoginSuccess }: Props)
   const [showPassword, setShowPassword] = useState(false);
   const [selectedTraditions, setSelectedTraditions] = useState<string[]>([]);
   const [showTraditionSelection, setShowTraditionSelection] = useState(false);
+  const [selectedEventType, setSelectedEventType] = useState<EventType>("wedding");
+  const [selectedEventCategory, setSelectedEventCategory] = useState<EventCategory>("personal");
+  const [showEventTypePicker, setShowEventTypePicker] = useState(false);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
@@ -110,6 +119,8 @@ export default function CoupleLoginScreen({ navigation, onLoginSuccess }: Props)
         password,
         displayName: isRegistering ? displayName : email.split("@")[0],
         selectedTraditions: isRegistering && selectedTraditions.length > 0 ? selectedTraditions : undefined,
+        eventType: isRegistering ? selectedEventType : undefined,
+        eventCategory: isRegistering ? selectedEventCategory : undefined,
       });
       return response.json();
     },
@@ -152,8 +163,14 @@ export default function CoupleLoginScreen({ navigation, onLoginSuccess }: Props)
       return;
     }
 
-    // For new registrations, show tradition selection first
-    if (isRegistering && selectedTraditions.length === 0) {
+    // For new registrations, show event type picker first
+    if (isRegistering && !showEventTypePicker && selectedEventType === "wedding" && selectedTraditions.length === 0) {
+      setShowEventTypePicker(true);
+      return;
+    }
+
+    // For wedding registrations, show tradition selection
+    if (isRegistering && selectedEventType === "wedding" && selectedTraditions.length === 0) {
       setShowTraditionSelection(true);
       return;
     }
@@ -181,6 +198,27 @@ export default function CoupleLoginScreen({ navigation, onLoginSuccess }: Props)
 
   const handleSkipTraditions = () => {
     setShowTraditionSelection(false);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    loginMutation.mutate();
+  };
+
+  const handleSelectEventType = (eventType: EventType) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    const config = EVENT_TYPE_CONFIGS[eventType];
+    setSelectedEventType(eventType);
+    setSelectedEventCategory(config.category);
+  };
+
+  const handleContinueWithEventType = () => {
+    setShowEventTypePicker(false);
+    
+    // If wedding, proceed to tradition selection
+    if (selectedEventType === "wedding") {
+      setShowTraditionSelection(true);
+      return;
+    }
+    
+    // For non-wedding events, skip traditions and register directly
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     loginMutation.mutate();
   };
@@ -232,8 +270,8 @@ export default function CoupleLoginScreen({ navigation, onLoginSuccess }: Props)
         <ThemedText style={styles.title}>Velkommen til Wedflow</ThemedText>
         <ThemedText style={[styles.subtitle, { color: theme.textSecondary }]}>
           {isRegistering 
-            ? "Opprett konto for å planlegge bryllupet ditt"
-            : "Logg inn for å planlegge bryllupet ditt"}
+            ? "Opprett konto for å planlegge arrangementet ditt"
+            : "Logg inn for å fortsette planleggingen"}
         </ThemedText>
 
         <View style={styles.form}>
@@ -401,9 +439,132 @@ export default function CoupleLoginScreen({ navigation, onLoginSuccess }: Props)
         </View>
 
         <ThemedText style={[styles.infoText, { color: theme.textMuted }]}>
-          Med Wedflow får du full kontroll over planleggingen av bryllupet ditt – fra gjesteoversikt og tidslinje til budsjett og leverandørsamtaler.
+          Med Wedflow får du full kontroll over planleggingen – fra gjesteoversikt og tidslinje til budsjett og leverandørsamtaler.
         </ThemedText>
       </KeyboardAwareScrollViewCompat>
+
+      {/* Event Type Picker Modal */}
+      <Modal
+        visible={showEventTypePicker}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowEventTypePicker(false)}
+      >
+        <SafeAreaView style={[styles.modalContainer, { backgroundColor: theme.backgroundRoot }]} edges={['top', 'bottom']}>
+          <View style={[styles.modalHeader, { borderBottomColor: theme.border }]}>
+            <ThemedText style={styles.modalTitle}>Hva planlegger du?</ThemedText>
+            <ThemedText style={[styles.modalSubtitle, { color: theme.textSecondary }]}>
+              Vi tilpasser verktøyene basert på type arrangement
+            </ThemedText>
+          </View>
+
+          <ScrollView 
+            style={styles.traditionsScroll}
+            contentContainerStyle={styles.traditionsContent}
+          >
+            {/* Personal Events */}
+            <ThemedText style={[styles.eventCategoryHeader, { color: theme.textSecondary }]}>
+              Privat
+            </ThemedText>
+            {getGroupedEventTypes().personal.map((config) => {
+              const isSelected = selectedEventType === config.type;
+              return (
+                <Pressable
+                  key={config.type}
+                  onPress={() => handleSelectEventType(config.type)}
+                  style={[
+                    styles.traditionCard,
+                    {
+                      backgroundColor: isSelected ? Colors.dark.accent + "15" : theme.backgroundDefault,
+                      borderColor: isSelected ? Colors.dark.accent : theme.border,
+                      borderWidth: isSelected ? 2 : 1,
+                    },
+                  ]}
+                >
+                  <View style={styles.traditionHeader}>
+                    <ThemedText style={styles.traditionIcon}>{config.icon}</ThemedText>
+                    <View style={{ flex: 1 }}>
+                      <ThemedText style={[styles.traditionName, { color: theme.text }]}>
+                        {config.labelNo}
+                      </ThemedText>
+                      <ThemedText style={[styles.eventTypeDesc, { color: theme.textSecondary }]}>
+                        {config.descriptionNo}
+                      </ThemedText>
+                    </View>
+                  </View>
+                  {isSelected && (
+                    <View style={[styles.checkBadge, { backgroundColor: Colors.dark.accent }]}>
+                      <Feather name="check" size={16} color="#1A1A1A" />
+                    </View>
+                  )}
+                </Pressable>
+              );
+            })}
+
+            {/* Corporate Events */}
+            <ThemedText style={[styles.eventCategoryHeader, { color: theme.textSecondary, marginTop: Spacing.lg }]}>
+              Bedrift & Organisasjon
+            </ThemedText>
+            {getGroupedEventTypes().corporate.map((config) => {
+              const isSelected = selectedEventType === config.type;
+              return (
+                <Pressable
+                  key={config.type}
+                  onPress={() => handleSelectEventType(config.type)}
+                  style={[
+                    styles.traditionCard,
+                    {
+                      backgroundColor: isSelected ? Colors.dark.accent + "15" : theme.backgroundDefault,
+                      borderColor: isSelected ? Colors.dark.accent : theme.border,
+                      borderWidth: isSelected ? 2 : 1,
+                    },
+                  ]}
+                >
+                  <View style={styles.traditionHeader}>
+                    <ThemedText style={styles.traditionIcon}>{config.icon}</ThemedText>
+                    <View style={{ flex: 1 }}>
+                      <ThemedText style={[styles.traditionName, { color: theme.text }]}>
+                        {config.labelNo}
+                      </ThemedText>
+                      <ThemedText style={[styles.eventTypeDesc, { color: theme.textSecondary }]}>
+                        {config.descriptionNo}
+                      </ThemedText>
+                    </View>
+                  </View>
+                  {isSelected && (
+                    <View style={[styles.checkBadge, { backgroundColor: Colors.dark.accent }]}>
+                      <Feather name="check" size={16} color="#1A1A1A" />
+                    </View>
+                  )}
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+
+          <View style={[styles.modalFooter, { borderTopColor: theme.border, backgroundColor: theme.backgroundDefault }]}>
+            <Pressable
+              onPress={() => setShowEventTypePicker(false)}
+              style={[styles.skipBtn, { borderColor: theme.border }]}
+            >
+              <ThemedText style={[styles.skipBtnText, { color: theme.textSecondary }]}>
+                Tilbake
+              </ThemedText>
+            </Pressable>
+            
+            <Pressable
+              onPress={handleContinueWithEventType}
+              style={[
+                styles.continueBtn,
+                { backgroundColor: Colors.dark.accent },
+              ]}
+            >
+              <ThemedText style={[styles.continueBtnText, { color: "#1A1A1A" }]}>
+                Fortsett
+              </ThemedText>
+            </Pressable>
+          </View>
+        </SafeAreaView>
+      </Modal>
 
       {/* Tradition Selection Modal */}
       <Modal
@@ -657,6 +818,18 @@ const styles = StyleSheet.create({
   traditionName: {
     fontSize: 18,
     fontWeight: "600",
+  },
+  eventTypeDesc: {
+    fontSize: 13,
+    marginTop: 2,
+  },
+  eventCategoryHeader: {
+    fontSize: 13,
+    fontWeight: "700",
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    marginBottom: Spacing.sm,
+    marginTop: Spacing.sm,
   },
   checkBadge: {
     width: 32,

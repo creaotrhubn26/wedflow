@@ -1,9 +1,13 @@
+import type { EventType, EventCategory } from "@shared/event-types";
+
 export interface CoupleProfile {
   id: string;
   displayName: string;
   email: string;
   partnerEmail?: string | null;
   weddingDate?: string | null;
+  eventType?: EventType | null;
+  eventCategory?: EventCategory | null;
   selectedTraditions?: string[] | null;
   expectedGuests?: number | null;
 }
@@ -33,6 +37,8 @@ export async function updateCoupleProfile(
     partnerEmail?: string | null;
     selectedTraditions?: string[];
     expectedGuests?: number;
+    eventType?: EventType;
+    eventCategory?: EventCategory;
   }
 ): Promise<CoupleProfile> {
   const res = await fetch(`${API_URL}/api/couples/me`, {

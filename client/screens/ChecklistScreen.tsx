@@ -833,10 +833,9 @@ export default function ChecklistScreen() {
               onChangeText={setEditTitle}
               placeholder={t("Oppgavetittel", "Task title")}
               placeholderTextColor={theme.textSecondary}
-              autoFocus
             />
 
-            <ThemedText style={[styles.label, { color: theme.textSecondary, marginTop: Spacing.md }]}>
+            <ThemedText style={[styles.label, { color: theme.textSecondary, marginTop: Spacing.sm }]}>
               {t("Kategori", "Category")}
             </ThemedText>
             <View style={styles.categoryGrid}>
@@ -861,7 +860,7 @@ export default function ChecklistScreen() {
             </View>
 
             <ThemedText style={[styles.label, { color: theme.textSecondary, marginTop: Spacing.md }]}>
-              {t("Måneder før bryllup", "Months before wedding")}
+              {t("Måneder før arrangementet", "Months before event")}
             </ThemedText>
             <View style={styles.monthsSlider}>
               {[0, 1, 2, 3, 6, 9, 12].map((months) => (
@@ -1012,7 +1011,7 @@ export default function ChecklistScreen() {
             </View>
 
             <ThemedText style={[styles.label, { color: theme.textSecondary, marginTop: Spacing.md }]}>
-              {t("Måneder før bryllup", "Months before wedding")}
+              {t("Måneder før arrangementet", "Months before event")}
             </ThemedText>
             <View style={styles.monthsSlider}>
               {[0, 1, 2, 3, 6, 9, 12].map((months) => (

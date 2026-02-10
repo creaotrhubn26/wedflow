@@ -152,7 +152,7 @@ export default function PhotoPlanScreen() {
       setLocationResults([]);
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     } catch {
-      Alert.alert("Feil", "Kunne ikke hente stedsinformasjon");
+      showToast("Kunne ikke hente stedsinformasjon");
     } finally {
       setIsSearchingLocation(false);
     }

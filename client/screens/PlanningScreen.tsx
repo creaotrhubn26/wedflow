@@ -37,6 +37,8 @@ import {
 } from "@/lib/storage";
 import { rescheduleAllNotifications } from "@/lib/notifications";
 import { WeddingDetails, ScheduleEvent } from "@/lib/types";
+import { useEventType } from "@/hooks/useEventType";
+import { getDateLabel } from "@shared/event-types";
 
 const API_BASE = process.env.EXPO_PUBLIC_API_URL || "";
 const COUPLE_STORAGE_KEY = "wedflow_couple_session";
@@ -155,6 +157,7 @@ export default function PlanningScreen() {
   const headerHeight = useHeaderHeight();
   const tabBarHeight = useBottomTabBarHeight();
   const { theme } = useTheme();
+  const { eventType, hasFeature, isWedding, config } = useEventType();
   const navigation = useNavigation<NavigationProp>();
 
   const [appLanguage, setAppLanguage] = useState<AppLanguage>("nb");
@@ -187,9 +190,10 @@ export default function PlanningScreen() {
 
   const isDefaultCoupleName = wedding ? defaultCoupleNames.includes(wedding.coupleNames) : true;
   const isDefaultVenue = wedding ? defaultVenues.includes(wedding.venue) : true;
+  const eventDefaultName = config ? t(config.roleLabels.primary.no, config.roleLabels.primary.en) : t("Ditt arrangement", "Your event");
   const displayCoupleNames = wedding?.coupleNames && !isDefaultCoupleName
     ? wedding.coupleNames
-    : t(DEFAULT_WEDDING_NB.coupleNames, DEFAULT_WEDDING_EN.coupleNames);
+    : (isWedding ? t(DEFAULT_WEDDING_NB.coupleNames, DEFAULT_WEDDING_EN.coupleNames) : eventDefaultName);
   const displayVenue = wedding?.venue && !isDefaultVenue
     ? wedding.venue
     : t(DEFAULT_WEDDING_NB.venue, DEFAULT_WEDDING_EN.venue);
@@ -641,12 +645,16 @@ export default function PlanningScreen() {
       </Animated.View>
 
       <Animated.View entering={FadeInDown.delay(350).duration(400)}>
+        {hasFeature("dressTracking") && (
+        <>
         <ThemedText style={styles.sectionTitle}>{t("Antrekk & Styling", "Attire & Styling")}</ThemedText>
         <View style={[styles.sectionCard, { backgroundColor: theme.backgroundDefault }]}>
           <ActionItem icon="heart" label={t("Brudekjole", "Wedding dress")} subtitle={t("Prøvinger og favoritter", "Fittings and favorites")} theme={theme} onPress={() => navigation.navigate("Brudekjole")} color="#BA68C8" />
           <View style={[styles.divider, { backgroundColor: theme.border }]} />
           <ActionItem icon="scissors" label={t("Hår & Makeup", "Hair & Makeup")} subtitle={t("Avtaler og looks", "Appointments and looks")} theme={theme} onPress={() => navigation.navigate("HaarMakeup")} color="#E91E63" />
         </View>
+        </>
+        )}
       </Animated.View>
 
       <Animated.View entering={FadeInDown.delay(375).duration(400)}>
@@ -654,7 +662,7 @@ export default function PlanningScreen() {
         <View style={[styles.sectionCard, { backgroundColor: theme.backgroundDefault }]}>
           <ActionItem icon="coffee" label={t("Catering", "Catering")} subtitle={t("Menyer og smaksprøver", "Menus and tastings")} theme={theme} onPress={() => navigation.navigate("Catering")} color="#FF9800" />
           <View style={[styles.divider, { backgroundColor: theme.border }]} />
-          <ActionItem icon="gift" label={t("Bryllupskake", "Wedding cake")} subtitle={t("Design og smaker", "Design and flavors")} theme={theme} onPress={() => navigation.navigate("Kake")} color="#F06292" />
+          <ActionItem icon="gift" label={t(isWedding ? "Bryllupskake" : "Kake", isWedding ? "Wedding cake" : "Cake")} subtitle={t("Design og smaker", "Design and flavors")} theme={theme} onPress={() => navigation.navigate("Kake")} color="#F06292" />
         </View>
       </Animated.View>
 
@@ -665,7 +673,7 @@ export default function PlanningScreen() {
           <View style={[styles.divider, { backgroundColor: theme.border }]} />
           <ActionItem icon="truck" label={t("Transport", "Transport")} subtitle={t("Biler og sjåfører", "Cars and drivers")} theme={theme} onPress={() => navigation.navigate("Transport")} color="#607D8B" />
           <View style={[styles.divider, { backgroundColor: theme.border }]} />
-          <ActionItem icon="home" label={t("Lokale", "Venue")} subtitle={t("Bryllupslokale og seremoni", "Venue and ceremony")} theme={theme} onPress={() => navigation.navigate("Venue")} color="#795548" />
+          <ActionItem icon="home" label={t("Lokale", "Venue")} subtitle={t(isWedding ? "Bryllupslokale og seremoni" : "Lokale og arrangement", isWedding ? "Venue and ceremony" : "Venue and event")} theme={theme} onPress={() => navigation.navigate("Venue")} color="#795548" />
         </View>
       </Animated.View>
 
@@ -683,7 +691,7 @@ export default function PlanningScreen() {
       <Animated.View entering={FadeInDown.delay(425).duration(400)}>
         <ThemedText style={styles.sectionTitle}>{t("Koordinering", "Coordination")}</ThemedText>
         <View style={[styles.sectionCard, { backgroundColor: theme.backgroundDefault }]}>
-          <ActionItem icon="clipboard" label={t("Bryllupsplanlegger", "Wedding planner")} subtitle={t("Profesjonell planlegging", "Professional planning")} theme={theme} onPress={() => navigation.navigate("Planlegger")} color="#00BCD4" />
+          <ActionItem icon="clipboard" label={t(isWedding ? "Bryllupsplanlegger" : "Planlegger", isWedding ? "Wedding planner" : "Event planner")} subtitle={t("Profesjonell planlegging", "Professional planning")} theme={theme} onPress={() => navigation.navigate("Planlegger")} color="#00BCD4" />
         </View>
       </Animated.View>
 
@@ -703,7 +711,7 @@ export default function PlanningScreen() {
       <Animated.View entering={FadeInDown.delay(500).duration(400)}>
         <ThemedText style={styles.sectionTitle}>{t("Team", "Team")}</ThemedText>
         <View style={[styles.sectionCard, { backgroundColor: theme.backgroundDefault }]}>
-          <ActionItem icon="users" label={t("Viktige personer", "Key people")} subtitle={t("Forlovere, toastmaster", "Bridal party, toastmaster")} theme={theme} onPress={() => navigation.navigate("ImportantPeople")} />
+          <ActionItem icon="users" label={t("Viktige personer", "Key people")} subtitle={t(isWedding ? "Forlovere, toastmaster" : "Nøkkelpersoner", isWedding ? "Bridal party, toastmaster" : "Key contacts")} theme={theme} onPress={() => navigation.navigate("ImportantPeople") } />
           <View style={[styles.divider, { backgroundColor: theme.border }]} />
           <ActionItem icon="message-circle" label={t("Meldinger", "Messages")} subtitle={t("Chat med leverandører", "Chat with vendors")} theme={theme} onPress={() => navigation.navigate("Messages")} />
           <View style={[styles.divider, { backgroundColor: theme.border }]} />

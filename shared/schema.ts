@@ -26,6 +26,7 @@ export const vendorCategories = pgTable("vendor_categories", {
   name: text("name").notNull(),
   icon: text("icon").notNull(),
   description: text("description"),
+  applicableEventTypes: text("applicable_event_types").array(),
 });
 
 export const vendors = pgTable("vendors", {
@@ -387,7 +388,7 @@ export type ChecklistTask = typeof checklistTasks.$inferSelect;
 export type InsertChecklistTask = z.infer<typeof insertChecklistTaskSchema>;
 export type CreateChecklistTask = z.infer<typeof createChecklistTaskSchema>;
 
-// Couple Profiles for messaging
+// Couple / Organizer Profiles — supports multiple event types (wedding, confirmation, corporate, etc.)
 export const coupleProfiles = pgTable("couple_profiles", {
   id: varchar("id")
     .primaryKey()
@@ -397,6 +398,8 @@ export const coupleProfiles = pgTable("couple_profiles", {
   password: text("password").notNull(),
   partnerEmail: text("partner_email"),
   weddingDate: text("wedding_date"),
+  eventType: text("event_type").default("wedding"),
+  eventCategory: text("event_category").default("personal"),
   selectedTraditions: text("selected_traditions").array(),
   lastActiveAt: timestamp("last_active_at").defaultNow(),
   createdAt: timestamp("created_at").defaultNow(),
