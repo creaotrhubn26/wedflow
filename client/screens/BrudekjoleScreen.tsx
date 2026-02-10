@@ -14,7 +14,7 @@ import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import * as ImagePicker from "expo-image-picker";
 import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
@@ -413,7 +413,7 @@ export default function BrudekjoleScreen() {
             <View style={[styles.budgetCard, { backgroundColor: theme.backgroundDefault }]}>
               <View style={styles.budgetHeader}>
                 <View style={[styles.budgetIcon, { backgroundColor: Colors.dark.accent + "20" }]}>
-                  <Feather name="dollar-sign" size={20} color={Colors.dark.accent} />
+                  <EvendiIcon name="dollar-sign" size={20} color={Colors.dark.accent} />
                 </View>
                 <View style={styles.budgetInfo}>
                   <ThemedText style={styles.budgetLabel}>{isWedding ? "Kjolebudsjett" : "Antrekksbudsjett"}</ThemedText>
@@ -421,7 +421,7 @@ export default function BrudekjoleScreen() {
                     {dressBudget > 0 ? `${dressBudget.toLocaleString("nb-NO")} kr` : "Sett budsjett"}
                   </ThemedText>
                 </View>
-                <Feather name="edit-2" size={16} color={theme.textMuted} />
+                <EvendiIcon name="edit-2" size={16} color={theme.textMuted} />
               </View>
               {dressBudget > 0 && (
                 <View style={styles.budgetProgress}>
@@ -471,7 +471,7 @@ export default function BrudekjoleScreen() {
                   { backgroundColor: activeTab === tab.key ? Colors.dark.accent : theme.backgroundDefault },
                 ]}
               >
-                <Feather
+                <EvendiIcon
                   name={tab.icon as any}
                   size={16}
                   color={activeTab === tab.key ? "#fff" : theme.textMuted}
@@ -493,14 +493,14 @@ export default function BrudekjoleScreen() {
               <ThemedText style={styles.sectionTitle}>{isWedding ? "Prøveavtaler" : "Avtaler"}</ThemedText>
               <Pressable onPress={() => openAppointmentModal()}>
                 <View style={[styles.addButton, { backgroundColor: Colors.dark.accent }]}>
-                  <Feather name="plus" size={18} color="#fff" />
+                  <EvendiIcon name="plus" size={18} color="#fff" />
                 </View>
               </Pressable>
             </View>
 
             {appointments.length === 0 ? (
               <View style={[styles.emptyCard, { backgroundColor: theme.backgroundDefault }]}>
-                <Feather name="calendar" size={40} color={theme.textMuted} />
+                <EvendiIcon name="calendar" size={40} color={theme.textMuted} />
                 <ThemedText style={[styles.emptyText, { color: theme.textMuted }]}>
                   Ingen avtaler lagt til
                 </ThemedText>
@@ -539,7 +539,7 @@ export default function BrudekjoleScreen() {
                           },
                         ]}
                       >
-                        {appointment.completed && <Feather name="check" size={14} color="#fff" />}
+                        {appointment.completed && <EvendiIcon name="check" size={14} color="#fff" />}
                       </Pressable>
                       <View style={styles.appointmentInfo}>
                         <ThemedText
@@ -551,7 +551,7 @@ export default function BrudekjoleScreen() {
                           {appointment.shopName}
                         </ThemedText>
                         <View style={styles.appointmentMeta}>
-                          <Feather name="calendar" size={12} color={theme.textMuted} />
+                          <EvendiIcon name="calendar" size={12} color={theme.textMuted} />
                           <ThemedText style={[styles.appointmentDate, { color: theme.textMuted }]}>
                             {appointment.date} {appointment.time && `kl. ${appointment.time}`}
                           </ThemedText>
@@ -569,7 +569,7 @@ export default function BrudekjoleScreen() {
                         }}
                         style={[styles.quickActionButton, { backgroundColor: theme.backgroundSecondary }]}
                       >
-                        <Feather name="copy" size={16} color={Colors.dark.accent} />
+                        <EvendiIcon name="copy" size={16} color={Colors.dark.accent} />
                       </Pressable>
                     </View>
                   </SwipeableRow>
@@ -586,14 +586,14 @@ export default function BrudekjoleScreen() {
               <ThemedText style={styles.sectionTitle}>{isWedding ? "Lagrede kjoler" : "Lagrede antrekk"}</ThemedText>
               <Pressable onPress={() => openDressModal()}>
                 <View style={[styles.addButton, { backgroundColor: Colors.dark.accent }]}>
-                  <Feather name="plus" size={18} color="#fff" />
+                  <EvendiIcon name="plus" size={18} color="#fff" />
                 </View>
               </Pressable>
             </View>
 
             {favorites.length === 0 ? (
               <View style={[styles.emptyCard, { backgroundColor: theme.backgroundDefault }]}>
-                <Feather name="heart" size={40} color={theme.textMuted} />
+                <EvendiIcon name="heart" size={40} color={theme.textMuted} />
                 <ThemedText style={[styles.emptyText, { color: theme.textMuted }]}>
                   Ingen kjoler lagret
                 </ThemedText>
@@ -630,14 +630,14 @@ export default function BrudekjoleScreen() {
                           <Image source={{ uri: dress.imageUrl }} style={styles.dressImage} />
                         ) : (
                           <View style={[styles.dressImagePlaceholder, { backgroundColor: theme.border }]}>
-                            <Feather name="image" size={30} color={theme.textMuted} />
+                            <EvendiIcon name="image" size={30} color={theme.textMuted} />
                           </View>
                         )}
                         <Pressable
                           onPress={() => toggleFavorite(dress.id)}
                           style={[styles.favoriteButton, { backgroundColor: theme.backgroundDefault }]}
                         >
-                          <Feather
+                          <EvendiIcon
                             name="heart"
                             size={16}
                             color={dress.isFavorite ? "#E57373" : theme.textMuted}
@@ -693,7 +693,7 @@ export default function BrudekjoleScreen() {
                             },
                           ]}
                         >
-                          {isCompleted && <Feather name="check" size={12} color="#fff" />}
+                          {isCompleted && <EvendiIcon name="check" size={12} color="#fff" />}
                         </View>
                         {idx < TIMELINE_STEPS.length - 1 && (
                           <View
@@ -707,7 +707,7 @@ export default function BrudekjoleScreen() {
                       <View style={styles.timelineContent}>
                         <View style={styles.timelineHeader}>
                           <View style={[styles.timelineIcon, { backgroundColor: isCompleted ? Colors.dark.accent + "20" : theme.border + "40" }]}>
-                            <Feather name={step.icon} size={16} color={isCompleted ? Colors.dark.accent : theme.textMuted} />
+                            <EvendiIcon name={step.icon} size={16} color={isCompleted ? Colors.dark.accent : theme.textMuted} />
                           </View>
                           <View style={styles.timelineTextContainer}>
                             <ThemedText style={[styles.timelineLabel, isCompleted && styles.completedText]}>
@@ -728,7 +728,7 @@ export default function BrudekjoleScreen() {
             </View>
 
             <View style={[styles.tipCard, { backgroundColor: Colors.dark.accent + "15" }]}>
-              <Feather name="info" size={18} color={Colors.dark.accent} />
+              <EvendiIcon name="info" size={18} color={Colors.dark.accent} />
               <ThemedText style={[styles.tipText, { color: theme.text }]}>
                 Bestill kjolen 6-9 måneder før bryllupet for å ha tid til prøvinger og endringer.
               </ThemedText>
@@ -746,7 +746,7 @@ export default function BrudekjoleScreen() {
                 {editingAppointment ? "Rediger avtale" : "Ny prøveavtale"}
               </ThemedText>
               <Pressable onPress={() => setShowAppointmentModal(false)}>
-                <Feather name="x" size={24} color={theme.text} />
+                <EvendiIcon name="x" size={24} color={theme.text} />
               </Pressable>
             </View>
 
@@ -823,7 +823,7 @@ export default function BrudekjoleScreen() {
                 {editingDress ? "Rediger kjole" : "Legg til kjole"}
               </ThemedText>
               <Pressable onPress={() => setShowDressModal(false)}>
-                <Feather name="x" size={24} color={theme.text} />
+                <EvendiIcon name="x" size={24} color={theme.text} />
               </Pressable>
             </View>
 
@@ -832,7 +832,7 @@ export default function BrudekjoleScreen() {
                 <Image source={{ uri: dressImage }} style={styles.imagePreview} />
               ) : (
                 <View style={[styles.imagePlaceholder, { backgroundColor: theme.backgroundRoot, borderColor: theme.border }]}>
-                  <Feather name="camera" size={30} color={theme.textMuted} />
+                  <EvendiIcon name="camera" size={30} color={theme.textMuted} />
                   <ThemedText style={[styles.imagePlaceholderText, { color: theme.textMuted }]}>
                     Ta bilde eller velg fra album
                   </ThemedText>
@@ -898,7 +898,7 @@ export default function BrudekjoleScreen() {
             <View style={styles.modalHeader}>
               <ThemedText style={styles.modalTitle}>{isWedding ? "Sett kjolebudsjett" : "Sett antrekksbudsjett"}</ThemedText>
               <Pressable onPress={() => setShowBudgetModal(false)}>
-                <Feather name="x" size={24} color={theme.text} />
+                <EvendiIcon name="x" size={24} color={theme.text} />
               </Pressable>
             </View>
 

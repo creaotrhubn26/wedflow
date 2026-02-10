@@ -9,7 +9,7 @@ import {
   Alert,
   RefreshControl,
 } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
@@ -226,7 +226,7 @@ export default function VendorCreatorHubBridge({ sessionToken, coupleId, onOpenC
   if (isError || !data?.projects?.length) {
     return (
       <Animated.View entering={FadeInDown.delay(100)} style={[styles.emptyCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-        <Feather name="folder" size={32} color={theme.textSecondary} />
+        <EvendiIcon name="folder" size={32} color={theme.textSecondary} />
         <ThemedText style={[styles.emptyTitle, { color: theme.text }]}>
           Ingen CreatorHub-prosjekter
         </ThemedText>
@@ -264,7 +264,7 @@ export default function VendorCreatorHubBridge({ sessionToken, coupleId, onOpenC
           style={styles.projectHeader}
         >
           <View style={styles.projectHeaderLeft}>
-            <Feather name="briefcase" size={20} color={theme.accent} />
+            <EvendiIcon name="briefcase" size={20} color={theme.accent} />
             <View style={{ marginLeft: Spacing.sm, flex: 1 }}>
               <ThemedText style={[styles.projectTitle, { color: theme.text }]}>
                 {project.title}
@@ -276,7 +276,7 @@ export default function VendorCreatorHubBridge({ sessionToken, coupleId, onOpenC
               )}
             </View>
           </View>
-          <Feather name={isExpanded ? "chevron-up" : "chevron-down"} size={20} color={theme.textSecondary} />
+          <EvendiIcon name={isExpanded ? "chevron-up" : "chevron-down"} size={20} color={theme.textSecondary} />
         </Pressable>
 
         {/* Expanded content */}
@@ -285,7 +285,7 @@ export default function VendorCreatorHubBridge({ sessionToken, coupleId, onOpenC
             {/* Culture badge */}
             {timeline.cultural_type && (
               <View style={[styles.cultureBadge, { backgroundColor: theme.accent + "20" }]}>
-                <Feather name="globe" size={14} color={theme.accent} />
+                <EvendiIcon name="globe" size={14} color={theme.accent} />
                 <ThemedText style={[styles.cultureBadgeText, { color: theme.accent }]}>
                   {timeline.cultural_type.charAt(0).toUpperCase() + timeline.cultural_type.slice(1)} bryllup
                 </ThemedText>
@@ -306,7 +306,7 @@ export default function VendorCreatorHubBridge({ sessionToken, coupleId, onOpenC
                     activeSection === tab && { borderBottomColor: theme.accent, borderBottomWidth: 2 },
                   ]}
                 >
-                  <Feather
+                  <EvendiIcon
                     name={tab === "timeline" ? "clock" : tab === "comments" ? "message-circle" : "camera"}
                     size={16}
                     color={activeSection === tab ? theme.accent : theme.textSecondary}
@@ -327,7 +327,7 @@ export default function VendorCreatorHubBridge({ sessionToken, coupleId, onOpenC
             {activeSection === "timeline" && (
               <View style={styles.section}>
                 <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
-                  <Feather name="clock" size={16} /> Bryllupstidslinje ({project.events.length} hendelser)
+                  <EvendiIcon name="clock" size={16} /> Bryllupstidslinje ({project.events.length} hendelser)
                 </ThemedText>
 
                 {project.events.map((evt) => (
@@ -340,7 +340,7 @@ export default function VendorCreatorHubBridge({ sessionToken, coupleId, onOpenC
                       <View style={styles.eventMeta}>
                         {evt.event_time && (
                           <ThemedText style={[styles.eventTime, { color: theme.textSecondary }]}>
-                            <Feather name="clock" size={12} /> {formatTime(evt.event_time)}
+                            <EvendiIcon name="clock" size={12} /> {formatTime(evt.event_time)}
                           </ThemedText>
                         )}
                         {evt.duration_minutes > 0 && (
@@ -350,7 +350,7 @@ export default function VendorCreatorHubBridge({ sessionToken, coupleId, onOpenC
                         )}
                         {evt.location ? (
                           <ThemedText style={[styles.eventLocation, { color: theme.textSecondary }]}>
-                            <Feather name="map-pin" size={12} /> {evt.location}
+                            <EvendiIcon name="map-pin" size={12} /> {evt.location}
                           </ThemedText>
                         ) : null}
                       </View>
@@ -361,7 +361,7 @@ export default function VendorCreatorHubBridge({ sessionToken, coupleId, onOpenC
                 {/* Add event form */}
                 <View style={[styles.addForm, { borderColor: theme.border }]}>
                   <ThemedText style={[styles.addFormTitle, { color: theme.text }]}>
-                    <Feather name="plus-circle" size={14} /> Legg til hendelse
+                    <EvendiIcon name="plus-circle" size={14} /> Legg til hendelse
                   </ThemedText>
                   <TextInput
                     style={[styles.input, { backgroundColor: theme.background, color: theme.text, borderColor: theme.border }]}
@@ -401,7 +401,7 @@ export default function VendorCreatorHubBridge({ sessionToken, coupleId, onOpenC
             {activeSection === "comments" && (
               <View style={styles.section}>
                 <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
-                  <Feather name="message-circle" size={16} /> Kommentarer til tidslinjen
+                  <EvendiIcon name="message-circle" size={16} /> Kommentarer til tidslinjen
                 </ThemedText>
 
                 {project.comments.length === 0 ? (
@@ -421,7 +421,7 @@ export default function VendorCreatorHubBridge({ sessionToken, coupleId, onOpenC
                       ]}
                     >
                       <View style={styles.commentHeader}>
-                        <Feather
+                        <EvendiIcon
                           name={comment.author_type === "vendor" ? "camera" : "heart"}
                           size={14}
                           color={comment.author_type === "vendor" ? theme.accent : "#E91E63"}
@@ -462,7 +462,7 @@ export default function VendorCreatorHubBridge({ sessionToken, coupleId, onOpenC
                     {addCommentMutation.isPending ? (
                       <ActivityIndicator size="small" color="#fff" />
                     ) : (
-                      <Feather name="send" size={18} color="#fff" />
+                      <EvendiIcon name="send" size={18} color="#fff" />
                     )}
                   </Pressable>
                 </View>
@@ -473,7 +473,7 @@ export default function VendorCreatorHubBridge({ sessionToken, coupleId, onOpenC
             {activeSection === "shots" && (
               <View style={styles.section}>
                 <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>
-                  <Feather name="camera" size={16} /> Shotliste fra CreatorHub
+                  <EvendiIcon name="camera" size={16} /> Shotliste fra CreatorHub
                 </ThemedText>
 
                 {project.shotList.length === 0 ? (
@@ -483,7 +483,7 @@ export default function VendorCreatorHubBridge({ sessionToken, coupleId, onOpenC
                 ) : (
                   project.shotList.map((shot: any, i: number) => (
                     <View key={shot.id || i} style={[styles.shotRow, { borderColor: theme.border }]}>
-                      <Feather name="aperture" size={16} color={theme.accent} />
+                      <EvendiIcon name="aperture" size={16} color={theme.accent} />
                       <View style={{ marginLeft: Spacing.sm, flex: 1 }}>
                         <ThemedText style={[styles.shotTitle, { color: theme.text }]}>
                           {shot.title || shot.description || `Shot ${i + 1}`}
@@ -516,7 +516,7 @@ export default function VendorCreatorHubBridge({ sessionToken, coupleId, onOpenC
                 }}
                 style={[styles.chatButton, { backgroundColor: theme.accent }]}
               >
-                <Feather name="message-square" size={18} color="#fff" />
+                <EvendiIcon name="message-square" size={18} color="#fff" />
                 <ThemedText style={styles.chatButtonText}>Chat med {data.coupleName || "paret"}</ThemedText>
               </Pressable>
             )}
@@ -527,7 +527,7 @@ export default function VendorCreatorHubBridge({ sessionToken, coupleId, onOpenC
         {isExpanded && !hasTimeline && (
           <View style={styles.expandedContent}>
             <View style={[styles.emptyCard, { backgroundColor: theme.background, borderColor: theme.border }]}>
-              <Feather name="calendar" size={24} color={theme.textSecondary} />
+              <EvendiIcon name="calendar" size={24} color={theme.textSecondary} />
               <ThemedText style={[styles.emptySubtitle, { color: theme.textSecondary }]}>
                 Ingen tidslinje opprettet for dette prosjektet ennå.
               </ThemedText>
@@ -546,7 +546,7 @@ export default function VendorCreatorHubBridge({ sessionToken, coupleId, onOpenC
         style={[styles.headerCard, { backgroundColor: theme.accent + "10", borderColor: theme.accent + "30" }]}
       >
         <View style={styles.headerRow}>
-          <Feather name="link" size={20} color={theme.accent} />
+          <EvendiIcon name="link" size={20} color={theme.accent} />
           <View style={{ marginLeft: Spacing.sm, flex: 1 }}>
             <ThemedText style={[styles.headerTitle, { color: theme.text }]}>
               CreatorHub-kobling

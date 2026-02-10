@@ -10,7 +10,7 @@ import {
   ScrollView,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import { useQuery } from "@tanstack/react-query";
 import { useTheme } from "@/hooks/useTheme";
@@ -66,7 +66,7 @@ export default function VideoGuidesScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.backgroundRoot }]} edges={["top", "bottom"]}>
       <View style={styles.header}>
-        <Feather name="play-circle" size={32} color={theme.accent} />
+        <EvendiIcon name="play-circle" size={32} color={theme.accent} />
         <ThemedText style={styles.title}>Videoguider</ThemedText>
         <ThemedText style={styles.subtitle}>Lær å bruke Evendi med videoguider</ThemedText>
       </View>
@@ -75,7 +75,7 @@ export default function VideoGuidesScreen() {
 
       {error && (
         <View style={[styles.errorContainer, { backgroundColor: theme.backgroundSecondary }]}>
-          <Feather name="alert-circle" size={24} color="#FF6B6B" />
+          <EvendiIcon name="alert-circle" size={24} color="#FF6B6B" />
           <ThemedText style={[styles.errorText, { color: theme.text }]}>
             Kunne ikke laste videoguider
           </ThemedText>
@@ -87,7 +87,7 @@ export default function VideoGuidesScreen() {
 
       {!isLoading && guides.length === 0 && (
         <View style={styles.emptyState}>
-          <Feather name="video" size={48} color={theme.textMuted} />
+          <EvendiIcon name="video" size={48} color={theme.textMuted} />
           <ThemedText style={[styles.emptyText, { color: theme.textMuted }]}>Ingen videoguider tilgjengelig</ThemedText>
         </View>
       )}
@@ -131,7 +131,7 @@ export default function VideoGuidesScreen() {
                 onPress={() => handlePlay(item)}
               >
                 <View style={[styles.thumbnail, { backgroundColor: theme.backgroundDefault }]}>
-                  <Feather name="play" size={48} color={theme.accent} />
+                  <EvendiIcon name="play" size={48} color={theme.accent} />
                 </View>
                 <View style={styles.cardContent}>
                   <ThemedText style={styles.cardTitle}>{item.title}</ThemedText>
@@ -139,11 +139,11 @@ export default function VideoGuidesScreen() {
                     {item.description}
                   </ThemedText>
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: Spacing.sm }}>
-                    <Feather name="tag" size={12} color={theme.textMuted} />
+                    <EvendiIcon name="tag" size={12} color={theme.textMuted} />
                     <ThemedText style={[styles.cardMeta, { color: theme.textMuted }]}>{item.category}</ThemedText>
                   </View>
                 </View>
-                <Feather name="chevron-right" size={20} color={theme.textMuted} />
+                <EvendiIcon name="chevron-right" size={20} color={theme.textMuted} />
               </Pressable>
             )}
           />
@@ -154,7 +154,7 @@ export default function VideoGuidesScreen() {
         <SafeAreaView style={[styles.modalContainer, { backgroundColor: theme.backgroundRoot }]} edges={["top", "bottom"]}>
           <View style={styles.modalHeader}>
             <Pressable onPress={() => setSelectedGuide(null)} hitSlop={10}>
-              <Feather name="x" size={24} color={theme.text} />
+              <EvendiIcon name="x" size={24} color={theme.text} />
             </Pressable>
             <ThemedText style={styles.modalTitle}>{selectedGuide?.title}</ThemedText>
             <View style={{ width: 24 }} />
@@ -163,7 +163,7 @@ export default function VideoGuidesScreen() {
           {selectedGuide && (
             <ScrollView contentContainerStyle={{ padding: Spacing.md }}>
               <View style={[styles.videoBox, { backgroundColor: theme.backgroundSecondary, borderColor: theme.border }]}>
-                <Feather name="video" size={64} color={theme.accent} />
+                <EvendiIcon name="video" size={64} color={theme.accent} />
               </View>
 
               <ThemedText style={[styles.guideTitle, { color: theme.text }]}>{selectedGuide.title}</ThemedText>
@@ -175,7 +175,7 @@ export default function VideoGuidesScreen() {
                 style={[styles.playBtn, { backgroundColor: theme.accent }]}
                 onPress={() => handleOpenURL(selectedGuide.videoUrl)}
               >
-                <Feather name="play" size={20} color="#FFFFFF" />
+                <EvendiIcon name="play" size={20} color="#FFFFFF" />
                 <ThemedText style={styles.playBtnText}>Åpne video</ThemedText>
               </Pressable>
 

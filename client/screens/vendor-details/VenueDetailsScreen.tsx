@@ -9,7 +9,7 @@ import {
   ScrollView,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -234,7 +234,7 @@ export default function VenueDetailsScreen({ navigation }: { navigation: NativeS
   const renderSectionHeader = (icon: string, title: string) => (
     <View style={styles.sectionHeader}>
       <View style={[styles.sectionIconCircle, { backgroundColor: theme.accent + "15" }]}>
-        <Feather name={icon as any} size={16} color={theme.accent} />
+        <EvendiIcon name={icon as any} size={16} color={theme.accent} />
       </View>
       <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>{title}</ThemedText>
     </View>
@@ -295,7 +295,7 @@ export default function VenueDetailsScreen({ navigation }: { navigation: NativeS
       styles.availabilityBadge,
       { backgroundColor: available ? "#4CAF5015" : "#EF535015" }
     ]}>
-      <Feather
+      <EvendiIcon
         name={available ? "check-circle" : "x-circle"}
         size={14}
         color={available ? "#4CAF50" : "#EF5350"}
@@ -315,7 +315,7 @@ export default function VenueDetailsScreen({ navigation }: { navigation: NativeS
         <View style={[styles.header, { paddingTop: insets.top + Spacing.md, backgroundColor: theme.backgroundDefault, borderBottomColor: theme.border }]}>
           <View style={styles.headerContent}>
             <View style={[styles.headerIconCircle, { backgroundColor: theme.accent }]}>
-              <Feather name="home" size={20} color="#FFFFFF" />
+              <EvendiIcon name="home" size={20} color="#FFFFFF" />
             </View>
             <View style={styles.headerTextContainer}>
               <ThemedText style={[styles.headerTitle, { color: theme.text }]}>Lokaldetaljer</ThemedText>
@@ -323,7 +323,7 @@ export default function VenueDetailsScreen({ navigation }: { navigation: NativeS
             </View>
           </View>
           <Pressable onPress={() => navigation.goBack()} style={({ pressed }) => [styles.closeButton, { backgroundColor: pressed ? theme.backgroundSecondary : theme.backgroundRoot }]}>
-            <Feather name="x" size={20} color={theme.textSecondary} />
+            <EvendiIcon name="x" size={20} color={theme.textSecondary} />
           </Pressable>
         </View>
         <View style={styles.loadingContainer}>
@@ -338,7 +338,7 @@ export default function VenueDetailsScreen({ navigation }: { navigation: NativeS
       <View style={[styles.header, { paddingTop: insets.top + Spacing.md, backgroundColor: theme.backgroundDefault, borderBottomColor: theme.border }]}>
         <View style={styles.headerContent}>
           <View style={[styles.headerIconCircle, { backgroundColor: theme.accent }]}>
-            <Feather name="home" size={20} color="#FFFFFF" />
+            <EvendiIcon name="home" size={20} color="#FFFFFF" />
           </View>
           <View style={styles.headerTextContainer}>
             <ThemedText style={[styles.headerTitle, { color: theme.text }]}>Lokaldetaljer</ThemedText>
@@ -346,7 +346,7 @@ export default function VenueDetailsScreen({ navigation }: { navigation: NativeS
           </View>
         </View>
         <Pressable onPress={() => navigation.goBack()} style={({ pressed }) => [styles.closeButton, { backgroundColor: pressed ? theme.backgroundSecondary : theme.backgroundRoot }]}>
-          <Feather name="x" size={20} color={theme.textSecondary} />
+          <EvendiIcon name="x" size={20} color={theme.textSecondary} />
         </Pressable>
       </View>
 
@@ -392,7 +392,7 @@ export default function VenueDetailsScreen({ navigation }: { navigation: NativeS
                 <View key={table.id} style={[styles.tableItem, { backgroundColor: theme.backgroundRoot, borderColor: theme.border }]}>
                   <View style={styles.tableItemContent}>
                     <View style={[styles.tableTypeIcon, { backgroundColor: theme.accent + "15" }]}>
-                      <Feather name={TABLE_TYPES.find(t => t.value === table.type)?.icon as any || "circle"} size={16} color={theme.accent} />
+                      <EvendiIcon name={TABLE_TYPES.find(t => t.value === table.type)?.icon as any || "circle"} size={16} color={theme.accent} />
                     </View>
                     <View style={styles.tableItemText}>
                       <ThemedText style={[styles.tableItemTitle, { color: theme.text }]}>
@@ -404,7 +404,7 @@ export default function VenueDetailsScreen({ navigation }: { navigation: NativeS
                     </View>
                   </View>
                   <Pressable onPress={() => removeTableSetup(table.id)} style={styles.tableRemoveBtn}>
-                    <Feather name="trash-2" size={16} color="#EF5350" />
+                    <EvendiIcon name="trash-2" size={16} color="#EF5350" />
                   </Pressable>
                 </View>
               ))}
@@ -430,7 +430,7 @@ export default function VenueDetailsScreen({ navigation }: { navigation: NativeS
                       newTable.type === type.value && { backgroundColor: theme.accent + "15" },
                     ]}
                   >
-                    <Feather name={type.icon as any} size={18} color={newTable.type === type.value ? theme.accent : theme.textSecondary} />
+                    <EvendiIcon name={type.icon as any} size={18} color={newTable.type === type.value ? theme.accent : theme.textSecondary} />
                     <ThemedText style={[styles.tableTypeLabel, { color: newTable.type === type.value ? theme.accent : theme.textSecondary }]}>
                       {type.label}
                     </ThemedText>
@@ -448,14 +448,14 @@ export default function VenueDetailsScreen({ navigation }: { navigation: NativeS
                   <ThemedText style={[styles.cancelBtnText, { color: theme.textSecondary }]}>Avbryt</ThemedText>
                 </Pressable>
                 <Pressable onPress={addTableSetup} style={[styles.addBtn, { backgroundColor: theme.accent }]}>
-                  <Feather name="plus" size={16} color="#FFFFFF" />
+                  <EvendiIcon name="plus" size={16} color="#FFFFFF" />
                   <ThemedText style={styles.addBtnText}>Legg til</ThemedText>
                 </Pressable>
               </View>
             </View>
           ) : (
             <Pressable onPress={() => setShowAddTable(true)} style={[styles.addTableBtn, { borderColor: theme.accent }]}>
-              <Feather name="plus" size={18} color={theme.accent} />
+              <EvendiIcon name="plus" size={18} color={theme.accent} />
               <ThemedText style={[styles.addTableBtnText, { color: theme.accent }]}>Legg til bordtype</ThemedText>
             </Pressable>
           )}
@@ -491,7 +491,7 @@ export default function VenueDetailsScreen({ navigation }: { navigation: NativeS
 
           {!details.hasAccommodation && (
             <View style={[styles.infoBox, { backgroundColor: theme.backgroundRoot, borderColor: theme.border }]}>
-              <Feather name="info" size={16} color={theme.textSecondary} />
+              <EvendiIcon name="info" size={16} color={theme.textSecondary} />
               <ThemedText style={[styles.infoText, { color: theme.textSecondary }]}>
                 Dette er kun et lokale uten overnatting. Gjester må finne egen overnatting.
               </ThemedText>
@@ -593,7 +593,7 @@ export default function VenueDetailsScreen({ navigation }: { navigation: NativeS
           ) : (
             <>
               <View style={styles.saveBtnIcon}>
-                <Feather name="save" size={16} color="#FFFFFF" />
+                <EvendiIcon name="save" size={16} color="#FFFFFF" />
               </View>
               <ThemedText style={styles.saveBtnText}>Lagre lokaldetaljer</ThemedText>
             </>

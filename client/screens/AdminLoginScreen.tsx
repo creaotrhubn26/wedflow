@@ -8,7 +8,7 @@ import {
   Image,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
@@ -95,7 +95,7 @@ export default function AdminLoginScreen({ navigation, onLoginSuccess, initialAd
 
         <Animated.View entering={FadeInDown.duration(400)} style={styles.formContainer}>
           <View style={[styles.iconCircle, { backgroundColor: Colors.dark.accent + "20" }]}>
-            <Feather name="shield" size={40} color={Colors.dark.accent} />
+            <EvendiIcon name="shield" size={40} color={Colors.dark.accent} />
           </View>
 
           <ThemedText style={styles.title}>Admin-portal</ThemedText>
@@ -105,7 +105,7 @@ export default function AdminLoginScreen({ navigation, onLoginSuccess, initialAd
 
           <View style={styles.form}>
             <View style={[styles.inputContainer, { backgroundColor: theme.backgroundDefault, borderColor: error ? "#DC3545" : theme.border }]}>
-              <Feather name="key" size={18} color={error ? "#DC3545" : theme.textMuted} />
+              <EvendiIcon name="key" size={18} color={error ? "#DC3545" : theme.textMuted} />
               <TextInput
                 style={[styles.input, { color: theme.text }]}
                 placeholder="Admin-nøkkel"
@@ -149,7 +149,7 @@ export default function AdminLoginScreen({ navigation, onLoginSuccess, initialAd
             onPress={() => navigation.goBack()}
             style={styles.backButton}
           >
-            <Feather name="arrow-left" size={18} color={Colors.dark.accent} />
+            <EvendiIcon name="arrow-left" size={18} color={Colors.dark.accent} />
             <ThemedText style={[styles.backText, { color: Colors.dark.accent }]}>
               Tilbake til bruker-innlogging
             </ThemedText>

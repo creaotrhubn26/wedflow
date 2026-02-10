@@ -10,7 +10,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useFocusEffect } from "@react-navigation/native";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import * as Print from "expo-print";
 import * as Sharing from "expo-sharing";
@@ -362,7 +362,7 @@ export default function SpeechListScreen() {
           onPress={handleExportPdf}
           style={[styles.exportButton, { borderColor: Colors.dark.accent }]}
         >
-          <Feather name="printer" size={18} color={Colors.dark.accent} />
+          <EvendiIcon name="printer" size={18} color={Colors.dark.accent} />
           <ThemedText style={[styles.exportButtonText, { color: Colors.dark.accent }]}>
             Eksporter PDF per bord
           </ThemedText>
@@ -434,7 +434,7 @@ export default function SpeechListScreen() {
                     </View>
                     <View style={[styles.tableChip, { borderColor: theme.border }]}
                     >
-                      <Feather name="map-pin" size={12} color={theme.textSecondary} />
+                      <EvendiIcon name="map-pin" size={12} color={theme.textSecondary} />
                       <ThemedText style={[styles.tableChipText, { color: theme.textSecondary }]}>
                         {getTableLabel(speech.tableId)}
                       </ThemedText>
@@ -456,7 +456,7 @@ export default function SpeechListScreen() {
                     ]}
                     disabled={index === 0}
                   >
-                    <Feather name="chevron-up" size={18} color={theme.textSecondary} />
+                    <EvendiIcon name="chevron-up" size={18} color={theme.textSecondary} />
                   </Pressable>
                   <Pressable
                     onPress={() => handleMoveDown(index)}
@@ -466,7 +466,7 @@ export default function SpeechListScreen() {
                     ]}
                     disabled={index === speeches.length - 1}
                   >
-                    <Feather
+                    <EvendiIcon
                       name="chevron-down"
                       size={18}
                       color={theme.textSecondary}
@@ -636,7 +636,7 @@ export default function SpeechListScreen() {
           }}
           style={[styles.addButton, { borderColor: Colors.dark.accent }]}
         >
-          <Feather name="plus" size={20} color={Colors.dark.accent} />
+          <EvendiIcon name="plus" size={20} color={Colors.dark.accent} />
           <ThemedText style={[styles.addButtonText, { color: Colors.dark.accent }]}>
             Legg til tale
           </ThemedText>

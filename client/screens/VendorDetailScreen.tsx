@@ -13,7 +13,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon, EvendiIconGlyphMap } from "@/components/EvendiIcon";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -192,8 +192,8 @@ export default function VendorDetailScreen() {
     return labels[category] || category;
   };
 
-  const getCategoryIcon = (category: string): keyof typeof Feather.glyphMap => {
-    const icons: Record<string, keyof typeof Feather.glyphMap> = {
+  const getCategoryIcon = (category: string): keyof typeof EvendiIconGlyphMap => {
+    const icons: Record<string, keyof typeof EvendiIconGlyphMap> = {
       photographer: "camera",
       videographer: "video",
       dj: "music",
@@ -222,18 +222,18 @@ export default function VendorDetailScreen() {
     >
       <Card style={styles.headerCard}>
         <View style={[styles.vendorImage, { backgroundColor: theme.backgroundSecondary }]}>
-          <Feather name={getCategoryIcon(vendorCategory)} size={32} color={theme.accent} />
+          <EvendiIcon name={getCategoryIcon(vendorCategory)} size={32} color={theme.accent} />
         </View>
         <ThemedText style={Typography.h2}>{vendorName}</ThemedText>
         <View style={styles.categoryRow}>
-          <Feather name="tag" size={14} color={theme.textSecondary} />
+          <EvendiIcon name="tag" size={14} color={theme.textSecondary} />
           <ThemedText style={[Typography.small, { color: theme.textSecondary, marginLeft: Spacing.xs }]}>
             {getCategoryLabel(vendorCategory)}
           </ThemedText>
         </View>
         {vendorLocation ? (
           <View style={styles.locationRow}>
-            <Feather name="map-pin" size={14} color={theme.textSecondary} />
+            <EvendiIcon name="map-pin" size={14} color={theme.textSecondary} />
             <ThemedText style={[Typography.small, { color: theme.textSecondary, marginLeft: Spacing.xs }]}>
               {vendorLocation}
             </ThemedText>
@@ -244,7 +244,7 @@ export default function VendorDetailScreen() {
         {(travelBadge || vendorTravel?.isLoading) && (
           <View style={[styles.travelCard, { backgroundColor: "#2196F308", borderColor: "#2196F320" }]}>
             <View style={styles.travelCardHeader}>
-              <Feather name="navigation" size={14} color="#2196F3" />
+              <EvendiIcon name="navigation" size={14} color="#2196F3" />
               {vendorTravel?.isLoading ? (
                 <View style={styles.travelCardLoading}>
                   <ActivityIndicator size={10} color="#2196F3" />
@@ -269,7 +269,7 @@ export default function VendorDetailScreen() {
               <View style={styles.travelCardDetails}>
                 {vendorTravel.travel.fuelCostNok > 0 && (
                   <View style={[styles.travelDetailBadge, { backgroundColor: "#FF980010" }]}>
-                    <Feather name="droplet" size={10} color="#FF9800" />
+                    <EvendiIcon name="droplet" size={10} color="#FF9800" />
                     <ThemedText style={[styles.travelDetailText, { color: "#FF9800" }]}>
                       Drivstoff: ~{Math.round(vendorTravel.travel.fuelCostNok)} kr
                     </ThemedText>
@@ -277,7 +277,7 @@ export default function VendorDetailScreen() {
                 )}
                 {vendorTravel.travel.tollEstimateNok > 0 && (
                   <View style={[styles.travelDetailBadge, { backgroundColor: "#9C27B010" }]}>
-                    <Feather name="credit-card" size={10} color="#9C27B0" />
+                    <EvendiIcon name="credit-card" size={10} color="#9C27B0" />
                     <ThemedText style={[styles.travelDetailText, { color: "#9C27B0" }]}>
                       Bompenger: ~{Math.round(vendorTravel.travel.tollEstimateNok)} kr
                     </ThemedText>
@@ -294,7 +294,7 @@ export default function VendorDetailScreen() {
                 })}
                 style={[styles.travelActionBtn, { backgroundColor: "#2196F312" }]}
               >
-                <Feather name="navigation" size={12} color="#2196F3" />
+                <EvendiIcon name="navigation" size={12} color="#2196F3" />
                 <ThemedText style={[styles.travelActionText, { color: "#2196F3" }]}>Kjørerute</ThemedText>
               </Pressable>
               <Pressable
@@ -303,7 +303,7 @@ export default function VendorDetailScreen() {
                 })}
                 style={[styles.travelActionBtn, { backgroundColor: "#4CAF5012" }]}
               >
-                <Feather name="map" size={12} color="#4CAF50" />
+                <EvendiIcon name="map" size={12} color="#4CAF50" />
                 <ThemedText style={[styles.travelActionText, { color: "#4CAF50" }]}>Vis på kart</ThemedText>
               </Pressable>
             </View>
@@ -328,7 +328,7 @@ export default function VendorDetailScreen() {
           disabled={isStartingChat}
           style={[styles.actionButton, { backgroundColor: theme.primary }]}
         >
-          <Feather name="message-circle" size={18} color="#FFFFFF" />
+          <EvendiIcon name="message-circle" size={18} color="#FFFFFF" />
           <ThemedText style={styles.actionButtonText}>
             {isStartingChat ? "Starter..." : "Send melding"}
           </ThemedText>
@@ -341,7 +341,7 @@ export default function VendorDetailScreen() {
           }}
           style={[styles.actionButtonOutline, { borderColor: theme.primary }]}
         >
-          <Feather name="calendar" size={18} color={theme.primary} />
+          <EvendiIcon name="calendar" size={18} color={theme.primary} />
           <ThemedText style={[styles.actionButtonOutlineText, { color: theme.primary }]}>
             Book avtale
           </ThemedText>
@@ -352,7 +352,7 @@ export default function VendorDetailScreen() {
         <ActivityIndicator size="large" color={theme.accent} style={{ marginTop: Spacing.xl }} />
       ) : error ? (
         <Card style={styles.errorCard}>
-          <Feather name="alert-circle" size={24} color={theme.error} />
+          <EvendiIcon name="alert-circle" size={24} color={theme.error} />
           <ThemedText style={[Typography.body, { marginTop: Spacing.sm }]}>
             Kunne ikke laste anmeldelser
           </ThemedText>
@@ -391,7 +391,7 @@ export default function VendorDetailScreen() {
                       <View style={styles.metadataRow}>
                         {metadata.offersTasteSample && (
                           <View style={[styles.metadataBadge, { backgroundColor: "#4CAF5015" }]}>
-                            <Feather name="coffee" size={10} color="#4CAF50" />
+                            <EvendiIcon name="coffee" size={10} color="#4CAF50" />
                             <ThemedText style={[styles.metadataText, { color: "#4CAF50" }]}>Smaksprøve</ThemedText>
                           </View>
                         )}
@@ -435,7 +435,7 @@ export default function VendorDetailScreen() {
                         )}
                         {metadata.vehicleType && (
                           <View style={[styles.metadataBadge, { backgroundColor: theme.accent + "15" }]}>
-                            <Feather name="truck" size={10} color={theme.accent} />
+                            <EvendiIcon name="truck" size={10} color={theme.accent} />
                             <ThemedText style={[styles.metadataText, { color: theme.accent }]}>
                               {metadata.vehicleType.charAt(0).toUpperCase() + metadata.vehicleType.slice(1)}
                             </ThemedText>
@@ -443,7 +443,7 @@ export default function VendorDetailScreen() {
                         )}
                         {metadata.passengerCapacity && (
                           <View style={[styles.metadataBadge, { backgroundColor: theme.accent + "15" }]}>
-                            <Feather name="users" size={10} color={theme.accent} />
+                            <EvendiIcon name="users" size={10} color={theme.accent} />
                             <ThemedText style={[styles.metadataText, { color: theme.accent }]}>
                               {metadata.passengerCapacity} plasser
                             </ThemedText>
@@ -458,7 +458,7 @@ export default function VendorDetailScreen() {
                         )}
                         {metadata.includesTrialSession && (
                           <View style={[styles.metadataBadge, { backgroundColor: "#9C27B015" }]}>
-                            <Feather name="check" size={10} color="#9C27B0" />
+                            <EvendiIcon name="check" size={10} color="#9C27B0" />
                             <ThemedText style={[styles.metadataText, { color: "#9C27B0" }]}>Prøveskyss</ThemedText>
                           </View>
                         )}
@@ -466,7 +466,7 @@ export default function VendorDetailScreen() {
                         {/* Fotograf metadata */}
                         {metadata.packageType && metadata.hoursIncluded && (
                           <View style={[styles.metadataBadge, { backgroundColor: "#2196F315" }]}>
-                            <Feather name="camera" size={10} color="#2196F3" />
+                            <EvendiIcon name="camera" size={10} color="#2196F3" />
                             <ThemedText style={[styles.metadataText, { color: "#2196F3" }]}>
                               {metadata.packageType} - {metadata.hoursIncluded}t
                             </ThemedText>
@@ -474,7 +474,7 @@ export default function VendorDetailScreen() {
                         )}
                         {metadata.photosDelivered && (
                           <View style={[styles.metadataBadge, { backgroundColor: "#2196F315" }]}>
-                            <Feather name="image" size={10} color="#2196F3" />
+                            <EvendiIcon name="image" size={10} color="#2196F3" />
                             <ThemedText style={[styles.metadataText, { color: "#2196F3" }]}>
                               {metadata.photosDelivered} bilder
                             </ThemedText>
@@ -482,7 +482,7 @@ export default function VendorDetailScreen() {
                         )}
                         {metadata.printRightsIncluded && (
                           <View style={[styles.metadataBadge, { backgroundColor: "#00BCD415" }]}>
-                            <Feather name="printer" size={10} color="#00BCD4" />
+                            <EvendiIcon name="printer" size={10} color="#00BCD4" />
                             <ThemedText style={[styles.metadataText, { color: "#00BCD4" }]}>Trykkerett</ThemedText>
                           </View>
                         )}
@@ -490,7 +490,7 @@ export default function VendorDetailScreen() {
                         {/* Videograf metadata */}
                         {metadata.filmDurationMinutes && (
                           <View style={[styles.metadataBadge, { backgroundColor: "#9C27B015" }]}>
-                            <Feather name="film" size={10} color="#9C27B0" />
+                            <EvendiIcon name="film" size={10} color="#9C27B0" />
                             <ThemedText style={[styles.metadataText, { color: "#9C27B0" }]}>
                               {metadata.filmDurationMinutes} min
                             </ThemedText>
@@ -505,7 +505,7 @@ export default function VendorDetailScreen() {
                         )}
                         {metadata.droneFootageIncluded && (
                           <View style={[styles.metadataBadge, { backgroundColor: "#FF980015" }]}>
-                            <Feather name="navigation" size={10} color="#FF9800" />
+                            <EvendiIcon name="navigation" size={10} color="#FF9800" />
                             <ThemedText style={[styles.metadataText, { color: "#FF9800" }]}>Drone</ThemedText>
                           </View>
                         )}
@@ -513,7 +513,7 @@ export default function VendorDetailScreen() {
                         {/* Musikk metadata */}
                         {metadata.performanceType && (
                           <View style={[styles.metadataBadge, { backgroundColor: "#E91E6315" }]}>
-                            <Feather name="music" size={10} color="#E91E63" />
+                            <EvendiIcon name="music" size={10} color="#E91E63" />
                             <ThemedText style={[styles.metadataText, { color: "#E91E63" }]}>
                               {metadata.performanceType.toUpperCase()}
                             </ThemedText>
@@ -528,7 +528,7 @@ export default function VendorDetailScreen() {
                         )}
                         {metadata.performanceDurationHours && (
                           <View style={[styles.metadataBadge, { backgroundColor: theme.accent + "15" }]}>
-                            <Feather name="clock" size={10} color={theme.accent} />
+                            <EvendiIcon name="clock" size={10} color={theme.accent} />
                             <ThemedText style={[styles.metadataText, { color: theme.accent }]}>
                               {metadata.performanceDurationHours}t
                             </ThemedText>
@@ -536,7 +536,7 @@ export default function VendorDetailScreen() {
                         )}
                         {metadata.equipmentIncluded && (
                           <View style={[styles.metadataBadge, { backgroundColor: "#FF572215" }]}>
-                            <Feather name="headphones" size={10} color="#FF5722" />
+                            <EvendiIcon name="headphones" size={10} color="#FF5722" />
                             <ThemedText style={[styles.metadataText, { color: "#FF5722" }]}>Utstyr</ThemedText>
                           </View>
                         )}
@@ -544,7 +544,7 @@ export default function VendorDetailScreen() {
                         {/* Venue metadata */}
                         {metadata.capacityMax && (
                           <View style={[styles.metadataBadge, { backgroundColor: "#79554815" }]}>
-                            <Feather name="users" size={10} color="#795548" />
+                            <EvendiIcon name="users" size={10} color="#795548" />
                             <ThemedText style={[styles.metadataText, { color: "#795548" }]}>
                               {metadata.capacityMin && `${metadata.capacityMin}-`}{metadata.capacityMax} gjester
                             </ThemedText>
@@ -552,7 +552,7 @@ export default function VendorDetailScreen() {
                         )}
                         {metadata.indoorOutdoor && (
                           <View style={[styles.metadataBadge, { backgroundColor: theme.accent + "15" }]}>
-                            <Feather name="home" size={10} color={theme.accent} />
+                            <EvendiIcon name="home" size={10} color={theme.accent} />
                             <ThemedText style={[styles.metadataText, { color: theme.accent }]}>
                               {metadata.indoorOutdoor.charAt(0).toUpperCase() + metadata.indoorOutdoor.slice(1)}
                             </ThemedText>
@@ -560,7 +560,7 @@ export default function VendorDetailScreen() {
                         )}
                         {metadata.cateringIncluded && (
                           <View style={[styles.metadataBadge, { backgroundColor: "#8BC34A15" }]}>
-                            <Feather name="coffee" size={10} color="#8BC34A" />
+                            <EvendiIcon name="coffee" size={10} color="#8BC34A" />
                             <ThemedText style={[styles.metadataText, { color: "#8BC34A" }]}>Catering</ThemedText>
                           </View>
                         )}
@@ -568,7 +568,7 @@ export default function VendorDetailScreen() {
                         {/* Planlegger metadata */}
                         {metadata.serviceLevel && (
                           <View style={[styles.metadataBadge, { backgroundColor: "#00BCD415" }]}>
-                            <Feather name="clipboard" size={10} color="#00BCD4" />
+                            <EvendiIcon name="clipboard" size={10} color="#00BCD4" />
                             <ThemedText style={[styles.metadataText, { color: "#00BCD4" }]}>
                               {metadata.serviceLevel.charAt(0).toUpperCase() + metadata.serviceLevel.slice(1)}
                             </ThemedText>
@@ -576,7 +576,7 @@ export default function VendorDetailScreen() {
                         )}
                         {metadata.monthsOfService && (
                           <View style={[styles.metadataBadge, { backgroundColor: theme.accent + "15" }]}>
-                            <Feather name="calendar" size={10} color={theme.accent} />
+                            <EvendiIcon name="calendar" size={10} color={theme.accent} />
                             <ThemedText style={[styles.metadataText, { color: theme.accent }]}>
                               {metadata.monthsOfService} mnd
                             </ThemedText>
@@ -584,7 +584,7 @@ export default function VendorDetailScreen() {
                         )}
                         {metadata.vendorCoordinationIncluded && (
                           <View style={[styles.metadataBadge, { backgroundColor: "#00968815" }]}>
-                            <Feather name="users" size={10} color="#009688" />
+                            <EvendiIcon name="users" size={10} color="#009688" />
                             <ThemedText style={[styles.metadataText, { color: "#009688" }]}>Koordinering</ThemedText>
                           </View>
                         )}
@@ -596,7 +596,7 @@ export default function VendorDetailScreen() {
                       <View style={[styles.venueDetailsBox, { backgroundColor: theme.backgroundSecondary, borderColor: theme.border }]}>
                         {product.venueMaxGuests && (
                           <View style={styles.venueDetailRow}>
-                            <Feather name="users" size={14} color={theme.accent} />
+                            <EvendiIcon name="users" size={14} color={theme.accent} />
                             <ThemedText style={[Typography.small, { flex: 1, marginLeft: Spacing.xs }]}>
                               Kapasitet: {product.venueMinGuests ? `${product.venueMinGuests}-${product.venueMaxGuests}` : `Opptil ${product.venueMaxGuests}`} gjester
                             </ThemedText>
@@ -604,7 +604,7 @@ export default function VendorDetailScreen() {
                         )}
                         {product.venueAddress && (
                           <View style={styles.venueDetailRow}>
-                            <Feather name="map-pin" size={14} color={theme.accent} />
+                            <EvendiIcon name="map-pin" size={14} color={theme.accent} />
                             <ThemedText style={[Typography.small, { flex: 1, marginLeft: Spacing.xs }]} numberOfLines={1}>
                               {product.venueAddress}
                             </ThemedText>
@@ -613,19 +613,19 @@ export default function VendorDetailScreen() {
                         <View style={styles.venueBadgesRow}>
                           {product.venueCateringIncluded && (
                             <View style={[styles.venueBadge, { backgroundColor: "#4CAF5020" }]}>
-                              <Feather name="coffee" size={10} color="#4CAF50" />
+                              <EvendiIcon name="coffee" size={10} color="#4CAF50" />
                               <ThemedText style={[styles.metadataText, { color: "#4CAF50" }]}>Servering inkludert</ThemedText>
                             </View>
                           )}
                           {product.venueAccommodationAvailable && (
                             <View style={[styles.venueBadge, { backgroundColor: "#2196F320" }]}>
-                              <Feather name="home" size={10} color="#2196F3" />
+                              <EvendiIcon name="home" size={10} color="#2196F3" />
                               <ThemedText style={[styles.metadataText, { color: "#2196F3" }]}>Overnatting tilgjengelig</ThemedText>
                             </View>
                           )}
                           {product.venueCheckoutTime && (
                             <View style={[styles.venueBadge, { backgroundColor: theme.accent + "20" }]}>
-                              <Feather name="clock" size={10} color={theme.accent} />
+                              <EvendiIcon name="clock" size={10} color={theme.accent} />
                               <ThemedText style={[styles.metadataText, { color: theme.accent }]}>Utsjekk: {product.venueCheckoutTime}</ThemedText>
                             </View>
                           )}
@@ -645,7 +645,7 @@ export default function VendorDetailScreen() {
               </ThemedText>
               <View style={styles.starsRow}>
                 {[1, 2, 3, 4, 5].map((star) => (
-                  <Feather
+                  <EvendiIcon
                     key={star}
                     name="star"
                     size={18}
@@ -664,7 +664,7 @@ export default function VendorDetailScreen() {
               style={[styles.googleButton, { backgroundColor: theme.backgroundSecondary, borderColor: theme.border }]}
               onPress={handleOpenGoogle}
             >
-              <Feather name="external-link" size={18} color={theme.accent} />
+              <EvendiIcon name="external-link" size={18} color={theme.accent} />
               <ThemedText style={[Typography.body, { marginLeft: Spacing.sm, color: theme.accent }]}>
                 Se anmeldelser på Google
               </ThemedText>
@@ -687,7 +687,7 @@ export default function VendorDetailScreen() {
                   </View>
                   <View style={styles.ratingBadge}>
                     {[1, 2, 3, 4, 5].map((star) => (
-                      <Feather
+                      <EvendiIcon
                         key={star}
                         name="star"
                         size={14}
@@ -718,7 +718,7 @@ export default function VendorDetailScreen() {
             ))
           ) : (
             <Card style={styles.emptyCard}>
-              <Feather name="star" size={32} color={theme.textSecondary} />
+              <EvendiIcon name="star" size={32} color={theme.textSecondary} />
               <ThemedText style={[Typography.body, { opacity: 0.7, marginTop: Spacing.md, textAlign: "center" }]}>
                 Ingen anmeldelser ennå
               </ThemedText>

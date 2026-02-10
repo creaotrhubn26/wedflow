@@ -1,6 +1,6 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 import { ThemedText } from "@/components/ThemedText";
@@ -32,14 +32,14 @@ export function TraditionHintBanner({ traditions, category }: TraditionHintBanne
         ]}
       >
         <View style={styles.headerRow}>
-          <Feather name="info" size={16} color="#FFB300" />
+          <EvendiIcon name="info" size={16} color="#FFB300" />
           <ThemedText style={[styles.headerText, { color: "#FFB300" }]}>
             Kulturelle tips
           </ThemedText>
         </View>
         {hints.map((hint, i) => (
           <View key={i} style={styles.hintRow}>
-            <Feather
+            <EvendiIcon
               name={hint.icon as any}
               size={14}
               color={theme.textSecondary}

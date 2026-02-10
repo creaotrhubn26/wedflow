@@ -6,7 +6,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import Animated, { FadeInDown } from "react-native-reanimated";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon, type EvendiIconName } from "@/components/EvendiIcon";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import * as Haptics from "expo-haptics";
@@ -20,7 +20,6 @@ import { getApiUrl } from "@/lib/query-client";
 import type { VendorSuggestion } from "@/hooks/useVendorSearch";
 import { showToast } from "@/lib/toast";
 
-type FeatherIconName = React.ComponentProps<typeof Feather>["name"];
 const COUPLE_STORAGE_KEY = "wedflow_couple_session";
 
 interface VendorActionBarProps {
@@ -30,7 +29,7 @@ interface VendorActionBarProps {
   /** Called when user taps "Fjern" (clear the selection) */
   onClear?: () => void;
   /** Icon for the category */
-  icon?: FeatherIconName;
+  icon?: EvendiIconName;
   /** Travel badge text (e.g., "15 min • 12 km") */
   travelBadge?: string | null;
   /** Whether travel info is loading */
@@ -138,7 +137,7 @@ export function VendorActionBar({
       {/* Selected vendor info */}
       <View style={styles.vendorRow}>
         <View style={[styles.vendorIcon, { backgroundColor: theme.primary + "15" }]}>
-          <Feather name={icon} size={14} color={theme.primary} />
+          <EvendiIcon name={icon} size={14} color={theme.primary} />
         </View>
         <View style={styles.vendorInfo}>
           <ThemedText style={[styles.vendorName, { color: theme.text }]} numberOfLines={1}>
@@ -146,7 +145,7 @@ export function VendorActionBar({
           </ThemedText>
           {vendor.location && (
             <View style={styles.metaRow}>
-              <Feather name="map-pin" size={10} color={theme.textMuted} />
+              <EvendiIcon name="map-pin" size={10} color={theme.textMuted} />
               <ThemedText style={[styles.metaText, { color: theme.textSecondary }]} numberOfLines={1}>
                 {vendor.location}
               </ThemedText>
@@ -154,7 +153,7 @@ export function VendorActionBar({
           )}
         </View>
         <View style={[styles.matchedBadge, { backgroundColor: theme.primary + "15" }]}>
-          <Feather name="check-circle" size={12} color={theme.primary} />
+          <EvendiIcon name="check-circle" size={12} color={theme.primary} />
           <ThemedText style={[styles.matchedText, { color: theme.primary }]}>Registrert</ThemedText>
         </View>
       </View>
@@ -162,7 +161,7 @@ export function VendorActionBar({
       {/* Travel info from venue */}
       {(travelBadge || isTravelLoading) && (
         <View style={[styles.travelInfoRow, { backgroundColor: "#2196F308", borderColor: "#2196F320" }]}>
-          <Feather name="navigation" size={12} color="#2196F3" />
+          <EvendiIcon name="navigation" size={12} color="#2196F3" />
           {isTravelLoading ? (
             <>
               <ActivityIndicator size={10} color="#2196F3" />
@@ -182,7 +181,7 @@ export function VendorActionBar({
               )}
               {fuelCostNok != null && fuelCostNok > 0 && (
                 <View style={[styles.fuelBadge, { backgroundColor: "#FF980015" }]}>
-                  <Feather name="droplet" size={9} color="#FF9800" />
+                  <EvendiIcon name="droplet" size={9} color="#FF9800" />
                   <ThemedText style={[styles.fuelText, { color: "#FF9800" }]}>
                     ~{Math.round(fuelCostNok)} kr
                   </ThemedText>
@@ -199,7 +198,7 @@ export function VendorActionBar({
           onPress={handleViewProfile}
           style={[styles.profileButton, { borderColor: theme.primary }]}
         >
-          <Feather name="user" size={14} color={theme.primary} />
+          <EvendiIcon name="user" size={14} color={theme.primary} />
           <ThemedText style={[styles.buttonText, { color: theme.primary }]}>Se profil</ThemedText>
         </Pressable>
 
@@ -212,7 +211,7 @@ export function VendorActionBar({
             <ActivityIndicator size="small" color="#FFFFFF" />
           ) : (
             <>
-              <Feather name="message-circle" size={14} color="#FFFFFF" />
+              <EvendiIcon name="message-circle" size={14} color="#FFFFFF" />
               <ThemedText style={styles.chatButtonText}>Send melding</ThemedText>
             </>
           )}
@@ -227,7 +226,7 @@ export function VendorActionBar({
             hitSlop={8}
             style={styles.clearButton}
           >
-            <Feather name="x" size={16} color={theme.textMuted} />
+            <EvendiIcon name="x" size={16} color={theme.textMuted} />
           </Pressable>
         )}
       </View>
@@ -243,7 +242,7 @@ export function VendorActionBar({
               }}
               style={[styles.quickLinkButton, { backgroundColor: "#2196F310" }]}
             >
-              <Feather name="navigation" size={12} color="#2196F3" />
+              <EvendiIcon name="navigation" size={12} color="#2196F3" />
               <ThemedText style={[styles.quickLinkText, { color: "#2196F3" }]}>Kjørerute</ThemedText>
             </Pressable>
           )}
@@ -255,7 +254,7 @@ export function VendorActionBar({
               }}
               style={[styles.quickLinkButton, { backgroundColor: "#4CAF5010" }]}
             >
-              <Feather name="map" size={12} color="#4CAF50" />
+              <EvendiIcon name="map" size={12} color="#4CAF50" />
               <ThemedText style={[styles.quickLinkText, { color: "#4CAF50" }]}>Vis på kart</ThemedText>
             </Pressable>
           )}
@@ -267,7 +266,7 @@ export function VendorActionBar({
               }}
               style={[styles.quickLinkButton, { backgroundColor: "#FF980010" }]}
             >
-              <Feather name="clock" size={12} color="#FF9800" />
+              <EvendiIcon name="clock" size={12} color="#FF9800" />
               <ThemedText style={[styles.quickLinkText, { color: "#FF9800" }]}>Tidslinje</ThemedText>
             </Pressable>
           )}

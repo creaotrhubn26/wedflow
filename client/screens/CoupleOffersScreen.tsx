@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -226,7 +226,7 @@ export default function CoupleOffersScreen() {
               <View style={styles.offerTitleRow}>
                 <ThemedText style={styles.offerTitle}>{offer.title}</ThemedText>
                 <View style={[styles.statusBadge, { backgroundColor: status.color + "20" }]}>
-                  <Feather name={status.icon} size={12} color={status.color} />
+                  <EvendiIcon name={status.icon} size={12} color={status.color} />
                   <ThemedText style={[styles.statusText, { color: status.color }]}>
                     {status.label}
                   </ThemedText>
@@ -246,7 +246,7 @@ export default function CoupleOffersScreen() {
                     const countdown = getCountdown(offer.validUntil);
                     return (
                       <View style={[styles.countdownBadge, { backgroundColor: countdown.color + "15", borderColor: countdown.color + "40" }]}>
-                        <Feather 
+                        <EvendiIcon 
                           name={countdown.urgency === "urgent" ? "alert-circle" : "clock"} 
                           size={12} 
                           color={countdown.color} 
@@ -260,7 +260,7 @@ export default function CoupleOffersScreen() {
                 ) : null}
               </View>
             </View>
-            <Feather
+            <EvendiIcon
               name={isExpanded ? "chevron-up" : "chevron-down"}
               size={20}
               color={theme.textMuted}
@@ -301,7 +301,7 @@ export default function CoupleOffersScreen() {
                             <View style={[styles.inventoryBadge, {
                               backgroundColor: exceedsInventory ? "#F44336" + "20" : "#4CAF50" + "20"
                             }]}>
-                              <Feather 
+                              <EvendiIcon 
                                 name={exceedsInventory ? "alert-triangle" : "check"} 
                                 size={10} 
                                 color={exceedsInventory ? "#F44336" : "#4CAF50"}
@@ -323,7 +323,7 @@ export default function CoupleOffersScreen() {
                           <View style={styles.metadataRow}>
                             {metadata.offersTasteSample && (
                               <View style={[styles.metadataBadge, { backgroundColor: "#4CAF5015" }]}>
-                                <Feather name="coffee" size={9} color="#4CAF50" />
+                                <EvendiIcon name="coffee" size={9} color="#4CAF50" />
                                 <ThemedText style={[styles.metadataText, { color: "#4CAF50" }]}>Smaksprøve inkludert</ThemedText>
                               </View>
                             )}
@@ -367,7 +367,7 @@ export default function CoupleOffersScreen() {
                             )}
                             {metadata.vehicleType && (
                               <View style={[styles.metadataBadge, { backgroundColor: Colors.dark.accent + "15" }]}>
-                                <Feather name="truck" size={9} color={Colors.dark.accent} />
+                                <EvendiIcon name="truck" size={9} color={Colors.dark.accent} />
                                 <ThemedText style={[styles.metadataText, { color: Colors.dark.accent }]}>
                                   {metadata.vehicleType.charAt(0).toUpperCase() + metadata.vehicleType.slice(1)}
                                 </ThemedText>
@@ -375,7 +375,7 @@ export default function CoupleOffersScreen() {
                             )}
                             {metadata.passengerCapacity && (
                               <View style={[styles.metadataBadge, { backgroundColor: Colors.dark.accent + "15" }]}>
-                                <Feather name="users" size={9} color={Colors.dark.accent} />
+                                <EvendiIcon name="users" size={9} color={Colors.dark.accent} />
                                 <ThemedText style={[styles.metadataText, { color: Colors.dark.accent }]}>
                                   {metadata.passengerCapacity} plasser
                                 </ThemedText>
@@ -390,7 +390,7 @@ export default function CoupleOffersScreen() {
                             )}
                             {metadata.includesTrialSession && (
                               <View style={[styles.metadataBadge, { backgroundColor: "#9C27B015" }]}>
-                                <Feather name="check" size={9} color="#9C27B0" />
+                                <EvendiIcon name="check" size={9} color="#9C27B0" />
                                 <ThemedText style={[styles.metadataText, { color: "#9C27B0" }]}>Prøveskyss inkludert</ThemedText>
                               </View>
                             )}
@@ -398,7 +398,7 @@ export default function CoupleOffersScreen() {
                             {/* Fotograf metadata */}
                             {metadata.packageType && metadata.hoursIncluded && (
                               <View style={[styles.metadataBadge, { backgroundColor: "#2196F315" }]}>
-                                <Feather name="camera" size={9} color="#2196F3" />
+                                <EvendiIcon name="camera" size={9} color="#2196F3" />
                                 <ThemedText style={[styles.metadataText, { color: "#2196F3" }]}>
                                   {metadata.packageType} - {metadata.hoursIncluded}t
                                 </ThemedText>
@@ -406,7 +406,7 @@ export default function CoupleOffersScreen() {
                             )}
                             {metadata.photosDelivered && (
                               <View style={[styles.metadataBadge, { backgroundColor: "#2196F315" }]}>
-                                <Feather name="image" size={9} color="#2196F3" />
+                                <EvendiIcon name="image" size={9} color="#2196F3" />
                                 <ThemedText style={[styles.metadataText, { color: "#2196F3" }]}>
                                   {metadata.photosDelivered} bilder
                                 </ThemedText>
@@ -414,7 +414,7 @@ export default function CoupleOffersScreen() {
                             )}
                             {metadata.printRightsIncluded && (
                               <View style={[styles.metadataBadge, { backgroundColor: "#00BCD415" }]}>
-                                <Feather name="printer" size={9} color="#00BCD4" />
+                                <EvendiIcon name="printer" size={9} color="#00BCD4" />
                                 <ThemedText style={[styles.metadataText, { color: "#00BCD4" }]}>Trykkerett</ThemedText>
                               </View>
                             )}
@@ -422,7 +422,7 @@ export default function CoupleOffersScreen() {
                             {/* Videograf metadata */}
                             {metadata.filmDurationMinutes && (
                               <View style={[styles.metadataBadge, { backgroundColor: "#9C27B015" }]}>
-                                <Feather name="film" size={9} color="#9C27B0" />
+                                <EvendiIcon name="film" size={9} color="#9C27B0" />
                                 <ThemedText style={[styles.metadataText, { color: "#9C27B0" }]}>
                                   {metadata.filmDurationMinutes} min film
                                 </ThemedText>
@@ -437,7 +437,7 @@ export default function CoupleOffersScreen() {
                             )}
                             {metadata.droneFootageIncluded && (
                               <View style={[styles.metadataBadge, { backgroundColor: "#FF980015" }]}>
-                                <Feather name="navigation" size={9} color="#FF9800" />
+                                <EvendiIcon name="navigation" size={9} color="#FF9800" />
                                 <ThemedText style={[styles.metadataText, { color: "#FF9800" }]}>Drone inkludert</ThemedText>
                               </View>
                             )}
@@ -445,7 +445,7 @@ export default function CoupleOffersScreen() {
                             {/* Musikk metadata */}
                             {metadata.performanceType && (
                               <View style={[styles.metadataBadge, { backgroundColor: "#E91E6315" }]}>
-                                <Feather name="music" size={9} color="#E91E63" />
+                                <EvendiIcon name="music" size={9} color="#E91E63" />
                                 <ThemedText style={[styles.metadataText, { color: "#E91E63" }]}>
                                   {metadata.performanceType.toUpperCase()}
                                 </ThemedText>
@@ -460,7 +460,7 @@ export default function CoupleOffersScreen() {
                             )}
                             {metadata.performanceDurationHours && (
                               <View style={[styles.metadataBadge, { backgroundColor: Colors.dark.accent + "15" }]}>
-                                <Feather name="clock" size={9} color={Colors.dark.accent} />
+                                <EvendiIcon name="clock" size={9} color={Colors.dark.accent} />
                                 <ThemedText style={[styles.metadataText, { color: Colors.dark.accent }]}>
                                   {metadata.performanceDurationHours}t opptreden
                                 </ThemedText>
@@ -468,7 +468,7 @@ export default function CoupleOffersScreen() {
                             )}
                             {metadata.equipmentIncluded && (
                               <View style={[styles.metadataBadge, { backgroundColor: "#FF572215" }]}>
-                                <Feather name="headphones" size={9} color="#FF5722" />
+                                <EvendiIcon name="headphones" size={9} color="#FF5722" />
                                 <ThemedText style={[styles.metadataText, { color: "#FF5722" }]}>Utstyr inkludert</ThemedText>
                               </View>
                             )}
@@ -476,7 +476,7 @@ export default function CoupleOffersScreen() {
                             {/* Venue metadata */}
                             {metadata.capacityMax && (
                               <View style={[styles.metadataBadge, { backgroundColor: "#79554815" }]}>
-                                <Feather name="users" size={9} color="#795548" />
+                                <EvendiIcon name="users" size={9} color="#795548" />
                                 <ThemedText style={[styles.metadataText, { color: "#795548" }]}>
                                   {metadata.capacityMin && `${metadata.capacityMin}-`}{metadata.capacityMax} gjester
                                 </ThemedText>
@@ -484,7 +484,7 @@ export default function CoupleOffersScreen() {
                             )}
                             {metadata.indoorOutdoor && (
                               <View style={[styles.metadataBadge, { backgroundColor: Colors.dark.accent + "15" }]}>
-                                <Feather name="home" size={9} color={Colors.dark.accent} />
+                                <EvendiIcon name="home" size={9} color={Colors.dark.accent} />
                                 <ThemedText style={[styles.metadataText, { color: Colors.dark.accent }]}>
                                   {metadata.indoorOutdoor.charAt(0).toUpperCase() + metadata.indoorOutdoor.slice(1)}
                                 </ThemedText>
@@ -492,7 +492,7 @@ export default function CoupleOffersScreen() {
                             )}
                             {metadata.cateringIncluded && (
                               <View style={[styles.metadataBadge, { backgroundColor: "#8BC34A15" }]}>
-                                <Feather name="coffee" size={9} color="#8BC34A" />
+                                <EvendiIcon name="coffee" size={9} color="#8BC34A" />
                                 <ThemedText style={[styles.metadataText, { color: "#8BC34A" }]}>Catering inkludert</ThemedText>
                               </View>
                             )}
@@ -500,7 +500,7 @@ export default function CoupleOffersScreen() {
                             {/* Planlegger metadata */}
                             {metadata.serviceLevel && (
                               <View style={[styles.metadataBadge, { backgroundColor: "#00BCD415" }]}>
-                                <Feather name="clipboard" size={9} color="#00BCD4" />
+                                <EvendiIcon name="clipboard" size={9} color="#00BCD4" />
                                 <ThemedText style={[styles.metadataText, { color: "#00BCD4" }]}>
                                   {metadata.serviceLevel.charAt(0).toUpperCase() + metadata.serviceLevel.slice(1)}
                                 </ThemedText>
@@ -508,7 +508,7 @@ export default function CoupleOffersScreen() {
                             )}
                             {metadata.monthsOfService && (
                               <View style={[styles.metadataBadge, { backgroundColor: Colors.dark.accent + "15" }]}>
-                                <Feather name="calendar" size={9} color={Colors.dark.accent} />
+                                <EvendiIcon name="calendar" size={9} color={Colors.dark.accent} />
                                 <ThemedText style={[styles.metadataText, { color: Colors.dark.accent }]}>
                                   {metadata.monthsOfService} måneder
                                 </ThemedText>
@@ -516,7 +516,7 @@ export default function CoupleOffersScreen() {
                             )}
                             {metadata.vendorCoordinationIncluded && (
                               <View style={[styles.metadataBadge, { backgroundColor: "#00968815" }]}>
-                                <Feather name="users" size={9} color="#009688" />
+                                <EvendiIcon name="users" size={9} color="#009688" />
                                 <ThemedText style={[styles.metadataText, { color: "#009688" }]}>Koordinering inkludert</ThemedText>
                               </View>
                             )}
@@ -537,14 +537,14 @@ export default function CoupleOffersScreen() {
 
               <View style={styles.metaSection}>
                 <View style={styles.metaRow}>
-                  <Feather name="calendar" size={14} color={theme.textMuted} />
+                  <EvendiIcon name="calendar" size={14} color={theme.textMuted} />
                   <ThemedText style={[styles.metaText, { color: theme.textMuted }]}>
                     Mottatt {formatDate(offer.createdAt)}
                   </ThemedText>
                 </View>
                 {offer.validUntil ? (
                   <View style={styles.metaRow}>
-                    <Feather
+                    <EvendiIcon
                       name="clock"
                       size={14}
                       color={isExpired ? "#F44336" : theme.textMuted}
@@ -616,7 +616,7 @@ export default function CoupleOffersScreen() {
         }
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <Feather name="file-text" size={48} color={theme.textMuted} />
+            <EvendiIcon name="file-text" size={48} color={theme.textMuted} />
             <ThemedText style={[styles.emptyTitle, { color: theme.text }]}>
               Ingen tilbud ennå
             </ThemedText>
@@ -652,7 +652,7 @@ export default function CoupleOffersScreen() {
                       },
                     ]}
                   >
-                    <Feather
+                    <EvendiIcon
                       name={filter.icon}
                       size={14}
                       color={statusFilter === filter.value ? "#1A1A1A" : theme.textMuted}
@@ -693,7 +693,7 @@ export default function CoupleOffersScreen() {
                       },
                     ]}
                   >
-                    <Feather
+                    <EvendiIcon
                       name={sort.icon}
                       size={14}
                       color={sortBy === sort.value ? "#1A1A1A" : theme.textMuted}

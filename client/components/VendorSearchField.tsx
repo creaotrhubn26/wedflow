@@ -32,7 +32,7 @@ import React, { useEffect, useMemo } from "react";
 import { View, TextInput, StyleSheet, Alert } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon, type EvendiIconName } from "@/components/EvendiIcon";
 
 import { ThemedText } from "@/components/ThemedText";
 import { VendorSuggestions } from "@/components/VendorSuggestions";
@@ -43,14 +43,13 @@ import { useTheme } from "@/hooks/useTheme";
 import { Spacing } from "@/constants/theme";
 import { PlanningStackParamList } from "@/navigation/PlanningStackNavigator";
 
-type FeatherIconName = React.ComponentProps<typeof Feather>["name"];
 type NavigationProp = NativeStackNavigationProp<PlanningStackParamList>;
 
 export interface VendorSearchFieldProps {
   /** Vendor category slug (e.g., "florist", "catering", "beauty", "photographer") */
   category: string;
-  /** Feather icon name for this category */
-  icon?: FeatherIconName;
+  /** Evendi icon name for this category */
+  icon?: EvendiIconName;
   /** Label above the search input */
   label?: string;
   /** Placeholder text in the search input */

@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import { useQuery } from "@tanstack/react-query";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -123,7 +123,7 @@ export default function VendorInventoryScreen({ navigation }: Props) {
         >
           <View style={styles.cardHeader}>
             <View style={[styles.iconCircle, { backgroundColor: statusColor + "20" }]}>
-              <Feather name="package" size={20} color={statusColor} />
+              <EvendiIcon name="package" size={20} color={statusColor} />
             </View>
             <View style={{ flex: 1 }}>
               <ThemedText style={[styles.productTitle, { color: theme.text }]}>
@@ -133,7 +133,7 @@ export default function VendorInventoryScreen({ navigation }: Props) {
                 {(item.unitPrice / 100).toLocaleString("nb-NO")} kr / {item.unitType}
               </ThemedText>
             </View>
-            <Feather name="chevron-right" size={20} color={theme.textMuted} />
+            <EvendiIcon name="chevron-right" size={20} color={theme.textMuted} />
           </View>
 
           <View style={styles.statsContainer}>
@@ -193,7 +193,7 @@ export default function VendorInventoryScreen({ navigation }: Props) {
 
           {isLowStock && (
             <View style={[styles.warningBadge, { backgroundColor: warningColor + "20" }]}> 
-              <Feather name="alert-triangle" size={14} color={warningColor} />
+              <EvendiIcon name="alert-triangle" size={14} color={warningColor} />
               <ThemedText style={[styles.warningText, { color: warningColor }]}>
                 Lav beholdning
               </ThemedText>
@@ -205,7 +205,7 @@ export default function VendorInventoryScreen({ navigation }: Props) {
             <View style={[styles.venueDetailsBox, { backgroundColor: theme.backgroundSecondary, borderColor: theme.border }]}>
               {item.venueMaxGuests && (
                 <View style={styles.venueDetailRow}>
-                  <Feather name="users" size={14} color={theme.accent} />
+                  <EvendiIcon name="users" size={14} color={theme.accent} />
                   <ThemedText style={[styles.venueDetailText, { color: theme.text }]}>
                     {item.venueMinGuests ? `${item.venueMinGuests}-${item.venueMaxGuests}` : `Opptil ${item.venueMaxGuests}`} gjester
                   </ThemedText>
@@ -213,7 +213,7 @@ export default function VendorInventoryScreen({ navigation }: Props) {
               )}
               {item.venueAddress && (
                 <View style={styles.venueDetailRow}>
-                  <Feather name="map-pin" size={14} color={theme.accent} />
+                  <EvendiIcon name="map-pin" size={14} color={theme.accent} />
                   <ThemedText style={[styles.venueDetailText, { color: theme.text }]} numberOfLines={1}>
                     {item.venueAddress}
                   </ThemedText>
@@ -246,7 +246,7 @@ export default function VendorInventoryScreen({ navigation }: Props) {
           )}
 
           <View style={[styles.infoBox, { backgroundColor: theme.accent + "12", borderColor: theme.accent + "30" }]}>
-            <Feather name="info" size={14} color={theme.accent} />
+            <EvendiIcon name="info" size={14} color={theme.accent} />
             <ThemedText style={[styles.infoText, { color: theme.text, flex: 1, marginLeft: Spacing.xs }]}>
               Tilgjengelighet sjekkes automatisk per arrangementsdato ved tilbudopprettelse
             </ThemedText>
@@ -281,7 +281,7 @@ export default function VendorInventoryScreen({ navigation }: Props) {
       >
         <View style={styles.headerContent}>
           <View style={[styles.headerIconCircle, { backgroundColor: Colors.dark.accent }]}>
-            <Feather name="package" size={20} color="#FFFFFF" />
+            <EvendiIcon name="package" size={20} color="#FFFFFF" />
           </View>
           <View style={styles.headerTextContainer}>
             <ThemedText style={[styles.headerTitle, { color: theme.text }]}>
@@ -299,14 +299,14 @@ export default function VendorInventoryScreen({ navigation }: Props) {
             { backgroundColor: pressed ? theme.backgroundSecondary : "transparent" },
           ]}
         >
-          <Feather name="x" size={20} color={theme.textSecondary} />
+          <EvendiIcon name="x" size={20} color={theme.textSecondary} />
         </Pressable>
       </View>
 
       {inventoryProducts.length === 0 ? (
         <View style={styles.emptyState}>
           <View style={[styles.emptyIconCircle, { backgroundColor: theme.accent + "15" }]}>
-            <Feather name="package" size={40} color={theme.accent} />
+            <EvendiIcon name="package" size={40} color={theme.accent} />
           </View>
           <ThemedText style={[styles.emptyTitle, { color: theme.text }]}>
             Ingen produkter med lagerstyring
@@ -324,7 +324,7 @@ export default function VendorInventoryScreen({ navigation }: Props) {
               },
             ]}
           >
-            <Feather name="plus" size={18} color="#FFFFFF" />
+            <EvendiIcon name="plus" size={18} color="#FFFFFF" />
             <ThemedText style={styles.emptyButtonText}>Gå til produkter</ThemedText>
           </Pressable>
         </View>

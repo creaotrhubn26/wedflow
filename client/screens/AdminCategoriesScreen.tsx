@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -185,13 +185,13 @@ export default function AdminCategoriesScreen() {
           style={styles.iconButton}
           onPress={() => openEditModal(item)}
         >
-          <Feather name="edit-2" size={18} color={theme.textSecondary} />
+          <EvendiIcon name="edit-2" size={18} color={theme.textSecondary} />
         </Pressable>
         <Pressable
           style={styles.iconButton}
           onPress={() => handleDelete(item)}
         >
-          <Feather name="trash-2" size={18} color="#FF6B6B" />
+          <EvendiIcon name="trash-2" size={18} color="#FF6B6B" />
         </Pressable>
       </View>
     </Animated.View>
@@ -242,7 +242,7 @@ export default function AdminCategoriesScreen() {
           }}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <Feather name="folder" size={48} color={theme.textMuted} />
+              <EvendiIcon name="folder" size={48} color={theme.textMuted} />
               <ThemedText style={[styles.emptyText, { color: theme.textSecondary }]}>
                 Ingen kategorier ennå
               </ThemedText>
@@ -259,7 +259,7 @@ export default function AdminCategoriesScreen() {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         }}
       >
-        <Feather name="plus" size={24} color="#000" />
+        <EvendiIcon name="plus" size={24} color="#000" />
       </Pressable>
 
       <Modal visible={showModal} animationType="slide" transparent>
@@ -270,7 +270,7 @@ export default function AdminCategoriesScreen() {
                 {editingCategory ? "Rediger kategori" : "Ny kategori"}
               </ThemedText>
               <Pressable onPress={() => { setShowModal(false); resetForm(); }}>
-                <Feather name="x" size={24} color={theme.text} />
+                <EvendiIcon name="x" size={24} color={theme.text} />
               </Pressable>
             </View>
 

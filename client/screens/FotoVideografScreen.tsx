@@ -3,7 +3,7 @@ import { View, StyleSheet, ScrollView, Pressable, RefreshControl, TextInput } fr
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Feather } from '@expo/vector-icons';
+import { EvendiIcon } from '@/components/EvendiIcon';
 import * as Haptics from 'expo-haptics';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
@@ -53,8 +53,8 @@ export function FotoVideografScreen() {
         <View style={styles.headerContent}>
           <View style={[styles.iconCircle, { backgroundColor: Colors.dark.accent + '15' }]}>
             <View style={styles.dualIconContainer}>
-              <Feather name="camera" size={20} color={Colors.dark.accent} />
-              <Feather name="video" size={20} color={Colors.dark.accent} />
+              <EvendiIcon name="camera" size={20} color={Colors.dark.accent} />
+              <EvendiIcon name="video" size={20} color={Colors.dark.accent} />
             </View>
           </View>
           <View style={styles.headerText}>
@@ -101,8 +101,8 @@ export function FotoVideografScreen() {
         {activeTab === 'sessions' ? (
           <Animated.View entering={FadeInDown.duration(300)} style={styles.emptyState}>
             <View style={styles.dualIconLarge}>
-              <Feather name="camera" size={32} color={theme.textMuted} />
-              <Feather name="video" size={32} color={theme.textMuted} />
+              <EvendiIcon name="camera" size={32} color={theme.textMuted} />
+              <EvendiIcon name="video" size={32} color={theme.textMuted} />
             </View>
             <ThemedText style={[styles.emptyTitle, { color: theme.text }]}>
               Ingen foto-/videoøkter ennå
@@ -153,7 +153,7 @@ export function FotoVideografScreen() {
             {TIMELINE_STEPS.map((step) => (
               <View key={step.key} style={styles.timelineItem}>
                 <View style={[styles.timelineIconCircle, { backgroundColor: theme.backgroundSecondary }]}>
-                  <Feather name={step.icon} size={20} color={theme.textMuted} />
+                  <EvendiIcon name={step.icon} size={20} color={theme.textMuted} />
                 </View>
                 <View style={styles.timelineContent}>
                   <ThemedText style={styles.timelineLabel}>{step.label}</ThemedText>

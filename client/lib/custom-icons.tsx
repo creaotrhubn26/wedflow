@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import { Svg, Path, Rect, Polyline, Circle } from "react-native-svg";
 
 export type IconRenderer = (color: string, size?: number) => ReactElement;
@@ -111,5 +111,5 @@ export function getAllIconOptions() {
 export function renderIcon(name: string, color: string, size = 20) {
   const custom = CUSTOM_ICONS[name];
   if (custom) return custom(color, size);
-  return <Feather name={name as any} size={size} color={color} />;
+  return <EvendiIcon name={name as any} size={size} color={color} />;
 }

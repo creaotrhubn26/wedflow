@@ -17,7 +17,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -383,23 +383,23 @@ export default function AdminVendorsScreen() {
 
         <View style={styles.vendorDetails}>
           <View style={styles.detailRow}>
-            <Feather name="mail" size={14} color={theme.textSecondary} />
+            <EvendiIcon name="mail" size={14} color={theme.textSecondary} />
             <ThemedText style={[styles.detailText, { color: theme.textSecondary }]}>{item.email}</ThemedText>
           </View>
           {item.location ? (
             <View style={styles.detailRow}>
-              <Feather name="map-pin" size={14} color={theme.textSecondary} />
+              <EvendiIcon name="map-pin" size={14} color={theme.textSecondary} />
               <ThemedText style={[styles.detailText, { color: theme.textSecondary }]}>{item.location}</ThemedText>
             </View>
           ) : null}
           {item.phone ? (
             <View style={styles.detailRow}>
-              <Feather name="phone" size={14} color={theme.textSecondary} />
+              <EvendiIcon name="phone" size={14} color={theme.textSecondary} />
               <ThemedText style={[styles.detailText, { color: theme.textSecondary }]}>{item.phone}</ThemedText>
             </View>
           ) : null}
           <View style={styles.detailRow}>
-            <Feather name="calendar" size={14} color={theme.textSecondary} />
+            <EvendiIcon name="calendar" size={14} color={theme.textSecondary} />
             <ThemedText style={[styles.detailText, { color: theme.textSecondary }]}>
               Registrert {formatDate(item.createdAt)}
             </ThemedText>
@@ -429,7 +429,7 @@ export default function AdminVendorsScreen() {
               disabled={approveMutation.isPending}
               style={[styles.actionBtn, styles.approveBtn]}
             >
-              <Feather name="check" size={18} color="#fff" />
+              <EvendiIcon name="check" size={18} color="#fff" />
               <ThemedText style={styles.actionBtnText}>Godkjenn</ThemedText>
             </Pressable>
             <Pressable
@@ -437,7 +437,7 @@ export default function AdminVendorsScreen() {
               disabled={rejectMutation.isPending}
               style={[styles.actionBtn, styles.rejectBtn]}
             >
-              <Feather name="x" size={18} color="#fff" />
+              <EvendiIcon name="x" size={18} color="#fff" />
               <ThemedText style={styles.actionBtnText}>Avvis</ThemedText>
             </Pressable>
           </View>
@@ -448,7 +448,7 @@ export default function AdminVendorsScreen() {
             onPress={() => openEditModal(item)}
             style={[styles.settingsBtn, { borderColor: Colors.dark.accent }]}
           >
-            <Feather name="settings" size={16} color={Colors.dark.accent} />
+            <EvendiIcon name="settings" size={16} color={Colors.dark.accent} />
             <ThemedText style={[styles.settingsBtnText, { color: Colors.dark.accent }]}>
               Administrer tilganger
             </ThemedText>
@@ -473,7 +473,7 @@ export default function AdminVendorsScreen() {
           </ThemedText>
 
           <View style={[styles.inputContainer, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-            <Feather name="key" size={18} color={theme.textMuted} />
+            <EvendiIcon name="key" size={18} color={theme.textMuted} />
             <TextInput
               style={[styles.input, { color: theme.text }]}
               placeholder="Admin-nøkkel"
@@ -550,7 +550,7 @@ export default function AdminVendorsScreen() {
           ItemSeparatorComponent={() => <View style={{ height: Spacing.md }} />}
           ListEmptyComponent={() => (
             <View style={styles.emptyContainer}>
-              <Feather name="inbox" size={48} color={theme.textMuted} />
+              <EvendiIcon name="inbox" size={48} color={theme.textMuted} />
               <ThemedText style={[styles.emptyText, { color: theme.textMuted }]}>
                 Ingen {selectedTab === "pending" ? "ventende" : selectedTab === "approved" ? "godkjente" : "avviste"} leverandører
               </ThemedText>
@@ -572,7 +572,7 @@ export default function AdminVendorsScreen() {
                 {editingVendor?.businessName}
               </ThemedText>
               <Pressable onPress={() => setEditingVendor(null)}>
-                <Feather name="x" size={24} color={theme.text} />
+                <EvendiIcon name="x" size={24} color={theme.text} />
               </Pressable>
             </View>
 
@@ -580,7 +580,7 @@ export default function AdminVendorsScreen() {
                     <ThemedText style={[styles.sectionTitle, { marginBottom: Spacing.sm }]}>Abonnement</ThemedText>
                     <View style={[styles.featureRow, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}> 
                       <View style={styles.featureInfo}>
-                        <Feather name="package" size={18} color={Colors.dark.accent} />
+                        <EvendiIcon name="package" size={18} color={Colors.dark.accent} />
                         <ThemedText style={styles.featureLabel}>Abonnementstier</ThemedText>
                       </View>
                       <Pressable
@@ -597,7 +597,7 @@ export default function AdminVendorsScreen() {
               <ThemedText style={styles.sectionTitle}>Funksjoner</ThemedText>
               <View style={[styles.featureRow, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
                 <View style={styles.featureInfo}>
-                  <Feather name="package" size={18} color={Colors.dark.accent} />
+                  <EvendiIcon name="package" size={18} color={Colors.dark.accent} />
                   <ThemedText style={styles.featureLabel}>Leveranser</ThemedText>
                 </View>
                 <Switch
@@ -609,7 +609,7 @@ export default function AdminVendorsScreen() {
               </View>
               <View style={[styles.featureRow, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
                 <View style={styles.featureInfo}>
-                  <Feather name="image" size={18} color={Colors.dark.accent} />
+                  <EvendiIcon name="image" size={18} color={Colors.dark.accent} />
                   <ThemedText style={styles.featureLabel}>Showcases</ThemedText>
                 </View>
                 <Switch
@@ -716,7 +716,7 @@ export default function AdminVendorsScreen() {
                     </ThemedText>
                   </View>
                   {selectedTierId === tier.id && (
-                    <Feather name="check-circle" size={24} color={Colors.dark.accent} />
+                    <EvendiIcon name="check-circle" size={24} color={Colors.dark.accent} />
                   )}
                 </Pressable>
               ))}
@@ -733,7 +733,7 @@ export default function AdminVendorsScreen() {
                 onPress={confirmApproval}
                 style={[styles.modalBtn, { backgroundColor: Colors.dark.accent }]}
               >
-                <Feather name="check" size={18} color="#1A1A1A" />
+                <EvendiIcon name="check" size={18} color="#1A1A1A" />
                 <ThemedText style={{ color: "#1A1A1A", fontWeight: "600", marginLeft: 8 }}>
                   Godkjenn
                 </ThemedText>
@@ -757,7 +757,7 @@ export default function AdminVendorsScreen() {
             <View style={styles.modalHeader}>
               <ThemedText style={styles.modalTitle}>Avvis leverandør</ThemedText>
               <Pressable onPress={cancelReject}>
-                <Feather name="x" size={20} color={theme.text} />
+                <EvendiIcon name="x" size={20} color={theme.text} />
               </Pressable>
             </View>
             <View style={{ padding: Spacing.lg, gap: Spacing.sm }}>

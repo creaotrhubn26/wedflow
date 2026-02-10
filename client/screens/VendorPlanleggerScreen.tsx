@@ -5,7 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Haptics from "expo-haptics";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
@@ -464,7 +464,7 @@ export default function VendorPlanleggerScreen() {
         >
           <View style={styles.cardHeader}>
             <ThemedText style={[styles.cardTitle, { color: theme.text }]}>Planleggingspakker</ThemedText>
-            <Feather name="clipboard" size={18} color={theme.textSecondary} />
+            <EvendiIcon name="clipboard" size={18} color={theme.textSecondary} />
           </View>
           <ThemedText style={[styles.cardBody, { color: theme.textSecondary }]}>Legg til pakker for full planlegging, delvis hjelp eller dagskoordinering.</ThemedText>
           <Button style={styles.cardButton} onPress={goToProducts}>Opprett pakke</Button>
@@ -480,7 +480,7 @@ export default function VendorPlanleggerScreen() {
         >
           <View style={styles.cardHeader}>
             <ThemedText style={[styles.cardTitle, { color: theme.text }]}>Tilbud</ThemedText>
-            <Feather name="file-text" size={18} color={theme.textSecondary} />
+            <EvendiIcon name="file-text" size={18} color={theme.textSecondary} />
           </View>
           <ThemedText style={[styles.cardBody, { color: theme.textSecondary }]}>Send tilbud med pakkepriser og tilgjengelighet.</ThemedText>
           <Button style={styles.cardButton} onPress={goToOffers}>Send tilbud</Button>
@@ -488,7 +488,7 @@ export default function VendorPlanleggerScreen() {
       </View>
 
       <View style={[styles.infoBox, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-        <Feather name="info" size={16} color={theme.textSecondary} />
+        <EvendiIcon name="info" size={16} color={theme.textSecondary} />
         <ThemedText style={[styles.infoText, { color: theme.textSecondary }]}>Legg til bilder av tidligere arrangementer og anmeldelser for å øke konvertering.</ThemedText>
       </View>
 
@@ -499,7 +499,7 @@ export default function VendorPlanleggerScreen() {
         </View>
         {products.length === 0 ? (
           <View style={styles.emptyRow}>
-            <Feather name="clipboard" size={18} color={theme.accent} />
+            <EvendiIcon name="clipboard" size={18} color={theme.accent} />
             <View style={{ flex: 1 }}>
               <ThemedText style={[styles.emptyTitle, { color: theme.text }]}>Ingen pakker ennå</ThemedText>
               <ThemedText style={[styles.emptySubtitle, { color: theme.textSecondary }]}>Legg til planleggingspakker for å komme i gang</ThemedText>
@@ -516,7 +516,7 @@ export default function VendorPlanleggerScreen() {
                     <ThemedText style={{ color: theme.textSecondary, fontSize: 13 }}>{p.unitPrice} {p.unitType}</ThemedText>
                     {p.description ? <ThemedText numberOfLines={1} style={{ color: theme.textSecondary, fontSize: 12 }}>{p.description}</ThemedText> : null}
                   </View>
-                  <Feather name="chevron-right" size={18} color={theme.textSecondary} />
+                  <EvendiIcon name="chevron-right" size={18} color={theme.textSecondary} />
                 </Pressable>
               </SwipeableRow>
             </Animated.View>
@@ -531,7 +531,7 @@ export default function VendorPlanleggerScreen() {
         </View>
         {offers.length === 0 ? (
           <View style={styles.emptyRow}>
-            <Feather name="file-text" size={18} color={theme.accent} />
+            <EvendiIcon name="file-text" size={18} color={theme.accent} />
             <View style={{ flex: 1 }}>
               <ThemedText style={[styles.emptyTitle, { color: theme.text }]}>Ingen tilbud ennå</ThemedText>
               <ThemedText style={[styles.emptySubtitle, { color: theme.textSecondary }]}>Send tilbud til kunden</ThemedText>
@@ -549,7 +549,7 @@ export default function VendorPlanleggerScreen() {
                   </View>
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                     <ThemedText style={{ fontSize: 12, color: theme.textSecondary }}>{o.status}</ThemedText>
-                    <Feather name="chevron-right" size={18} color={theme.textSecondary} />
+                    <EvendiIcon name="chevron-right" size={18} color={theme.textSecondary} />
                   </View>
                 </Pressable>
               </SwipeableRow>
@@ -563,12 +563,12 @@ export default function VendorPlanleggerScreen() {
         <View style={styles.sectionHeaderRow}>
           <ThemedText style={[styles.cardTitle, { color: theme.text }]}>{isWedding ? "Møter med par" : "Møter med kunder"}</ThemedText>
           <Pressable onPress={() => openMeetingModal()} style={styles.addIconBtn}>
-            <Feather name="plus" size={18} color={theme.text} />
+            <EvendiIcon name="plus" size={18} color={theme.text} />
           </Pressable>
         </View>
         {meetings.length === 0 ? (
           <View style={styles.emptyRow}>
-            <Feather name="users" size={18} color={theme.accent} />
+            <EvendiIcon name="users" size={18} color={theme.accent} />
             <View style={{ flex: 1 }}>
               <ThemedText style={[styles.emptyTitle, { color: theme.text }]}>Ingen møter ennå</ThemedText>
               <ThemedText style={[styles.emptySubtitle, { color: theme.textSecondary }]}>Planlegg møte med kunden</ThemedText>
@@ -604,7 +604,7 @@ export default function VendorPlanleggerScreen() {
                       m.completed && { backgroundColor: theme.primary, borderColor: theme.primary },
                     ]}
                   >
-                    {m.completed && <Feather name="check" size={14} color="#fff" />}
+                    {m.completed && <EvendiIcon name="check" size={14} color="#fff" />}
                   </Pressable>
                   <View style={styles.cardInfo}>
                     <ThemedText style={[styles.cardTitle, m.completed && styles.completedText]}>{m.coupleName}</ThemedText>
@@ -614,9 +614,9 @@ export default function VendorPlanleggerScreen() {
                     ) : null}
                   </View>
                   <Pressable onPress={() => duplicateMeeting(m)} style={styles.quickActionButton}>
-                    <Feather name="copy" size={16} color={theme.textSecondary} />
+                    <EvendiIcon name="copy" size={16} color={theme.textSecondary} />
                   </Pressable>
-                  <Feather name="chevron-right" size={18} color={theme.textSecondary} />
+                  <EvendiIcon name="chevron-right" size={18} color={theme.textSecondary} />
                 </Pressable>
               </SwipeableRow>
             </Animated.View>
@@ -629,12 +629,12 @@ export default function VendorPlanleggerScreen() {
         <View style={styles.sectionHeaderRow}>
           <ThemedText style={[styles.cardTitle, { color: theme.text }]}>Oppgaver</ThemedText>
           <Pressable onPress={() => openTaskModal()} style={styles.addIconBtn}>
-            <Feather name="plus" size={18} color={theme.text} />
+            <EvendiIcon name="plus" size={18} color={theme.text} />
           </Pressable>
         </View>
         {tasks.length === 0 ? (
           <View style={styles.emptyRow}>
-            <Feather name="check-square" size={18} color={theme.accent} />
+            <EvendiIcon name="check-square" size={18} color={theme.accent} />
             <View style={{ flex: 1 }}>
               <ThemedText style={[styles.emptyTitle, { color: theme.text }]}>Ingen oppgaver ennå</ThemedText>
               <ThemedText style={[styles.emptySubtitle, { color: theme.textSecondary }]}>Opprett oppgaver for planleggingen</ThemedText>
@@ -670,7 +670,7 @@ export default function VendorPlanleggerScreen() {
                       t.completed && { backgroundColor: theme.primary, borderColor: theme.primary },
                     ]}
                   >
-                    {t.completed && <Feather name="check" size={14} color="#fff" />}
+                    {t.completed && <EvendiIcon name="check" size={14} color="#fff" />}
                   </Pressable>
                   <View style={styles.cardInfo}>
                     <ThemedText style={[styles.cardTitle, t.completed && styles.completedText]}>{t.title}</ThemedText>
@@ -685,9 +685,9 @@ export default function VendorPlanleggerScreen() {
                     </View>
                   </View>
                   <Pressable onPress={() => duplicateTask(t)} style={styles.quickActionButton}>
-                    <Feather name="copy" size={16} color={theme.textSecondary} />
+                    <EvendiIcon name="copy" size={16} color={theme.textSecondary} />
                   </Pressable>
-                  <Feather name="chevron-right" size={18} color={theme.textSecondary} />
+                  <EvendiIcon name="chevron-right" size={18} color={theme.textSecondary} />
                 </Pressable>
               </SwipeableRow>
             </Animated.View>
@@ -726,10 +726,10 @@ export default function VendorPlanleggerScreen() {
                   timeline[step.key as keyof PlannerTimeline] && { backgroundColor: Colors.light.success, borderColor: Colors.light.success },
                 ]}
               >
-                {timeline[step.key as keyof PlannerTimeline] && <Feather name="check" size={12} color="#fff" />}
+                {timeline[step.key as keyof PlannerTimeline] && <EvendiIcon name="check" size={12} color="#fff" />}
               </View>
               <View style={styles.timelineStepContent}>
-                <Feather name={step.icon} size={16} color={theme.textSecondary} />
+                <EvendiIcon name={step.icon} size={16} color={theme.textSecondary} />
                 <ThemedText style={styles.timelineLabel}>{step.label}</ThemedText>
               </View>
             </Pressable>

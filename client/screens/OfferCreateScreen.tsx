@@ -8,7 +8,7 @@ import {
   Platform,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -373,7 +373,7 @@ export default function OfferCreateScreen() {
       <View style={[styles.header, { paddingTop: insets.top + Spacing.md, backgroundColor: theme.backgroundDefault, borderBottomColor: theme.border }]}>
         <View style={styles.headerContent}>
           <View style={[styles.headerIconCircle, { backgroundColor: theme.accent }]}>
-            <Feather name="file-text" size={20} color="#FFFFFF" />
+            <EvendiIcon name="file-text" size={20} color="#FFFFFF" />
           </View>
           <View style={styles.headerTextContainer}>
             <ThemedText style={[styles.headerTitle, { color: theme.text }]}>
@@ -391,7 +391,7 @@ export default function OfferCreateScreen() {
             { backgroundColor: pressed ? theme.backgroundSecondary : theme.backgroundRoot },
           ]}
         >
-          <Feather name="x" size={20} color={theme.textSecondary} />
+          <EvendiIcon name="x" size={20} color={theme.textSecondary} />
         </Pressable>
       </View>
       <KeyboardAwareScrollViewCompat
@@ -408,11 +408,11 @@ export default function OfferCreateScreen() {
             <Animated.View entering={FadeInDown.duration(300)} style={[styles.templatesCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.accent }]}>
               <View style={styles.templatesHeader}>
                 <View style={styles.templatesHeaderLeft}>
-                  <Feather name="zap" size={18} color={theme.accent} />
+                  <EvendiIcon name="zap" size={18} color={theme.accent} />
                   <ThemedText style={[styles.templatesTitle, { color: theme.accent }]}>Hurtigstart</ThemedText>
                 </View>
                 <Pressable onPress={() => setShowTemplates(false)} style={styles.templatesClose}>
-                  <Feather name="x" size={16} color={theme.textMuted} />
+                  <EvendiIcon name="x" size={16} color={theme.textMuted} />
                 </Pressable>
               </View>
               <ThemedText style={[styles.templatesSubtitle, { color: theme.textSecondary }]}>
@@ -425,7 +425,7 @@ export default function OfferCreateScreen() {
                     onPress={() => applyOfferTemplate(template)}
                     style={[styles.templateChip, { backgroundColor: theme.backgroundRoot, borderColor: theme.border }]}
                   >
-                    <Feather name="copy" size={14} color={theme.accent} />
+                    <EvendiIcon name="copy" size={14} color={theme.accent} />
                     <View style={styles.templateChipContent}>
                       <ThemedText style={[styles.templateChipTitle, { color: theme.text }]}>{template.title}</ThemedText>
                       <ThemedText style={[styles.templateChipSubtitle, { color: theme.textSecondary }]}>
@@ -445,7 +445,7 @@ export default function OfferCreateScreen() {
               <ActivityIndicator size="small" color={Colors.dark.accent} />
             ) : contacts.length === 0 ? (
               <View style={styles.emptyState}>
-                <Feather name="users" size={24} color={theme.textMuted} />
+                <EvendiIcon name="users" size={24} color={theme.textMuted} />
                 <ThemedText style={[styles.emptyText, { color: theme.textMuted }]}>
                   {isWedding ? "Ingen kontakter ennå. Start en samtale med et brudepar først." : "Ingen kontakter ennå. Start en samtale med en kunde først."}
                 </ThemedText>
@@ -478,7 +478,7 @@ export default function OfferCreateScreen() {
                       </ThemedText>
                       {contact.couple.weddingDate && (
                         <View style={{ flexDirection: "row", alignItems: "center", gap: 4, marginTop: 2 }}>
-                          <Feather name="calendar" size={12} color={theme.textMuted} />
+                          <EvendiIcon name="calendar" size={12} color={theme.textMuted} />
                           <ThemedText style={[styles.contactEmail, { color: theme.textMuted }]}>
                             {new Date(contact.couple.weddingDate).toLocaleDateString("nb-NO", { day: "numeric", month: "long", year: "numeric" })}
                           </ThemedText>
@@ -486,7 +486,7 @@ export default function OfferCreateScreen() {
                       )}
                     </View>
                     {selectedContact?.couple.id === contact.couple.id ? (
-                      <Feather name="check-circle" size={20} color={Colors.dark.accent} />
+                      <EvendiIcon name="check-circle" size={20} color={Colors.dark.accent} />
                     ) : null}
                   </Pressable>
                 ))}
@@ -539,7 +539,7 @@ export default function OfferCreateScreen() {
                   onPress={() => setValidUntil(new Date(Date.now() + getSuggestedValidityDays() * 24 * 60 * 60 * 1000))}
                   style={[styles.suggestionChip, { backgroundColor: "#f59e0b" + "15", borderColor: "#f59e0b" }]}
                 >
-                  <Feather name="zap" size={12} color="#f59e0b" />
+                  <EvendiIcon name="zap" size={12} color="#f59e0b" />
                   <ThemedText style={[styles.suggestionText, { color: "#f59e0b" }]}>
                     Foreslått: {getSuggestedValidityDays()} dager
                   </ThemedText>
@@ -565,7 +565,7 @@ export default function OfferCreateScreen() {
                       { backgroundColor: theme.backgroundRoot, borderColor: theme.border },
                     ]}
                   >
-                    <Feather name="calendar" size={18} color={Colors.dark.accent} />
+                    <EvendiIcon name="calendar" size={18} color={Colors.dark.accent} />
                     <ThemedText style={styles.dateButtonText}>{formatDate(validUntil)}</ThemedText>
                   </Pressable>
                   {showDatePicker ? (
@@ -589,7 +589,7 @@ export default function OfferCreateScreen() {
               <ThemedText style={styles.formTitle}>Produkter og tjenester</ThemedText>
               {selectedContact?.couple.weddingDate && (
                 <View style={[styles.dateInfoBadge, { backgroundColor: Colors.dark.accent + "15", borderColor: Colors.dark.accent + "30" }]}>
-                  <Feather name="calendar" size={14} color={Colors.dark.accent} />
+                  <EvendiIcon name="calendar" size={14} color={Colors.dark.accent} />
                   <ThemedText style={[styles.dateInfoText, { color: Colors.dark.accent }]}>
                     {isWedding ? "Bryllup" : "Arrangement"}: {new Date(selectedContact.couple.weddingDate).toLocaleDateString("nb-NO", { day: "numeric", month: "long", year: "numeric" })}
                   </ThemedText>
@@ -599,7 +599,7 @@ export default function OfferCreateScreen() {
               {/* Availability warnings */}
               {vendorAvailability && !vendorAvailability.isAvailable && (
                 <View style={[styles.availabilityWarning, { backgroundColor: "#F44336" + "15", borderColor: "#F44336" }]}>
-                  <Feather name="x-circle" size={16} color="#F44336" />
+                  <EvendiIcon name="x-circle" size={16} color="#F44336" />
                   <ThemedText style={[styles.availabilityWarningText, { color: "#F44336" }]}>
                     Du er blokkert på denne datoen. Tilbud kan ikke aksepteres.
                   </ThemedText>
@@ -607,7 +607,7 @@ export default function OfferCreateScreen() {
               )}
               {vendorAvailability && vendorAvailability.status === "limited" && vendorAvailability.maxBookings && (
                 <View style={[styles.availabilityWarning, { backgroundColor: "#FF9800" + "15", borderColor: "#FF9800" }]}>
-                  <Feather name="alert-circle" size={16} color="#FF9800" />
+                  <EvendiIcon name="alert-circle" size={16} color="#FF9800" />
                   <ThemedText style={[styles.availabilityWarningText, { color: "#FF9800" }]}>
                     Begrenset kapasitet: {vendorAvailability.currentBookings || 0}/{vendorAvailability.maxBookings} bookinger
                   </ThemedText>
@@ -615,7 +615,7 @@ export default function OfferCreateScreen() {
               )}
               {vendorAvailability && vendorAvailability.currentBookings && vendorAvailability.currentBookings > 0 && vendorAvailability.status === "available" && (
                 <View style={[styles.availabilityInfo, { backgroundColor: "#4CAF50" + "15", borderColor: "#4CAF50" }]}>
-                  <Feather name="check-circle" size={16} color="#4CAF50" />
+                  <EvendiIcon name="check-circle" size={16} color="#4CAF50" />
                   <ThemedText style={[styles.availabilityInfoText, { color: "#4CAF50" }]}>
                     {vendorAvailability.currentBookings} eksisterende booking(er) på denne datoen
                   </ThemedText>
@@ -646,7 +646,7 @@ export default function OfferCreateScreen() {
                             <View style={[styles.inventoryBadge, {
                               backgroundColor: totalAvailable > 10 ? "#4CAF50" + "20" : totalAvailable > 0 ? "#FF9800" + "20" : "#F44336" + "20"
                             }]}>
-                              <Feather 
+                              <EvendiIcon 
                                 name={totalAvailable > 10 ? "check-circle" : totalAvailable > 0 ? "alert-circle" : "x-circle"} 
                                 size={12} 
                                 color={totalAvailable > 10 ? "#4CAF50" : totalAvailable > 0 ? "#FF9800" : "#F44336"}
@@ -667,7 +667,7 @@ export default function OfferCreateScreen() {
                           <View style={styles.metadataRow}>
                             {product.metadata.offersTasteSample && (
                               <View style={[styles.metadataBadge, { backgroundColor: "#4CAF5015" }]}>
-                                <Feather name="coffee" size={10} color="#4CAF50" />
+                                <EvendiIcon name="coffee" size={10} color="#4CAF50" />
                                 <ThemedText style={[styles.metadataText, { color: "#4CAF50" }]}>Smaksprøve</ThemedText>
                               </View>
                             )}
@@ -711,7 +711,7 @@ export default function OfferCreateScreen() {
                             )}
                             {product.metadata.vehicleType && (
                               <View style={[styles.metadataBadge, { backgroundColor: Colors.dark.accent + "15" }]}>
-                                <Feather name="truck" size={10} color={Colors.dark.accent} />
+                                <EvendiIcon name="truck" size={10} color={Colors.dark.accent} />
                                 <ThemedText style={[styles.metadataText, { color: Colors.dark.accent }]}>
                                   {product.metadata.vehicleType.charAt(0).toUpperCase() + product.metadata.vehicleType.slice(1)}
                                 </ThemedText>
@@ -719,7 +719,7 @@ export default function OfferCreateScreen() {
                             )}
                             {product.metadata.passengerCapacity && (
                               <View style={[styles.metadataBadge, { backgroundColor: Colors.dark.accent + "15" }]}>
-                                <Feather name="users" size={10} color={Colors.dark.accent} />
+                                <EvendiIcon name="users" size={10} color={Colors.dark.accent} />
                                 <ThemedText style={[styles.metadataText, { color: Colors.dark.accent }]}>
                                   {product.metadata.passengerCapacity} plasser
                                 </ThemedText>
@@ -734,7 +734,7 @@ export default function OfferCreateScreen() {
                             )}
                             {product.metadata.includesTrialSession && (
                               <View style={[styles.metadataBadge, { backgroundColor: "#9C27B015" }]}>
-                                <Feather name="check" size={10} color="#9C27B0" />
+                                <EvendiIcon name="check" size={10} color="#9C27B0" />
                                 <ThemedText style={[styles.metadataText, { color: "#9C27B0" }]}>Prøveskyss</ThemedText>
                               </View>
                             )}
@@ -745,7 +745,7 @@ export default function OfferCreateScreen() {
                           {formatPrice(product.unitPrice)} / {product.unitType}
                         </ThemedText>
                       </View>
-                      <Feather name="plus-circle" size={20} color={Colors.dark.accent} />
+                      <EvendiIcon name="plus-circle" size={20} color={Colors.dark.accent} />
                     </Pressable>
                   );
                 })}
@@ -785,7 +785,7 @@ export default function OfferCreateScreen() {
                   onPress={addCustomItem}
                   style={[styles.addItemBtn, { backgroundColor: Colors.dark.accent }]}
                 >
-                  <Feather name="plus" size={18} color="#1A1A1A" />
+                  <EvendiIcon name="plus" size={18} color="#1A1A1A" />
                 </Pressable>
               </View>
             </View>
@@ -810,17 +810,17 @@ export default function OfferCreateScreen() {
                       onPress={() => updateItemQuantity(index, item.quantity - 1)}
                       style={[styles.qtyBtn, { borderColor: theme.border }]}
                     >
-                      <Feather name="minus" size={14} color={theme.textMuted} />
+                      <EvendiIcon name="minus" size={14} color={theme.textMuted} />
                     </Pressable>
                     <ThemedText style={styles.qtyText}>{item.quantity}</ThemedText>
                     <Pressable
                       onPress={() => updateItemQuantity(index, item.quantity + 1)}
                       style={[styles.qtyBtn, { borderColor: theme.border }]}
                     >
-                      <Feather name="plus" size={14} color={theme.textMuted} />
+                      <EvendiIcon name="plus" size={14} color={theme.textMuted} />
                     </Pressable>
                     <Pressable onPress={() => removeItem(index)} style={styles.removeBtn}>
-                      <Feather name="trash-2" size={16} color="#F44336" />
+                      <EvendiIcon name="trash-2" size={16} color="#F44336" />
                     </Pressable>
                   </View>
                 </View>
@@ -856,7 +856,7 @@ export default function OfferCreateScreen() {
               <ActivityIndicator size="small" color="#F44336" />
             ) : (
               <>
-                <Feather name="trash-2" size={18} color="#F44336" />
+                <EvendiIcon name="trash-2" size={18} color="#F44336" />
                 <ThemedText style={styles.deleteBtnText}>Slett tilbud</ThemedText>
               </>
             )}

@@ -14,7 +14,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInUp } from "react-native-reanimated";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -282,7 +282,7 @@ export default function InspirationScreen() {
         </View>
       ) : filteredInspirations.length === 0 ? (
         <View style={styles.emptyState}>
-          <Feather name="image" size={48} color={theme.textMuted} />
+          <EvendiIcon name="image" size={48} color={theme.textMuted} />
           <ThemedText
             style={[styles.emptyText, { color: theme.textSecondary }]}
           >
@@ -321,7 +321,7 @@ export default function InspirationScreen() {
                       { backgroundColor: theme.backgroundSecondary },
                     ]}
                   >
-                    <Feather name="image" size={32} color={theme.textMuted} />
+                    <EvendiIcon name="image" size={32} color={theme.textMuted} />
                   </View>
                 )}
                 <View style={styles.imageOverlay}>
@@ -345,7 +345,7 @@ export default function InspirationScreen() {
                         },
                       ]}
                     >
-                      <Feather
+                      <EvendiIcon
                         name="heart"
                         size={16}
                         color={savedItems.has(item.id) ? "#1A1A1A" : "#FFFFFF"}
@@ -413,7 +413,7 @@ export default function InspirationScreen() {
                   >
                     {category.count} {category.count === 1 ? "bilde" : "bilder"}
                   </ThemedText>
-                  <Feather name="chevron-right" size={18} color={theme.textMuted} />
+                  <EvendiIcon name="chevron-right" size={18} color={theme.textMuted} />
                 </Pressable>
               </Animated.View>
             ))}
@@ -430,7 +430,7 @@ export default function InspirationScreen() {
         <View style={styles.modalOverlay}>
           <View style={[styles.detailModal, { backgroundColor: theme.backgroundRoot }]}>
             <Pressable style={styles.closeBtn} onPress={() => setSelectedInspiration(null)}>
-              <Feather name="x" size={24} color={theme.text} />
+              <EvendiIcon name="x" size={24} color={theme.text} />
             </Pressable>
 
             <ScrollView contentContainerStyle={styles.detailContent}>
@@ -458,7 +458,7 @@ export default function InspirationScreen() {
 
               {selectedInspiration && formatPrice(selectedInspiration) ? (
                 <View style={[styles.priceBox, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-                  <Feather name="tag" size={18} color={Colors.dark.accent} />
+                  <EvendiIcon name="tag" size={18} color={Colors.dark.accent} />
                   <ThemedText style={styles.priceText}>{formatPrice(selectedInspiration)}</ThemedText>
                 </View>
               ) : null}
@@ -469,7 +469,7 @@ export default function InspirationScreen() {
                     onPress={() => Linking.openURL(selectedInspiration.websiteUrl!)}
                     style={[styles.contactBtn, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}
                   >
-                    <Feather name="globe" size={18} color={Colors.dark.accent} />
+                    <EvendiIcon name="globe" size={18} color={Colors.dark.accent} />
                     <ThemedText style={styles.contactBtnText}>Nettside</ThemedText>
                   </Pressable>
                 ) : null}
@@ -479,7 +479,7 @@ export default function InspirationScreen() {
                     onPress={() => Linking.openURL(`tel:${selectedInspiration.inquiryPhone}`)}
                     style={[styles.contactBtn, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}
                   >
-                    <Feather name="phone" size={18} color={Colors.dark.accent} />
+                    <EvendiIcon name="phone" size={18} color={Colors.dark.accent} />
                     <ThemedText style={styles.contactBtnText}>Ring</ThemedText>
                   </Pressable>
                 ) : null}
@@ -489,7 +489,7 @@ export default function InspirationScreen() {
                     onPress={() => Linking.openURL(`mailto:${selectedInspiration.inquiryEmail}`)}
                     style={[styles.contactBtn, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}
                   >
-                    <Feather name="mail" size={18} color={Colors.dark.accent} />
+                    <EvendiIcon name="mail" size={18} color={Colors.dark.accent} />
                     <ThemedText style={styles.contactBtnText}>E-post</ThemedText>
                   </Pressable>
                 ) : null}
@@ -509,7 +509,7 @@ export default function InspirationScreen() {
                   onPress={() => setShowInquiryModal(true)}
                   style={[styles.inquiryBtn, { borderColor: Colors.dark.accent }]}
                 >
-                  <Feather name="send" size={18} color={Colors.dark.accent} />
+                  <EvendiIcon name="send" size={18} color={Colors.dark.accent} />
                   <ThemedText style={[styles.inquiryBtnText, { color: Colors.dark.accent }]}>
                     Send forespørsel
                   </ThemedText>
@@ -531,7 +531,7 @@ export default function InspirationScreen() {
             <View style={styles.inquiryHeader}>
               <ThemedText style={styles.inquiryTitle}>Send forespørsel</ThemedText>
               <Pressable onPress={() => setShowInquiryModal(false)}>
-                <Feather name="x" size={24} color={theme.text} />
+                <EvendiIcon name="x" size={24} color={theme.text} />
               </Pressable>
             </View>
 

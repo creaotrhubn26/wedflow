@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { ScrollView, StyleSheet, View, Switch, Pressable, Platform, Linking } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import * as Notifications from "expo-notifications";
@@ -155,7 +155,7 @@ export default function NotificationSettingsScreen() {
             <View style={styles.settingRow}>
               <View style={styles.settingInfo}>
                 <View style={[styles.iconContainer, { backgroundColor: theme.accent + "20" }]}>
-                  <Feather name="bell" size={20} color={theme.accent} />
+                  <EvendiIcon name="bell" size={20} color={theme.accent} />
                 </View>
                 <View style={styles.settingText}>
                   <ThemedText style={styles.settingTitle}>Varsler</ThemedText>
@@ -174,7 +174,7 @@ export default function NotificationSettingsScreen() {
 
             {permissionStatus === "denied" ? (
               <View style={[styles.warningBox, { backgroundColor: "#FF6B6B20" }]}>
-                <Feather name="alert-triangle" size={16} color="#FF6B6B" />
+                <EvendiIcon name="alert-triangle" size={16} color="#FF6B6B" />
                 <ThemedText style={[styles.warningText, { color: "#FF6B6B" }]}>
                   Varsler er blokkert. Åpne innstillinger for å aktivere.
                 </ThemedText>
@@ -193,7 +193,7 @@ export default function NotificationSettingsScreen() {
                 <View style={styles.settingRow}>
                   <View style={styles.settingInfo}>
                     <View style={[styles.iconContainer, { backgroundColor: "#64B5F620" }]}>
-                      <Feather name="check-square" size={20} color="#64B5F6" />
+                      <EvendiIcon name="check-square" size={20} color="#64B5F6" />
                     </View>
                     <View style={styles.settingText}>
                       <ThemedText style={styles.settingTitle}>Gjøremålspåminnelser</ThemedText>
@@ -215,7 +215,7 @@ export default function NotificationSettingsScreen() {
                 <View style={styles.settingRow}>
                   <View style={styles.settingInfo}>
                     <View style={[styles.iconContainer, { backgroundColor: "#BA68C820" }]}>
-                      <Feather name="calendar" size={20} color="#BA68C8" />
+                      <EvendiIcon name="calendar" size={20} color="#BA68C8" />
                     </View>
                     <View style={styles.settingText}>
                       <ThemedText style={styles.settingTitle}>{isWedding ? "Bryllupsnedtelling" : "Arrangementsnedtelling"}</ThemedText>
@@ -242,7 +242,7 @@ export default function NotificationSettingsScreen() {
                 <View style={[styles.card, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
                   {!hasWeddingDate ? (
                     <View style={[styles.warningBox, { backgroundColor: "#FFB74D20" }]}>
-                      <Feather name="info" size={16} color="#FFB74D" />
+                      <EvendiIcon name="info" size={16} color="#FFB74D" />
                       <ThemedText style={[styles.warningText, { color: "#FFB74D" }]}>
                         Sett bryllupsdato for å aktivere nedtellingsvarsler
                       </ThemedText>
@@ -271,7 +271,7 @@ export default function NotificationSettingsScreen() {
                           ]}
                         >
                           {settings.daysBefore.includes(option.days) ? (
-                            <Feather name="check" size={14} color={theme.text} />
+                            <EvendiIcon name="check" size={14} color={theme.text} />
                           ) : null}
                         </View>
                       </Pressable>
@@ -283,7 +283,7 @@ export default function NotificationSettingsScreen() {
 
             <Animated.View entering={FadeInDown.delay(300).duration(300)}>
               <View style={[styles.infoCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-                <Feather name="info" size={18} color={theme.textMuted} />
+                <EvendiIcon name="info" size={18} color={theme.textMuted} />
                 <ThemedText style={[styles.infoText, { color: theme.textMuted }]}>
                   {scheduledCount > 0
                     ? `${scheduledCount} varsler er planlagt`

@@ -11,7 +11,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon, EvendiIconGlyphMap } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 
 import { ThemedText } from "@/components/ThemedText";
@@ -76,7 +76,7 @@ export default function FeedbackScreen() {
       : statusType === "success"
       ? "#51CF66"
       : theme.accent || Colors.dark.accent;
-  const statusIcon: keyof typeof Feather.glyphMap =
+  const statusIcon: keyof typeof EvendiIconGlyphMap =
     maintenanceMode
       ? "tool"
       : statusType === "warning"
@@ -133,7 +133,7 @@ export default function FeedbackScreen() {
       >
         <Card style={styles.successCard}>
           <View style={[styles.successIcon, { backgroundColor: theme.success + "20" }]}>
-            <Feather name="check-circle" size={48} color={theme.success} />
+            <EvendiIcon name="check-circle" size={48} color={theme.success} />
           </View>
           <ThemedText style={[Typography.h2, { textAlign: "center" }]}>Takk for tilbakemeldingen!</ThemedText>
           <ThemedText style={[Typography.body, { opacity: 0.7, textAlign: "center", marginTop: Spacing.sm }]}>
@@ -169,7 +169,7 @@ export default function FeedbackScreen() {
           backgroundColor: statusColor + "15",
           borderColor: statusColor,
         }]}>
-          <Feather 
+          <EvendiIcon 
             name={statusIcon} 
             size={20} 
             color={statusColor} 
@@ -217,7 +217,7 @@ export default function FeedbackScreen() {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             }}
           >
-            <Feather
+            <EvendiIcon
               name={cat.icon}
               size={24}
               color={category === cat.id ? theme.accent : theme.textSecondary}

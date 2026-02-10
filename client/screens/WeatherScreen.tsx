@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, View, ActivityIndicator, Pressable, TextInput }
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon, EvendiIconGlyphMap } from "@/components/EvendiIcon";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 import { ThemedText } from "@/components/ThemedText";
@@ -68,7 +68,7 @@ const SCANDINAVIAN_CITIES: Record<string, { lat: number; lon: number }> = {
   "Aalborg": { lat: 57.0488, lon: 9.9217 },
 };
 
-const SYMBOL_MAP: Record<string, keyof typeof Feather.glyphMap> = {
+const SYMBOL_MAP: Record<string, keyof typeof EvendiIconGlyphMap> = {
   clearsky_day: "sun",
   clearsky_night: "moon",
   cloudy: "cloud",
@@ -248,7 +248,7 @@ export default function WeatherScreen() {
     fetchWeather();
   }, [fetchWeather]);
 
-  const getWeatherIcon = (symbol: string): keyof typeof Feather.glyphMap => {
+  const getWeatherIcon = (symbol: string): keyof typeof EvendiIconGlyphMap => {
     if (!symbol) return "cloud";
     const baseSymbol = symbol.replace(/_day|_night|_polartwilight/g, "_day");
     return SYMBOL_MAP[baseSymbol] || SYMBOL_MAP[symbol] || "cloud";
@@ -298,7 +298,7 @@ export default function WeatherScreen() {
           {weather?.current ? (
             <>
               <View style={[styles.weatherIcon, { backgroundColor: theme.backgroundSecondary }]}>
-                <Feather name={getWeatherIcon(weather.current.symbol)} size={40} color={Colors.dark.accent} />
+                <EvendiIcon name={getWeatherIcon(weather.current.symbol)} size={40} color={Colors.dark.accent} />
               </View>
               <ThemedText style={[styles.tempLarge, { color: getTempColor(weather.current.temperature) }]}>
                 {Math.round(weather.current.temperature)}°C
@@ -312,21 +312,21 @@ export default function WeatherScreen() {
 
               <View style={styles.statsRow}>
                 <View style={styles.statItem}>
-                  <Feather name="wind" size={18} color={theme.textSecondary} />
+                  <EvendiIcon name="wind" size={18} color={theme.textSecondary} />
                   <ThemedText style={[styles.statValue, { color: theme.text }]}>
                     {weather.current.windSpeed} m/s
                   </ThemedText>
                   <ThemedText style={[styles.statLabel, { color: theme.textMuted }]}>Vind</ThemedText>
                 </View>
                 <View style={styles.statItem}>
-                  <Feather name="droplet" size={18} color="#64B5F6" />
+                  <EvendiIcon name="droplet" size={18} color="#64B5F6" />
                   <ThemedText style={[styles.statValue, { color: theme.text }]}>
                     {Math.round(weather.current.humidity)}%
                   </ThemedText>
                   <ThemedText style={[styles.statLabel, { color: theme.textMuted }]}>Fuktighet</ThemedText>
                 </View>
                 <View style={styles.statItem}>
-                  <Feather name="cloud-rain" size={18} color="#81C784" />
+                  <EvendiIcon name="cloud-rain" size={18} color="#81C784" />
                   <ThemedText style={[styles.statValue, { color: theme.text }]}>
                     {weather.current.precipitation} mm
                   </ThemedText>
@@ -336,7 +336,7 @@ export default function WeatherScreen() {
             </>
           ) : error ? (
             <View style={styles.errorContainer}>
-              <Feather name="cloud-off" size={48} color={theme.textMuted} />
+              <EvendiIcon name="cloud-off" size={48} color={theme.textMuted} />
               <ThemedText style={[styles.errorText, { color: theme.textSecondary }]}>{error}</ThemedText>
               <Button onPress={fetchWeather} style={styles.retryButton}>Prøv igjen</Button>
             </View>
@@ -356,7 +356,7 @@ export default function WeatherScreen() {
                 <ThemedText style={[styles.hourTime, { color: theme.textSecondary }]}>
                   {formatTime(hour.time)}
                 </ThemedText>
-                <Feather name={getWeatherIcon(hour.symbol)} size={24} color={Colors.dark.accent} />
+                <EvendiIcon name={getWeatherIcon(hour.symbol)} size={24} color={Colors.dark.accent} />
                 <ThemedText style={[styles.hourTemp, { color: getTempColor(hour.temperature) }]}>
                   {Math.round(hour.temperature)}°
                 </ThemedText>
@@ -368,7 +368,7 @@ export default function WeatherScreen() {
 
       <Animated.View entering={FadeInDown.delay(300).duration(400)}>
         <View style={[styles.yrCredit, { backgroundColor: theme.backgroundSecondary }]}>
-          <Feather name="info" size={14} color={theme.textMuted} />
+          <EvendiIcon name="info" size={14} color={theme.textMuted} />
           <ThemedText style={[styles.yrText, { color: theme.textMuted }]}>
             Værdata fra Yr, levert av Meteorologisk institutt og NRK
           </ThemedText>
@@ -380,7 +380,7 @@ export default function WeatherScreen() {
         <Animated.View entering={FadeInDown.delay(320).duration(400)}>
           <View style={[styles.weddingDayCard, { backgroundColor: theme.backgroundDefault, borderColor: Colors.dark.accent }]}>
             <View style={styles.weddingDayHeader}>
-              <Feather name="heart" size={20} color={Colors.dark.accent} />
+              <EvendiIcon name="heart" size={20} color={Colors.dark.accent} />
               <ThemedText type="h4" style={styles.weddingDayTitle}>{eventDayLabel}</ThemedText>
               <ThemedText style={[styles.weddingDayDate, { color: theme.textSecondary }]}>
                 {bridgeData.weather.weddingDayForecast.date}
@@ -388,14 +388,14 @@ export default function WeatherScreen() {
             </View>
             <View style={styles.weddingDayStats}>
               <View style={styles.statItem}>
-                <Feather name="thermometer" size={18} color={getTempColor(bridgeData.weather.weddingDayForecast.avgTemperature)} />
+                <EvendiIcon name="thermometer" size={18} color={getTempColor(bridgeData.weather.weddingDayForecast.avgTemperature)} />
                 <ThemedText style={[styles.statValue, { color: theme.text }]}>
                   {bridgeData.weather.weddingDayForecast.avgTemperature}°C
                 </ThemedText>
                 <ThemedText style={[styles.statLabel, { color: theme.textMuted }]}>Snitt</ThemedText>
               </View>
               <View style={styles.statItem}>
-                <Feather name="cloud-rain" size={18} color="#64B5F6" />
+                <EvendiIcon name="cloud-rain" size={18} color="#64B5F6" />
                 <ThemedText style={[styles.statValue, { color: theme.text }]}>
                   {bridgeData.weather.weddingDayForecast.maxPrecipitation} mm
                 </ThemedText>
@@ -426,7 +426,7 @@ export default function WeatherScreen() {
         <Animated.View entering={FadeInDown.delay(320).duration(400)}>
           <View style={[styles.weddingDayCard, { backgroundColor: theme.backgroundDefault, borderColor: Colors.dark.accent }]}>
             <View style={styles.weddingDayHeader}>
-              <Feather name="alert-circle" size={20} color={Colors.dark.accent} />
+              <EvendiIcon name="alert-circle" size={20} color={Colors.dark.accent} />
               <ThemedText type="h4" style={styles.weddingDayTitle}>Værtips</ThemedText>
             </View>
             <View style={styles.tipsContainer}>
@@ -442,10 +442,10 @@ export default function WeatherScreen() {
       <Animated.View entering={FadeInDown.delay(340).duration(400)}>
         <View style={[styles.venueSection, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
           <View style={styles.venueHeader}>
-            <Feather name="map-pin" size={20} color={Colors.dark.accent} />
+            <EvendiIcon name="map-pin" size={20} color={Colors.dark.accent} />
             <ThemedText type="h4" style={styles.sectionTitle}>{eventVenueLabel}</ThemedText>
             <Pressable onPress={() => setShowVenueSearch(!showVenueSearch)} style={styles.editVenueBtn}>
-              <Feather name={showVenueSearch ? "x" : "edit-2"} size={16} color={Colors.dark.accent} />
+              <EvendiIcon name={showVenueSearch ? "x" : "edit-2"} size={16} color={Colors.dark.accent} />
             </Pressable>
           </View>
           <ThemedText style={[styles.venueName, { color: theme.text }]}>{venue}</ThemedText>
@@ -475,7 +475,7 @@ export default function WeatherScreen() {
                   onPress={() => handleSelectVenue(result)}
                   style={[styles.searchResult, { borderColor: theme.border, backgroundColor: theme.backgroundSecondary }]}
                 >
-                  <Feather name="map-pin" size={14} color={Colors.dark.accent} />
+                  <EvendiIcon name="map-pin" size={14} color={Colors.dark.accent} />
                   <View style={{ flex: 1, marginLeft: Spacing.sm }}>
                     <ThemedText style={{ fontSize: 13 }}>{result.address}</ThemedText>
                     <ThemedText style={[styles.searchResultSub, { color: theme.textSecondary }]}>
@@ -495,9 +495,9 @@ export default function WeatherScreen() {
           onPress={() => setShowTravelSection(!showTravelSection)}
           style={[styles.travelHeader, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}
         >
-          <Feather name="navigation" size={20} color={Colors.dark.accent} />
+          <EvendiIcon name="navigation" size={20} color={Colors.dark.accent} />
           <ThemedText type="h4" style={[styles.sectionTitle, { flex: 1 }]}>{travelLabel}</ThemedText>
-          <Feather name={showTravelSection ? "chevron-up" : "chevron-down"} size={20} color={theme.textSecondary} />
+          <EvendiIcon name={showTravelSection ? "chevron-up" : "chevron-down"} size={20} color={theme.textSecondary} />
         </Pressable>
 
         {showTravelSection && (
@@ -516,7 +516,7 @@ export default function WeatherScreen() {
                 {travelLoading ? (
                   <ActivityIndicator size="small" color="#1A1A1A" />
                 ) : (
-                  <Feather name="search" size={18} color="#1A1A1A" />
+                  <EvendiIcon name="search" size={18} color="#1A1A1A" />
                 )}
               </Pressable>
             </View>
@@ -528,15 +528,15 @@ export default function WeatherScreen() {
                 </ThemedText>
                 <View style={styles.travelStats}>
                   <View style={styles.travelStat}>
-                    <Feather name="clock" size={14} color={Colors.dark.accent} />
+                    <EvendiIcon name="clock" size={14} color={Colors.dark.accent} />
                     <ThemedText style={styles.travelValue}>{customTravelResult.travel.drivingFormatted}</ThemedText>
                   </View>
                   <View style={styles.travelStat}>
-                    <Feather name="navigation" size={14} color={theme.textSecondary} />
+                    <EvendiIcon name="navigation" size={14} color={theme.textSecondary} />
                     <ThemedText style={[styles.travelValue, { color: theme.textSecondary }]}>{customTravelResult.travel.roadDistanceKm} km</ThemedText>
                   </View>
                   <View style={styles.travelStat}>
-                    <Feather name="dollar-sign" size={14} color={theme.textSecondary} />
+                    <EvendiIcon name="dollar-sign" size={14} color={theme.textSecondary} />
                     <ThemedText style={[styles.travelValue, { color: theme.textSecondary }]}>~{Math.round(customTravelResult.travel.fuelCostNok)} kr</ThemedText>
                   </View>
                 </View>
@@ -582,7 +582,7 @@ export default function WeatherScreen() {
               style={[styles.tipCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}
             >
               <View style={[styles.tipIcon, { backgroundColor: theme.backgroundSecondary }]}>
-                <Feather name={tip.icon as any} size={20} color={Colors.dark.accent} />
+                <EvendiIcon name={tip.icon as any} size={20} color={Colors.dark.accent} />
               </View>
               <ThemedText style={styles.tipTitle}>{tip.title}</ThemedText>
               <ThemedText style={[styles.tipDesc, { color: theme.textSecondary }]}>{tip.desc}</ThemedText>

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { StyleSheet, View, FlatList, TextInput, Pressable, ActivityIndicator, Linking, ScrollView, Text, NativeSyntheticEvent, NativeScrollEvent } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useHeaderHeight } from "@react-navigation/elements";
@@ -279,7 +279,7 @@ export default function VendorAdminChatScreen() {
           onPress={() => navigation.goBack()}
           style={styles.closeButton}
         >
-          <Feather name="x" size={24} color={theme.text} />
+          <EvendiIcon name="x" size={24} color={theme.text} />
         </Pressable>
       </View>
       {loading && <ActivityIndicator style={{ marginTop: Spacing.lg }} color={theme.accent} />}
@@ -308,7 +308,7 @@ export default function VendorAdminChatScreen() {
                     ? "#FF8C00"
                     : theme.accent,
                 }]}>
-                  <Feather 
+                  <EvendiIcon 
                     name={appSettings?.find(s => s.key === "maintenance_mode")?.value === "true" ? "tool" : "info"} 
                     size={20} 
                     color={appSettings?.find(s => s.key === "maintenance_mode")?.value === "true" 
@@ -344,12 +344,12 @@ export default function VendorAdminChatScreen() {
                 <ScrollView contentContainerStyle={{ paddingTop: hasActiveStatus ? 0 : Spacing.md }}>
                   <View style={[styles.welcomeBox, { backgroundColor: theme.backgroundSecondary, borderColor: theme.border }]}>
                   <View style={styles.welcomeHeader}>
-                    <Feather name="message-circle" size={32} color={theme.accent} />
+                    <EvendiIcon name="message-circle" size={32} color={theme.accent} />
                     <ThemedText style={styles.welcomeTitle}>Evendi Support</ThemedText>
                   </View>
                   <ThemedText style={styles.welcomeBody}>{WELCOME_MESSAGE}</ThemedText>
                   <View style={{ flexDirection: "row", alignItems: "center", gap: Spacing.sm, marginBottom: Spacing.md }}>
-                    <Feather name="book-open" size={16} color={theme.accent} />
+                    <EvendiIcon name="book-open" size={16} color={theme.accent} />
                     <ThemedText style={{ fontWeight: "600", color: theme.text, fontSize: 13 }}>Ressurser</ThemedText>
                   </View>
                   <View style={styles.quickLinks}>
@@ -371,18 +371,18 @@ export default function VendorAdminChatScreen() {
                         }}
                       >
                         <View style={{ position: "relative" }}>
-                          <Feather name={link.icon} size={18} color={theme.accent} />
+                          <EvendiIcon name={link.icon} size={18} color={theme.accent} />
                           {link.screen === "Status" && hasActiveStatus && (
                             <View style={[styles.statusBadge, { backgroundColor: theme.error }]} />
                           )}
                         </View>
                         <ThemedText style={[styles.quickLinkText, { color: theme.text }]}>{link.label}</ThemedText>
-                        <Feather name={link.screen ? "chevron-right" : "external-link"} size={12} color={theme.textMuted} style={{ marginLeft: "auto" }} />
+                        <EvendiIcon name={link.screen ? "chevron-right" : "external-link"} size={12} color={theme.textMuted} style={{ marginLeft: "auto" }} />
                       </Pressable>
                     ))}
                   </View>
                   <View style={[styles.infoBox, { backgroundColor: theme.accent + "15", borderColor: theme.accent }]}>
-                    <Feather name="info" size={16} color={theme.accent} />
+                    <EvendiIcon name="info" size={16} color={theme.accent} />
                     <ThemedText style={[styles.infoText, { color: theme.text }]}>
                       Når du sender melding her, går den direkte til vårt supportteam. Vi hjelper deg med alt fra tekniske problemer til spørsmål om funksjoner.
                     </ThemedText>
@@ -409,7 +409,7 @@ export default function VendorAdminChatScreen() {
                 <Body />
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 6, marginTop: 4 }}>
                   {item.status === "pending" && <ActivityIndicator size="small" color={metaColor} />}
-                  {item.status === "error" && <Feather name="alert-circle" size={12} color={theme.error} />}
+                  {item.status === "error" && <EvendiIcon name="alert-circle" size={12} color={theme.error} />}
                   <ThemedText style={[styles.meta, { color: metaColor }]}>{new Date(item.createdAt).toLocaleString()}</ThemedText>
                   {item.status === "error" && (
                     <Pressable onPress={() => retrySend(item)} style={{ marginLeft: 8 }}>
@@ -427,7 +427,7 @@ export default function VendorAdminChatScreen() {
           onPress={() => { listRef.current?.scrollToEnd({ animated: true }); setUnseenCount(0); }}
           style={[styles.toBottomBtn, { backgroundColor: theme.accent }]}
         >
-          <Feather name="arrow-down" size={16} color="#FFFFFF" />
+          <EvendiIcon name="arrow-down" size={16} color="#FFFFFF" />
           <Text style={{ color: "#FFFFFF", fontSize: 12, fontWeight: "600" }}>{unseenCount}</Text>
         </Pressable>
       )}
@@ -446,7 +446,7 @@ export default function VendorAdminChatScreen() {
           editable={!loading && !sending}
         />
         <Pressable style={[styles.sendBtn, { backgroundColor: theme.accent }]} onPress={sendMessage} disabled={sending || !input.trim()}>
-          {sending ? <ActivityIndicator color="#FFFFFF" /> : <Feather name="send" size={18} color="#FFFFFF" />}
+          {sending ? <ActivityIndicator color="#FFFFFF" /> : <EvendiIcon name="send" size={18} color="#FFFFFF" />}
         </Pressable>
       </View>
     </SafeAreaView>

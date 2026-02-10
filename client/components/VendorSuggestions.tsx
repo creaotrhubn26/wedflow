@@ -6,7 +6,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import Animated, { FadeInDown, FadeOutUp } from "react-native-reanimated";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon, type EvendiIconName } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 
 import { ThemedText } from "@/components/ThemedText";
@@ -15,7 +15,6 @@ import { Spacing, BorderRadius } from "@/constants/theme";
 import type { VendorSuggestion } from "@/hooks/useVendorSearch";
 import type { VendorTravelInfo } from "@/hooks/useVendorLocationIntelligence";
 
-type FeatherIconName = React.ComponentProps<typeof Feather>["name"];
 
 interface VendorSuggestionsProps {
   suggestions: VendorSuggestion[];
@@ -24,7 +23,7 @@ interface VendorSuggestionsProps {
   /** Called when user taps "Se profil" on a vendor row */
   onViewProfile?: (vendor: VendorSuggestion) => void;
   /** Optional icon to show per result (defaults to "briefcase") */
-  icon?: FeatherIconName;
+  icon?: EvendiIconName;
   /** Travel badge text per vendor (vendorId → "15 min • 12 km") */
   travelBadges?: Record<string, string | null>;
   /** Travel info per vendor for loading states */
@@ -77,7 +76,7 @@ export function VendorSuggestions({
       ) : (
         <>
           <View style={styles.headerRow}>
-            <Feather name="check-circle" size={12} color={theme.primary} />
+            <EvendiIcon name="check-circle" size={12} color={theme.primary} />
             <ThemedText style={[styles.headerText, { color: theme.primary }]}>
               {suggestions.length} registrert{suggestions.length !== 1 ? "e" : ""} leverandør{suggestions.length !== 1 ? "er" : ""}
             </ThemedText>
@@ -101,7 +100,7 @@ export function VendorSuggestions({
               ]}
             >
               <View style={[styles.iconCircle, { backgroundColor: theme.primary + "15" }]}>
-                <Feather name={icon} size={14} color={theme.primary} />
+                <EvendiIcon name={icon} size={14} color={theme.primary} />
               </View>
               <View style={styles.info}>
                 <ThemedText style={[styles.name, { color: theme.text }]} numberOfLines={1}>
@@ -110,7 +109,7 @@ export function VendorSuggestions({
                 <View style={styles.meta}>
                   {vendor.location && (
                     <View style={styles.metaItem}>
-                      <Feather name="map-pin" size={10} color={theme.textMuted} />
+                      <EvendiIcon name="map-pin" size={10} color={theme.textMuted} />
                       <ThemedText style={[styles.metaText, { color: theme.textSecondary }]} numberOfLines={1}>
                         {vendor.location}
                       </ThemedText>
@@ -118,7 +117,7 @@ export function VendorSuggestions({
                   )}
                   {vendor.priceRange && (
                     <View style={styles.metaItem}>
-                      <Feather name="tag" size={10} color={theme.textMuted} />
+                      <EvendiIcon name="tag" size={10} color={theme.textMuted} />
                       <ThemedText style={[styles.metaText, { color: theme.textSecondary }]} numberOfLines={1}>
                         {vendor.priceRange}
                       </ThemedText>
@@ -128,7 +127,7 @@ export function VendorSuggestions({
                 {/* Travel time badge from venue */}
                 {travelBadges?.[vendor.id] && (
                   <View style={styles.travelRow}>
-                    <Feather name="navigation" size={9} color="#2196F3" />
+                    <EvendiIcon name="navigation" size={9} color="#2196F3" />
                     <ThemedText style={styles.travelText}>
                       {travelBadges[vendor.id]}
                     </ThemedText>
@@ -158,7 +157,7 @@ export function VendorSuggestions({
                     hitSlop={6}
                     style={[styles.actionPill, { backgroundColor: "#2196F312" }]}
                   >
-                    <Feather name="navigation" size={12} color="#2196F3" />
+                    <EvendiIcon name="navigation" size={12} color="#2196F3" />
                   </Pressable>
                 )}
                 {onViewProfile && (
@@ -170,11 +169,11 @@ export function VendorSuggestions({
                     hitSlop={6}
                     style={[styles.actionPill, { backgroundColor: theme.primary + "12" }]}
                   >
-                    <Feather name="eye" size={12} color={theme.primary} />
+                    <EvendiIcon name="eye" size={12} color={theme.primary} />
                     <ThemedText style={[styles.actionPillText, { color: theme.primary }]}>Profil</ThemedText>
                   </Pressable>
                 )}
-                <Feather name="chevron-right" size={14} color={theme.textMuted} />
+                <EvendiIcon name="chevron-right" size={14} color={theme.textMuted} />
               </View>
             </Pressable>
           ))}

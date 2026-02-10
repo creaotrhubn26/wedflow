@@ -12,7 +12,7 @@ import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon, EvendiIconGlyphMap } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
@@ -282,7 +282,7 @@ export default function ProfileScreen() {
               { backgroundColor: theme.backgroundSecondary },
             ]}
           >
-            <Feather name="heart" size={32} color={Colors.dark.accent} />
+            <EvendiIcon name="heart" size={32} color={Colors.dark.accent} />
           </View>
 
           {editing ? (
@@ -350,7 +350,7 @@ export default function ProfileScreen() {
                         getFieldStyle("weddingDate"),
                       ]}
                     >
-                      <Feather name="calendar" size={18} color={theme.accent} />
+                      <EvendiIcon name="calendar" size={18} color={theme.accent} />
                       <ThemedText style={[styles.dateButtonText, { color: theme.text }]}
                       >
                         {editWeddingDate ? formatDate(editWeddingDate) : t("Velg dato", "Select date")}
@@ -429,7 +429,7 @@ export default function ProfileScreen() {
                 }}
                 style={[styles.editButton, { borderColor: Colors.dark.accent }]}
               >
-                <Feather name="edit-2" size={16} color={Colors.dark.accent} />
+                <EvendiIcon name="edit-2" size={16} color={Colors.dark.accent} />
                 <ThemedText style={[styles.editButtonText, { color: Colors.dark.accent }]}>
                   {t("Rediger", "Edit")}
                 </ThemedText>
@@ -455,7 +455,7 @@ export default function ProfileScreen() {
                 { backgroundColor: theme.backgroundSecondary },
               ]}
             >
-              <Feather name="camera" size={20} color={Colors.dark.accent} />
+              <EvendiIcon name="camera" size={20} color={Colors.dark.accent} />
             </View>
             <ThemedText style={styles.toolLabel}>{t("Fotoplan", "Photo plan")}</ThemedText>
             <ThemedText style={[styles.toolDescription, { color: theme.textSecondary }]}>
@@ -474,7 +474,7 @@ export default function ProfileScreen() {
                 { backgroundColor: theme.backgroundSecondary },
               ]}
             >
-              <Feather name="settings" size={20} color={Colors.dark.accent} />
+              <EvendiIcon name="settings" size={20} color={Colors.dark.accent} />
             </View>
             <ThemedText style={styles.toolLabel}>{t("Innstillinger", "Settings")}</ThemedText>
             <ThemedText style={[styles.toolDescription, { color: theme.textSecondary }]}>
@@ -553,7 +553,7 @@ export default function ProfileScreen() {
 }
 
 interface MenuItemProps {
-  icon: keyof typeof Feather.glyphMap;
+  icon: keyof typeof EvendiIconGlyphMap;
   label: string;
   theme: any;
   onPress: () => void;
@@ -577,10 +577,10 @@ function MenuItem({ icon, label, theme, onPress, destructive }: MenuItemProps) {
       <View
         style={[styles.menuIcon, { backgroundColor: destructive ? "#DC354515" : theme.backgroundSecondary }]}
       >
-        <Feather name={icon} size={18} color={iconColor} />
+        <EvendiIcon name={icon} size={18} color={iconColor} />
       </View>
       <ThemedText style={[styles.menuLabel, destructive && { color: "#DC3545" }]}>{label}</ThemedText>
-      <Feather name="chevron-right" size={18} color={theme.textMuted} />
+      <EvendiIcon name="chevron-right" size={18} color={theme.textMuted} />
     </Pressable>
   );
 }

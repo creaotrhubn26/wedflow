@@ -12,7 +12,7 @@ import {
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -359,13 +359,13 @@ export default function TransportScreen() {
       <View style={styles.sectionHeader}>
         <ThemedText style={styles.sectionTitle}>Bookinger</ThemedText>
         <Pressable onPress={() => openBookingModal()} style={[styles.addButton, { backgroundColor: theme.primary }]}>
-          <Feather name="plus" size={20} color="#fff" />
+          <EvendiIcon name="plus" size={20} color="#fff" />
         </Pressable>
       </View>
 
       {bookings.length === 0 ? (
         <View style={[styles.emptyState, { backgroundColor: theme.backgroundDefault }]}>
-          <Feather name="heart" size={48} color={theme.primary} style={{ opacity: 0.6 }} />
+          <EvendiIcon name="heart" size={48} color={theme.primary} style={{ opacity: 0.6 }} />
           <ThemedText style={[styles.emptyText, { color: theme.text, fontWeight: '600', fontSize: 18 }]}>
             Hvordan starter dagen for dere?
           </ThemedText>
@@ -379,7 +379,7 @@ export default function TransportScreen() {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             }}
           >
-            <Feather name="plus" size={16} color="#fff" />
+            <EvendiIcon name="plus" size={16} color="#fff" />
             <ThemedText style={styles.emptyStateCtaText}>Legg til booking</ThemedText>
           </Pressable>
         </View>
@@ -405,7 +405,7 @@ export default function TransportScreen() {
                 style={[styles.bookingCard, { backgroundColor: theme.backgroundDefault }]}
               >
                 <View style={[styles.bookingIcon, { backgroundColor: booking.confirmed ? theme.primary + '20' : theme.border }]}>
-                  <Feather 
+                  <EvendiIcon 
                     name={getVehicleIcon(booking.vehicleType) as any} 
                     size={20} 
                     color={booking.confirmed ? theme.primary : theme.textSecondary} 
@@ -438,7 +438,7 @@ export default function TransportScreen() {
                   }}
                   style={[styles.quickActionButton, { backgroundColor: theme.backgroundSecondary }]}
                 >
-                  <Feather name="copy" size={16} color={Colors.dark.accent} />
+                  <EvendiIcon name="copy" size={16} color={Colors.dark.accent} />
                 </Pressable>
                 <View style={styles.bookingActions}>
                   <Pressable
@@ -449,7 +449,7 @@ export default function TransportScreen() {
                       booking.confirmed ? { backgroundColor: Colors.light.success, borderColor: Colors.light.success } : undefined,
                     ]}
                   >
-                    <Feather name="check" size={16} color={booking.confirmed ? "#fff" : theme.textSecondary} />
+                    <EvendiIcon name="check" size={16} color={booking.confirmed ? "#fff" : theme.textSecondary} />
                   </Pressable>
                 </View>
               </Pressable>
@@ -466,7 +466,7 @@ export default function TransportScreen() {
       <Pressable onPress={openBudgetModal} style={[styles.budgetCard, { backgroundColor: theme.backgroundDefault }]}>
         <View style={styles.budgetHeader}>
           <ThemedText style={styles.budgetLabel}>Budsjett for Transport</ThemedText>
-          <Feather name="edit-2" size={16} color={theme.textSecondary} />
+          <EvendiIcon name="edit-2" size={16} color={theme.textSecondary} />
         </View>
         <ThemedText style={[styles.budgetAmount, { color: theme.primary }]}>
           {formatCurrency(budget)}
@@ -501,9 +501,9 @@ export default function TransportScreen() {
         }}
         style={[styles.findVendorsButton, { backgroundColor: theme.primary }]}
       >
-        <Feather name="search" size={18} color="#FFFFFF" />
+        <EvendiIcon name="search" size={18} color="#FFFFFF" />
         <ThemedText style={styles.findVendorsText}>Finn transportleverandører</ThemedText>
-        <Feather name="arrow-right" size={18} color="#FFFFFF" />
+        <EvendiIcon name="arrow-right" size={18} color="#FFFFFF" />
       </Pressable>
 
       {/* Progress */}
@@ -540,11 +540,11 @@ export default function TransportScreen() {
                   isCompleted ? { backgroundColor: theme.primary, borderColor: theme.primary } : undefined,
                 ]}
               >
-                {isCompleted && <Feather name="check" size={14} color="#fff" />}
+                {isCompleted && <EvendiIcon name="check" size={14} color="#fff" />}
               </View>
               <View style={styles.timelineStepContent}>
                 <View style={[styles.timelineIcon, { backgroundColor: isCompleted ? theme.primary + '20' : theme.border }]}>
-                  <Feather name={step.icon} size={16} color={isCompleted ? theme.primary : theme.textSecondary} />
+                  <EvendiIcon name={step.icon} size={16} color={isCompleted ? theme.primary : theme.textSecondary} />
                 </View>
                 <ThemedText style={[styles.timelineStepLabel, isCompleted ? styles.completedText : undefined]}>
                   {step.label}
@@ -570,7 +570,7 @@ export default function TransportScreen() {
             onPress={() => setActiveTab(tab.key as any)}
             style={[styles.tab, activeTab === tab.key && { borderBottomColor: theme.primary, borderBottomWidth: 2 }]}
           >
-            <Feather name={tab.icon as any} size={18} color={activeTab === tab.key ? theme.primary : theme.textSecondary} />
+            <EvendiIcon name={tab.icon as any} size={18} color={activeTab === tab.key ? theme.primary : theme.textSecondary} />
             <ThemedText style={[styles.tabLabel, { color: activeTab === tab.key ? theme.primary : theme.textSecondary }]}>
               {tab.label}
             </ThemedText>
@@ -590,7 +590,7 @@ export default function TransportScreen() {
           </View>
         ) : isError ? (
           <View style={styles.errorContainer}>
-            <Feather name="alert-circle" size={48} color={Colors.light.error} />
+            <EvendiIcon name="alert-circle" size={48} color={Colors.light.error} />
             <ThemedText style={styles.errorText}>Kunne ikke laste data</ThemedText>
             <ThemedText style={[styles.errorSubtext, { color: theme.textSecondary }]}>
               {error instanceof Error ? error.message : 'Ukjent feil'}
@@ -643,7 +643,7 @@ export default function TransportScreen() {
                       bookingVehicleType === vehicle.key ? { backgroundColor: theme.primary + '20', borderColor: theme.primary } : undefined,
                     ]}
                   >
-                    <Feather 
+                    <EvendiIcon 
                       name={vehicle.icon} 
                       size={24} 
                       color={bookingVehicleType === vehicle.key ? theme.primary : theme.textSecondary} 

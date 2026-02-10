@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { View, StyleSheet, TextInput, FlatList, Platform, TouchableOpacity, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon, EvendiIconGlyphMap, type EvendiIconName } from "@/components/EvendiIcon";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
 import { ThemedText } from "@/components/ThemedText";
@@ -16,13 +16,12 @@ import { useQuery } from "@tanstack/react-query";
 import { SeatingChart, Table } from "@/components/SeatingChart";
 import { showToast } from "@/lib/toast";
 
-type FeatherIconName = keyof typeof Feather.glyphMap;
 
 interface ScheduleEvent {
   id: string;
   time: string;
   title: string;
-  icon?: FeatherIconName;
+  icon?: EvendiIconName;
   location?: string;
   notes?: string;
 }
@@ -104,7 +103,7 @@ export default function CoordinatorTimelineScreen() {
       // Map to local interface with type safety
       const mappedEvents: ScheduleEvent[] = schedule.map((evt) => ({
         ...evt,
-        icon: (evt.icon as FeatherIconName) || undefined,
+        icon: (evt.icon as string) || undefined,
       }));
       setEvents(sortEventsByTime(mappedEvents));
       setSeatingData(seating || { tables: [], guests: [] });
@@ -160,7 +159,7 @@ export default function CoordinatorTimelineScreen() {
         </View>
         <View style={styles.dotColumn}>
           <View style={[styles.dot, { backgroundColor: theme.accent }]}>
-            <Feather name={item.icon || "circle"} size={12} color="#FFFFFF" />
+            <EvendiIcon name={item.icon || "circle"} size={12} color="#FFFFFF" />
           </View>
           <View style={[styles.line, { backgroundColor: theme.border }]} />
         </View>
@@ -168,7 +167,7 @@ export default function CoordinatorTimelineScreen() {
           <ThemedText style={styles.eventTitle}>{item.title}</ThemedText>
           {item.location && (
             <View style={styles.eventDetailRow}>
-              <Feather name="map-pin" size={12} color={theme.textMuted} />
+              <EvendiIcon name="map-pin" size={12} color={theme.textMuted} />
               <ThemedText style={[styles.eventDetail, { color: theme.textMuted }]}>
                 {item.location}
               </ThemedText>
@@ -176,7 +175,7 @@ export default function CoordinatorTimelineScreen() {
           )}
           {item.notes && (
             <View style={styles.eventDetailRow}>
-              <Feather name="file-text" size={12} color={theme.textMuted} />
+              <EvendiIcon name="file-text" size={12} color={theme.textMuted} />
               <ThemedText style={[styles.eventDetail, { color: theme.textMuted }]}>
                 {item.notes}
               </ThemedText>
@@ -189,7 +188,7 @@ export default function CoordinatorTimelineScreen() {
 
   const renderEmpty = () => (
     <View style={[styles.emptyCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-      <Feather name="calendar" size={32} color={theme.textMuted} />
+      <EvendiIcon name="calendar" size={32} color={theme.textMuted} />
       <ThemedText style={[styles.emptyTitle, { color: theme.text }]}>
         Programmet er ikke lagt inn ennå
       </ThemedText>
@@ -214,7 +213,7 @@ export default function CoordinatorTimelineScreen() {
   return (
     <View style={[styles.container, { backgroundColor: theme.backgroundRoot, paddingBottom: insets.bottom + Spacing.lg }] }>
       <View style={[styles.headerCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }] }>
-        <Feather name="calendar" size={20} color={theme.accent} />
+        <EvendiIcon name="calendar" size={20} color={theme.accent} />
         <ThemedText style={styles.headerTitle}>Toastmaster – oversikt</ThemedText>
         {displayName ? (
           <ThemedText style={[styles.headerName, { color: theme.text }] }>{displayName}</ThemedText>
@@ -240,7 +239,7 @@ export default function CoordinatorTimelineScreen() {
           </Button>
           {error && (
             <View style={styles.errorContainer}>
-              <Feather name="alert-circle" size={16} color="#FF3B30" />
+              <EvendiIcon name="alert-circle" size={16} color="#FF3B30" />
               <ThemedText style={styles.errorText}>{error}</ThemedText>
             </View>
           )}
@@ -255,7 +254,7 @@ export default function CoordinatorTimelineScreen() {
               style={[styles.tab, activeTab === 'timeline' && { borderBottomColor: theme.accent, borderBottomWidth: 2 }]}
               onPress={() => setActiveTab('timeline')}
             >
-              <Feather name="calendar" size={18} color={activeTab === 'timeline' ? theme.accent : theme.textSecondary} />
+              <EvendiIcon name="calendar" size={18} color={activeTab === 'timeline' ? theme.accent : theme.textSecondary} />
               <ThemedText style={[styles.tabText, { color: activeTab === 'timeline' ? theme.accent : theme.textSecondary }]}>
                 Tidslinje
               </ThemedText>
@@ -264,7 +263,7 @@ export default function CoordinatorTimelineScreen() {
               style={[styles.tab, activeTab === 'speeches' && { borderBottomColor: theme.accent, borderBottomWidth: 2 }]}
               onPress={() => setActiveTab('speeches')}
             >
-              <Feather name="mic" size={18} color={activeTab === 'speeches' ? theme.accent : theme.textSecondary} />
+              <EvendiIcon name="mic" size={18} color={activeTab === 'speeches' ? theme.accent : theme.textSecondary} />
               <ThemedText style={[styles.tabText, { color: activeTab === 'speeches' ? theme.accent : theme.textSecondary }]}>
                 Taler ({speeches.length})
               </ThemedText>
@@ -273,7 +272,7 @@ export default function CoordinatorTimelineScreen() {
               style={[styles.tab, activeTab === 'seating' && { borderBottomColor: theme.accent, borderBottomWidth: 2 }]}
               onPress={() => setActiveTab('seating')}
             >
-              <Feather name="users" size={18} color={activeTab === 'seating' ? theme.accent : theme.textSecondary} />
+              <EvendiIcon name="users" size={18} color={activeTab === 'seating' ? theme.accent : theme.textSecondary} />
               <ThemedText style={[styles.tabText, { color: activeTab === 'seating' ? theme.accent : theme.textSecondary }]}>
                 Bordplan
               </ThemedText>
@@ -299,7 +298,7 @@ export default function CoordinatorTimelineScreen() {
               {speeches.length > 0 ? (
                 <View style={[styles.speechListCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
                   <View style={styles.speechHeader}>
-                    <Feather name="mic" size={18} color={theme.accent} />
+                    <EvendiIcon name="mic" size={18} color={theme.accent} />
                     <ThemedText style={styles.speechTitle}>Taler ({speeches.length})</ThemedText>
                   </View>
                   <ThemedText style={[styles.speechSubtext, { color: theme.textSecondary }]}>
@@ -332,7 +331,7 @@ export default function CoordinatorTimelineScreen() {
                           </ThemedText>
                           {tableName && (
                             <View style={styles.tableInfo}>
-                              <Feather name="users" size={10} color={theme.textMuted} />
+                              <EvendiIcon name="users" size={10} color={theme.textMuted} />
                               <ThemedText style={[styles.tableName, { color: theme.textMuted }]}>
                                 {tableName}
                               </ThemedText>
@@ -350,7 +349,7 @@ export default function CoordinatorTimelineScreen() {
                 </View>
               ) : (
                 <View style={[styles.emptyCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-                  <Feather name="mic" size={32} color={theme.textMuted} />
+                  <EvendiIcon name="mic" size={32} color={theme.textMuted} />
                   <ThemedText style={[styles.emptyTitle, { color: theme.text }]}>
                     Ingen taler lagt til
                   </ThemedText>
@@ -362,7 +361,7 @@ export default function CoordinatorTimelineScreen() {
               {seatingData.tables.length > 0 ? (
                 <View>
                   <View style={[styles.seatingHeader, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-                    <Feather name="info" size={16} color={theme.accent} />
+                    <EvendiIcon name="info" size={16} color={theme.accent} />
                     <ThemedText style={[styles.seatingInfo, { color: theme.textSecondary }]}>
                       Oversikt over gjester ved hvert bord. Røde ikoner = talere.
                     </ThemedText>
@@ -378,7 +377,7 @@ export default function CoordinatorTimelineScreen() {
                 </View>
               ) : (
                 <View style={[styles.emptyCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-                  <Feather name="users" size={32} color={theme.textMuted} />
+                  <EvendiIcon name="users" size={32} color={theme.textMuted} />
                   <ThemedText style={[styles.emptyTitle, { color: theme.text }]}>
                     Bordplan ikke lagt til
                   </ThemedText>

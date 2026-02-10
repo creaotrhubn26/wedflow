@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import { renderIcon } from "@/lib/custom-icons";
@@ -264,7 +264,7 @@ export default function VendorRegistrationScreen() {
       <View style={[styles.container, { backgroundColor: theme.backgroundRoot }]}>
         <View style={[styles.successContainer, { paddingTop: headerHeight + Spacing.xl }]}>
           <View style={[styles.successIcon, { backgroundColor: Colors.dark.accent + "20" }]}>
-            <Feather name="check-circle" size={48} color={Colors.dark.accent} />
+            <EvendiIcon name="check-circle" size={48} color={Colors.dark.accent} />
           </View>
           <ThemedText style={styles.successTitle}>Søknad mottatt!</ThemedText>
           <ThemedText style={[styles.successText, { color: theme.textSecondary }]}>
@@ -301,7 +301,7 @@ export default function VendorRegistrationScreen() {
 
         <View>
           <View style={[styles.inputContainer, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }, getFieldStyle("email")]}>
-            <Feather name="mail" size={18} color={touched.email && errors.email ? "#DC3545" : theme.textMuted} />
+            <EvendiIcon name="mail" size={18} color={touched.email && errors.email ? "#DC3545" : theme.textMuted} />
             <TextInput
               style={[styles.input, { color: theme.text }]}
               placeholder="E-postadresse *"
@@ -320,7 +320,7 @@ export default function VendorRegistrationScreen() {
 
         <View>
           <View style={[styles.inputContainer, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }, getFieldStyle("password")]}>
-            <Feather name="lock" size={18} color={touched.password && errors.password ? "#DC3545" : theme.textMuted} />
+            <EvendiIcon name="lock" size={18} color={touched.password && errors.password ? "#DC3545" : theme.textMuted} />
             <TextInput
               style={[styles.input, { color: theme.text }]}
               placeholder="Passord (min. 8 tegn) *"
@@ -331,7 +331,7 @@ export default function VendorRegistrationScreen() {
               secureTextEntry={!showPassword}
             />
             <Pressable onPress={() => setShowPassword(!showPassword)}>
-              <Feather name={showPassword ? "eye-off" : "eye"} size={18} color={theme.textMuted} />
+              <EvendiIcon name={showPassword ? "eye-off" : "eye"} size={18} color={theme.textMuted} />
             </Pressable>
           </View>
           {touched.password && errors.password ? (
@@ -341,7 +341,7 @@ export default function VendorRegistrationScreen() {
 
         <View>
           <View style={[styles.inputContainer, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }, getFieldStyle("confirmPassword")]}>
-            <Feather name="lock" size={18} color={touched.confirmPassword && errors.confirmPassword ? "#DC3545" : theme.textMuted} />
+            <EvendiIcon name="lock" size={18} color={touched.confirmPassword && errors.confirmPassword ? "#DC3545" : theme.textMuted} />
             <TextInput
               style={[styles.input, { color: theme.text }]}
               placeholder="Bekreft passord *"
@@ -363,7 +363,7 @@ export default function VendorRegistrationScreen() {
 
         <View style={styles.businessNameContainer}>
           <View style={[styles.inputContainer, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-            <Feather name="briefcase" size={18} color={theme.textMuted} />
+            <EvendiIcon name="briefcase" size={18} color={theme.textMuted} />
             <TextInput
               style={[styles.input, { color: theme.text }]}
               placeholder="Bedriftsnavn (søk i Brønnøysundregistrene) *"
@@ -414,7 +414,7 @@ export default function VendorRegistrationScreen() {
 
         {formData.organizationNumber ? (
           <View style={[styles.orgNumberBadge, { backgroundColor: Colors.dark.accent + "20", borderColor: Colors.dark.accent }]}>
-            <Feather name="check-circle" size={14} color={Colors.dark.accent} />
+            <EvendiIcon name="check-circle" size={14} color={Colors.dark.accent} />
             <ThemedText style={[styles.orgNumberText, { color: Colors.dark.accent }]}>
               Org.nr: {formData.organizationNumber}
             </ThemedText>
@@ -490,7 +490,7 @@ export default function VendorRegistrationScreen() {
                   <View style={styles.tierHeader}>
                     <ThemedText style={styles.tierName}>{tier.displayName}</ThemedText>
                     {formData.tierId === tier.id && (
-                      <Feather name="check-circle" size={20} color={Colors.dark.accent} />
+                      <EvendiIcon name="check-circle" size={20} color={Colors.dark.accent} />
                     )}
                   </View>
                   {tier.description && (
@@ -504,7 +504,7 @@ export default function VendorRegistrationScreen() {
                   <View style={styles.tierFeatures}>
                     {tier.maxInspirationPhotos > 0 && (
                       <View style={styles.featureRow}>
-                        <Feather name="image" size={14} color={theme.textSecondary} />
+                        <EvendiIcon name="image" size={14} color={theme.textSecondary} />
                         <ThemedText style={[styles.featureText, { color: theme.textSecondary }]}>
                           {tier.maxInspirationPhotos === -1 ? "Ubegrensede" : tier.maxInspirationPhotos} bilder
                         </ThemedText>
@@ -512,7 +512,7 @@ export default function VendorRegistrationScreen() {
                     )}
                     {tier.hasAdvancedAnalytics && (
                       <View style={styles.featureRow}>
-                        <Feather name="bar-chart-2" size={14} color={theme.textSecondary} />
+                        <EvendiIcon name="bar-chart-2" size={14} color={theme.textSecondary} />
                         <ThemedText style={[styles.featureText, { color: theme.textSecondary }]}>
                           Avansert analyse
                         </ThemedText>
@@ -520,7 +520,7 @@ export default function VendorRegistrationScreen() {
                     )}
                     {tier.hasPrioritizedSearch && (
                       <View style={styles.featureRow}>
-                        <Feather name="star" size={14} color={theme.textSecondary} />
+                        <EvendiIcon name="star" size={14} color={theme.textSecondary} />
                         <ThemedText style={[styles.featureText, { color: theme.textSecondary }]}>
                           Prioritert søk
                         </ThemedText>
@@ -534,13 +534,13 @@ export default function VendorRegistrationScreen() {
         )}
         {touched.tierId && errors.tierId ? (
           <View style={styles.errorContainer}>
-            <Feather name="alert-circle" size={14} color="#EF5350" />
+            <EvendiIcon name="alert-circle" size={14} color="#EF5350" />
             <ThemedText style={styles.errorText}>{errors.tierId}</ThemedText>
           </View>
         ) : null}
 
         <View style={[styles.inputContainer, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-          <Feather name="map-pin" size={18} color={theme.textMuted} />
+          <EvendiIcon name="map-pin" size={18} color={theme.textMuted} />
           <TextInput
             style={[styles.input, { color: theme.text }]}
             placeholder="Sted (f.eks. Oslo, Norge)"
@@ -551,7 +551,7 @@ export default function VendorRegistrationScreen() {
         </View>
 
         <View style={[styles.inputContainer, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-          <Feather name="phone" size={18} color={theme.textMuted} />
+          <EvendiIcon name="phone" size={18} color={theme.textMuted} />
           <TextInput
             style={[styles.input, { color: theme.text }]}
             placeholder="Telefonnummer"
@@ -563,7 +563,7 @@ export default function VendorRegistrationScreen() {
         </View>
 
         <View style={[styles.inputContainer, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-          <Feather name="globe" size={18} color={theme.textMuted} />
+          <EvendiIcon name="globe" size={18} color={theme.textMuted} />
           <TextInput
             style={[styles.input, { color: theme.text }]}
             placeholder="Nettside (valgfritt)"
@@ -576,7 +576,7 @@ export default function VendorRegistrationScreen() {
         </View>
 
         <View style={[styles.inputContainer, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-          <Feather name="dollar-sign" size={18} color={theme.textMuted} />
+          <EvendiIcon name="dollar-sign" size={18} color={theme.textMuted} />
           <TextInput
             style={[styles.input, { color: theme.text }]}
             placeholder="Prisklasse (f.eks. 20 000 - 40 000 kr)"
@@ -612,7 +612,7 @@ export default function VendorRegistrationScreen() {
         ) : (
           <>
             <ThemedText style={styles.submitText}>Send søknad</ThemedText>
-            <Feather name="arrow-right" size={20} color="#1A1A1A" />
+            <EvendiIcon name="arrow-right" size={20} color="#1A1A1A" />
           </>
         )}
       </Pressable>

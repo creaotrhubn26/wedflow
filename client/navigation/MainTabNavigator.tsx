@@ -1,6 +1,6 @@
 import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import { BlurView } from "expo-blur";
 import { Platform, StyleSheet } from "react-native";
 
@@ -58,7 +58,7 @@ export default function MainTabNavigator() {
         options={{
           title: "Planlegging",
           tabBarIcon: ({ color, size }) => (
-            <Feather name="calendar" size={size} color={color} />
+            <EvendiIcon name="calendar" size={size} color={color} />
           ),
         }}
       />
@@ -68,7 +68,7 @@ export default function MainTabNavigator() {
         options={{
           title: "Showcase",
           tabBarIcon: ({ color, size }) => (
-            <Feather name="heart" size={size} color={color} />
+            <EvendiIcon name="heart" size={size} color={color} />
           ),
         }}
       />
@@ -78,7 +78,7 @@ export default function MainTabNavigator() {
         options={{
           title: "Gjester",
           tabBarIcon: ({ color, size }) => (
-            <Feather name="users" size={size} color={color} />
+            <EvendiIcon name="users" size={size} color={color} />
           ),
         }}
       />
@@ -88,7 +88,7 @@ export default function MainTabNavigator() {
         options={{
           title: "Profil",
           tabBarIcon: ({ color, size }) => (
-            <Feather name="user" size={size} color={color} />
+            <EvendiIcon name="user" size={size} color={color} />
           ),
         }}
       />

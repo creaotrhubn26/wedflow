@@ -3,13 +3,13 @@
  * Customizes tabs, features, insights, and stats for different vendor types
  */
 
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon, EvendiIconGlyphMap } from "@/components/EvendiIcon";
 
 export type TabType = "deliveries" | "inspirations" | "messages" | "products" | "offers" | "reviews" | "couples";
 
 export interface VendorTab {
   key: TabType;
-  icon: keyof typeof Feather.glyphMap;
+  icon: keyof typeof EvendiIconGlyphMap;
   label: string;
   enabled: boolean;
   priority: number; // Lower number = higher priority (leftmost)

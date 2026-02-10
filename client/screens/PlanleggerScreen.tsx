@@ -12,7 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Feather } from '@expo/vector-icons';
+import { EvendiIcon } from '@/components/EvendiIcon';
 import * as Haptics from 'expo-haptics';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -363,13 +363,13 @@ export function PlanleggerScreen() {
       <View style={styles.sectionHeader}>
         <ThemedText style={styles.sectionTitle}>Møter med planlegger</ThemedText>
         <Pressable onPress={() => openMeetingModal()} style={[styles.addButton, { backgroundColor: theme.primary }]}>
-          <Feather name="plus" size={20} color="#fff" />
+          <EvendiIcon name="plus" size={20} color="#fff" />
         </Pressable>
       </View>
 
       {meetings.length === 0 ? (
         <View style={[styles.emptyState, { backgroundColor: theme.backgroundDefault }]}>
-          <Feather name="users" size={48} color={theme.textSecondary} />
+          <EvendiIcon name="users" size={48} color={theme.textSecondary} />
           <ThemedText style={[styles.emptyText, { color: theme.textSecondary }]}>
             Ingen møter planlagt ennå
           </ThemedText>
@@ -409,7 +409,7 @@ export function PlanleggerScreen() {
                     meeting.completed && { backgroundColor: theme.primary, borderColor: theme.primary },
                   ]}
                 >
-                  {meeting.completed && <Feather name="check" size={14} color="#fff" />}
+                  {meeting.completed && <EvendiIcon name="check" size={14} color="#fff" />}
                 </Pressable>
                 <View style={styles.cardInfo}>
                   <ThemedText style={[styles.cardTitle, meeting.completed && styles.completedText]}>
@@ -431,9 +431,9 @@ export function PlanleggerScreen() {
                   }}
                   style={styles.quickActionButton}
                 >
-                  <Feather name="copy" size={16} color={theme.textSecondary} />
+                  <EvendiIcon name="copy" size={16} color={theme.textSecondary} />
                 </Pressable>
-                <Feather name="chevron-right" size={20} color={theme.textSecondary} />
+                <EvendiIcon name="chevron-right" size={20} color={theme.textSecondary} />
               </Pressable>
             </SwipeableRow>
           </Animated.View>
@@ -447,13 +447,13 @@ export function PlanleggerScreen() {
       <View style={styles.sectionHeader}>
         <ThemedText style={styles.sectionTitle}>Oppgaver</ThemedText>
         <Pressable onPress={() => openTaskModal()} style={[styles.addButton, { backgroundColor: theme.primary }]}>
-          <Feather name="plus" size={20} color="#fff" />
+          <EvendiIcon name="plus" size={20} color="#fff" />
         </Pressable>
       </View>
 
       {tasks.length === 0 ? (
         <View style={[styles.emptyState, { backgroundColor: theme.backgroundDefault }]}>
-          <Feather name="check-square" size={48} color={theme.textSecondary} />
+          <EvendiIcon name="check-square" size={48} color={theme.textSecondary} />
           <ThemedText style={[styles.emptyText, { color: theme.textSecondary }]}>
             Ingen oppgaver ennå
           </ThemedText>
@@ -493,7 +493,7 @@ export function PlanleggerScreen() {
                     task.completed && { backgroundColor: theme.primary, borderColor: theme.primary },
                   ]}
                 >
-                  {task.completed && <Feather name="check" size={14} color="#fff" />}
+                  {task.completed && <EvendiIcon name="check" size={14} color="#fff" />}
                 </Pressable>
                 <View style={styles.cardInfo}>
                   <ThemedText style={[styles.cardTitle, task.completed && styles.completedText]}>
@@ -520,9 +520,9 @@ export function PlanleggerScreen() {
                   }}
                   style={styles.quickActionButton}
                 >
-                  <Feather name="copy" size={16} color={theme.textSecondary} />
+                  <EvendiIcon name="copy" size={16} color={theme.textSecondary} />
                 </Pressable>
-                <Feather name="chevron-right" size={20} color={theme.textSecondary} />
+                <EvendiIcon name="chevron-right" size={20} color={theme.textSecondary} />
               </Pressable>
             </SwipeableRow>
           </Animated.View>
@@ -555,10 +555,10 @@ export function PlanleggerScreen() {
                 !!timeline[step.key as keyof PlannerTimeline] && { backgroundColor: Colors.light.success, borderColor: Colors.light.success },
               ]}
             >
-              {!!timeline[step.key as keyof PlannerTimeline] && <Feather name="check" size={12} color="#fff" />}
+              {!!timeline[step.key as keyof PlannerTimeline] && <EvendiIcon name="check" size={12} color="#fff" />}
             </View>
             <View style={styles.timelineStepContent}>
-              <Feather name={step.icon} size={16} color={theme.textSecondary} />
+              <EvendiIcon name={step.icon} size={16} color={theme.textSecondary} />
               <ThemedText style={[styles.timelineLabel, { color: theme.text }]}>
                 {step.label}
               </ThemedText>
@@ -574,7 +574,7 @@ export function PlanleggerScreen() {
       <View style={[styles.header, { backgroundColor: theme.backgroundDefault, borderBottomColor: theme.border }]}>
         <View style={styles.headerContent}>
           <View style={[styles.iconCircle, { backgroundColor: Colors.dark.accent + '15' }]}>
-            <Feather name="clipboard" size={24} color={Colors.dark.accent} />
+            <EvendiIcon name="clipboard" size={24} color={Colors.dark.accent} />
           </View>
           <View style={styles.headerText}>
             <ThemedText style={styles.headerTitle}>Bryllupsplanlegger</ThemedText>

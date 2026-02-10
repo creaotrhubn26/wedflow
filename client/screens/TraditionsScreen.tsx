@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, View, Pressable, Alert } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon, EvendiIconGlyphMap } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -21,7 +21,7 @@ interface Tradition {
   title: string;
   description: string;
   details: string;
-  icon: keyof typeof Feather.glyphMap;
+  icon: keyof typeof EvendiIconGlyphMap;
 }
 
 // Keys synced with CreatorHub culturalType for seamless bridge
@@ -287,14 +287,14 @@ export default function TraditionsScreen() {
     >
       <Animated.View entering={FadeInDown.delay(100).duration(400)}>
         <View style={[styles.headerCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-          <Feather name="book-open" size={24} color={Colors.dark.accent} />
+          <EvendiIcon name="book-open" size={24} color={Colors.dark.accent} />
           <ThemedText type="h2" style={styles.headerTitle}>{config.featureLabels?.traditions?.no || "Bryllupstradisjoner"}</ThemedText>
           <ThemedText style={[styles.headerSubtitle, { color: theme.textSecondary }]}>
             {config.featureLabels?.traditions?.descriptionNo || "Velg kulturer som passer for deres bryllup"}
           </ThemedText>
           {selectedTraditions.length > 0 && (
             <View style={[styles.selectedBadge, { backgroundColor: Colors.dark.accent + "15", borderColor: Colors.dark.accent }]}>
-              <Feather name="check-circle" size={16} color={Colors.dark.accent} />
+              <EvendiIcon name="check-circle" size={16} color={Colors.dark.accent} />
               <ThemedText style={[styles.selectedBadgeText, { color: Colors.dark.accent }]}>
                 {selectedTraditions.length} valgt
               </ThemedText>
@@ -329,7 +329,7 @@ export default function TraditionsScreen() {
                 ]}
               >
                 {isSelected && (
-                  <Feather 
+                  <EvendiIcon 
                     name="check-circle" 
                     size={14} 
                     color={isViewing ? "#FFFFFF" : culture.color}
@@ -369,7 +369,7 @@ export default function TraditionsScreen() {
             >
               <View style={styles.traditionHeader}>
                 <View style={[styles.traditionIcon, { backgroundColor: cultureData.color + "20" }]}>
-                  <Feather name={tradition.icon} size={20} color={cultureData.color} />
+                  <EvendiIcon name={tradition.icon} size={20} color={cultureData.color} />
                 </View>
                 <View style={styles.traditionInfo}>
                   <ThemedText style={styles.traditionTitle}>{tradition.title}</ThemedText>
@@ -377,7 +377,7 @@ export default function TraditionsScreen() {
                     {tradition.description}
                   </ThemedText>
                 </View>
-                <Feather
+                <EvendiIcon
                   name={expandedId === tradition.id ? "chevron-up" : "chevron-down"}
                   size={20}
                   color={theme.textSecondary}
@@ -398,7 +398,7 @@ export default function TraditionsScreen() {
 
       <Animated.View entering={FadeInDown.delay(800).duration(400)}>
         <View style={[styles.tipsCard, { backgroundColor: Colors.dark.accent + "15", borderColor: Colors.dark.accent }]}>
-          <Feather name="info" size={20} color={Colors.dark.accent} />
+          <EvendiIcon name="info" size={20} color={Colors.dark.accent} />
           <ThemedText style={[styles.tipsText, { color: theme.text }]}>
             Det er helt normalt å kombinere tradisjoner fra flere kulturer. Velg det som føles riktig for dere som par!
           </ThemedText>

@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { ScrollView, StyleSheet, View, ActivityIndicator, Linking, Pressable, RefreshControl } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon, EvendiIconGlyphMap } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import { useQuery } from "@tanstack/react-query";
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -68,7 +68,7 @@ export default function StatusScreen() {
     return Colors.dark.accent;
   };
 
-  const getStatusIcon = (): keyof typeof Feather.glyphMap => {
+  const getStatusIcon = (): keyof typeof EvendiIconGlyphMap => {
     if (maintenanceMode) return "tool";
     if (statusType === "error") return "alert-circle";
     if (statusType === "warning") return "alert-triangle";
@@ -118,7 +118,7 @@ export default function StatusScreen() {
         {/* Header */}
         <Animated.View entering={FadeInDown.duration(400)}>
           <View style={[styles.header, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-            <Feather name="activity" size={32} color={getStatusColor()} />
+            <EvendiIcon name="activity" size={32} color={getStatusColor()} />
             <ThemedText style={styles.headerTitle}>{t("Evendi Status", "Evendi Status")}</ThemedText>
             <ThemedText style={[styles.headerSubtitle, { color: theme.textSecondary }]}>
               {t("Sanntidsstatus for tjenesten", "Real-time service status")}
@@ -150,7 +150,7 @@ export default function StatusScreen() {
               >
                 <View style={styles.statusHeader}>
                   <View style={[styles.statusIconCircle, { backgroundColor: getStatusColor() }]}>
-                    <Feather name={getStatusIcon()} size={24} color="#FFFFFF" />
+                    <EvendiIcon name={getStatusIcon()} size={24} color="#FFFFFF" />
                   </View>
                   <View style={{ flex: 1 }}>
                     <ThemedText style={[styles.statusTitle, { color: getStatusColor() }]}>
@@ -181,7 +181,7 @@ export default function StatusScreen() {
 
                 <View style={styles.infoRow}>
                   <View style={[styles.infoIcon, { backgroundColor: theme.accent + "15" }]}>
-                    <Feather name="smartphone" size={18} color={theme.accent} />
+                    <EvendiIcon name="smartphone" size={18} color={theme.accent} />
                   </View>
                   <View style={{ flex: 1 }}>
                     <ThemedText style={styles.infoLabel}>{t("Gjeldende versjon", "Current version")}</ThemedText>
@@ -194,7 +194,7 @@ export default function StatusScreen() {
                 {minAppVersion && (
                   <View style={styles.infoRow}>
                     <View style={[styles.infoIcon, { backgroundColor: theme.accent + "15" }]}>
-                      <Feather name="alert-circle" size={18} color={theme.accent} />
+                      <EvendiIcon name="alert-circle" size={18} color={theme.accent} />
                     </View>
                     <View style={{ flex: 1 }}>
                       <ThemedText style={styles.infoLabel}>{t("Minimum versjon", "Minimum version")}</ThemedText>
@@ -207,7 +207,7 @@ export default function StatusScreen() {
 
                 <View style={styles.infoRow}>
                   <View style={[styles.infoIcon, { backgroundColor: "#51CF66" + "15" }]}>
-                    <Feather name="check-circle" size={18} color="#51CF66" />
+                    <EvendiIcon name="check-circle" size={18} color="#51CF66" />
                   </View>
                   <View style={{ flex: 1 }}>
                     <ThemedText style={styles.infoLabel}>{t("Status", "Status")}</ThemedText>
@@ -232,10 +232,10 @@ export default function StatusScreen() {
                   style={[styles.link, { borderColor: theme.border }]}
                 >
                   <View style={[styles.linkIcon, { backgroundColor: theme.accent + "15" }]}>
-                    <Feather name="book-open" size={18} color={theme.accent} />
+                    <EvendiIcon name="book-open" size={18} color={theme.accent} />
                   </View>
                   <ThemedText style={styles.linkText}>{t("Fullstendig dokumentasjon", "Full documentation")}</ThemedText>
-                  <Feather name="chevron-right" size={16} color={theme.textMuted} />
+                  <EvendiIcon name="chevron-right" size={16} color={theme.textMuted} />
                 </Pressable>
 
                 <Pressable
@@ -245,10 +245,10 @@ export default function StatusScreen() {
                   style={[styles.link, { borderColor: theme.border }]}
                 >
                   <View style={[styles.linkIcon, { backgroundColor: theme.accent + "15" }]}>
-                    <Feather name="mail" size={18} color={theme.accent} />
+                    <EvendiIcon name="mail" size={18} color={theme.accent} />
                   </View>
                   <ThemedText style={styles.linkText}>{t("Kontakt Support", "Contact support")}</ThemedText>
-                  <Feather name="external-link" size={16} color={theme.textMuted} />
+                  <EvendiIcon name="external-link" size={16} color={theme.textMuted} />
                 </Pressable>
 
                 <Pressable
@@ -258,10 +258,10 @@ export default function StatusScreen() {
                   style={[styles.link, { borderColor: theme.border }]}
                 >
                   <View style={[styles.linkIcon, { backgroundColor: theme.accent + "15" }]}>
-                    <Feather name="globe" size={18} color={theme.accent} />
+                    <EvendiIcon name="globe" size={18} color={theme.accent} />
                   </View>
                   <ThemedText style={styles.linkText}>Norwedfilm.no</ThemedText>
-                  <Feather name="external-link" size={16} color={theme.textMuted} />
+                  <EvendiIcon name="external-link" size={16} color={theme.textMuted} />
                 </Pressable>
               </View>
             </Animated.View>
@@ -269,7 +269,7 @@ export default function StatusScreen() {
             {!hasActiveStatus && (
               <Animated.View entering={FadeInDown.delay(400).duration(400)}>
                 <View style={[styles.infoBox, { backgroundColor: theme.accent + "15", borderColor: theme.accent }]}>
-                  <Feather name="info" size={18} color={theme.accent} />
+                  <EvendiIcon name="info" size={18} color={theme.accent} />
                   <ThemedText style={[styles.infoText, { color: theme.text }]}>
                     {t("Alle systemer kjører som normalt. Vi overvåker tjenesten kontinuerlig.", "All systems are operating normally. We monitor the service continuously.")}
                   </ThemedText>
@@ -281,7 +281,7 @@ export default function StatusScreen() {
             <Animated.View entering={FadeInDown.delay(500).duration(400)}>
               <View style={[styles.section, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
                 <View style={styles.visionHeader}>
-                  <Feather name="target" size={24} color={theme.accent} />
+                  <EvendiIcon name="target" size={24} color={theme.accent} />
                   <ThemedText style={styles.sectionTitle}>
                     {t("Evendi Visjonen", "Evendi Vision")}
                   </ThemedText>
@@ -348,7 +348,7 @@ export default function StatusScreen() {
                 </View>
 
                 <View style={[styles.visionFooter, { borderTopColor: theme.border }]}>
-                  <Feather name="heart" size={16} color={theme.accent} />
+                  <EvendiIcon name="heart" size={16} color={theme.accent} />
                   <ThemedText style={[styles.visionFooterText, { color: theme.textMuted }]}>
                     {t(
                       "\"Folk kjøper ikke HVA du gjør, de kjøper HVORFOR du gjør det.\" — Simon Sinek",
@@ -363,7 +363,7 @@ export default function StatusScreen() {
             <Animated.View entering={FadeInDown.delay(600).duration(400)}>
               <View style={[styles.section, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
                 <View style={styles.visionHeader}>
-                  <Feather name="film" size={24} color={theme.accent} />
+                  <EvendiIcon name="film" size={24} color={theme.accent} />
                   <ThemedText style={styles.sectionTitle}>
                     {t("Norwedfilm — Historien bak Evendi", "Norwedfilm — The story behind Evendi")}
                   </ThemedText>
@@ -379,7 +379,7 @@ export default function StatusScreen() {
                 <View style={[styles.norwedStoryCard, { backgroundColor: theme.backgroundSecondary, borderColor: theme.border }]}>
                   <View style={styles.norwedStoryRow}>
                     <View style={[styles.norwedIconCircle, { backgroundColor: theme.accent }]}>
-                      <Feather name="video" size={20} color="#FFFFFF" />
+                      <EvendiIcon name="video" size={20} color="#FFFFFF" />
                     </View>
                     <View style={{ flex: 1 }}>
                       <ThemedText style={[styles.norwedLabel, { color: theme.accent }]}>
@@ -413,7 +413,7 @@ export default function StatusScreen() {
                 <View style={[styles.norwedStoryCard, { backgroundColor: theme.backgroundSecondary, borderColor: theme.border }]}>
                   <View style={styles.norwedStoryRow}>
                     <View style={[styles.norwedIconCircle, { backgroundColor: "#FF6B6B" }]}>
-                      <Feather name="alert-circle" size={20} color="#FFFFFF" />
+                      <EvendiIcon name="alert-circle" size={20} color="#FFFFFF" />
                     </View>
                     <View style={{ flex: 1 }}>
                       <ThemedText style={[styles.norwedLabel, { color: "#FF6B6B" }]}>
@@ -433,7 +433,7 @@ export default function StatusScreen() {
                 <View style={[styles.norwedStoryCard, { backgroundColor: theme.backgroundSecondary, borderColor: theme.border }]}>
                   <View style={styles.norwedStoryRow}>
                     <View style={[styles.norwedIconCircle, { backgroundColor: theme.accent }]}>
-                      <Feather name="heart" size={20} color="#FFFFFF" />
+                      <EvendiIcon name="heart" size={20} color="#FFFFFF" />
                     </View>
                     <View style={{ flex: 1 }}>
                       <ThemedText style={[styles.norwedLabel, { color: theme.accent }]}>
@@ -453,7 +453,7 @@ export default function StatusScreen() {
                 <View style={[styles.norwedStoryCard, { backgroundColor: "#51CF6610", borderColor: "#51CF66" }]}>
                   <View style={styles.norwedStoryRow}>
                     <View style={[styles.norwedIconCircle, { backgroundColor: "#51CF66" }]}>
-                      <Feather name="zap" size={20} color="#FFFFFF" />
+                      <EvendiIcon name="zap" size={20} color="#FFFFFF" />
                     </View>
                     <View style={{ flex: 1 }}>
                       <ThemedText style={[styles.norwedLabel, { color: "#51CF66" }]}>
@@ -473,11 +473,11 @@ export default function StatusScreen() {
                   onPress={() => handleOpenLink("https://norwedfilm.no")}
                   style={[styles.norwedCta, { backgroundColor: theme.accent + "15", borderColor: theme.accent }]}
                 >
-                  <Feather name="globe" size={18} color={theme.accent} />
+                  <EvendiIcon name="globe" size={18} color={theme.accent} />
                   <ThemedText style={[styles.norwedCtaText, { color: theme.accent }]}>
                     {t("Besøk norwedfilm.no", "Visit norwedfilm.no")}
                   </ThemedText>
-                  <Feather name="external-link" size={14} color={theme.accent} />
+                  <EvendiIcon name="external-link" size={14} color={theme.accent} />
                 </Pressable>
               </View>
             </Animated.View>

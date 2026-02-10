@@ -8,7 +8,7 @@ import {
   SafeAreaView,
 } from "react-native";
 import { useQuery } from "@tanstack/react-query";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon, EvendiIconGlyphMap } from "@/components/EvendiIcon";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { ThemedText } from "@/components/ThemedText";
@@ -26,8 +26,8 @@ interface WhatsNewModalProps {
 
 const STORAGE_KEY_PREFIX = "whats_new_viewed_version_";
 
-const isFeatherIcon = (icon: string): icon is keyof typeof Feather.glyphMap => {
-  return Object.prototype.hasOwnProperty.call(Feather.glyphMap, icon);
+const isEvendiIcon = (icon: string): icon is keyof typeof EvendiIconGlyphMap => {
+  return Object.prototype.hasOwnProperty.call(EvendiIconGlyphMap, icon);
 };
 
 export default function WhatsNewModal({
@@ -118,7 +118,7 @@ export default function WhatsNewModal({
             </ThemedText>
           </View>
           <Pressable onPress={handleDismiss}>
-            <Feather name="x" size={24} color={theme.text} />
+            <EvendiIcon name="x" size={24} color={theme.text} />
           </Pressable>
         </View>
 
@@ -147,8 +147,8 @@ export default function WhatsNewModal({
                   },
                 ]}
               >
-                <Feather
-                  name={isFeatherIcon(item.icon) ? item.icon : "star"}
+                <EvendiIcon
+                  name={isEvendiIcon(item.icon) ? item.icon : "star"}
                   size={24}
                   color={theme.accent}
                 />

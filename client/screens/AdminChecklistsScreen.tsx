@@ -8,7 +8,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -225,7 +225,7 @@ export default function AdminChecklistsScreen() {
                               },
                             ]}
                           >
-                            {task.taskCompleted && <Feather name="check" size={12} color="#1A1A1A" />}
+                            {task.taskCompleted && <EvendiIcon name="check" size={12} color="#1A1A1A" />}
                           </View>
                           <View style={{ flex: 1 }}>
                             <ThemedText
@@ -287,7 +287,7 @@ export default function AdminChecklistsScreen() {
                               onPress={() => toggleTaskExpanded(task.taskId)}
                               style={[styles.actionButton, { backgroundColor: theme.backgroundRoot }]}
                             >
-                              <Feather
+                              <EvendiIcon
                                 name={isTaskExpanded ? "chevron-up" : "chevron-down"}
                                 size={16}
                                 color={theme.textSecondary}
@@ -299,7 +299,7 @@ export default function AdminChecklistsScreen() {
                               onPress={() => handleDelete(task.taskId, task.taskTitle)}
                               style={[styles.actionButton, { backgroundColor: theme.error + "20" }]}
                             >
-                              <Feather name="trash-2" size={14} color={theme.error} />
+                              <EvendiIcon name="trash-2" size={14} color={theme.error} />
                             </Pressable>
                           )}
                         </View>
@@ -315,7 +315,7 @@ export default function AdminChecklistsScreen() {
 
       {couples.length === 0 && (
         <View style={styles.emptyState}>
-          <Feather name="clipboard" size={64} color={theme.textSecondary} />
+          <EvendiIcon name="clipboard" size={64} color={theme.textSecondary} />
           <ThemedText style={{ color: theme.textSecondary, marginTop: Spacing.md }}>
             Ingen sjekklister funnet
           </ThemedText>

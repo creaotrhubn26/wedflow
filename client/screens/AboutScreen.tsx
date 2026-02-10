@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon, EvendiIconGlyphMap } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import Constants from "expo-constants";
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -148,7 +148,7 @@ export default function AboutScreen() {
             },
           ]}
         >
-          <Feather name={statusIcon as keyof typeof Feather.glyphMap} size={20} color={statusColor} />
+          <EvendiIcon name={statusIcon as keyof typeof EvendiIconGlyphMap} size={20} color={statusColor} />
           <View style={{ flex: 1 }}>
             <ThemedText style={[styles.statusNoticeTitle, { color: theme.text, fontWeight: "600" }]}>
               {maintenanceMode ? "⚠️ Vedlikeholdsmodus" : "Systemmelding"}
@@ -221,13 +221,13 @@ export default function AboutScreen() {
             style={[styles.contactRow, { borderColor: theme.border }]}
           >
             <View style={[styles.contactIcon, { backgroundColor: theme.backgroundSecondary }]}>
-              <Feather name="mail" size={18} color={accentColor} />
+              <EvendiIcon name="mail" size={18} color={accentColor} />
             </View>
             <View style={styles.contactInfo}>
               <ThemedText style={styles.contactLabel}>E-post</ThemedText>
               <ThemedText style={[styles.contactValue, { color: accentColor }]}>{supportEmail}</ThemedText>
             </View>
-            <Feather name="chevron-right" size={18} color={theme.textMuted} />
+            <EvendiIcon name="chevron-right" size={18} color={theme.textMuted} />
           </Pressable>
 
           {supportPhone.length > 0 && dialablePhone.length > 0 && (
@@ -236,13 +236,13 @@ export default function AboutScreen() {
               style={[styles.contactRow, { borderColor: theme.border }]}
             >
               <View style={[styles.contactIcon, { backgroundColor: theme.backgroundSecondary }]}>
-                <Feather name="phone" size={18} color={accentColor} />
+                <EvendiIcon name="phone" size={18} color={accentColor} />
               </View>
               <View style={styles.contactInfo}>
                 <ThemedText style={styles.contactLabel}>Telefon</ThemedText>
                 <ThemedText style={[styles.contactValue, { color: accentColor }]}>{supportPhone}</ThemedText>
               </View>
-              <Feather name="chevron-right" size={18} color={theme.textMuted} />
+              <EvendiIcon name="chevron-right" size={18} color={theme.textMuted} />
             </Pressable>
           )}
 
@@ -251,7 +251,7 @@ export default function AboutScreen() {
             style={[styles.contactRow, { borderColor: theme.border }]}
           >
             <View style={[styles.contactIcon, { backgroundColor: theme.backgroundSecondary }]}>
-              <Feather name="globe" size={18} color={accentColor} />
+              <EvendiIcon name="globe" size={18} color={accentColor} />
             </View>
             <View style={styles.contactInfo}>
               <ThemedText style={styles.contactLabel}>Nettside</ThemedText>
@@ -259,7 +259,7 @@ export default function AboutScreen() {
                 {websiteUrl.replace(/^https?:\/\//, "")}
               </ThemedText>
             </View>
-            <Feather name="chevron-right" size={18} color={theme.textMuted} />
+            <EvendiIcon name="chevron-right" size={18} color={theme.textMuted} />
           </Pressable>
 
           <Pressable
@@ -267,13 +267,13 @@ export default function AboutScreen() {
             style={[styles.contactRow, { borderColor: theme.border }]}
           >
             <View style={[styles.contactIcon, { backgroundColor: theme.backgroundSecondary }]}>
-              <Feather name="instagram" size={18} color={accentColor} />
+              <EvendiIcon name="instagram" size={18} color={accentColor} />
             </View>
             <View style={styles.contactInfo}>
               <ThemedText style={styles.contactLabel}>Instagram</ThemedText>
               <ThemedText style={[styles.contactValue, { color: accentColor }]}>{instagramHandle}</ThemedText>
             </View>
-            <Feather name="chevron-right" size={18} color={theme.textMuted} />
+            <EvendiIcon name="chevron-right" size={18} color={theme.textMuted} />
           </Pressable>
         </View>
       </Animated.View>
@@ -287,10 +287,10 @@ export default function AboutScreen() {
   );
 }
 
-function FeatureItem({ icon, text, theme }: { icon: keyof typeof Feather.glyphMap; text: string; theme: Theme }) {
+function FeatureItem({ icon, text, theme }: { icon: keyof typeof EvendiIconGlyphMap; text: string; theme: Theme }) {
   return (
     <View style={styles.featureItem}>
-      <Feather name={icon} size={16} color={theme.accent || Colors.dark.accent} />
+      <EvendiIcon name={icon} size={16} color={theme.accent || Colors.dark.accent} />
       <ThemedText style={[styles.featureText, { color: theme.textSecondary }]}>{text}</ThemedText>
     </View>
   );

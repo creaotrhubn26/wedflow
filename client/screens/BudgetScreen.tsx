@@ -12,7 +12,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
 import { renderIcon } from "@/lib/custom-icons";
@@ -380,7 +380,7 @@ export default function BudgetScreen() {
   if (isError) {
     return (
       <View style={[styles.container, styles.centered, { backgroundColor: theme.backgroundRoot }]}>
-        <Feather name="alert-circle" size={48} color={theme.error} />
+        <EvendiIcon name="alert-circle" size={48} color={theme.error} />
         <ThemedText style={{ color: theme.error, marginTop: Spacing.md, textAlign: "center" }}>
           Kunne ikke laste budsjett
         </ThemedText>
@@ -426,7 +426,7 @@ export default function BudgetScreen() {
                   keyboardType="numeric"
                 />
                 <Pressable onPress={handleSaveBudget} style={styles.budgetSaveBtn}>
-                  <Feather name="check" size={18} color={Colors.dark.accent} />
+                  <EvendiIcon name="check" size={18} color={Colors.dark.accent} />
                 </Pressable>
               </View>
             ) : (
@@ -434,7 +434,7 @@ export default function BudgetScreen() {
                 <ThemedText style={[styles.budgetValue, { color: Colors.dark.accent }]}>
                   {formatCurrency(totalBudget)}
                 </ThemedText>
-                <Feather name="edit-2" size={14} color={theme.textMuted} />
+                <EvendiIcon name="edit-2" size={14} color={theme.textMuted} />
               </Pressable>
             )}
           </View>
@@ -494,7 +494,7 @@ export default function BudgetScreen() {
           <View style={[styles.summaryCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border, marginTop: Spacing.sm }]}>
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
               <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                <Feather name="users" size={16} color={Colors.dark.accent} />
+                <EvendiIcon name="users" size={16} color={Colors.dark.accent} />
                 <ThemedText style={{ color: theme.text, marginLeft: Spacing.xs, fontWeight: '600' }}>
                   {guestCount} gjester
                 </ThemedText>
@@ -515,11 +515,11 @@ export default function BudgetScreen() {
             disabled={isSaving}
             style={[styles.summaryCard, { backgroundColor: theme.backgroundDefault, borderColor: '#FFB300', borderWidth: 1, marginTop: Spacing.sm, flexDirection: 'row', alignItems: 'center' }]}
           >
-            <Feather name="globe" size={16} color="#FFB300" />
+            <EvendiIcon name="globe" size={16} color="#FFB300" />
             <ThemedText style={{ color: theme.text, marginLeft: Spacing.sm, flex: 1, fontSize: 14 }}>
               Importer tradisjonsbudsjett ({coupleProfile?.selectedTraditions?.map(t => CULTURAL_LABELS[t] || t).join(', ')})
             </ThemedText>
-            <Feather name="plus-circle" size={18} color="#FFB300" />
+            <EvendiIcon name="plus-circle" size={18} color="#FFB300" />
           </Pressable>
         </Animated.View>
       )}
@@ -534,7 +534,7 @@ export default function BudgetScreen() {
       {items.length === 0 && !showForm && (
         <Animated.View entering={FadeInDown.delay(200).duration(400)}>
           <View style={[styles.emptyState, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-            <Feather name="clipboard" size={48} color={theme.textMuted} />
+            <EvendiIcon name="clipboard" size={48} color={theme.textMuted} />
             <ThemedText type="h4" style={{ color: theme.text, marginTop: Spacing.md, textAlign: "center" }}>
               Ingen utgifter ennå
             </ThemedText>
@@ -585,7 +585,7 @@ export default function BudgetScreen() {
                         },
                       ]}
                     >
-                      {item.isPaid ? <Feather name="check" size={12} color="#1A1A1A" /> : null}
+                      {item.isPaid ? <EvendiIcon name="check" size={12} color="#1A1A1A" /> : null}
                     </View>
                     <View style={styles.itemNameContainer}>
                       <ThemedText style={[styles.itemName, item.isPaid && styles.itemPaid]}>
@@ -671,7 +671,7 @@ export default function BudgetScreen() {
                     },
                   ]}
                 >
-                  {newIsPaid ? <Feather name="check" size={12} color="#1A1A1A" /> : null}
+                  {newIsPaid ? <EvendiIcon name="check" size={12} color="#1A1A1A" /> : null}
                 </View>
                 <ThemedText style={{ color: theme.text }}>Betalt</ThemedText>
               </Pressable>
@@ -736,7 +736,7 @@ export default function BudgetScreen() {
           }}
           style={[styles.addButton, { borderColor: Colors.dark.accent }]}
         >
-          <Feather name="plus" size={20} color={Colors.dark.accent} />
+          <EvendiIcon name="plus" size={20} color={Colors.dark.accent} />
           <ThemedText style={[styles.addButtonText, { color: Colors.dark.accent }]}>
             Legg til utgift
           </ThemedText>

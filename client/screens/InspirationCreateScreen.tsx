@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import { useNavigation, useRoute, RouteProp } from "@react-navigation/native";
@@ -338,7 +338,7 @@ export default function InspirationCreateScreen() {
       <View style={[styles.header, { paddingTop: insets.top + Spacing.md, backgroundColor: theme.backgroundDefault, borderBottomColor: theme.border }]}>
         <View style={styles.headerContent}>
           <View style={[styles.headerIconCircle, { backgroundColor: theme.accent }]}>
-            <Feather name="image" size={20} color="#FFFFFF" />
+            <EvendiIcon name="image" size={20} color="#FFFFFF" />
           </View>
           <View style={styles.headerTextContainer}>
             <ThemedText style={[styles.headerTitle, { color: theme.text }]}>
@@ -356,7 +356,7 @@ export default function InspirationCreateScreen() {
             { backgroundColor: pressed ? theme.backgroundSecondary : theme.backgroundRoot },
           ]}
         >
-          <Feather name="x" size={20} color={theme.textSecondary} />
+          <EvendiIcon name="x" size={20} color={theme.textSecondary} />
         </Pressable>
       </View>
       <KeyboardAwareScrollViewCompat
@@ -370,7 +370,7 @@ export default function InspirationCreateScreen() {
         <View style={[styles.sectionCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
           <View style={styles.sectionHeader}>
             <View style={[styles.sectionIconCircle, { backgroundColor: theme.accent + "15" }]}>
-              <Feather name="grid" size={16} color={theme.accent} />
+              <EvendiIcon name="grid" size={16} color={theme.accent} />
             </View>
             <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>Kategori</ThemedText>
           </View>
@@ -417,7 +417,7 @@ export default function InspirationCreateScreen() {
         <View style={[styles.sectionCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
           <View style={styles.sectionHeader}>
             <View style={[styles.sectionIconCircle, { backgroundColor: theme.accent + "15" }]}>
-              <Feather name="edit-3" size={16} color={theme.accent} />
+              <EvendiIcon name="edit-3" size={16} color={theme.accent} />
             </View>
             <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>Detaljer</ThemedText>
           </View>
@@ -446,7 +446,7 @@ export default function InspirationCreateScreen() {
         <View style={[styles.sectionCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
           <View style={styles.sectionHeader}>
             <View style={[styles.sectionIconCircle, { backgroundColor: theme.accent + "15" }]}>
-              <Feather name="film" size={16} color={theme.accent} />
+              <EvendiIcon name="film" size={16} color={theme.accent} />
             </View>
             <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>Media</ThemedText>
           </View>
@@ -477,7 +477,7 @@ export default function InspirationCreateScreen() {
                       backgroundColor: item.type === "image" ? theme.accent : "transparent",
                     }]}
                   >
-                    <Feather name="image" size={16} color={item.type === "image" ? "#FFFFFF" : theme.textMuted} />
+                    <EvendiIcon name="image" size={16} color={item.type === "image" ? "#FFFFFF" : theme.textMuted} />
                   </Pressable>
                   <Pressable
                     onPress={() => handleUpdateMedia(index, "type", "video")}
@@ -490,7 +490,7 @@ export default function InspirationCreateScreen() {
                       backgroundColor: item.type === "video" ? theme.accent : "transparent",
                     }]}
                   >
-                    <Feather name="video" size={16} color={item.type === "video" ? "#FFFFFF" : theme.textMuted} />
+                    <EvendiIcon name="video" size={16} color={item.type === "video" ? "#FFFFFF" : theme.textMuted} />
                   </Pressable>
                 </View>
                 <View style={styles.mediaActions}>
@@ -499,7 +499,7 @@ export default function InspirationCreateScreen() {
                       onPress={() => handlePickImage(index)}
                       style={[styles.pickImageBtn, { backgroundColor: theme.accent + "15" }]}
                     >
-                      <Feather name="upload" size={16} color={theme.accent} />
+                      <EvendiIcon name="upload" size={16} color={theme.accent} />
                     </Pressable>
                   ) : null}
                   {mediaItems.length > 1 ? (
@@ -507,7 +507,7 @@ export default function InspirationCreateScreen() {
                       onPress={() => handleRemoveMedia(index)}
                       style={[styles.removeMediaBtn, { backgroundColor: "#EF535015" }]}
                     >
-                      <Feather name="trash-2" size={16} color="#EF5350" />
+                      <EvendiIcon name="trash-2" size={16} color="#EF5350" />
                     </Pressable>
                   ) : null}
                 </View>
@@ -530,7 +530,7 @@ export default function InspirationCreateScreen() {
                     onPress={() => setShowGoogleDriveHelp(true)}
                     style={[styles.helpBtn, { backgroundColor: theme.accent + "15" }]}
                   >
-                    <Feather name="help-circle" size={14} color={theme.accent} />
+                    <EvendiIcon name="help-circle" size={14} color={theme.accent} />
                   </Pressable>
                 </View>
               ) : null}
@@ -553,7 +553,7 @@ export default function InspirationCreateScreen() {
               }
             ]}
           >
-            <Feather name="plus" size={18} color={theme.accent} />
+            <EvendiIcon name="plus" size={18} color={theme.accent} />
             <ThemedText style={[styles.addMediaText, { color: theme.accent }]}>Legg til media</ThemedText>
           </Pressable>
         </View>
@@ -564,11 +564,11 @@ export default function InspirationCreateScreen() {
         >
           <View style={styles.toggleHeader}>
             <View style={[styles.sectionIconCircle, { backgroundColor: theme.accent + "15" }]}>
-              <Feather name="tag" size={16} color={theme.accent} />
+              <EvendiIcon name="tag" size={16} color={theme.accent} />
             </View>
             <ThemedText style={[styles.toggleTitle, { color: theme.text }]}>Pris og kontakt</ThemedText>
           </View>
-          <Feather name={showPricing ? "chevron-up" : "chevron-down"} size={20} color={theme.textMuted} />
+          <EvendiIcon name={showPricing ? "chevron-up" : "chevron-down"} size={20} color={theme.textMuted} />
         </Pressable>
 
       {showPricing ? (
@@ -665,7 +665,7 @@ export default function InspirationCreateScreen() {
           <View style={[styles.switchRow, { backgroundColor: theme.backgroundRoot }]}>
             <View style={styles.switchInfo}>
               <View style={[styles.sectionIconCircle, { backgroundColor: theme.accent + "15" }]}>
-                <Feather name="mail" size={14} color={theme.accent} />
+                <EvendiIcon name="mail" size={14} color={theme.accent} />
               </View>
               <View style={{ flex: 1 }}>
                 <ThemedText style={[styles.switchLabel, { color: theme.text }]}>Tillat kontaktskjema</ThemedText>
@@ -701,7 +701,7 @@ export default function InspirationCreateScreen() {
           ) : (
             <>
               <View style={styles.submitBtnIcon}>
-                <Feather name="send" size={16} color="#FFFFFF" />
+                <EvendiIcon name="send" size={16} color="#FFFFFF" />
               </View>
               <ThemedText style={styles.submitBtnText}>
                 {isEditMode ? "Lagre endringer" : "Send til godkjenning"}
@@ -727,7 +727,7 @@ export default function InspirationCreateScreen() {
               <ActivityIndicator color="#F44336" />
             ) : (
               <>
-                <Feather name="trash-2" size={18} color="#F44336" />
+                <EvendiIcon name="trash-2" size={18} color="#F44336" />
                 <ThemedText style={[styles.deleteBtnText, { color: "#F44336" }]}>
                   Slett showcase
                 </ThemedText>
@@ -761,7 +761,7 @@ export default function InspirationCreateScreen() {
                 onPress={() => setShowGoogleDriveHelp(false)}
                 style={styles.modalCloseBtn}
               >
-                <Feather name="x" size={24} color={theme.text} />
+                <EvendiIcon name="x" size={24} color={theme.text} />
               </Pressable>
             </View>
 
@@ -816,7 +816,7 @@ export default function InspirationCreateScreen() {
                     </ThemedText>
                   </ThemedText>
                   <View style={[styles.warningBox, { backgroundColor: "#FFF3E0" }]}>
-                    <Feather name="alert-triangle" size={16} color="#FF9800" />
+                    <EvendiIcon name="alert-triangle" size={16} color="#FF9800" />
                     <ThemedText style={styles.warningText}>
                       Viktig: Hvis bildet forblir "Begrenset", vil det ikke vises i appen!
                     </ThemedText>

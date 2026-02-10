@@ -9,7 +9,7 @@ import {
   Linking,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import { useQuery } from "@tanstack/react-query";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -163,7 +163,7 @@ export default function VendorSiteVisitsScreen({ navigation }: Props) {
 
           <View style={styles.visitInfo}>
             <View style={styles.infoRow}>
-              <Feather name="calendar" size={14} color={theme.accent} />
+              <EvendiIcon name="calendar" size={14} color={theme.accent} />
               <ThemedText style={[styles.infoText, { color: theme.text }]}>
                 {formatDate(item.siteVisitDate)}
                 {item.siteVisitTime && ` kl. ${item.siteVisitTime}`}
@@ -172,7 +172,7 @@ export default function VendorSiteVisitsScreen({ navigation }: Props) {
 
             {item.weddingDate && (
               <View style={styles.infoRow}>
-                <Feather name="heart" size={14} color={theme.textSecondary} />
+                <EvendiIcon name="heart" size={14} color={theme.textSecondary} />
                 <ThemedText style={[styles.infoText, { color: theme.textSecondary }]}>
                   Arrangement: {formatDate(item.weddingDate)}
                 </ThemedText>
@@ -187,7 +187,7 @@ export default function VendorSiteVisitsScreen({ navigation }: Props) {
                   pressed && { opacity: 0.7 },
                 ]}
               >
-                <Feather name="map-pin" size={14} color={theme.textSecondary} />
+                <EvendiIcon name="map-pin" size={14} color={theme.textSecondary} />
                 <ThemedText style={[styles.infoText, { color: theme.textSecondary }]}>
                   {address}
                 </ThemedText>
@@ -196,7 +196,7 @@ export default function VendorSiteVisitsScreen({ navigation }: Props) {
 
             {(item.invitedGuests || item.maxGuests) && (
               <View style={styles.infoRow}>
-                <Feather name="users" size={14} color={theme.textSecondary} />
+                <EvendiIcon name="users" size={14} color={theme.textSecondary} />
                 <ThemedText style={[styles.infoText, { color: theme.textSecondary }]}>
                   {item.invitedGuests ? `${item.invitedGuests} gjester` : `Opptil ${item.maxGuests} gjester`}
                 </ThemedText>
@@ -216,7 +216,7 @@ export default function VendorSiteVisitsScreen({ navigation }: Props) {
             onPress={() => openEmail(item.email)}
             style={[styles.contactButton, { backgroundColor: theme.accent }]}
           >
-            <Feather name="mail" size={16} color="#FFFFFF" />
+            <EvendiIcon name="mail" size={16} color="#FFFFFF" />
             <ThemedText style={styles.contactButtonText}>Kontakt kunde</ThemedText>
           </Pressable>
         </View>
@@ -249,7 +249,7 @@ export default function VendorSiteVisitsScreen({ navigation }: Props) {
       >
         <View style={styles.headerContent}>
           <View style={[styles.headerIconCircle, { backgroundColor: Colors.dark.accent }]}>
-            <Feather name="calendar" size={20} color="#FFFFFF" />
+            <EvendiIcon name="calendar" size={20} color="#FFFFFF" />
           </View>
           <View style={styles.headerTextContainer}>
             <ThemedText style={[styles.headerTitle, { color: theme.text }]}>
@@ -267,14 +267,14 @@ export default function VendorSiteVisitsScreen({ navigation }: Props) {
             { backgroundColor: pressed ? theme.backgroundSecondary : "transparent" },
           ]}
         >
-          <Feather name="x" size={20} color={theme.textSecondary} />
+          <EvendiIcon name="x" size={20} color={theme.textSecondary} />
         </Pressable>
       </View>
 
       {siteVisits.length === 0 ? (
         <View style={styles.emptyState}>
           <View style={[styles.emptyIconCircle, { backgroundColor: theme.accent + "15" }]}>
-            <Feather name="calendar" size={40} color={theme.accent} />
+            <EvendiIcon name="calendar" size={40} color={theme.accent} />
           </View>
           <ThemedText style={[styles.emptyTitle, { color: theme.text }]}>
             Ingen planlagte befaringer

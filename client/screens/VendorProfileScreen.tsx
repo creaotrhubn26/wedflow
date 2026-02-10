@@ -9,7 +9,7 @@ import {
   Switch,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -964,7 +964,7 @@ export default function VendorProfileScreen({ navigation }: Props) {
         <View style={[styles.header, { paddingTop: insets.top + Spacing.md, backgroundColor: theme.backgroundDefault, borderBottomColor: theme.border }]}>
           <View style={styles.headerContent}>
             <View style={[styles.headerIconCircle, { backgroundColor: theme.accent }]}>
-              <Feather name="user" size={20} color="#FFFFFF" />
+              <EvendiIcon name="user" size={20} color="#FFFFFF" />
             </View>
             <View style={styles.headerTextContainer}>
               <ThemedText style={[styles.headerTitle, { color: theme.text }]}>Min profil</ThemedText>
@@ -978,7 +978,7 @@ export default function VendorProfileScreen({ navigation }: Props) {
               { backgroundColor: pressed ? theme.backgroundSecondary : theme.backgroundRoot },
             ]}
           >
-            <Feather name="x" size={20} color={theme.textSecondary} />
+            <EvendiIcon name="x" size={20} color={theme.textSecondary} />
           </Pressable>
         </View>
         <View style={styles.loadingContainer}>
@@ -993,7 +993,7 @@ export default function VendorProfileScreen({ navigation }: Props) {
       <View style={[styles.header, { paddingTop: insets.top + Spacing.md, backgroundColor: theme.backgroundDefault, borderBottomColor: theme.border }]}>
         <View style={styles.headerContent}>
           <View style={[styles.headerIconCircle, { backgroundColor: theme.accent }]}>
-            <Feather name="user" size={20} color="#FFFFFF" />
+            <EvendiIcon name="user" size={20} color="#FFFFFF" />
           </View>
           <View style={styles.headerTextContainer}>
             <ThemedText style={[styles.headerTitle, { color: theme.text }]}>Min profil</ThemedText>
@@ -1007,7 +1007,7 @@ export default function VendorProfileScreen({ navigation }: Props) {
             { backgroundColor: pressed ? theme.backgroundSecondary : theme.backgroundRoot },
           ]}
         >
-          <Feather name="x" size={20} color={theme.textSecondary} />
+          <EvendiIcon name="x" size={20} color={theme.textSecondary} />
         </Pressable>
       </View>
 
@@ -1051,7 +1051,7 @@ export default function VendorProfileScreen({ navigation }: Props) {
         <View style={[styles.formCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
           <View style={styles.sectionHeader}>
             <View style={[styles.sectionIconCircle, { backgroundColor: theme.accent + "15" }]}>
-              <Feather name="briefcase" size={16} color={theme.accent} />
+              <EvendiIcon name="briefcase" size={16} color={theme.accent} />
             </View>
             <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>Bedriftsinformasjon</ThemedText>
           </View>
@@ -1100,7 +1100,7 @@ export default function VendorProfileScreen({ navigation }: Props) {
         <View style={[styles.formCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
           <View style={styles.sectionHeader}>
             <View style={[styles.sectionIconCircle, { backgroundColor: theme.accent + "15" }]}>
-              <Feather name="phone" size={16} color={theme.accent} />
+              <EvendiIcon name="phone" size={16} color={theme.accent} />
             </View>
             <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>Kontaktinformasjon</ThemedText>
           </View>
@@ -1146,7 +1146,7 @@ export default function VendorProfileScreen({ navigation }: Props) {
         <View style={[styles.formCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
           <View style={styles.sectionHeader}>
             <View style={[styles.sectionIconCircle, { backgroundColor: theme.accent + "15" }]}>
-              <Feather name="dollar-sign" size={16} color={theme.accent} />
+              <EvendiIcon name="dollar-sign" size={16} color={theme.accent} />
             </View>
             <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>Priser & Anmeldelser</ThemedText>
           </View>
@@ -1180,7 +1180,7 @@ export default function VendorProfileScreen({ navigation }: Props) {
         <View style={[styles.formCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
           <View style={styles.sectionHeader}>
             <View style={[styles.sectionIconCircle, { backgroundColor: theme.accent + "15" }]}>
-              <Feather name="globe" size={16} color={theme.accent} />
+              <EvendiIcon name="globe" size={16} color={theme.accent} />
             </View>
             <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>Kulturell ekspertise</ThemedText>
           </View>
@@ -1212,7 +1212,7 @@ export default function VendorProfileScreen({ navigation }: Props) {
                   ]}
                 >
                   {isSelected && (
-                    <Feather name="check-circle" size={14} color="#FFFFFF" style={{ marginRight: 6 }} />
+                    <EvendiIcon name="check-circle" size={14} color="#FFFFFF" style={{ marginRight: 6 }} />
                   )}
                   <ThemedText
                     style={[
@@ -1243,7 +1243,7 @@ export default function VendorProfileScreen({ navigation }: Props) {
           ) : (
             <>
               <View style={styles.submitBtnIcon}>
-                <Feather name="check" size={16} color="#FFFFFF" />
+                <EvendiIcon name="check" size={16} color="#FFFFFF" />
               </View>
               <ThemedText style={styles.submitBtnText}>Lagre endringer</ThemedText>
             </>
@@ -1254,7 +1254,7 @@ export default function VendorProfileScreen({ navigation }: Props) {
         <View style={[styles.formCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border, marginTop: Spacing.xl }]}>
           <View style={styles.sectionHeader}>
             <View style={[styles.sectionIconCircle, { backgroundColor: theme.accent + "15" }]}>
-              <Feather name="award" size={16} color={theme.accent} />
+              <EvendiIcon name="award" size={16} color={theme.accent} />
             </View>
             <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>Generell forretningsinformasjon</ThemedText>
           </View>
@@ -1267,7 +1267,7 @@ export default function VendorProfileScreen({ navigation }: Props) {
           <View style={[styles.formCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
             <View style={styles.sectionHeader}>
               <View style={[styles.sectionIconCircle, { backgroundColor: theme.accent + "15" }]}>
-                <Feather 
+                <EvendiIcon 
                   name={
                     getCategoryName() === "Venue" ? "home" :
                     getCategoryName() === "Fotograf" || getCategoryName() === "Videograf" ? "camera" :
@@ -1298,7 +1298,7 @@ export default function VendorProfileScreen({ navigation }: Props) {
                     ]}
                   >
                     <ThemedText style={[styles.detailsLinkText, { color: theme.accent }]}>Alle detaljer</ThemedText>
-                    <Feather name="arrow-right" size={14} color={theme.accent} />
+                    <EvendiIcon name="arrow-right" size={14} color={theme.accent} />
                   </Pressable>
                 )}
               </View>
@@ -1320,7 +1320,7 @@ export default function VendorProfileScreen({ navigation }: Props) {
           >
             <View style={styles.advancedDetailsContent}>
               <View style={[styles.advancedDetailsIcon, { backgroundColor: theme.accent + "15" }]}>
-                <Feather name="sliders" size={20} color={theme.accent} />
+                <EvendiIcon name="sliders" size={20} color={theme.accent} />
               </View>
               <View style={styles.advancedDetailsText}>
                 <ThemedText style={[styles.advancedDetailsTitle, { color: theme.text }]}>
@@ -1331,7 +1331,7 @@ export default function VendorProfileScreen({ navigation }: Props) {
                 </ThemedText>
               </View>
             </View>
-            <Feather name="chevron-right" size={20} color={theme.accent} />
+            <EvendiIcon name="chevron-right" size={20} color={theme.accent} />
           </Pressable>
         )}
 
@@ -1350,7 +1350,7 @@ export default function VendorProfileScreen({ navigation }: Props) {
           ) : (
             <>
               <View style={styles.submitBtnIcon}>
-                <Feather name="save" size={16} color="#FFFFFF" />
+                <EvendiIcon name="save" size={16} color="#FFFFFF" />
               </View>
               <ThemedText style={styles.submitBtnText}>Lagre kategori-detaljer</ThemedText>
             </>

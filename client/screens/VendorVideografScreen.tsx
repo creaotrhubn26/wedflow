@@ -5,7 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Haptics from "expo-haptics";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import { useQuery } from "@tanstack/react-query";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
@@ -200,7 +200,7 @@ export default function VendorVideografScreen() {
           style={[styles.tab, activeTab === 'dashboard' && { borderBottomColor: theme.accent, borderBottomWidth: 2 }]}
           onPress={() => setActiveTab('dashboard')}
         >
-          <Feather name="package" size={18} color={activeTab === 'dashboard' ? theme.accent : theme.textSecondary} />
+          <EvendiIcon name="package" size={18} color={activeTab === 'dashboard' ? theme.accent : theme.textSecondary} />
           <ThemedText style={[styles.tabText, { color: activeTab === 'dashboard' ? theme.accent : theme.textSecondary }]}>
             Pakker
           </ThemedText>
@@ -209,7 +209,7 @@ export default function VendorVideografScreen() {
           style={[styles.tab, activeTab === 'speeches' && { borderBottomColor: theme.accent, borderBottomWidth: 2 }]}
           onPress={() => setActiveTab('speeches')}
         >
-          <Feather name="mic" size={18} color={activeTab === 'speeches' ? theme.accent : theme.textSecondary} />
+          <EvendiIcon name="mic" size={18} color={activeTab === 'speeches' ? theme.accent : theme.textSecondary} />
           <ThemedText style={[styles.tabText, { color: activeTab === 'speeches' ? theme.accent : theme.textSecondary }]}>
             Taler ({speeches.length})
           </ThemedText>
@@ -218,7 +218,7 @@ export default function VendorVideografScreen() {
           style={[styles.tab, activeTab === 'prosjekt' && { borderBottomColor: theme.accent, borderBottomWidth: 2 }]}
           onPress={() => setActiveTab('prosjekt')}
         >
-          <Feather name="link" size={18} color={activeTab === 'prosjekt' ? theme.accent : theme.textSecondary} />
+          <EvendiIcon name="link" size={18} color={activeTab === 'prosjekt' ? theme.accent : theme.textSecondary} />
           <ThemedText style={[styles.tabText, { color: activeTab === 'prosjekt' ? theme.accent : theme.textSecondary }]}>
             Prosjekt
           </ThemedText>
@@ -250,7 +250,7 @@ export default function VendorVideografScreen() {
         >
           <View style={styles.cardHeader}>
             <ThemedText style={[styles.cardTitle, { color: theme.text }]}>Videopakker</ThemedText>
-            <Feather name="video" size={18} color={theme.textSecondary} />
+            <EvendiIcon name="video" size={18} color={theme.textSecondary} />
           </View>
           <ThemedText style={[styles.cardBody, { color: theme.textSecondary }]}>Legg til videopakker med timepriser, lengde og leveringstid.</ThemedText>
           <Button style={styles.cardButton} onPress={goToProducts}>Opprett pakke</Button>
@@ -266,7 +266,7 @@ export default function VendorVideografScreen() {
         >
           <View style={styles.cardHeader}>
             <ThemedText style={[styles.cardTitle, { color: theme.text }]}>Tilbud</ThemedText>
-            <Feather name="file-text" size={18} color={theme.textSecondary} />
+            <EvendiIcon name="file-text" size={18} color={theme.textSecondary} />
           </View>
           <ThemedText style={[styles.cardBody, { color: theme.textSecondary }]}>Send tilbud med timepriser og tilgjengelighet.</ThemedText>
           <Button style={styles.cardButton} onPress={goToOffers}>Send tilbud</Button>
@@ -274,7 +274,7 @@ export default function VendorVideografScreen() {
       </View>
 
       <View style={[styles.infoBox, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-        <Feather name="info" size={16} color={theme.textSecondary} />
+        <EvendiIcon name="info" size={16} color={theme.textSecondary} />
         <ThemedText style={[styles.infoText, { color: theme.textSecondary }]}>Legg til demo-videoer for å øke konvertering.</ThemedText>
       </View>
 
@@ -285,7 +285,7 @@ export default function VendorVideografScreen() {
         </View>
         {products.length === 0 ? (
           <View style={styles.emptyRow}>
-            <Feather name="video" size={18} color={theme.accent} />
+            <EvendiIcon name="video" size={18} color={theme.accent} />
             <View style={{ flex: 1 }}>
               <ThemedText style={[styles.emptyTitle, { color: theme.text }]}>Ingen pakker ennå</ThemedText>
               <ThemedText style={[styles.emptySubtitle, { color: theme.textSecondary }]}>Legg til videopakker for å komme i gang</ThemedText>
@@ -302,7 +302,7 @@ export default function VendorVideografScreen() {
                     <ThemedText style={{ color: theme.textSecondary, fontSize: 13 }}>{p.unitPrice} {p.unitType}</ThemedText>
                     {p.description ? <ThemedText numberOfLines={1} style={{ color: theme.textSecondary, fontSize: 12 }}>{p.description}</ThemedText> : null}
                   </View>
-                  <Feather name="chevron-right" size={18} color={theme.textSecondary} />
+                  <EvendiIcon name="chevron-right" size={18} color={theme.textSecondary} />
                 </Pressable>
               </SwipeableRow>
             </Animated.View>
@@ -317,7 +317,7 @@ export default function VendorVideografScreen() {
         </View>
         {offers.length === 0 ? (
           <View style={styles.emptyRow}>
-            <Feather name="file-text" size={18} color={theme.accent} />
+            <EvendiIcon name="file-text" size={18} color={theme.accent} />
             <View style={{ flex: 1 }}>
               <ThemedText style={[styles.emptyTitle, { color: theme.text }]}>Ingen tilbud ennå</ThemedText>
               <ThemedText style={[styles.emptySubtitle, { color: theme.textSecondary }]}>Send tilbud til kunden</ThemedText>
@@ -335,7 +335,7 @@ export default function VendorVideografScreen() {
                   </View>
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                     <ThemedText style={{ fontSize: 12, color: theme.textSecondary }}>{o.status}</ThemedText>
-                    <Feather name="chevron-right" size={18} color={theme.textSecondary} />
+                    <EvendiIcon name="chevron-right" size={18} color={theme.textSecondary} />
                   </View>
                 </Pressable>
               </SwipeableRow>
@@ -349,7 +349,7 @@ export default function VendorVideografScreen() {
           {speeches.length > 0 ? (
             <View style={[styles.sectionCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
               <View style={{ flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, marginBottom: Spacing.xs }}>
-                <Feather name="video" size={18} color={theme.accent} />
+                <EvendiIcon name="video" size={18} color={theme.accent} />
                 <ThemedText style={styles.cardTitle}>Taler å filme ({speeches.length})</ThemedText>
               </View>
               <ThemedText style={[styles.infoText, { color: theme.textSecondary, marginBottom: Spacing.md }]}>
@@ -369,7 +369,7 @@ export default function VendorVideografScreen() {
             </View>
           ) : (
             <View style={[styles.emptyCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-              <Feather name="mic" size={32} color={theme.textSecondary} />
+              <EvendiIcon name="mic" size={32} color={theme.textSecondary} />
               <ThemedText style={[styles.emptyTitle, { color: theme.text }]}>Ingen taler lagt til</ThemedText>
               <ThemedText style={[styles.emptySubtitle, { color: theme.textSecondary }]}>Taler vises her når kunden legger dem til</ThemedText>
             </View>
@@ -391,7 +391,7 @@ export default function VendorVideografScreen() {
                   ]}
                 >
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: Spacing.sm }}>
-                    <Feather name={selectedCoupleId === c.coupleId ? 'check-circle' : 'circle'} size={18} color={selectedCoupleId === c.coupleId ? theme.accent : theme.textSecondary} />
+                    <EvendiIcon name={selectedCoupleId === c.coupleId ? 'check-circle' : 'circle'} size={18} color={selectedCoupleId === c.coupleId ? theme.accent : theme.textSecondary} />
                     <ThemedText style={{ color: theme.text, fontWeight: selectedCoupleId === c.coupleId ? '600' : '400' }}>{c.coupleName}</ThemedText>
                   </View>
                 </Pressable>
@@ -409,7 +409,7 @@ export default function VendorVideografScreen() {
             />
           ) : (
             <View style={[styles.emptyCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-              <Feather name="link" size={32} color={theme.textSecondary} />
+              <EvendiIcon name="link" size={32} color={theme.textSecondary} />
               <ThemedText style={[styles.emptyTitle, { color: theme.text }]}>Ingen par tilkoblet</ThemedText>
               <ThemedText style={[styles.emptySubtitle, { color: theme.textSecondary }]}>Start en samtale med en kunde for å koble til prosjektet</ThemedText>
             </View>

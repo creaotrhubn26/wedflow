@@ -12,7 +12,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon, type EvendiIconName } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { LinearGradient } from "expo-linear-gradient";
@@ -56,9 +56,8 @@ const SESSION_MINUTES_STORAGE_KEY = "wedflow_stress_tracker_session_minutes";
 const TOTAL_BREATHS_STORAGE_KEY = "wedflow_stress_tracker_total_breaths";
 const SESSION_MINUTES_OPTIONS = [1, 3, 5];
 
-type FeatherIconName = React.ComponentProps<typeof Feather>["name"];
 
-const STRESS_TIPS: Array<{ icon: FeatherIconName; title: string; desc: string }> = [
+const STRESS_TIPS: Array<{ icon: EvendiIconName; title: string; desc: string }> = [
   { icon: "moon", title: "Søvn først", desc: "7-8 timer gir bedre beslutninger" },
   { icon: "calendar", title: "En ting om gangen", desc: "Fokuser på én oppgave per dag" },
   { icon: "users", title: "Deleger", desc: "La andre hjelpe deg" },
@@ -423,7 +422,7 @@ export default function StressTrackerScreen() {
               { backgroundColor: "rgba(255,255,255,0.7)", borderColor: Colors.dark.accent + "40" },
             ]}
           >
-            <Feather name="sun" size={24} color={Colors.dark.accent} />
+            <EvendiIcon name="sun" size={24} color={Colors.dark.accent} />
             <ThemedText style={[styles.affirmation, { color: Colors.dark.accent }]}>
               "{affirmation}"
             </ThemedText>
@@ -436,7 +435,7 @@ export default function StressTrackerScreen() {
               accessibilityHint="Hold for å tilbakestille lagret affirmasjon"
               testID="pulseid-affirmation-refresh"
             >
-              <Feather name="refresh-cw" size={18} color={Colors.dark.accent} />
+              <EvendiIcon name="refresh-cw" size={18} color={Colors.dark.accent} />
             </Pressable>
           </View>
         </Animated.View>
@@ -456,7 +455,7 @@ export default function StressTrackerScreen() {
                 accessibilityLabel="Aapne pusteinnstillinger"
                 testID="pulseid-breathing-settings"
               >
-                <Feather name="settings" size={18} color={theme.textSecondary} />
+                <EvendiIcon name="settings" size={18} color={theme.textSecondary} />
               </Pressable>
             </View>
             <ThemedText style={[styles.breathingSubtitle, { color: theme.textSecondary }]}>
@@ -541,7 +540,7 @@ export default function StressTrackerScreen() {
                 >
                   <View style={[styles.tipIcon, { backgroundColor: theme.backgroundSecondary }]}
                   >
-                    <Feather name={tip.icon} size={20} color={Colors.dark.accent} />
+                    <EvendiIcon name={tip.icon} size={20} color={Colors.dark.accent} />
                   </View>
                   <ThemedText style={styles.tipTitle}>{tip.title}</ThemedText>
                   <ThemedText style={[styles.tipDesc, { color: theme.textSecondary }]}>{tip.desc}</ThemedText>
@@ -557,7 +556,7 @@ export default function StressTrackerScreen() {
               Husk dette
             </ThemedText>
             <View style={styles.statRow}>
-              <Feather name="heart" size={18} color={Colors.dark.accent} />
+              <EvendiIcon name="heart" size={18} color={Colors.dark.accent} />
               <ThemedText style={[styles.statNumber, { color: Colors.dark.accent }]}>96%</ThemedText>
               <ThemedText style={[styles.statLabel, { color: theme.textSecondary }]}
               >
@@ -565,7 +564,7 @@ export default function StressTrackerScreen() {
               </ThemedText>
             </View>
             <View style={styles.statRow}>
-              <Feather name="eye" size={18} color={Colors.dark.accent} />
+              <EvendiIcon name="eye" size={18} color={Colors.dark.accent} />
               <ThemedText style={[styles.statNumber, { color: Colors.dark.accent }]}>0</ThemedText>
               <ThemedText style={[styles.statLabel, { color: theme.textSecondary }]}
               >
@@ -573,7 +572,7 @@ export default function StressTrackerScreen() {
               </ThemedText>
             </View>
             <View style={styles.statRow}>
-              <Feather name="calendar" size={18} color={Colors.dark.accent} />
+              <EvendiIcon name="calendar" size={18} color={Colors.dark.accent} />
               <ThemedText style={[styles.statNumber, { color: Colors.dark.accent }]}>1</ThemedText>
               <ThemedText style={[styles.statLabel, { color: theme.textSecondary }]}
               >
@@ -581,7 +580,7 @@ export default function StressTrackerScreen() {
               </ThemedText>
             </View>
             <View style={styles.statRow}>
-              <Feather name="activity" size={18} color={Colors.dark.accent} />
+              <EvendiIcon name="activity" size={18} color={Colors.dark.accent} />
               <ThemedText style={[styles.statNumber, { color: Colors.dark.accent }]}
               >
                 {totalBreaths}
@@ -621,7 +620,7 @@ export default function StressTrackerScreen() {
                     accessibilityRole="button"
                     accessibilityLabel="Lukk innstillinger"
                   >
-                    <Feather name="x" size={20} color={theme.textSecondary} />
+                    <EvendiIcon name="x" size={20} color={theme.textSecondary} />
                   </Pressable>
                 </View>
 

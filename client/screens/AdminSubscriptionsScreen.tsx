@@ -11,7 +11,7 @@ import {
   FlatList,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTheme } from "@/hooks/useTheme";
@@ -291,7 +291,7 @@ export default function AdminSubscriptionsScreen({ route }: Props) {
           style={[styles.tab, tab === "tiers" && { borderBottomColor: theme.accent, borderBottomWidth: 2 }]}
           onPress={() => setTab("tiers")}
         >
-          <Feather name="package" size={16} color={tab === "tiers" ? theme.accent : theme.textSecondary} />
+          <EvendiIcon name="package" size={16} color={tab === "tiers" ? theme.accent : theme.textSecondary} />
           <ThemedText style={[styles.tabText, { color: tab === "tiers" ? theme.accent : theme.textSecondary }]}>
             Tiers
           </ThemedText>
@@ -300,7 +300,7 @@ export default function AdminSubscriptionsScreen({ route }: Props) {
           style={[styles.tab, tab === "vendors" && { borderBottomColor: theme.accent, borderBottomWidth: 2 }]}
           onPress={() => setTab("vendors")}
         >
-          <Feather name="users" size={16} color={tab === "vendors" ? theme.accent : theme.textSecondary} />
+          <EvendiIcon name="users" size={16} color={tab === "vendors" ? theme.accent : theme.textSecondary} />
           <ThemedText style={[styles.tabText, { color: tab === "vendors" ? theme.accent : theme.textSecondary }]}>
             Leverandører
           </ThemedText>
@@ -348,7 +348,7 @@ export default function AdminSubscriptionsScreen({ route }: Props) {
                       }}
                       hitSlop={10}
                     >
-                      <Feather name="trash-2" size={18} color="#FF6B6B" />
+                      <EvendiIcon name="trash-2" size={18} color="#FF6B6B" />
                     </Pressable>
                   </View>
                 </Pressable>
@@ -358,7 +358,7 @@ export default function AdminSubscriptionsScreen({ route }: Props) {
                 style={[styles.addButton, { backgroundColor: theme.accent }]}
                 onPress={openNewTierModal}
               >
-                <Feather name="plus" size={20} color="#FFFFFF" />
+                <EvendiIcon name="plus" size={20} color="#FFFFFF" />
                 <ThemedText style={styles.addButtonText}>Ny abonnementstier</ThemedText>
               </Pressable>
             </>
@@ -377,7 +377,7 @@ export default function AdminSubscriptionsScreen({ route }: Props) {
               contentContainerStyle={{ padding: Spacing.md }}
               ListHeaderComponent={
                 <View style={[styles.searchBox, { backgroundColor: theme.backgroundSecondary, borderColor: theme.border }]}> 
-                  <Feather name="search" size={16} color={theme.textMuted} />
+                  <EvendiIcon name="search" size={16} color={theme.textMuted} />
                   <TextInput
                     style={[styles.searchInput, { color: theme.text, flex: 1 }]}
                     placeholder="Søk leverandør..."
@@ -422,7 +422,7 @@ export default function AdminSubscriptionsScreen({ route }: Props) {
               {editingId ? "Rediger abonnementstier" : "Ny abonnementstier"}
             </ThemedText>
             <Pressable onPress={() => setShowModal(false)}>
-              <Feather name="x" size={20} color={theme.text} />
+              <EvendiIcon name="x" size={20} color={theme.text} />
             </Pressable>
           </View>
 
@@ -646,7 +646,7 @@ export default function AdminSubscriptionsScreen({ route }: Props) {
                 <ActivityIndicator color="#FFFFFF" />
               ) : (
                 <>
-                  <Feather name="save" size={18} color="#FFFFFF" />
+                  <EvendiIcon name="save" size={18} color="#FFFFFF" />
                   <ThemedText style={styles.saveButtonText}>Lagre</ThemedText>
                 </>
               )}

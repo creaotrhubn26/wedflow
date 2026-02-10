@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { ScrollView, StyleSheet, View, Pressable, TextInput, ActivityIndicator, Switch } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon, EvendiIconGlyphMap } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -29,7 +29,7 @@ interface VideoGuideForm {
   isActive: boolean;
 }
 
-const FEATHER_ICONS: Array<keyof typeof Feather.glyphMap> = [
+const FEATHER_ICONS: Array<keyof typeof EvendiIconGlyphMap> = [
   "video",
   "play-circle",
   "youtube",
@@ -206,7 +206,7 @@ export default function AdminVideoGuidesScreen({ route }: Props) {
     <SafeAreaView style={[styles.container, { backgroundColor: theme.backgroundRoot }]} edges={["bottom"]}>
       <ScrollView contentContainerStyle={styles.scroll}>
         <View style={[styles.header, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-          <Feather name="video" size={32} color={theme.accent} />
+          <EvendiIcon name="video" size={32} color={theme.accent} />
           <ThemedText style={styles.headerTitle}>Videoguider</ThemedText>
           <ThemedText style={[styles.headerSubtitle, { color: theme.textSecondary }]}>
             Administrer videoguider for leverandører og par
@@ -228,7 +228,7 @@ export default function AdminVideoGuidesScreen({ route }: Props) {
                 activeCategory === category && { borderBottomColor: theme.accent, borderBottomWidth: 2 },
               ]}
             >
-              <Feather
+              <EvendiIcon
                 name={category === "vendor" ? "briefcase" : "heart"}
                 size={16}
                 color={activeCategory === category ? theme.accent : theme.textMuted}
@@ -346,7 +346,7 @@ export default function AdminVideoGuidesScreen({ route }: Props) {
                       },
                     ]}
                   >
-                    <Feather name={iconName} size={16} color={formData.icon === iconName ? theme.accent : theme.textMuted} />
+                    <EvendiIcon name={iconName} size={16} color={formData.icon === iconName ? theme.accent : theme.textMuted} />
                   </Pressable>
                 ))}
               </View>
@@ -376,7 +376,7 @@ export default function AdminVideoGuidesScreen({ route }: Props) {
             onPress={() => setFormData({ ...formData, category: activeCategory })}
             style={[styles.addButton, { backgroundColor: theme.accent }]}
           >
-            <Feather name="plus" size={20} color="#FFFFFF" />
+            <EvendiIcon name="plus" size={20} color="#FFFFFF" />
             <ThemedText style={{ color: "#FFFFFF", fontWeight: "600" }}>Ny videoguide</ThemedText>
           </Pressable>
         )}
@@ -386,7 +386,7 @@ export default function AdminVideoGuidesScreen({ route }: Props) {
           <ActivityIndicator style={{ marginTop: Spacing.xl }} color={theme.accent} />
         ) : filteredGuides.length === 0 ? (
           <View style={[styles.emptyContainer, { backgroundColor: theme.backgroundSecondary }]}>
-            <Feather name="video" size={48} color={theme.textMuted} />
+            <EvendiIcon name="video" size={48} color={theme.textMuted} />
             <ThemedText style={{ color: theme.textSecondary, marginTop: Spacing.md }}>Ingen videoguider</ThemedText>
           </View>
         ) : (
@@ -414,13 +414,13 @@ export default function AdminVideoGuidesScreen({ route }: Props) {
                     onPress={() => handleEdit(guide)}
                     style={[styles.actionButton, { backgroundColor: theme.accent + "20" }]}
                   >
-                    <Feather name="edit-2" size={16} color={theme.accent} />
+                    <EvendiIcon name="edit-2" size={16} color={theme.accent} />
                   </Pressable>
                   <Pressable
                     onPress={() => handleDelete(guide.id)}
                     style={[styles.actionButton, { backgroundColor: theme.error + "20" }]}
                   >
-                    <Feather name="trash-2" size={16} color={theme.error} />
+                    <EvendiIcon name="trash-2" size={16} color={theme.error} />
                   </Pressable>
                 </View>
               </View>

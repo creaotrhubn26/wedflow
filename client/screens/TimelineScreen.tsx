@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useFocusEffect } from "@react-navigation/native";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon, EvendiIconGlyphMap } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown, FadeInLeft } from "react-native-reanimated";
 
@@ -40,7 +40,7 @@ type ScheduleInterval = {
   index: number;
 };
 
-const ICON_MAP: Record<string, keyof typeof Feather.glyphMap> = {
+const ICON_MAP: Record<string, keyof typeof EvendiIconGlyphMap> = {
   heart: "heart",
   camera: "camera",
   music: "music",
@@ -488,7 +488,7 @@ export default function TimelineScreen() {
     }
   };
 
-  const getBufferStatus = (diff: number): { color: string; label: string; icon: keyof typeof Feather.glyphMap; suggestion: string } => {
+  const getBufferStatus = (diff: number): { color: string; label: string; icon: keyof typeof EvendiIconGlyphMap; suggestion: string } => {
     if (diff < 15) return { 
       color: theme.error, 
       label: "For kort buffer!", 
@@ -518,7 +518,7 @@ export default function TimelineScreen() {
   if (loading) {
     return (
       <View style={[styles.container, styles.centered, { backgroundColor: theme.backgroundRoot }]}>
-        <Feather name="calendar" size={48} color={theme.textSecondary} style={{ marginBottom: Spacing.md }} />
+        <EvendiIcon name="calendar" size={48} color={theme.textSecondary} style={{ marginBottom: Spacing.md }} />
         <ThemedText style={{ color: theme.textSecondary }}>Laster timelinedata…</ThemedText>
       </View>
     );
@@ -527,7 +527,7 @@ export default function TimelineScreen() {
   if (error) {
     return (
       <View style={[styles.container, styles.centered, { backgroundColor: theme.backgroundRoot }]}>
-        <Feather name="alert-circle" size={48} color={theme.error} style={{ marginBottom: Spacing.md }} />
+        <EvendiIcon name="alert-circle" size={48} color={theme.error} style={{ marginBottom: Spacing.md }} />
         <ThemedText style={[styles.errorTitle, { color: theme.error }]}>Kunne ikke laste timeline</ThemedText>
         <ThemedText style={[styles.errorMessage, { color: theme.textSecondary }]}>{error}</ThemedText>
         <Button style={{ marginTop: Spacing.lg }} onPress={loadData}>Prøv igjen</Button>
@@ -547,7 +547,7 @@ export default function TimelineScreen() {
     >
       <Animated.View entering={FadeInDown.delay(100).duration(400)}>
         <View style={[styles.headerCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-          <Feather name="calendar" size={24} color={Colors.dark.accent} />
+          <EvendiIcon name="calendar" size={24} color={Colors.dark.accent} />
           <ThemedText type="h2" style={styles.headerTitle}>Bryllupsdagen</ThemedText>
           <ThemedText style={[styles.headerDate, { color: theme.textSecondary }]}>
             {formatDate(weddingDate)}
@@ -582,7 +582,7 @@ export default function TimelineScreen() {
               onPress={() => setShowWeatherOverlay(!showWeatherOverlay)}
               style={[styles.weatherSummaryRow, { backgroundColor: theme.backgroundSecondary, borderColor: theme.border }]}
             >
-              <Feather name="cloud" size={16} color={Colors.dark.accent} />
+              <EvendiIcon name="cloud" size={16} color={Colors.dark.accent} />
               <ThemedText style={[styles.weatherSummaryText, { color: theme.text }]}>
                 {Math.round(venueWeatherSummary.avgTemp)}°C • {venueWeatherSummary.maxPrecip > 0 ? `${venueWeatherSummary.maxPrecip}mm nedbør` : 'Tørt'}
                 {venueWeatherSummary.maxWind > 8 ? ` • ${Math.round(venueWeatherSummary.maxWind)} m/s` : ''}
@@ -590,7 +590,7 @@ export default function TimelineScreen() {
               {venueName ? (
                 <ThemedText style={[styles.weatherVenue, { color: theme.textSecondary }]}>📍 {venueName}</ThemedText>
               ) : null}
-              <Feather name={showWeatherOverlay ? "chevron-up" : "chevron-down"} size={14} color={theme.textSecondary} />
+              <EvendiIcon name={showWeatherOverlay ? "chevron-up" : "chevron-down"} size={14} color={theme.textSecondary} />
             </Pressable>
           )}
           {weatherLoading && !venueWeatherSummary && (
@@ -670,7 +670,7 @@ export default function TimelineScreen() {
                             ~{Math.round(travel.travel.fuelCostNok)} kr
                           </ThemedText>
                         ) : null}
-                        <Feather name="navigation" size={12} color="#2196F3" />
+                        <EvendiIcon name="navigation" size={12} color="#2196F3" />
                       </Pressable>
                     );
                   })}
@@ -698,7 +698,7 @@ export default function TimelineScreen() {
 
                 <View style={styles.dotColumn}>
                   <View style={[styles.dot, { backgroundColor: Colors.dark.accent }]}>
-                    <Feather name={ICON_MAP[event.icon] || "circle"} size={12} color="#1A1A1A" />
+                    <EvendiIcon name={ICON_MAP[event.icon] || "circle"} size={12} color="#1A1A1A" />
                   </View>
                   {index < schedule.length - 1 ? (
                     <View style={[styles.line, { backgroundColor: theme.border }]} />
@@ -711,7 +711,7 @@ export default function TimelineScreen() {
                     onPress={() => handleDeleteEvent(event.id)}
                     style={styles.deleteBtn}
                   >
-                    <Feather name="trash-2" size={14} color={theme.textSecondary} />
+                    <EvendiIcon name="trash-2" size={14} color={theme.textSecondary} />
                   </Pressable>
                   {/* Weather badge for this event */}
                   {eventWeatherMap.has(event.id) && eventWeatherMap.get(event.id)?.weather && (
@@ -751,7 +751,7 @@ export default function TimelineScreen() {
                     onPress={() => setExpandedBuffer(expandedBuffer === event.id ? null : event.id)}
                     style={[styles.bufferCard, { backgroundColor: bufferStatus.color + "20", borderColor: bufferStatus.color }]}
                   >
-                    <Feather name={bufferStatus.icon} size={14} color={bufferStatus.color} />
+                    <EvendiIcon name={bufferStatus.icon} size={14} color={bufferStatus.color} />
                     <View style={{ flex: 1, marginLeft: Spacing.xs }}>
                       <ThemedText style={[styles.bufferText, { color: bufferStatus.color }]}>
                         {bufferStatus.label} • {timeDiff} min
@@ -762,7 +762,7 @@ export default function TimelineScreen() {
                         </ThemedText>
                       )}
                     </View>
-                    <Feather name={expandedBuffer === event.id ? "chevron-up" : "chevron-down"} size={14} color={bufferStatus.color} />
+                    <EvendiIcon name={expandedBuffer === event.id ? "chevron-up" : "chevron-down"} size={14} color={bufferStatus.color} />
                   </Pressable>
                 </View>
               ) : null}
@@ -775,7 +775,7 @@ export default function TimelineScreen() {
         <Animated.View entering={FadeInDown.delay(600).duration(400)} style={{ marginTop: Spacing.xl }}>
           <View style={[styles.sectionCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
             <View style={styles.sectionHeader}>
-              <Feather name="mic" size={20} color={Colors.dark.accent} />
+              <EvendiIcon name="mic" size={20} color={Colors.dark.accent} />
               <ThemedText type="h4" style={styles.sectionTitle}>
                 Taler ({speeches.length})
               </ThemedText>
@@ -822,7 +822,7 @@ export default function TimelineScreen() {
 
       {schedule.length === 0 ? (
         <View style={styles.emptyState}>
-          <Feather name="calendar" size={48} color={theme.textMuted} />
+          <EvendiIcon name="calendar" size={48} color={theme.textMuted} />
           <ThemedText style={[styles.emptyText, { color: theme.textSecondary }]}>
             Ingen hendelser i kjøreplanen
           </ThemedText>
@@ -833,7 +833,7 @@ export default function TimelineScreen() {
         <Animated.View entering={FadeInDown.delay(400).duration(400)}>
           <View style={[styles.optimizationCard, { backgroundColor: Colors.dark.accent + "08", borderColor: Colors.dark.accent }]}>
             <View style={styles.optimizationHeader}>
-              <Feather name="alert-circle" size={20} color={Colors.dark.accent} />
+              <EvendiIcon name="alert-circle" size={20} color={Colors.dark.accent} />
               <ThemedText type="h4" style={[styles.optimizationTitle, { color: Colors.dark.accent }]}>
                 Tidsoptimalisering
               </ThemedText>
@@ -854,7 +854,7 @@ export default function TimelineScreen() {
                     <ThemedText style={[styles.eventName, { color: theme.textSecondary }]}>
                       {interval.from}
                     </ThemedText>
-                    <Feather name="arrow-right" size={12} color={theme.textSecondary} />
+                    <EvendiIcon name="arrow-right" size={12} color={theme.textSecondary} />
                     <ThemedText style={[styles.eventName, { color: theme.textSecondary }]}>
                       {interval.to}
                     </ThemedText>
@@ -875,7 +875,7 @@ export default function TimelineScreen() {
                         {interval.current} min
                       </ThemedText>
                     </View>
-                    <Feather name="arrow-right" size={14} color={Colors.dark.accent} />
+                    <EvendiIcon name="arrow-right" size={14} color={Colors.dark.accent} />
                     <View style={styles.recommendedTime}>
                       <ThemedText style={[styles.timeLabel, { color: Colors.dark.accent }]}>
                         Anbefalt
@@ -892,7 +892,7 @@ export default function TimelineScreen() {
                   </View>
                   
                   <View style={[styles.editHint, { backgroundColor: Colors.dark.accent + "10" }]}>
-                    <Feather name="edit-2" size={12} color={Colors.dark.accent} />
+                    <EvendiIcon name="edit-2" size={12} color={Colors.dark.accent} />
                     <ThemedText style={[styles.editHintText, { color: Colors.dark.accent }]}>
                       Trykk for å redigere tiden
                     </ThemedText>
@@ -909,7 +909,7 @@ export default function TimelineScreen() {
           <View style={styles.tipsHeader}>
             <ThemedText type="h4" style={styles.tipsTitle}>Buffer-oversikt</ThemedText>
             <View style={[styles.bufferSummary, { backgroundColor: Colors.dark.accent + "15" }]}>
-              <Feather name="clock" size={14} color={Colors.dark.accent} />
+              <EvendiIcon name="clock" size={14} color={Colors.dark.accent} />
               <ThemedText style={[styles.bufferSummaryText, { color: Colors.dark.accent }]}>
                 {totalBufferTime} min totalt
               </ThemedText>
@@ -960,7 +960,7 @@ export default function TimelineScreen() {
 
       <View style={styles.addFabContainer}>
         <Pressable onPress={() => setShowAddModal(true)} style={[styles.addFab, { backgroundColor: Colors.dark.accent }]}>
-          <Feather name="plus" size={24} color="#1A1A1A" />
+          <EvendiIcon name="plus" size={24} color="#1A1A1A" />
         </Pressable>
       </View>
 
@@ -972,7 +972,7 @@ export default function TimelineScreen() {
                 Rediger tid
               </ThemedText>
               <Pressable onPress={() => setEditingInterval(null)}>
-                <Feather name="x" size={24} color={theme.text} />
+                <EvendiIcon name="x" size={24} color={theme.text} />
               </Pressable>
             </View>
 
@@ -1004,7 +1004,7 @@ export default function TimelineScreen() {
 
                 {getTraditionInsight(editingInterval.from) && (
                   <View style={[styles.modalTip, { backgroundColor: Colors.dark.accent + "15", borderColor: Colors.dark.accent }]}>
-                    <Feather name="info" size={16} color={Colors.dark.accent} />
+                    <EvendiIcon name="info" size={16} color={Colors.dark.accent} />
                     <ThemedText style={[styles.modalTipText, { color: Colors.dark.accent }]}>
                       {getTraditionInsight(editingInterval.from)}
                     </ThemedText>
@@ -1038,7 +1038,7 @@ export default function TimelineScreen() {
             <View style={styles.modalHeader}>
               <ThemedText type="h3" style={styles.modalTitle}>Ny hendelse</ThemedText>
               <Pressable onPress={() => setShowAddModal(false)}>
-                <Feather name="x" size={24} color={theme.text} />
+                <EvendiIcon name="x" size={24} color={theme.text} />
               </Pressable>
             </View>
             <View style={styles.modalSection}>
@@ -1062,7 +1062,7 @@ export default function TimelineScreen() {
                           { borderColor: theme.border, backgroundColor: newIcon === key ? Colors.dark.accent + "20" : theme.backgroundSecondary },
                         ]}
                       >
-                        <Feather name={ICON_MAP[key]} size={16} color={newIcon === key ? Colors.dark.accent : theme.textSecondary} />
+                        <EvendiIcon name={ICON_MAP[key]} size={16} color={newIcon === key ? Colors.dark.accent : theme.textSecondary} />
                       </Pressable>
                     ))}
                   </View>

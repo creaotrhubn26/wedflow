@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon, EvendiIconGlyphMap } from "@/components/EvendiIcon";
 import { useQuery } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -184,7 +184,7 @@ export default function AdminDashboardScreen() {
         <Animated.View entering={FadeInDown.duration(400)}>
           <View style={[styles.loginCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
             <View style={[styles.iconCircle, { backgroundColor: Colors.dark.accent + "20" }]}>
-              <Feather name="shield" size={32} color={Colors.dark.accent} />
+              <EvendiIcon name="shield" size={32} color={Colors.dark.accent} />
             </View>
             <ThemedText style={styles.loginTitle}>Admin-tilgang</ThemedText>
             <ThemedText style={[styles.loginSubtitle, { color: theme.textSecondary }]}>
@@ -257,7 +257,7 @@ export default function AdminDashboardScreen() {
             }}
           >
             <View style={[styles.menuIcon, { backgroundColor: Colors.dark.accent + "20" }]}>
-              <Feather name={section.icon} size={20} color={Colors.dark.accent} />
+              <EvendiIcon name={section.icon} size={20} color={Colors.dark.accent} />
             </View>
             <View style={styles.menuContent}>
               <ThemedText style={styles.menuItemTitle}>{section.title}</ThemedText>
@@ -270,7 +270,7 @@ export default function AdminDashboardScreen() {
                 <ThemedText style={styles.badgeText}>{section.badge}</ThemedText>
               </View>
             ) : null}
-            <Feather name="chevron-right" size={20} color={theme.textMuted} />
+            <EvendiIcon name="chevron-right" size={20} color={theme.textMuted} />
           </Pressable>
         ))}
       </Animated.View>
@@ -284,7 +284,7 @@ export default function AdminDashboardScreen() {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
           }}
         >
-          <Feather name="log-out" size={18} color={theme.textSecondary} />
+          <EvendiIcon name="log-out" size={18} color={theme.textSecondary} />
           <ThemedText style={[styles.logoutText, { color: theme.textSecondary }]}>Logg ut</ThemedText>
         </Pressable>
       </Animated.View>
@@ -292,10 +292,10 @@ export default function AdminDashboardScreen() {
   );
 }
 
-function StatBox({ label, value, icon, theme }: { label: string; value: number; icon: keyof typeof Feather.glyphMap; theme: any }) {
+function StatBox({ label, value, icon, theme }: { label: string; value: number; icon: keyof typeof EvendiIconGlyphMap; theme: any }) {
   return (
     <View style={styles.statBox}>
-      <Feather name={icon} size={16} color={Colors.dark.accent} />
+      <EvendiIcon name={icon} size={16} color={Colors.dark.accent} />
       <ThemedText style={styles.statValue}>{value}</ThemedText>
       <ThemedText style={[styles.statLabel, { color: theme.textSecondary }]}>{label}</ThemedText>
     </View>

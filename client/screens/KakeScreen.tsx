@@ -15,7 +15,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Feather } from '@expo/vector-icons';
+import { EvendiIcon } from '@/components/EvendiIcon';
 import * as Haptics from 'expo-haptics';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -565,7 +565,7 @@ export function KakeScreen() {
 
       {(cakeData?.tastings || []).length === 0 ? (
         <View style={styles.emptyState}>
-          <Feather name="heart" size={48} color={theme.primary} style={{ opacity: 0.6 }} />
+          <EvendiIcon name="heart" size={48} color={theme.primary} style={{ opacity: 0.6 }} />
           <ThemedText style={[styles.emptyStateText, { fontWeight: '600' }]}>Hvilken kake avslutter dagen best?</ThemedText>
           <ThemedText style={[styles.emptyStateSubtext, { color: theme.textSecondary }]}>
             La oss finne smaken dere husker.
@@ -577,7 +577,7 @@ export function KakeScreen() {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             }}
           >
-            <Feather name="plus" size={16} color="#fff" />
+            <EvendiIcon name="plus" size={16} color="#fff" />
             <ThemedText style={styles.emptyStateCtaText}>Legg til smaksprøve</ThemedText>
           </TouchableOpacity>
         </View>
@@ -620,7 +620,7 @@ export function KakeScreen() {
                   {tasting.rating && tasting.rating > 0 && (
                     <View style={styles.ratingContainer}>
                       {[1, 2, 3, 4, 5].map((star) => (
-                        <Feather
+                        <EvendiIcon
                           key={star}
                           name="star"
                           size={14}
@@ -634,7 +634,7 @@ export function KakeScreen() {
 
                 {tasting.location && (
                   <View style={styles.cardRow}>
-                    <Feather name="map-pin" size={14} color={theme.textSecondary} />
+                    <EvendiIcon name="map-pin" size={14} color={theme.textSecondary} />
                     <ThemedText style={[styles.cardSubtext, { color: theme.textSecondary }]}>
                       {tasting.location}
                     </ThemedText>
@@ -642,7 +642,7 @@ export function KakeScreen() {
                 )}
 
                 <View style={styles.cardRow}>
-                  <Feather name="calendar" size={14} color={theme.textSecondary} />
+                  <EvendiIcon name="calendar" size={14} color={theme.textSecondary} />
                   <ThemedText style={[styles.cardSubtext, { color: theme.textSecondary }]}>
                     {formatDate(tasting.date)}
                     {tasting.time && ` kl. ${tasting.time}`}
@@ -651,7 +651,7 @@ export function KakeScreen() {
 
                 {tasting.flavorsToTry && (
                   <View style={styles.cardRow}>
-                    <Feather name="list" size={14} color={theme.textSecondary} />
+                    <EvendiIcon name="list" size={14} color={theme.textSecondary} />
                     <ThemedText
                       style={[styles.cardSubtext, { color: theme.textSecondary }]}
                       numberOfLines={1}
@@ -667,7 +667,7 @@ export function KakeScreen() {
                   }}
                   style={styles.quickActionButton}
                 >
-                  <Feather name="copy" size={16} color={theme.textSecondary} />
+                  <EvendiIcon name="copy" size={16} color={theme.textSecondary} />
                 </Pressable>
               </TouchableOpacity>
             </SwipeableRow>
@@ -703,7 +703,7 @@ export function KakeScreen() {
 
       {(cakeData?.designs || []).length === 0 ? (
         <View style={styles.emptyState}>
-          <Feather name="heart" size={48} color={theme.primary} style={{ opacity: 0.6 }} />
+          <EvendiIcon name="heart" size={48} color={theme.primary} style={{ opacity: 0.6 }} />
           <ThemedText style={[styles.emptyStateText, { fontWeight: '600' }]}>Hvilken kake avslutter dagen best?</ThemedText>
           <ThemedText style={[styles.emptyStateSubtext, { color: theme.textSecondary }]}>
             Lagre inspirasjon for kaken deres.
@@ -715,7 +715,7 @@ export function KakeScreen() {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             }}
           >
-            <Feather name="plus" size={16} color="#fff" />
+            <EvendiIcon name="plus" size={16} color="#fff" />
             <ThemedText style={styles.emptyStateCtaText}>Legg til design</ThemedText>
           </TouchableOpacity>
         </View>
@@ -748,7 +748,7 @@ export function KakeScreen() {
                   <View style={styles.cardTitleRow}>
                     <ThemedText style={styles.cardTitle}>{design.name}</ThemedText>
                     {design.isFavorite && (
-                      <Feather name="heart" size={16} color={Colors.light.error} style={{ marginLeft: 8 }} />
+                      <EvendiIcon name="heart" size={16} color={Colors.light.error} style={{ marginLeft: 8 }} />
                     )}
                     {design.isSelected && (
                       <View style={[styles.statusBadge, { backgroundColor: theme.primary + '20', marginLeft: 8 }]}>
@@ -841,7 +841,7 @@ export function KakeScreen() {
                   }}
                   style={styles.quickActionButton}
                 >
-                  <Feather name="copy" size={16} color={theme.textSecondary} />
+                  <EvendiIcon name="copy" size={16} color={theme.textSecondary} />
                 </Pressable>
               </TouchableOpacity>
             </SwipeableRow>
@@ -856,7 +856,7 @@ export function KakeScreen() {
       {/* Cake sizing suggestion based on guest count */}
       {(coupleProfile?.expectedGuests ?? 0) > 0 && (
         <View style={{ backgroundColor: theme.backgroundDefault, borderWidth: 1, borderColor: '#FFB300', borderRadius: 12, padding: 14, marginBottom: 16, flexDirection: 'row', alignItems: 'center' }}>
-          <Feather name="users" size={16} color="#FFB300" />
+          <EvendiIcon name="users" size={16} color="#FFB300" />
           <ThemedText style={{ color: theme.text, marginLeft: 10, flex: 1, fontSize: 13 }}>
             {getCakeSizingSuggestion(coupleProfile!.expectedGuests!)}
           </ThemedText>
@@ -898,7 +898,7 @@ export function KakeScreen() {
                   ? `${cakeData.timeline.budget.toLocaleString('nb-NO')} kr`
                   : 'Sett budsjett'}
               </ThemedText>
-              <Feather name="edit-2" size={12} color={theme.primary} />
+              <EvendiIcon name="edit-2" size={12} color={theme.primary} />
             </View>
           </TouchableOpacity>
         </View>
@@ -908,7 +908,7 @@ export function KakeScreen() {
       {cakeData?.timeline?.bakerySelected ? (
         <View style={[styles.vendorSelectedCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
           <View style={styles.vendorSelectedHeader}>
-            <Feather name="check-circle" size={18} color={theme.primary} />
+            <EvendiIcon name="check-circle" size={18} color={theme.primary} />
             <ThemedText style={[styles.vendorSelectedText, { color: theme.text }]}>
               Bakeri valgt
             </ThemedText>
@@ -932,9 +932,9 @@ export function KakeScreen() {
           style={[styles.findVendorsButton, { backgroundColor: theme.primary }]}
           activeOpacity={0.7}
         >
-          <Feather name="search" size={18} color="#FFFFFF" />
+          <EvendiIcon name="search" size={18} color="#FFFFFF" />
           <ThemedText style={styles.findVendorsText}>Finn konditori</ThemedText>
-          <Feather name="arrow-right" size={18} color="#FFFFFF" />
+          <EvendiIcon name="arrow-right" size={18} color="#FFFFFF" />
         </TouchableOpacity>
       )}
 
@@ -957,12 +957,12 @@ export function KakeScreen() {
                   },
                 ]}
               >
-                {isCompleted && <Feather name="check" size={14} color="#fff" />}
+                {isCompleted && <EvendiIcon name="check" size={14} color="#fff" />}
               </View>
 
               <View style={styles.timelineContent}>
                 <View style={styles.timelineHeader}>
-                  <Feather
+                  <EvendiIcon
                     name={step.icon}
                     size={18}
                     color={isCompleted ? theme.primary : theme.textSecondary}
@@ -993,7 +993,7 @@ export function KakeScreen() {
           onPress={() => navigation.goBack()}
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
-          <Feather name="arrow-left" size={24} color={theme.text} />
+          <EvendiIcon name="arrow-left" size={24} color={theme.text} />
         </TouchableOpacity>
         <ThemedText style={styles.headerTitle}>{isWedding ? "Bryllupskake" : "Kake"}</ThemedText>
         <View style={styles.headerRight} />
@@ -1014,7 +1014,7 @@ export function KakeScreen() {
               Haptics.selectionAsync();
             }}
           >
-            <Feather
+            <EvendiIcon
               name={tab.icon as any}
               size={18}
               color={activeTab === tab.id ? theme.primary : theme.textSecondary}
@@ -1046,7 +1046,7 @@ export function KakeScreen() {
           </View>
         ) : isError ? (
           <View style={styles.errorContainer}>
-            <Feather name="alert-circle" size={48} color={Colors.light.error} />
+            <EvendiIcon name="alert-circle" size={48} color={Colors.light.error} />
             <ThemedText style={styles.errorText}>Kunne ikke laste data</ThemedText>
             <ThemedText style={[styles.errorSubtext, { color: theme.textSecondary }]}>
               {error instanceof Error ? error.message : 'Ukjent feil'}
@@ -1077,7 +1077,7 @@ export function KakeScreen() {
             else setDesignModalVisible(true);
           }}
         >
-          <Feather name="plus" size={24} color="#fff" />
+          <EvendiIcon name="plus" size={24} color="#fff" />
         </TouchableOpacity>
       )}
 
@@ -1090,7 +1090,7 @@ export function KakeScreen() {
                 {editingTasting ? 'Rediger smaksprøve' : 'Ny smaksprøve'}
               </ThemedText>
               <TouchableOpacity onPress={closeTastingModal}>
-                <Feather name="x" size={24} color={theme.text} />
+                <EvendiIcon name="x" size={24} color={theme.text} />
               </TouchableOpacity>
             </View>
 
@@ -1194,7 +1194,7 @@ export function KakeScreen() {
                     }}
                     hitSlop={{ top: 10, bottom: 10, left: 5, right: 5 }}
                   >
-                    <Feather
+                    <EvendiIcon
                       name="star"
                       size={28}
                       color={star <= tastingRating ? Colors.light.warning : theme.border}
@@ -1233,7 +1233,7 @@ export function KakeScreen() {
                     },
                   ]}
                 >
-                  {tastingCompleted && <Feather name="check" size={14} color="#fff" />}
+                  {tastingCompleted && <EvendiIcon name="check" size={14} color="#fff" />}
                 </View>
                 <ThemedText style={styles.checkboxLabel}>Gjennomført</ThemedText>
               </TouchableOpacity>
@@ -1274,7 +1274,7 @@ export function KakeScreen() {
                 {editingDesign ? 'Rediger design' : 'Nytt design'}
               </ThemedText>
               <TouchableOpacity onPress={closeDesignModal}>
-                <Feather name="x" size={24} color={theme.text} />
+                <EvendiIcon name="x" size={24} color={theme.text} />
               </TouchableOpacity>
             </View>
 
@@ -1334,14 +1334,14 @@ export function KakeScreen() {
                       style={[styles.imageActionButton, { backgroundColor: theme.backgroundSecondary }]}
                       onPress={pickDesignImage}
                     >
-                      <Feather name="edit-2" size={14} color={theme.text} />
+                      <EvendiIcon name="edit-2" size={14} color={theme.text} />
                       <ThemedText style={[styles.imageActionText, { color: theme.text }]}>Endre</ThemedText>
                     </TouchableOpacity>
                     <TouchableOpacity
                       style={[styles.imageActionButton, { backgroundColor: Colors.light.error + '20' }]}
                       onPress={() => setDesignImageUrl('')}
                     >
-                      <Feather name="trash-2" size={14} color={Colors.light.error} />
+                      <EvendiIcon name="trash-2" size={14} color={Colors.light.error} />
                       <ThemedText style={[styles.imageActionText, { color: Colors.light.error }]}>Fjern</ThemedText>
                     </TouchableOpacity>
                   </View>
@@ -1352,7 +1352,7 @@ export function KakeScreen() {
                     style={[styles.pickImageButton, { backgroundColor: theme.primary + '15', borderColor: theme.primary }]}
                     onPress={pickDesignImage}
                   >
-                    <Feather name="image" size={18} color={theme.primary} />
+                    <EvendiIcon name="image" size={18} color={theme.primary} />
                     <ThemedText style={{ color: theme.primary, fontWeight: '500' }}>Velg bilde</ThemedText>
                   </TouchableOpacity>
                   <ThemedText style={{ color: theme.textSecondary, marginVertical: 8 }}>eller</ThemedText>
@@ -1470,7 +1470,7 @@ export function KakeScreen() {
                     },
                   ]}
                 >
-                  {designIsFavorite && <Feather name="heart" size={14} color="#fff" />}
+                  {designIsFavorite && <EvendiIcon name="heart" size={14} color="#fff" />}
                 </View>
                 <ThemedText style={styles.checkboxLabel}>Favoritt</ThemedText>
               </TouchableOpacity>
@@ -1491,7 +1491,7 @@ export function KakeScreen() {
                     },
                   ]}
                 >
-                  {designIsSelected && <Feather name="check" size={14} color="#fff" />}
+                  {designIsSelected && <EvendiIcon name="check" size={14} color="#fff" />}
                 </View>
                 <ThemedText style={styles.checkboxLabel}>Valgt som endelig design</ThemedText>
               </TouchableOpacity>
@@ -1530,7 +1530,7 @@ export function KakeScreen() {
             <View style={styles.modalHeader}>
               <ThemedText style={styles.modalTitle}>Budsjett for {isWedding ? "Bryllupskake" : "Kake"}</ThemedText>
               <TouchableOpacity onPress={() => setShowBudgetModal(false)}>
-                <Feather name="x" size={24} color={theme.text} />
+                <EvendiIcon name="x" size={24} color={theme.text} />
               </TouchableOpacity>
             </View>
 

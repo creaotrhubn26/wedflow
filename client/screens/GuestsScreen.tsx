@@ -17,7 +17,7 @@ import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useNavigation } from "@react-navigation/native";
 import { useFocusEffect } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
 import * as Clipboard from "expo-clipboard";
@@ -583,7 +583,7 @@ export default function GuestsScreen() {
               },
             ]}
           >
-            <Feather
+            <EvendiIcon
               name={item.category === "reserved" ? "star" : "user"}
               size={18}
               color={item.category === "reserved" ? Colors.dark.accent : theme.textSecondary}
@@ -615,7 +615,7 @@ export default function GuestsScreen() {
               <View style={styles.dietaryRow}>
                 {item.dietaryRequirements ? (
                   <View style={[styles.dietaryBadge, { backgroundColor: "#4CAF5020" }]}>
-                    <Feather name="coffee" size={10} color="#4CAF50" />
+                    <EvendiIcon name="coffee" size={10} color="#4CAF50" />
                     <ThemedText style={[styles.dietaryText, { color: "#4CAF50" }]}>
                       {item.dietaryRequirements}
                     </ThemedText>
@@ -623,7 +623,7 @@ export default function GuestsScreen() {
                 ) : null}
                 {item.allergies ? (
                   <View style={[styles.dietaryBadge, { backgroundColor: "#EF535020" }]}>
-                    <Feather name="alert-circle" size={10} color="#EF5350" />
+                    <EvendiIcon name="alert-circle" size={10} color="#EF5350" />
                     <ThemedText style={[styles.dietaryText, { color: "#EF5350" }]}>
                       {item.allergies}
                     </ThemedText>
@@ -710,7 +710,7 @@ export default function GuestsScreen() {
             style={[styles.matchingCard, { backgroundColor: theme.backgroundDefault, borderColor: Colors.dark.accent + "30" }]}
           >
             <View style={[styles.matchingIconCircle, { backgroundColor: Colors.dark.accent + "15" }]}>
-              <Feather name="zap" size={18} color={Colors.dark.accent} />
+              <EvendiIcon name="zap" size={18} color={Colors.dark.accent} />
             </View>
             <View style={styles.matchingContent}>
               <ThemedText style={[styles.matchingTitle, { color: theme.text }]}>
@@ -720,7 +720,7 @@ export default function GuestsScreen() {
                 Lokale, catering, fotograf, kake og mer
               </ThemedText>
             </View>
-            <Feather name="chevron-right" size={18} color={Colors.dark.accent} />
+            <EvendiIcon name="chevron-right" size={18} color={Colors.dark.accent} />
           </Pressable>
         </Animated.View>
       )}
@@ -751,7 +751,7 @@ export default function GuestsScreen() {
                 },
               ]}
             >
-              <Feather
+              <EvendiIcon
                 name={filter.icon}
                 size={14}
                 color={quickFilter === filter.value ? "#1A1A1A" : theme.textMuted}
@@ -799,21 +799,21 @@ export default function GuestsScreen() {
           onPress={() => navigation.navigate("TableSeating")}
           style={[styles.actionButton, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}
         >
-          <Feather name="grid" size={18} color={Colors.dark.accent} />
+          <EvendiIcon name="grid" size={18} color={Colors.dark.accent} />
           <ThemedText style={styles.actionButtonText}>Bordplassering</ThemedText>
         </Pressable>
         <Pressable
           onPress={() => navigation.navigate("SpeechList")}
           style={[styles.actionButton, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}
         >
-          <Feather name="mic" size={18} color={Colors.dark.accent} />
+          <EvendiIcon name="mic" size={18} color={Colors.dark.accent} />
           <ThemedText style={styles.actionButtonText}>Taleliste</ThemedText>
         </Pressable>
         <Pressable
           onPress={() => navigation.navigate("GuestInvitations")}
           style={[styles.actionButton, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}
         >
-          <Feather name="mail" size={18} color={Colors.dark.accent} />
+          <EvendiIcon name="mail" size={18} color={Colors.dark.accent} />
           <ThemedText style={styles.actionButtonText}>Invitasjoner</ThemedText>
         </Pressable>
       </View>
@@ -824,7 +824,7 @@ export default function GuestsScreen() {
           { backgroundColor: theme.backgroundSecondary, borderColor: theme.border },
         ]}
       >
-        <Feather name="search" size={18} color={theme.textMuted} />
+        <EvendiIcon name="search" size={18} color={theme.textMuted} />
         <TextInput
           style={[styles.searchInput, { color: theme.text }]}
           placeholder="Søk etter gjest eller kontakt..."
@@ -855,7 +855,7 @@ export default function GuestsScreen() {
               ]}
             >
               <View style={[styles.contactAvatar, { backgroundColor: Colors.dark.accent + "20" }]}>
-                <Feather name="phone" size={14} color={Colors.dark.accent} />
+                <EvendiIcon name="phone" size={14} color={Colors.dark.accent} />
               </View>
               <View style={styles.contactInfo}>
                 <ThemedText style={styles.contactName}>{contact.name}</ThemedText>
@@ -870,7 +870,7 @@ export default function GuestsScreen() {
                   </ThemedText>
                 )}
               </View>
-              <Feather name="arrow-right" size={16} color={theme.textMuted} />
+              <EvendiIcon name="arrow-right" size={16} color={theme.textMuted} />
             </Pressable>
           ))}
         </Animated.View>
@@ -909,7 +909,7 @@ export default function GuestsScreen() {
                 onPress={() => handleShareExisting(inv)}
                 style={[styles.inviteShareBtn, { borderColor: theme.border }]}
               >
-                <Feather name="share-2" size={16} color={theme.text} />
+                <EvendiIcon name="share-2" size={16} color={theme.text} />
               </Pressable>
             </Pressable>
           ))
@@ -1072,7 +1072,7 @@ export default function GuestsScreen() {
                 },
               ]}
             >
-              {formPlusOne ? <Feather name="check" size={14} color="#1A1A1A" /> : null}
+              {formPlusOne ? <EvendiIcon name="check" size={14} color="#1A1A1A" /> : null}
             </View>
             <ThemedText style={{ color: theme.text }}>+1 (Følge)</ThemedText>
           </Pressable>
@@ -1133,7 +1133,7 @@ export default function GuestsScreen() {
   const ListEmpty = () => (
     <View style={styles.emptyState}>
       <View style={[styles.emptyIcon, { backgroundColor: theme.backgroundSecondary }]}>
-        <Feather name="users" size={48} color={theme.textMuted} />
+        <EvendiIcon name="users" size={48} color={theme.textMuted} />
       </View>
       <ThemedText style={[styles.emptyText, { color: theme.textSecondary }]}>
         Ingen gjester lagt til
@@ -1385,7 +1385,7 @@ export default function GuestsScreen() {
             { backgroundColor: Colors.dark.accent, bottom: tabBarHeight + Spacing.xl },
           ]}
         >
-          <Feather name="plus" size={24} color="#1A1A1A" />
+          <EvendiIcon name="plus" size={24} color="#1A1A1A" />
         </Pressable>
       ) : null}
     </View>

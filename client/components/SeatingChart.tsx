@@ -1,6 +1,6 @@
 import React, { useState, useRef, useMemo, useCallback, useEffect } from 'react';
 import { View, StyleSheet, Pressable, TextInput, Modal, ScrollView, PanResponder, KeyboardAvoidingView, Platform, SafeAreaView } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import { EvendiIcon } from '@/components/EvendiIcon';
 import * as Haptics from 'expo-haptics';
 import { nanoid } from 'nanoid';
 import { ThemedText } from './ThemedText';
@@ -480,17 +480,17 @@ export function SeatingChart({
           )}
           {table.locked && (
             <View style={styles.lockBadge}>
-              <Feather name="lock" size={12} color="#fff" />
+              <EvendiIcon name="lock" size={12} color="#fff" />
             </View>
           )}
           {table.reserved && (
             <View style={styles.reservedBadge}>
-              <Feather name="bookmark" size={12} color="#fff" />
+              <EvendiIcon name="bookmark" size={12} color="#fff" />
             </View>
           )}
           {speakerCount > 0 && (
             <View style={styles.speakerBadge}>
-              <Feather name="mic" size={12} color="#fff" />
+              <EvendiIcon name="mic" size={12} color="#fff" />
               <ThemedText style={styles.speakerBadgeText}>{speakerCount}</ThemedText>
             </View>
           )}
@@ -516,7 +516,7 @@ export function SeatingChart({
                 key={speaker.id}
                 style={styles.speakerChipRow}
               >
-                <Feather 
+                <EvendiIcon 
                   name="mic" 
                   size={10} 
                   color={speaker.status === 'speaking' ? '#f59e0b' : '#6b7280'} 
@@ -550,13 +550,13 @@ export function SeatingChart({
           </ThemedText>
           {editable && (
             <Pressable onPress={() => setShowGuestModal(true)} style={styles.addButton}>
-              <Feather name="plus" size={20} color={theme.primary} />
+              <EvendiIcon name="plus" size={20} color={theme.primary} />
             </Pressable>
           )}
         </View>
 
         <View style={styles.searchBox}>
-          <Feather name="search" size={16} color={theme.textSecondary} />
+          <EvendiIcon name="search" size={16} color={theme.textSecondary} />
           <TextInput
             style={[styles.searchInput, { color: theme.text }]}
             placeholder="Search guests..."
@@ -590,7 +590,7 @@ export function SeatingChart({
                 ]}
               >
                 <View style={{ flexDirection: 'row', alignItems: 'center', flex: 1, gap: Spacing.sm }}>
-                  <Feather 
+                  <EvendiIcon 
                     name={isDragging ? "move" : "user"} 
                     size={14} 
                     color={isDragging ? theme.primary : theme.textSecondary} 
@@ -604,14 +604,14 @@ export function SeatingChart({
                   style={[styles.assignFullButton, { backgroundColor: theme.primary }]}
                 >
                   <ThemedText style={styles.assignFullButtonText}>Assign</ThemedText>
-                  <Feather name="chevron-right" size={14} color="#fff" />
+                  <EvendiIcon name="chevron-right" size={14} color="#fff" />
                 </Pressable>
               </Pressable>
             );
           })}
           {filteredGuests.length === 0 && (
             <View style={styles.emptyState}>
-              <Feather name="users" size={32} color={theme.textMuted} />
+              <EvendiIcon name="users" size={32} color={theme.textMuted} />
               <ThemedText style={[styles.emptyText, { color: theme.textSecondary }]}>
                 {searchQuery ? 'No guests found' : 'All guests assigned'}
               </ThemedText>
@@ -634,7 +634,7 @@ export function SeatingChart({
                   historyIndex.current === 0 && { opacity: 0.3 }
                 ]}
               >
-                <Feather name="rotate-ccw" size={16} color={theme.text} />
+                <EvendiIcon name="rotate-ccw" size={16} color={theme.text} />
               </Pressable>
               <Pressable
                 onPress={redo}
@@ -645,7 +645,7 @@ export function SeatingChart({
                   historyIndex.current >= historyStack.current.length - 1 && { opacity: 0.3 }
                 ]}
               >
-                <Feather name="rotate-cw" size={16} color={theme.text} />
+                <EvendiIcon name="rotate-cw" size={16} color={theme.text} />
               </Pressable>
             </View>
           )}
@@ -659,7 +659,7 @@ export function SeatingChart({
                 viewMode === 'seating' && { backgroundColor: theme.primary }
               ]}
             >
-              <Feather name="grid" size={16} color={viewMode === 'seating' ? '#fff' : theme.textSecondary} />
+              <EvendiIcon name="grid" size={16} color={viewMode === 'seating' ? '#fff' : theme.textSecondary} />
               <ThemedText style={[styles.viewModeText, { color: viewMode === 'seating' ? '#fff' : theme.textSecondary }]}>
                 Seating
               </ThemedText>
@@ -672,7 +672,7 @@ export function SeatingChart({
                 viewMode === 'guestlist' && { backgroundColor: theme.primary }
               ]}
             >
-              <Feather name="list" size={16} color={viewMode === 'guestlist' ? '#fff' : theme.textSecondary} />
+              <EvendiIcon name="list" size={16} color={viewMode === 'guestlist' ? '#fff' : theme.textSecondary} />
               <ThemedText style={[styles.viewModeText, { color: viewMode === 'guestlist' ? '#fff' : theme.textSecondary }]}>
                 Guest List
               </ThemedText>
@@ -685,7 +685,7 @@ export function SeatingChart({
                 viewMode === 'speakers' && { backgroundColor: theme.primary }
               ]}
             >
-              <Feather name="mic" size={16} color={viewMode === 'speakers' ? '#fff' : theme.textSecondary} />
+              <EvendiIcon name="mic" size={16} color={viewMode === 'speakers' ? '#fff' : theme.textSecondary} />
               <ThemedText style={[styles.viewModeText, { color: viewMode === 'speakers' ? '#fff' : theme.textSecondary }]}>
                 Speakers
               </ThemedText>
@@ -696,7 +696,7 @@ export function SeatingChart({
               onPress={() => setShowAddTableMenu(!showAddTableMenu)}
               style={[styles.addTableButton, { backgroundColor: theme.primary }]}
             >
-              <Feather name="plus" size={20} color="#fff" />
+              <EvendiIcon name="plus" size={20} color="#fff" />
               <ThemedText style={styles.addTableText}>Add Table</ThemedText>
             </Pressable>
           )}
@@ -771,7 +771,7 @@ export function SeatingChart({
             >
               {tables.length === 0 ? (
                 <View style={styles.emptyChart}>
-                  <Feather name="grid" size={48} color={theme.textMuted} />
+                  <EvendiIcon name="grid" size={48} color={theme.textMuted} />
                   <ThemedText style={[styles.emptyChartText, { color: theme.text }]}>
                     No tables yet
                   </ThemedText>
@@ -818,7 +818,7 @@ export function SeatingChart({
                       <View style={styles.listTableInfo}>
                         <View style={[styles.categoryDot, { backgroundColor: categoryColor }]} />
                         <ThemedText style={[styles.listTableName, { color: theme.text }]}>{table.name}</ThemedText>
-                        {table.reserved && <Feather name="bookmark" size={14} color="#eab308" />}
+                        {table.reserved && <EvendiIcon name="bookmark" size={14} color="#eab308" />}
                       </View>
                       <ThemedText style={[styles.listTableSeats, { color: theme.textSecondary }]}>
                         {tableGuests.length}/{table.seats} seats
@@ -827,7 +827,7 @@ export function SeatingChart({
                     <View style={styles.listTableGuests}>
                       {tableGuests.map(guest => (
                         <View key={guest.id} style={styles.listGuestRow}>
-                          <Feather name="user" size={14} color={theme.textSecondary} />
+                          <EvendiIcon name="user" size={14} color={theme.textSecondary} />
                           <ThemedText style={[styles.listGuestName, { color: theme.text }]}>{guest.name}</ThemedText>
                         </View>
                       ))}
@@ -837,7 +837,7 @@ export function SeatingChart({
               })}
               {tables.every(t => (guestsByTable.get(t.id) || []).length === 0) && (
                 <View style={styles.emptyChart}>
-                  <Feather name="users" size={48} color={theme.textMuted} />
+                  <EvendiIcon name="users" size={48} color={theme.textMuted} />
                   <ThemedText style={[styles.emptyChartText, { color: theme.text }]}>
                     No guests assigned yet
                   </ThemedText>
@@ -865,7 +865,7 @@ export function SeatingChart({
                     <View style={styles.listTableGuests}>
                       {tableSpeakers.map(speaker => (
                         <View key={speaker.id} style={styles.listGuestRow}>
-                          <Feather 
+                          <EvendiIcon 
                             name="mic" 
                             size={14} 
                             color={speaker.status === 'speaking' ? '#f59e0b' : theme.textSecondary} 
@@ -884,7 +884,7 @@ export function SeatingChart({
               })}
               {speeches.length === 0 && (
                 <View style={styles.emptyChart}>
-                  <Feather name="mic" size={48} color={theme.textMuted} />
+                  <EvendiIcon name="mic" size={48} color={theme.textMuted} />
                   <ThemedText style={[styles.emptyChartText, { color: theme.text }]}>
                     No speakers assigned yet
                   </ThemedText>
@@ -998,7 +998,7 @@ export function SeatingChart({
             <View style={styles.formGroup}>
               <View style={[styles.lockToggleRow, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
                 <View style={styles.lockToggleContent}>
-                  <Feather name={tableLocked ? 'lock' : 'unlock'} size={18} color={theme.primary} />
+                  <EvendiIcon name={tableLocked ? 'lock' : 'unlock'} size={18} color={theme.primary} />
                   <View style={{ flex: 1, marginLeft: Spacing.md }}>
                     <ThemedText style={[styles.formLabel, { marginBottom: 2 }]}>Lock Table Position</ThemedText>
                     <ThemedText style={[styles.lockToggleDesc, { color: theme.textSecondary }]}>
@@ -1010,7 +1010,7 @@ export function SeatingChart({
                   onPress={() => setTableLocked(!tableLocked)}
                   style={[styles.lockToggle, tableLocked && { backgroundColor: theme.primary + '30' }]}
                 >
-                  <Feather name={tableLocked ? 'check' : 'x'} size={16} color={theme.primary} />
+                  <EvendiIcon name={tableLocked ? 'check' : 'x'} size={16} color={theme.primary} />
                 </Pressable>
               </View>
             </View>
@@ -1018,7 +1018,7 @@ export function SeatingChart({
             <View style={styles.formGroup}>
               <View style={[styles.lockToggleRow, { backgroundColor: theme.backgroundDefault, borderColor: tableReserved ? '#eab308' : theme.border }]}>
                 <View style={styles.lockToggleContent}>
-                  <Feather name="bookmark" size={18} color={tableReserved ? '#eab308' : theme.primary} />
+                  <EvendiIcon name="bookmark" size={18} color={tableReserved ? '#eab308' : theme.primary} />
                   <View style={{ flex: 1, marginLeft: Spacing.md }}>
                     <ThemedText style={[styles.formLabel, { marginBottom: 2 }]}>Reserved Table</ThemedText>
                     <ThemedText style={[styles.lockToggleDesc, { color: theme.textSecondary }]}>
@@ -1030,7 +1030,7 @@ export function SeatingChart({
                   onPress={() => setTableReserved(!tableReserved)}
                   style={[styles.lockToggle, tableReserved && { backgroundColor: '#eab308' + '30', borderColor: '#eab308' }]}
                 >
-                  <Feather name={tableReserved ? 'check' : 'x'} size={16} color={tableReserved ? '#eab308' : theme.primary} />
+                  <EvendiIcon name={tableReserved ? 'check' : 'x'} size={16} color={tableReserved ? '#eab308' : theme.primary} />
                 </Pressable>
               </View>
             </View>
@@ -1044,7 +1044,7 @@ export function SeatingChart({
                   <View key={guest.id} style={[styles.assignedGuestRow, { borderColor: theme.border }]}>
                     <ThemedText style={{ color: theme.text, flex: 1 }}>{guest.name}</ThemedText>
                     <Pressable onPress={() => unassignGuest(guest.id)}>
-                      <Feather name="x" size={18} color={theme.textSecondary} />
+                      <EvendiIcon name="x" size={18} color={theme.textSecondary} />
                     </Pressable>
                   </View>
                 ))}
@@ -1108,7 +1108,7 @@ export function SeatingChart({
             {selectedGuest && (
               <>
                 <View style={[styles.guestInfoCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-                  <Feather name="user" size={20} color={theme.primary} />
+                  <EvendiIcon name="user" size={20} color={theme.primary} />
                   <ThemedText style={[styles.guestInfoName, { color: theme.text }]}>
                     {selectedGuest.name}
                   </ThemedText>
@@ -1143,7 +1143,7 @@ export function SeatingChart({
                             {table.name}
                           </ThemedText>
                           <View style={styles.tableSelectionMeta}>
-                            <Feather 
+                            <EvendiIcon 
                               name={table.shape === 'round' ? 'circle' : table.shape === 'square' ? 'square' : 'menu'} 
                               size={12} 
                               color={theme.textSecondary} 
@@ -1160,7 +1160,7 @@ export function SeatingChart({
                             borderColor: isFull ? '#ef4444' : availableSeats <= 2 ? '#f59e0b' : '#10b981',
                           }
                         ]}>
-                          <Feather 
+                          <EvendiIcon 
                             name={isFull ? 'x-circle' : 'users'} 
                             size={14} 
                             color={isFull ? '#ef4444' : availableSeats <= 2 ? '#f59e0b' : '#10b981'} 
@@ -1177,7 +1177,7 @@ export function SeatingChart({
                   })}
                   {tables.length === 0 && (
                     <View style={styles.emptyState}>
-                      <Feather name="grid" size={32} color={theme.textMuted} />
+                      <EvendiIcon name="grid" size={32} color={theme.textMuted} />
                       <ThemedText style={[styles.emptyText, { color: theme.textSecondary }]}>
                         No tables created yet
                       </ThemedText>

@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, View, Pressable, Share, Alert, TextInput, Switc
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useNavigation } from "@react-navigation/native";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import * as Clipboard from "expo-clipboard";
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -181,7 +181,7 @@ export default function SharePartnerScreen() {
       <Animated.View entering={FadeInDown.duration(400)}>
         <View style={[styles.heroSection, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
           <View style={[styles.iconCircle, { backgroundColor: Colors.dark.accent + "20" }]}>
-            <Feather name="users" size={40} color={Colors.dark.accent} />
+            <EvendiIcon name="users" size={40} color={Colors.dark.accent} />
           </View>
           <ThemedText style={styles.title}>{config.shareLabel?.titleNo || "Del bryllupet"}</ThemedText>
           <ThemedText style={[styles.subtitle, { color: theme.textSecondary }]}>
@@ -196,14 +196,14 @@ export default function SharePartnerScreen() {
           onPress={() => navigation.navigate("ImportantPeople")}
           style={[styles.linkCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}
         >
-          <Feather name="users" size={20} color={Colors.dark.accent} />
+          <EvendiIcon name="users" size={20} color={Colors.dark.accent} />
           <View style={{ flex: 1, marginLeft: 12 }}>
             <ThemedText style={styles.linkTitle}>Viktige personer</ThemedText>
             <ThemedText style={[styles.linkDesc, { color: theme.textSecondary }]}>
               Administrer og inviter viktige personer direkte
             </ThemedText>
           </View>
-          <Feather name="chevron-right" size={18} color={theme.textMuted} />
+          <EvendiIcon name="chevron-right" size={18} color={theme.textMuted} />
         </Pressable>
       </Animated.View>
 
@@ -219,7 +219,7 @@ export default function SharePartnerScreen() {
           <ActivityIndicator color={Colors.dark.accent} style={{ marginVertical: 20 }} />
         ) : activeInvites.length === 0 ? (
           <View style={[styles.emptyBox, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-            <Feather name="mail" size={28} color={theme.textMuted} />
+            <EvendiIcon name="mail" size={28} color={theme.textMuted} />
             <ThemedText style={[styles.emptyText, { color: theme.textMuted }]}>
               Ingen invitasjoner ennå. Opprett en nedenfor!
             </ThemedText>
@@ -250,15 +250,15 @@ export default function SharePartnerScreen() {
 
                 <View style={styles.inviteCardActions}>
                   <Pressable style={[styles.actionBtn, { backgroundColor: theme.backgroundSecondary }]} onPress={() => handleCopyCode(inv.inviteCode)}>
-                    <Feather name="copy" size={14} color={Colors.dark.accent} />
+                    <EvendiIcon name="copy" size={14} color={Colors.dark.accent} />
                     <ThemedText style={[styles.actionBtnText, { color: Colors.dark.accent }]}>Kopier</ThemedText>
                   </Pressable>
                   <Pressable style={[styles.actionBtn, { backgroundColor: "#25D366" + "20" }]} onPress={() => handleShareCode(inv.inviteCode, inv.name)}>
-                    <Feather name="share-2" size={14} color="#25D366" />
+                    <EvendiIcon name="share-2" size={14} color="#25D366" />
                     <ThemedText style={[styles.actionBtnText, { color: "#25D366" }]}>Del</ThemedText>
                   </Pressable>
                   <Pressable style={[styles.actionBtn, { backgroundColor: "#f4433620" }]} onPress={() => handleDelete(inv.id, inv.name)}>
-                    <Feather name="trash-2" size={14} color="#f44336" />
+                    <EvendiIcon name="trash-2" size={14} color="#f44336" />
                   </Pressable>
                 </View>
               </View>
@@ -298,7 +298,7 @@ export default function SharePartnerScreen() {
                   style={[styles.roleChip, { backgroundColor: newRole === r.key ? Colors.dark.accent : theme.backgroundSecondary }]}
                   onPress={() => setRoleDefaults(r.key)}
                 >
-                  <Feather name={r.icon} size={13} color={newRole === r.key ? "#1A1A1A" : theme.textSecondary} />
+                  <EvendiIcon name={r.icon} size={13} color={newRole === r.key ? "#1A1A1A" : theme.textSecondary} />
                   <ThemedText style={[styles.roleChipText, { color: newRole === r.key ? "#1A1A1A" : theme.textSecondary }]}>
                     {r.label}
                   </ThemedText>
@@ -346,7 +346,7 @@ export default function SharePartnerScreen() {
             }}
             style={[styles.addBtn, { backgroundColor: Colors.dark.accent }]}
           >
-            <Feather name="plus" size={20} color="#1A1A1A" />
+            <EvendiIcon name="plus" size={20} color="#1A1A1A" />
             <ThemedText style={styles.addBtnText}>Ny invitasjon</ThemedText>
           </Pressable>
         )}

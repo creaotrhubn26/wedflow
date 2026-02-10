@@ -1,7 +1,7 @@
 // Category-specific fields for vendor products
 import React from "react";
 import { View, TextInput, Switch, Pressable, StyleSheet } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import { ThemedText } from "@/components/ThemedText";
 import { Spacing, BorderRadius } from "@/constants/theme";

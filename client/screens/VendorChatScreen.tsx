@@ -15,7 +15,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight, HeaderButton } from "@react-navigation/elements";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -203,19 +203,19 @@ export default function VendorChatScreen({ route, navigation }: Props) {
     navigation.setOptions({
       headerLeft: () => (
         <HeaderButton onPress={handleDeleteConversation}>
-          <Feather name="trash-2" size={20} color={theme.textSecondary} />
+          <EvendiIcon name="trash-2" size={20} color={theme.textSecondary} />
         </HeaderButton>
       ),
       headerRight: () => (
         <View style={{ flexDirection: 'row', gap: 12 }}>
           <HeaderButton onPress={() => setShowSearch(!showSearch)}>
-            <Feather name="search" size={20} color={theme.text} />
+            <EvendiIcon name="search" size={20} color={theme.text} />
           </HeaderButton>
           <HeaderButton onPress={() => setShowCoupleInfo(!showCoupleInfo)}>
-            <Feather name="user" size={20} color={theme.text} />
+            <EvendiIcon name="user" size={20} color={theme.text} />
           </HeaderButton>
           <HeaderButton onPress={() => navigation.goBack()}>
-            <Feather name="x" size={24} color={theme.text} />
+            <EvendiIcon name="x" size={24} color={theme.text} />
           </HeaderButton>
         </View>
       ),
@@ -637,9 +637,9 @@ export default function VendorChatScreen({ route, navigation }: Props) {
               {isFromMe ? (
                 <View style={styles.readReceipt}>
                   {item.readAt ? (
-                    <Feather name="check-circle" size={13} color="rgba(0,0,0,0.8)" />
+                    <EvendiIcon name="check-circle" size={13} color="rgba(0,0,0,0.8)" />
                   ) : (
-                    <Feather name="check" size={13} color="rgba(0,0,0,0.65)" />
+                    <EvendiIcon name="check" size={13} color="rgba(0,0,0,0.65)" />
                   )}
                 </View>
               ) : null}
@@ -671,7 +671,7 @@ export default function VendorChatScreen({ route, navigation }: Props) {
     <View style={[styles.container, { backgroundColor: theme.backgroundRoot }]}>
       {showSearch && (
         <View style={[styles.searchBar, { backgroundColor: theme.backgroundDefault, borderBottomColor: theme.border }]}>
-          <Feather name="search" size={18} color={theme.textMuted} />
+          <EvendiIcon name="search" size={18} color={theme.textMuted} />
           <TextInput
             style={[styles.searchInput, { color: theme.text }]}
             placeholder="Søk i meldinger..."
@@ -682,7 +682,7 @@ export default function VendorChatScreen({ route, navigation }: Props) {
           />
           {searchQuery.length > 0 && (
             <Pressable onPress={() => setSearchQuery("")}>
-              <Feather name="x" size={18} color={theme.textMuted} />
+              <EvendiIcon name="x" size={18} color={theme.textMuted} />
             </Pressable>
           )}
         </View>
@@ -691,11 +691,11 @@ export default function VendorChatScreen({ route, navigation }: Props) {
       {showCoupleInfo && conversationDetails?.couple && (
         <View style={[styles.coupleInfoCard, { backgroundColor: theme.backgroundDefault, borderBottomColor: theme.border }]}>
           <View style={styles.coupleInfoRow}>
-            <Feather name="user" size={16} color={Colors.dark.accent} />
+            <EvendiIcon name="user" size={16} color={Colors.dark.accent} />
             <ThemedText style={styles.coupleInfoText}>{conversationDetails.couple.displayName}</ThemedText>
           </View>
           <View style={styles.coupleInfoRow}>
-            <Feather name="mail" size={16} color={theme.textMuted} />
+            <EvendiIcon name="mail" size={16} color={theme.textMuted} />
             <ThemedText style={[styles.coupleInfoText, { color: theme.textSecondary }]}>
               {conversationDetails.couple.email}
             </ThemedText>
@@ -704,7 +704,7 @@ export default function VendorChatScreen({ route, navigation }: Props) {
             onPress={() => setShowCoupleInfo(false)}
             style={styles.closeInfoBtn}
           >
-            <Feather name="x" size={16} color={theme.textMuted} />
+            <EvendiIcon name="x" size={16} color={theme.textMuted} />
           </Pressable>
         </View>
       )}
@@ -756,7 +756,7 @@ export default function VendorChatScreen({ route, navigation }: Props) {
               </ThemedText>
             </View>
             <Pressable onPress={handleCancelEdit} hitSlop={8}>
-              <Feather name="x" size={20} color={theme.textSecondary} />
+              <EvendiIcon name="x" size={20} color={theme.textSecondary} />
             </Pressable>
           </View>
         )}
@@ -769,10 +769,10 @@ export default function VendorChatScreen({ route, navigation }: Props) {
               </ThemedText>
               <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                 <Pressable onPress={() => setShowCreateTemplate(true)}>
-                  <Feather name="plus" size={16} color={Colors.dark.accent} />
+                  <EvendiIcon name="plus" size={16} color={Colors.dark.accent} />
                 </Pressable>
                 <Pressable onPress={() => setShowQuickReplies(false)}>
-                  <Feather name="x" size={16} color={theme.textMuted} />
+                  <EvendiIcon name="x" size={16} color={theme.textMuted} />
                 </Pressable>
               </View>
             </View>
@@ -790,7 +790,7 @@ export default function VendorChatScreen({ route, navigation }: Props) {
                     },
                   ]}
                 >
-                  <Feather name={cat.icon} size={12} color={quickReplyCategory === cat.value ? Colors.dark.accent : theme.textMuted} />
+                  <EvendiIcon name={cat.icon} size={12} color={quickReplyCategory === cat.value ? Colors.dark.accent : theme.textMuted} />
                   <ThemedText style={[styles.categoryChipText, { color: quickReplyCategory === cat.value ? Colors.dark.accent : theme.textSecondary }]}>
                     {cat.label}
                   </ThemedText>
@@ -814,7 +814,7 @@ export default function VendorChatScreen({ route, navigation }: Props) {
                     <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
                       <ThemedText style={[styles.quickReplyLabel, { color: template.color }]}>{template.label}</ThemedText>
                       {"isCustom" in template && (template as any).isCustom && (
-                        <Feather name="star" size={10} color={template.color} />
+                        <EvendiIcon name="star" size={10} color={template.color} />
                       )}
                     </View>
                     <ThemedText style={[styles.quickReplyText, { color: theme.textSecondary }]} numberOfLines={1}>{template.message}</ThemedText>
@@ -832,7 +832,7 @@ export default function VendorChatScreen({ route, navigation }: Props) {
               onPress={() => setShowCreateTemplate(true)}
               style={[styles.addTemplateBtn, { borderColor: Colors.dark.accent }]}
             >
-              <Feather name="plus" size={14} color={Colors.dark.accent} />
+              <EvendiIcon name="plus" size={14} color={Colors.dark.accent} />
               <ThemedText style={{ fontSize: 12, color: Colors.dark.accent, fontWeight: "600" }}>Ny mal</ThemedText>
             </Pressable>
           </View>
@@ -846,7 +846,7 @@ export default function VendorChatScreen({ route, navigation }: Props) {
                 <View style={styles.modalHeader}>
                   <ThemedText style={styles.modalTitle}>Opprett ny hurtigmelding</ThemedText>
                   <Pressable onPress={() => setShowCreateTemplate(false)}>
-                    <Feather name="x" size={20} color={theme.textSecondary} />
+                    <EvendiIcon name="x" size={20} color={theme.textSecondary} />
                   </Pressable>
                 </View>
                 <TextInput
@@ -888,7 +888,7 @@ export default function VendorChatScreen({ route, navigation }: Props) {
                   style={[styles.saveTemplateBtn, { backgroundColor: Colors.dark.accent, opacity: (!newTemplateLabel.trim() || !newTemplateMessage.trim()) ? 0.5 : 1 }]}
                   disabled={!newTemplateLabel.trim() || !newTemplateMessage.trim()}
                 >
-                  <Feather name="save" size={16} color="#1A1A1A" />
+                  <EvendiIcon name="save" size={16} color="#1A1A1A" />
                   <ThemedText style={{ fontSize: 14, fontWeight: "600", color: "#1A1A1A" }}>Lagre</ThemedText>
                 </Pressable>
               </View>
@@ -916,7 +916,7 @@ export default function VendorChatScreen({ route, navigation }: Props) {
               onPress={() => setSelectedImage(null)}
               style={styles.removeImageBtn}
             >
-              <Feather name="x-circle" size={24} color="#fff" />
+              <EvendiIcon name="x-circle" size={24} color="#fff" />
             </Pressable>
           </View>
         )}
@@ -929,13 +929,13 @@ export default function VendorChatScreen({ route, navigation }: Props) {
             }}
             style={styles.quickReplyBtn}
           >
-            <Feather name="zap" size={20} color={showQuickReplies ? Colors.dark.accent : theme.textMuted} />
+            <EvendiIcon name="zap" size={20} color={showQuickReplies ? Colors.dark.accent : theme.textMuted} />
           </Pressable>
           <Pressable 
             onPress={pickImage}
             style={styles.imagePickerBtn}
           >
-            <Feather name="image" size={20} color={selectedImage ? Colors.dark.accent : theme.textMuted} />
+            <EvendiIcon name="image" size={20} color={selectedImage ? Colors.dark.accent : theme.textMuted} />
           </Pressable>
           <TextInput
             style={[
@@ -969,7 +969,7 @@ export default function VendorChatScreen({ route, navigation }: Props) {
             {sendMutation.isPending || editMessageMutation.isPending || isUploading ? (
               <ActivityIndicator size="small" color="#1A1A1A" />
             ) : (
-              <Feather
+              <EvendiIcon
                 name={editingMessage ? "check" : "send"}
                 size={20}
                 color={messageText.trim() ? "#1A1A1A" : theme.textMuted}

@@ -10,7 +10,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useNavigation, CommonActions } from "@react-navigation/native";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
@@ -23,14 +23,14 @@ import { Spacing, BorderRadius, Colors } from "@/constants/theme";
 import { getCoupleContracts, updateContract, CoupleContract } from "@/lib/api-couple-data";
 import { showConfirm } from "@/lib/dialogs";
 
-const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.ComponentProps<typeof Feather>["name"] }> = {
+const STATUS_CONFIG: Record<string, { label: string; color: string; icon: string }> = {
   active: { label: "Aktiv", color: "#4CAF50", icon: "check-circle" },
   pending: { label: "Venter", color: "#FF9800", icon: "clock" },
   completed: { label: "Fullført", color: "#2196F3", icon: "award" },
   cancelled: { label: "Kansellert", color: "#F44336", icon: "x-circle" },
 };
 
-const CATEGORY_ICONS: Record<string, React.ComponentProps<typeof Feather>["name"]> = {
+const CATEGORY_ICONS: Record<string, string> = {
   "Fotograf": "camera",
   "Videograf": "video",
   "Catering": "coffee",
@@ -124,7 +124,7 @@ export default function CoupleContractsScreen() {
             {/* Header */}
             <View style={styles.contractHeader}>
               <View style={[styles.categoryIcon, { backgroundColor: Colors.dark.accent + "20" }]}>
-                <Feather name={categoryIcon} size={20} color={Colors.dark.accent} />
+                <EvendiIcon name={categoryIcon} size={20} color={Colors.dark.accent} />
               </View>
               <View style={styles.contractInfo}>
                 <ThemedText style={styles.vendorName} numberOfLines={1}>
@@ -137,7 +137,7 @@ export default function CoupleContractsScreen() {
                 )}
               </View>
               <View style={[styles.statusBadge, { backgroundColor: status.color + "20" }]}>
-                <Feather name={status.icon} size={12} color={status.color} />
+                <EvendiIcon name={status.icon} size={12} color={status.color} />
                 <ThemedText style={[styles.statusText, { color: status.color }]}>
                   {status.label}
                 </ThemedText>
@@ -158,7 +158,7 @@ export default function CoupleContractsScreen() {
                   {formatDate(contract.createdAt)}
                 </ThemedText>
               </View>
-              <Feather
+              <EvendiIcon
                 name={isExpanded ? "chevron-up" : "chevron-down"}
                 size={20}
                 color={theme.textMuted}
@@ -172,7 +172,7 @@ export default function CoupleContractsScreen() {
                   {/* Notification Settings */}
                   <View style={styles.notificationRow}>
                     <View style={styles.notificationItem}>
-                      <Feather
+                      <EvendiIcon
                         name={contract.canViewSchedule ? "calendar" : "calendar-off" as any}
                         size={16}
                         color={contract.canViewSchedule ? Colors.dark.accent : theme.textMuted}
@@ -182,7 +182,7 @@ export default function CoupleContractsScreen() {
                       </ThemedText>
                     </View>
                     <View style={styles.notificationItem}>
-                      <Feather
+                      <EvendiIcon
                         name={contract.canViewSpeeches ? "mic" : "mic-off"}
                         size={16}
                         color={contract.canViewSpeeches ? Colors.dark.accent : theme.textMuted}
@@ -211,11 +211,11 @@ export default function CoupleContractsScreen() {
                       }}
                       style={[styles.startPlanningButton, { backgroundColor: Colors.dark.accent + "15" }]}
                     >
-                      <Feather name="clipboard" size={18} color={Colors.dark.accent} />
+                      <EvendiIcon name="clipboard" size={18} color={Colors.dark.accent} />
                       <ThemedText style={[styles.startPlanningText, { color: Colors.dark.accent }]}>
                         {CATEGORY_PLANNING_SCREENS[contract.vendorCategory].label}
                       </ThemedText>
-                      <Feather name="arrow-right" size={16} color={Colors.dark.accent} />
+                      <EvendiIcon name="arrow-right" size={16} color={Colors.dark.accent} />
                     </Pressable>
                   )}
 
@@ -232,7 +232,7 @@ export default function CoupleContractsScreen() {
 
                   {contract.status === "completed" && (
                     <View style={[styles.completedBanner, { backgroundColor: "#4CAF5015" }]}>
-                      <Feather name="award" size={20} color="#4CAF50" />
+                      <EvendiIcon name="award" size={20} color="#4CAF50" />
                       <ThemedText style={[styles.completedText, { color: "#4CAF50" }]}>
                         Avtale fullført
                       </ThemedText>
@@ -276,7 +276,7 @@ export default function CoupleContractsScreen() {
           <View style={styles.statsContainer}>
             <View style={[styles.statCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
               <View style={[styles.statIcon, { backgroundColor: "#4CAF5020" }]}>
-                <Feather name="check-circle" size={20} color="#4CAF50" />
+                <EvendiIcon name="check-circle" size={20} color="#4CAF50" />
               </View>
               <View>
                 <ThemedText style={[styles.statValue, { color: "#4CAF50" }]}>{activeContracts.length}</ThemedText>
@@ -285,7 +285,7 @@ export default function CoupleContractsScreen() {
             </View>
             <View style={[styles.statCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
               <View style={[styles.statIcon, { backgroundColor: "#2196F320" }]}>
-                <Feather name="award" size={20} color="#2196F3" />
+                <EvendiIcon name="award" size={20} color="#2196F3" />
               </View>
               <View>
                 <ThemedText style={[styles.statValue, { color: "#2196F3" }]}>{completedContracts.length}</ThemedText>
@@ -296,7 +296,7 @@ export default function CoupleContractsScreen() {
         }
         ListEmptyComponent={
           <View style={[styles.emptyContainer, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-            <Feather name="file-text" size={48} color={theme.textMuted} />
+            <EvendiIcon name="file-text" size={48} color={theme.textMuted} />
             <ThemedText style={[styles.emptyTitle, { color: theme.text }]}>Ingen avtaler ennå</ThemedText>
             <ThemedText style={[styles.emptyText, { color: theme.textSecondary }]}>
               Når du aksepterer tilbud fra leverandører, vises avtalene her

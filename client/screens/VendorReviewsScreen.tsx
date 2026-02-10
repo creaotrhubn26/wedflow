@@ -12,7 +12,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 
 import { ThemedText } from "@/components/ThemedText";
@@ -160,7 +160,7 @@ export default function VendorReviewsScreen() {
                   }}
                   style={styles.starButton}
                 >
-                  <Feather
+                  <EvendiIcon
                     name="star"
                     size={32}
                     color={star <= rating ? theme.accent : theme.border}
@@ -263,7 +263,7 @@ export default function VendorReviewsScreen() {
                 style={[styles.reviewButton, { backgroundColor: theme.accent }]}
                 onPress={() => setSelectedContract(contract)}
               >
-                <Feather name="star" size={16} color={theme.buttonText} />
+                <EvendiIcon name="star" size={16} color={theme.buttonText} />
                 <ThemedText style={[Typography.small, { color: theme.buttonText, fontWeight: "600" }]}>
                   Gi anmeldelse
                 </ThemedText>
@@ -283,7 +283,7 @@ export default function VendorReviewsScreen() {
               <View style={styles.reviewHeader}>
                 <ThemedText style={Typography.h4}>{review.businessName}</ThemedText>
                 <View style={styles.ratingBadge}>
-                  <Feather name="star" size={14} color={theme.accent} />
+                  <EvendiIcon name="star" size={14} color={theme.accent} />
                   <ThemedText style={[Typography.body, { color: theme.accent, fontWeight: "700" }]}>
                     {review.rating}
                   </ThemedText>
@@ -323,7 +323,7 @@ export default function VendorReviewsScreen() {
 
       {unreviewedContracts.length === 0 && myReviews.length === 0 ? (
         <Card style={styles.emptyCard}>
-          <Feather name="star" size={48} color={theme.textSecondary} />
+          <EvendiIcon name="star" size={48} color={theme.textSecondary} />
           <ThemedText style={[Typography.h3, { marginTop: Spacing.lg, marginBottom: Spacing.sm }]}>Ingen anmeldelser ennå</ThemedText>
           <ThemedText style={[Typography.small, { opacity: 0.7, textAlign: "center", paddingHorizontal: Spacing.lg }]}>
             Når du fullfører en avtale med en leverandør, kan du gi dem en anmeldelse her.

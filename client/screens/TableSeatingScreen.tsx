@@ -14,7 +14,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useFocusEffect } from "@react-navigation/native";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import Animated, {
   FadeInUp,
@@ -373,7 +373,7 @@ export default function TableSeatingScreen() {
               Velg bord for {selectedGuest.name}
             </ThemedText>
             <Pressable onPress={() => setSelectedGuest(null)}>
-              <Feather name="x" size={20} color="#1A1A1A" />
+              <EvendiIcon name="x" size={20} color="#1A1A1A" />
             </Pressable>
           </Animated.View>
         ) : null}
@@ -479,7 +479,7 @@ export default function TableSeatingScreen() {
                       onPress={() => handleEditTable(table)}
                       style={styles.editButton}
                     >
-                      <Feather name="edit-2" size={16} color={theme.textSecondary} />
+                      <EvendiIcon name="edit-2" size={16} color={theme.textSecondary} />
                     </Pressable>
                   </View>
 
@@ -496,7 +496,7 @@ export default function TableSeatingScreen() {
                   {showSpeakers && tableSpeeches.length > 0 ? (
                     <View style={styles.speechOverlay}>
                       <View style={styles.speechOverlayHeader}>
-                        <Feather name="mic" size={14} color={Colors.dark.accent} />
+                        <EvendiIcon name="mic" size={14} color={Colors.dark.accent} />
                         <ThemedText style={[styles.speechOverlayTitle, { color: theme.text }]}>
                           Taler ved bordet
                         </ThemedText>
@@ -538,7 +538,7 @@ export default function TableSeatingScreen() {
 
                   {table.isReserved ? (
                     <View style={[styles.reservedBadge, { backgroundColor: Colors.dark.accent + "20" }]}>
-                      <Feather name="lock" size={12} color={Colors.dark.accent} />
+                      <EvendiIcon name="lock" size={12} color={Colors.dark.accent} />
                       <ThemedText style={[styles.reservedText, { color: Colors.dark.accent }]}>
                         Reservert
                       </ThemedText>
@@ -574,7 +574,7 @@ export default function TableSeatingScreen() {
                                   })}
                               >
                                 <View style={styles.dragHandle}>
-                                  <Feather name="move" size={14} color={theme.textSecondary} />
+                                  <EvendiIcon name="move" size={14} color={theme.textSecondary} />
                                 </View>
                               </GestureDetector>
                             </View>
@@ -597,7 +597,7 @@ export default function TableSeatingScreen() {
           onPress={handleAddTable}
           style={[styles.addTableButton, { borderColor: Colors.dark.accent }]}
         >
-          <Feather name="plus" size={20} color={Colors.dark.accent} />
+          <EvendiIcon name="plus" size={20} color={Colors.dark.accent} />
           <ThemedText style={[styles.addTableText, { color: Colors.dark.accent }]}>
             Legg til bord
           </ThemedText>
@@ -656,7 +656,7 @@ export default function TableSeatingScreen() {
                       })}
                   >
                     <View style={styles.dragHandle}>
-                      <Feather name="move" size={14} color={theme.textSecondary} />
+                      <EvendiIcon name="move" size={14} color={theme.textSecondary} />
                     </View>
                   </GestureDetector>
                 </View>
@@ -690,7 +690,7 @@ export default function TableSeatingScreen() {
             <View style={styles.modalHeader}>
               <ThemedText type="h3">Rediger bord</ThemedText>
               <Pressable onPress={() => setShowEditModal(false)}>
-                <Feather name="x" size={24} color={theme.text} />
+                <EvendiIcon name="x" size={24} color={theme.text} />
               </Pressable>
             </View>
 
@@ -806,7 +806,7 @@ export default function TableSeatingScreen() {
                     onPress={() => handleDeleteTable(editingTable)}
                     style={[styles.deleteButton, { borderColor: "#ff4444" }]}
                   >
-                    <Feather name="trash-2" size={20} color="#ff4444" />
+                    <EvendiIcon name="trash-2" size={20} color="#ff4444" />
                   </Pressable>
                 </View>
               </ScrollView>

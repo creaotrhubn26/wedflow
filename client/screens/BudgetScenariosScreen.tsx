@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, View, Pressable, Switch, Alert, ActivityIndicat
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
 import { useNavigation } from "@react-navigation/native";
@@ -280,7 +280,7 @@ export default function BudgetScenariosScreen() {
   if (error) {
     return (
       <View style={[styles.container, styles.centered, { backgroundColor: theme.backgroundRoot }]}>
-        <Feather name="alert-circle" size={48} color={theme.error} />
+        <EvendiIcon name="alert-circle" size={48} color={theme.error} />
         <ThemedText style={{ color: theme.error, marginTop: Spacing.md, textAlign: "center" }}>
           {error}
         </ThemedText>
@@ -294,7 +294,7 @@ export default function BudgetScenariosScreen() {
   if (items.length === 0) {
     return (
       <View style={[styles.container, styles.centered, { backgroundColor: theme.backgroundRoot }]}>
-        <Feather name="clipboard" size={48} color={theme.textMuted} />
+        <EvendiIcon name="clipboard" size={48} color={theme.textMuted} />
         <ThemedText type="h4" style={{ color: theme.text, marginTop: Spacing.md, textAlign: "center" }}>
           {t("Ingen budsjettposter", "No budget items")}
         </ThemedText>
@@ -334,7 +334,7 @@ export default function BudgetScenariosScreen() {
             </View>
             {hasChanges && (
               <Pressable onPress={handleResetScenario} style={styles.resetButton}>
-                <Feather name="refresh-cw" size={16} color={Colors.dark.accent} />
+                <EvendiIcon name="refresh-cw" size={16} color={Colors.dark.accent} />
                 <ThemedText style={{ color: Colors.dark.accent, fontSize: 13, marginLeft: 4 }}>
                   {t("Nullstill", "Reset")}
                 </ThemedText>
@@ -462,19 +462,19 @@ export default function BudgetScenariosScreen() {
         <View style={[styles.tipsCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
           <ThemedText type="h4" style={styles.tipsTitle}>{t("Spare-tips", "Savings tips")}</ThemedText>
           <View style={styles.tipItem}>
-            <Feather name="calendar" size={16} color={Colors.dark.accent} />
+            <EvendiIcon name="calendar" size={16} color={Colors.dark.accent} />
             <ThemedText style={[styles.tipText, { color: theme.textSecondary }]}>
               {t("Velg lavssong (jan-mar, nov) for lavere priser", "Choose off-season (Jan-Mar, Nov) for lower prices")}
             </ThemedText>
           </View>
           <View style={styles.tipItem}>
-            <Feather name="users" size={16} color={Colors.dark.accent} />
+            <EvendiIcon name="users" size={16} color={Colors.dark.accent} />
             <ThemedText style={[styles.tipText, { color: theme.textSecondary }]}>
               {t("Færre gjester = mer per person i budsjettet", "Fewer guests = more per person in the budget")}
             </ThemedText>
           </View>
           <View style={styles.tipItem}>
-            <Feather name="sun" size={16} color={Colors.dark.accent} />
+            <EvendiIcon name="sun" size={16} color={Colors.dark.accent} />
             <ThemedText style={[styles.tipText, { color: theme.textSecondary }]}>
               {t("Søndager og hverdager er billigere", "Sundays and weekdays are cheaper")}
             </ThemedText>

@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Pressable, StyleSheet } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -84,13 +84,13 @@ export function SwipeableRow({
       <View style={styles.actionsContainer}>
         {showEdit && onEdit ? (
           <Pressable style={[styles.actionButton, styles.editButton]} onPress={handleEdit}>
-            <Feather name="edit-2" size={18} color="#FFF" />
+            <EvendiIcon name="edit-2" size={18} color="#FFF" />
             <ThemedText style={styles.actionText}>{editLabel}</ThemedText>
           </Pressable>
         ) : null}
         {showDelete && onDelete ? (
           <Pressable style={[styles.actionButton, styles.deleteButton]} onPress={handleDelete}>
-            <Feather name="trash-2" size={18} color="#FFF" />
+            <EvendiIcon name="trash-2" size={18} color="#FFF" />
             <ThemedText style={styles.actionText}>{deleteLabel}</ThemedText>
           </Pressable>
         ) : null}

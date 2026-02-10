@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import * as ImagePicker from 'expo-image-picker';
@@ -330,7 +330,7 @@ export default function AdminDesignScreen() {
               onPress={pickImage}
               style={[styles.pickButton, { backgroundColor: theme.accent, borderColor: theme.border }]}
             >
-              <Feather name="upload" size={18} color="#000" />
+              <EvendiIcon name="upload" size={18} color="#000" />
             </Pressable>
           </View>
           {logoUrl ? (
@@ -458,7 +458,7 @@ export default function AdminDesignScreen() {
                 <ThemedText style={{ fontSize: 12, color: theme.textMuted }}>{option.description}</ThemedText>
               </View>
               {layoutDensity === option.value && (
-                <Feather name="check" size={20} color={theme.accent} />
+                <EvendiIcon name="check" size={20} color={theme.accent} />
               )}
             </Pressable>
           ))}
@@ -579,7 +579,7 @@ export default function AdminDesignScreen() {
                 },
               ]}
             >
-              <Feather name="heart" size={24} color={primaryColor} />
+              <EvendiIcon name="heart" size={24} color={primaryColor} />
               <ThemedText
                 style={[
                   styles.previewCardText,
@@ -607,7 +607,7 @@ export default function AdminDesignScreen() {
             <ActivityIndicator color="#000" />
           ) : (
             <>
-              <Feather name="save" size={18} color="#000" />
+              <EvendiIcon name="save" size={18} color="#000" />
               <ThemedText style={styles.saveButtonText}>Lagre endringer</ThemedText>
             </>
           )}

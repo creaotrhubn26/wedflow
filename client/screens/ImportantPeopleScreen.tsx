@@ -15,7 +15,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import * as Clipboard from "expo-clipboard";
 import Animated, { FadeInRight } from "react-native-reanimated";
@@ -306,7 +306,7 @@ export default function ImportantPeopleScreen() {
               { backgroundColor: theme.backgroundDefault },
             ]}
           >
-            <Feather name="users" size={32} color={theme.textMuted} />
+            <EvendiIcon name="users" size={32} color={theme.textMuted} />
           </View>
           <ThemedText
             style={[styles.emptyText, { color: theme.textSecondary }]}
@@ -351,7 +351,7 @@ export default function ImportantPeopleScreen() {
                       { backgroundColor: theme.backgroundSecondary },
                     ]}
                   >
-                    <Feather name="user" size={20} color={Colors.dark.accent} />
+                    <EvendiIcon name="user" size={20} color={Colors.dark.accent} />
                   </View>
                   <View style={styles.personInfo}>
                     <ThemedText style={styles.personName}>{person.name}</ThemedText>
@@ -377,7 +377,7 @@ export default function ImportantPeopleScreen() {
                     }]}
                     hitSlop={8}
                   >
-                    <Feather
+                    <EvendiIcon
                       name={existingInvites.find(
                         (inv) => inv.importantPersonId === person.id && inv.status !== "revoked"
                       ) ? "check-circle" : "send"}
@@ -396,7 +396,7 @@ export default function ImportantPeopleScreen() {
                       ) ? "Invitert" : "Inviter"}
                     </ThemedText>
                   </Pressable>
-                  <Feather name="chevron-right" size={20} color={theme.textMuted} />
+                  <EvendiIcon name="chevron-right" size={20} color={theme.textMuted} />
                 </View>
               </SwipeableRow>
             </Animated.View>
@@ -513,7 +513,7 @@ export default function ImportantPeopleScreen() {
           }}
           style={[styles.addButton, { borderColor: Colors.dark.accent }]}
         >
-          <Feather name="plus" size={20} color={Colors.dark.accent} />
+          <EvendiIcon name="plus" size={20} color={Colors.dark.accent} />
           <ThemedText style={[styles.addButtonText, { color: Colors.dark.accent }]}>
             Legg til person
           </ThemedText>
@@ -529,7 +529,7 @@ export default function ImportantPeopleScreen() {
                 {inviteResult ? "Invitasjon opprettet! 🎉" : `Inviter ${invitePerson?.name || ""}`}
               </ThemedText>
               <Pressable onPress={() => setShowInviteModal(false)} hitSlop={12}>
-                <Feather name="x" size={22} color={theme.textSecondary} />
+                <EvendiIcon name="x" size={22} color={theme.textSecondary} />
               </Pressable>
             </View>
 
@@ -547,14 +547,14 @@ export default function ImportantPeopleScreen() {
                     style={[styles.inviteActionBtn, { backgroundColor: Colors.dark.accent }]}
                     onPress={() => handleCopyInviteCode(inviteResult.inviteCode)}
                   >
-                    <Feather name="copy" size={16} color="#fff" />
+                    <EvendiIcon name="copy" size={16} color="#fff" />
                     <ThemedText style={styles.inviteActionText}>Kopier</ThemedText>
                   </Pressable>
                   <Pressable
                     style={[styles.inviteActionBtn, { backgroundColor: "#25D366" }]}
                     onPress={() => handleShareInviteCode(inviteResult.inviteCode, invitePerson?.name || "")}
                   >
-                    <Feather name="share-2" size={16} color="#fff" />
+                    <EvendiIcon name="share-2" size={16} color="#fff" />
                     <ThemedText style={styles.inviteActionText}>Del</ThemedText>
                   </Pressable>
                 </View>
@@ -591,7 +591,7 @@ export default function ImportantPeopleScreen() {
                     <ActivityIndicator color="#fff" />
                   ) : (
                     <>
-                      <Feather name="send" size={16} color="#fff" style={{ marginRight: 8 }} />
+                      <EvendiIcon name="send" size={16} color="#fff" style={{ marginRight: 8 }} />
                       <ThemedText style={styles.sendInviteBtnText}>Opprett invitasjon</ThemedText>
                     </>
                   )}

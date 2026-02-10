@@ -18,7 +18,7 @@ import {
 import * as Clipboard from "expo-clipboard";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon, EvendiIconGlyphMap } from "@/components/EvendiIcon";
 import { useMutation } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import * as WebBrowser from "expo-web-browser";
@@ -123,7 +123,7 @@ export default function DeliveryAccessScreen() {
   const hasTrackedOpen = useRef(false);
 
   // Map vendor category to icon
-  const getVendorIcon = useCallback((categoryId: string | null): keyof typeof Feather.glyphMap => {
+  const getVendorIcon = useCallback((categoryId: string | null): keyof typeof EvendiIconGlyphMap => {
     switch (categoryId) {
       case "photographer": return "camera";
       case "videographer": return "video";
@@ -287,7 +287,7 @@ export default function DeliveryAccessScreen() {
     }
   }, []);
 
-  const getTypeIcon = (type: string): keyof typeof Feather.glyphMap => {
+  const getTypeIcon = (type: string): keyof typeof EvendiIconGlyphMap => {
     switch (type) {
       case "gallery": return "image";
       case "video": return "video";
@@ -333,24 +333,24 @@ export default function DeliveryAccessScreen() {
           {/* Top bar */}
           <View style={[styles.lightboxTopBar, { paddingTop: insets.top }]}>
             <Pressable onPress={() => setSelectedImageIndex(null)} style={styles.lightboxBtn}>
-              <Feather name="x" size={24} color="#FFF" />
+              <EvendiIcon name="x" size={24} color="#FFF" />
             </Pressable>
             <ThemedText style={styles.lightboxCounter}>
               {selectedImageIndex + 1} / {imageItems.length}
             </ThemedText>
             <View style={{ flexDirection: 'row', gap: 16 }}>
               <Pressable onPress={() => toggleFavorite(currentItem)} style={styles.lightboxBtn}>
-                <Feather
+                <EvendiIcon
                   name={favorites.has(currentItem.id) ? "heart" : "heart"}
                   size={22}
                   color={favorites.has(currentItem.id) ? "#FF6B6B" : "#FFF"}
                 />
               </Pressable>
               <Pressable onPress={() => { openLink(currentItem.url, currentItem); }} style={styles.lightboxBtn}>
-                <Feather name="download" size={22} color="#FFF" />
+                <EvendiIcon name="download" size={22} color="#FFF" />
               </Pressable>
               <Pressable onPress={() => shareLink(currentItem.url, currentItem.label)} style={styles.lightboxBtn}>
-                <Feather name="share-2" size={22} color="#FFF" />
+                <EvendiIcon name="share-2" size={22} color="#FFF" />
               </Pressable>
             </View>
           </View>
@@ -367,7 +367,7 @@ export default function DeliveryAccessScreen() {
               style={[styles.lightboxNav, styles.lightboxNavLeft]}
               onPress={() => setSelectedImageIndex(selectedImageIndex - 1)}
             >
-              <Feather name="chevron-left" size={32} color="#FFF" />
+              <EvendiIcon name="chevron-left" size={32} color="#FFF" />
             </Pressable>
           )}
           {selectedImageIndex < imageItems.length - 1 && (
@@ -375,7 +375,7 @@ export default function DeliveryAccessScreen() {
               style={[styles.lightboxNav, styles.lightboxNavRight]}
               onPress={() => setSelectedImageIndex(selectedImageIndex + 1)}
             >
-              <Feather name="chevron-right" size={32} color="#FFF" />
+              <EvendiIcon name="chevron-right" size={32} color="#FFF" />
             </Pressable>
           )}
         </View>
@@ -396,7 +396,7 @@ export default function DeliveryAccessScreen() {
           {/* Vendor Badge — PicTime style header */}
           <View style={styles.galleryHeader}>
             <View style={[styles.vendorBadge, { backgroundColor: theme.accent + "15" }]}>
-              <Feather name={getVendorIcon(deliveryData.vendor.categoryId)} size={16} color={theme.accent} />
+              <EvendiIcon name={getVendorIcon(deliveryData.vendor.categoryId)} size={16} color={theme.accent} />
               <ThemedText style={[styles.vendorName, { color: theme.accent }]}>
                 {deliveryData.vendor.businessName}
               </ThemedText>
@@ -409,7 +409,7 @@ export default function DeliveryAccessScreen() {
 
             {deliveryData.delivery.weddingDate ? (
               <View style={styles.dateRow}>
-                <Feather name="calendar" size={14} color={theme.textMuted} />
+                <EvendiIcon name="calendar" size={14} color={theme.textMuted} />
                 <ThemedText style={[styles.dateText, { color: theme.textMuted }]}>
                   {deliveryData.delivery.weddingDate}
                 </ThemedText>
@@ -426,7 +426,7 @@ export default function DeliveryAccessScreen() {
           {/* Stats row — PicTime style */}
           <View style={[styles.statsRow, { borderColor: theme.border }]}>
             <View style={styles.statItem}>
-              <Feather name="image" size={16} color={theme.accent} />
+              <EvendiIcon name="image" size={16} color={theme.accent} />
               <ThemedText style={[styles.statValue, { color: theme.text }]}>
                 {deliveryData.delivery.items.length}
               </ThemedText>
@@ -434,7 +434,7 @@ export default function DeliveryAccessScreen() {
             </View>
             <View style={[styles.statDivider, { backgroundColor: theme.border }]} />
             <View style={styles.statItem}>
-              <Feather name="heart" size={16} color="#FF6B6B" />
+              <EvendiIcon name="heart" size={16} color="#FF6B6B" />
               <ThemedText style={[styles.statValue, { color: theme.text }]}>
                 {favorites.size}
               </ThemedText>
@@ -442,7 +442,7 @@ export default function DeliveryAccessScreen() {
             </View>
             <View style={[styles.statDivider, { backgroundColor: theme.border }]} />
             <View style={styles.statItem}>
-              <Feather name="download" size={16} color={theme.accent} />
+              <EvendiIcon name="download" size={16} color={theme.accent} />
               <ThemedText style={[styles.statValue, { color: theme.text }]}>
                 {deliveryData.delivery.downloadCount || 0}
               </ThemedText>
@@ -456,17 +456,17 @@ export default function DeliveryAccessScreen() {
               style={[styles.viewToggleBtn, viewMode === 'grid' && { backgroundColor: theme.accent + "20" }]}
               onPress={() => setViewMode('grid')}
             >
-              <Feather name="grid" size={18} color={viewMode === 'grid' ? theme.accent : theme.textMuted} />
+              <EvendiIcon name="grid" size={18} color={viewMode === 'grid' ? theme.accent : theme.textMuted} />
             </Pressable>
             <Pressable
               style={[styles.viewToggleBtn, viewMode === 'list' && { backgroundColor: theme.accent + "20" }]}
               onPress={() => setViewMode('list')}
             >
-              <Feather name="list" size={18} color={viewMode === 'list' ? theme.accent : theme.textMuted} />
+              <EvendiIcon name="list" size={18} color={viewMode === 'list' ? theme.accent : theme.textMuted} />
             </Pressable>
             {favoritedItems.length > 0 && (
               <View style={styles.favBadge}>
-                <Feather name="heart" size={12} color="#FF6B6B" />
+                <EvendiIcon name="heart" size={12} color="#FF6B6B" />
                 <ThemedText style={{ fontSize: 11, color: "#FF6B6B", fontWeight: "600" }}>
                   {favoritedItems.length}
                 </ThemedText>
@@ -500,12 +500,12 @@ export default function DeliveryAccessScreen() {
                       <Image source={{ uri: item.url }} style={styles.galleryImage} />
                       {item.type === 'video' && (
                         <View style={styles.videoOverlay}>
-                          <Feather name="play-circle" size={28} color="#FFF" />
+                          <EvendiIcon name="play-circle" size={28} color="#FFF" />
                         </View>
                       )}
                       {favorites.has(item.id) && (
                         <View style={styles.favOverlay}>
-                          <Feather name="heart" size={14} color="#FF6B6B" />
+                          <EvendiIcon name="heart" size={14} color="#FF6B6B" />
                         </View>
                       )}
                     </Pressable>
@@ -526,7 +526,7 @@ export default function DeliveryAccessScreen() {
                       </ThemedText>
                     </View>
                     <Pressable onPress={() => toggleFavorite(item)} style={styles.favBtn}>
-                      <Feather
+                      <EvendiIcon
                         name="heart"
                         size={20}
                         color={favorites.has(item.id) ? "#FF6B6B" : theme.textMuted}
@@ -559,7 +559,7 @@ export default function DeliveryAccessScreen() {
                   style={[styles.itemCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}
                 >
                   <View style={[styles.itemIcon, { backgroundColor: theme.accent + "20" }]}>
-                    <Feather name={getTypeIcon(item.type)} size={20} color={theme.accent} />
+                    <EvendiIcon name={getTypeIcon(item.type)} size={20} color={theme.accent} />
                   </View>
                   <View style={styles.itemContent}>
                     <ThemedText style={styles.itemLabel}>{item.label}</ThemedText>
@@ -572,7 +572,7 @@ export default function DeliveryAccessScreen() {
                       </ThemedText>
                     )}
                   </View>
-                  <Feather name="external-link" size={18} color={theme.textMuted} />
+                  <EvendiIcon name="external-link" size={18} color={theme.textMuted} />
                 </Pressable>
               ))}
             </View>
@@ -601,7 +601,7 @@ export default function DeliveryAccessScreen() {
               }}
               style={[styles.downloadAllBtn, { backgroundColor: theme.accent }]}
             >
-              <Feather name="download-cloud" size={20} color="#FFF" />
+              <EvendiIcon name="download-cloud" size={20} color="#FFF" />
               <ThemedText style={styles.downloadAllText}>Last ned alle ({imageItems.length})</ThemedText>
             </Pressable>
           )}
@@ -633,7 +633,7 @@ export default function DeliveryAccessScreen() {
         ]}
       >
         <View style={[styles.iconContainer, { backgroundColor: theme.accent + "20" }]}>
-          <Feather name="gift" size={32} color={theme.accent} />
+          <EvendiIcon name="gift" size={32} color={theme.accent} />
         </View>
 
         <ThemedText style={styles.title}>Hent din leveranse</ThemedText>
@@ -643,7 +643,7 @@ export default function DeliveryAccessScreen() {
 
         <View style={styles.form}>
           <View style={[styles.inputContainer, { backgroundColor: theme.backgroundDefault, borderColor: errorMessage ? "#EF5350" : theme.border }]}>
-            <Feather name="key" size={18} color={theme.textMuted} />
+            <EvendiIcon name="key" size={18} color={theme.textMuted} />
             <TextInput
               style={[styles.input, { color: theme.text }]}
               placeholder="Tilgangskode"
@@ -661,7 +661,7 @@ export default function DeliveryAccessScreen() {
 
           {errorMessage && (
             <View style={styles.errorContainer}>
-              <Feather name="alert-circle" size={16} color="#EF5350" />
+              <EvendiIcon name="alert-circle" size={16} color="#EF5350" />
               <ThemedText style={styles.errorText}>{errorMessage}</ThemedText>
             </View>
           )}

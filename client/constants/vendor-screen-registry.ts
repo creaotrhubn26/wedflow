@@ -51,9 +51,7 @@
  * which vendor categories exist in the system.
  */
 
-import type { Feather } from "@expo/vector-icons";
-
-type FeatherIconName = React.ComponentProps<typeof Feather>["name"];
+import { type EvendiIconName } from "@/components/EvendiIcon";
 
 // ─── Couple-facing screens that MUST have VendorSearchField ─────────────────
 
@@ -62,8 +60,8 @@ export interface CoupleVendorScreen {
   screen: string;
   /** Vendor category slug passed to useVendorSearch / VendorSearchField */
   category: string;
-  /** Feather icon name */
-  icon: FeatherIconName;
+  /** Evendi icon name */
+  icon: EvendiIconName;
   /** Human label (Norwegian) */
   label: string;
   /** "form-modal" = TextInput inside a Modal  |  "inline" = search in page body */

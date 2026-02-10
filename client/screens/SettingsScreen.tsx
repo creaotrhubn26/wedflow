@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, View, Pressable, Switch, Platform } from "react
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon, EvendiIconGlyphMap } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
@@ -188,7 +188,7 @@ export default function SettingsScreen() {
 }
 
 interface SettingRowProps {
-  icon: keyof typeof Feather.glyphMap;
+  icon: keyof typeof EvendiIconGlyphMap;
   label: string;
   theme: any;
   value?: string;
@@ -223,7 +223,7 @@ function SettingRow({
           { backgroundColor: theme.backgroundSecondary },
         ]}
       >
-        <Feather
+        <EvendiIcon
           name={icon}
           size={18}
           color={destructive ? theme.error : Colors.dark.accent}
@@ -249,7 +249,7 @@ function SettingRow({
           {value}
         </ThemedText>
       ) : onPress ? (
-        <Feather name="chevron-right" size={18} color={theme.textMuted} />
+        <EvendiIcon name="chevron-right" size={18} color={theme.textMuted} />
       ) : null}
     </View>
   );

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { ScrollView, StyleSheet, View, Pressable, TextInput, ActivityIndicator, Switch } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigation } from "@react-navigation/native";
@@ -175,7 +175,7 @@ export default function AdminFAQScreen({ route }: { route: { params: { adminKey:
               selectedCategory !== "vendor" && { backgroundColor: theme.backgroundDefault, borderColor: theme.border },
             ]}
           >
-            <Feather name="briefcase" size={18} color={selectedCategory === "vendor" ? "#FFF" : theme.textSecondary} />
+            <EvendiIcon name="briefcase" size={18} color={selectedCategory === "vendor" ? "#FFF" : theme.textSecondary} />
             <ThemedText style={[styles.tabText, { color: selectedCategory === "vendor" ? "#FFF" : theme.textSecondary }]}>
               Leverandører
             </ThemedText>
@@ -193,7 +193,7 @@ export default function AdminFAQScreen({ route }: { route: { params: { adminKey:
               selectedCategory !== "couple" && { backgroundColor: theme.backgroundDefault, borderColor: theme.border },
             ]}
           >
-            <Feather name="heart" size={18} color={selectedCategory === "couple" ? "#FFF" : theme.textSecondary} />
+            <EvendiIcon name="heart" size={18} color={selectedCategory === "couple" ? "#FFF" : theme.textSecondary} />
             <ThemedText style={[styles.tabText, { color: selectedCategory === "couple" ? "#FFF" : theme.textSecondary }]}>
               Par
             </ThemedText>
@@ -205,7 +205,7 @@ export default function AdminFAQScreen({ route }: { route: { params: { adminKey:
           <ThemedText style={styles.formTitle}>{editingId ? "Rediger FAQ" : "Ny FAQ"}</ThemedText>
 
           <View style={styles.formGroup}>
-            <ThemedText style={[styles.label, { color: theme.textSecondary }]}>Ikon (Feather)</ThemedText>
+            <ThemedText style={[styles.label, { color: theme.textSecondary }]}>Ikon (Evendi)</ThemedText>
             <TextInput
               style={[styles.input, { backgroundColor: theme.backgroundSecondary, color: theme.text }]}
               placeholder="f.eks. log-in, package, star"
@@ -303,7 +303,7 @@ export default function AdminFAQScreen({ route }: { route: { params: { adminKey:
                 <View style={styles.faqHeader}>
                   <View style={styles.faqHeaderLeft}>
                     <View style={[styles.iconCircle, { backgroundColor: theme.accent + "15" }]}>
-                      <Feather name={item.icon as any} size={16} color={theme.accent} />
+                      <EvendiIcon name={item.icon as any} size={16} color={theme.accent} />
                     </View>
                     <View style={{ flex: 1 }}>
                       <ThemedText style={styles.faqQuestion}>{item.question}</ThemedText>
@@ -314,10 +314,10 @@ export default function AdminFAQScreen({ route }: { route: { params: { adminKey:
                   </View>
                   <View style={styles.faqActions}>
                     <Pressable onPress={() => handleEdit(item)} style={styles.actionBtn}>
-                      <Feather name="edit-2" size={18} color={theme.accent} />
+                      <EvendiIcon name="edit-2" size={18} color={theme.accent} />
                     </Pressable>
                     <Pressable onPress={() => handleDelete(item.id)} style={styles.actionBtn}>
-                      <Feather name="trash-2" size={18} color="#FF6B6B" />
+                      <EvendiIcon name="trash-2" size={18} color="#FF6B6B" />
                     </Pressable>
                   </View>
                 </View>

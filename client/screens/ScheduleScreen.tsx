@@ -12,7 +12,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useNavigation } from "@react-navigation/native";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import Animated, {
   FadeInDown,
@@ -122,14 +122,14 @@ function SwipeableEventItem({ event, index, theme, t, onEdit, onDelete }: Swipea
             style={[styles.actionButton, styles.editButton]}
             onPress={handleEdit}
           >
-            <Feather name="edit-2" size={18} color="#FFF" />
+            <EvendiIcon name="edit-2" size={18} color="#FFF" />
             <ThemedText style={styles.actionText}>{t("Endre", "Edit")}</ThemedText>
           </Pressable>
           <Pressable
             style={[styles.actionButton, styles.deleteButton]}
             onPress={handleDelete}
           >
-            <Feather name="trash-2" size={18} color="#FFF" />
+            <EvendiIcon name="trash-2" size={18} color="#FFF" />
             <ThemedText style={styles.actionText}>{t("Slett", "Delete")}</ThemedText>
           </Pressable>
         </View>
@@ -147,7 +147,7 @@ function SwipeableEventItem({ event, index, theme, t, onEdit, onDelete }: Swipea
               </ThemedText>
             </View>
             <View style={[styles.eventIcon, { backgroundColor: theme.backgroundSecondary }]}>
-              <Feather name={resolveIcon(event.icon)} size={18} color={Colors.dark.accent} />
+              <EvendiIcon name={resolveIcon(event.icon)} size={18} color={Colors.dark.accent} />
             </View>
             <ThemedText style={styles.eventTitle}>{event.title}</ThemedText>
           </Animated.View>
@@ -348,7 +348,7 @@ export default function ScheduleScreen() {
     >
       {queryError && (
         <View style={[styles.errorBanner, { backgroundColor: theme.backgroundSecondary, borderColor: theme.border }]}> 
-          <Feather name="alert-triangle" size={16} color={theme.textSecondary} />
+          <EvendiIcon name="alert-triangle" size={16} color={theme.textSecondary} />
           <View style={{ flex: 1 }}>
             <ThemedText style={[styles.errorBannerText, { color: theme.textSecondary }]}> 
               {queryError instanceof Error ? queryError.message : t("Kunne ikke laste tidsplan", "Could not load schedule")}
@@ -381,7 +381,7 @@ export default function ScheduleScreen() {
         ]}
       >
         <View style={[styles.speechIconContainer, { backgroundColor: Colors.dark.accent + "20" }]}>
-          <Feather name="mic" size={18} color={Colors.dark.accent} />
+          <EvendiIcon name="mic" size={18} color={Colors.dark.accent} />
         </View>
         <View style={styles.speechHeaderContent}>
           <ThemedText style={styles.speechTitle}>{t("Taleliste", "Speech list")}</ThemedText>
@@ -392,7 +392,7 @@ export default function ScheduleScreen() {
             )}
           </ThemedText>
         </View>
-        <Feather
+        <EvendiIcon
           name={showSpeeches ? "chevron-up" : "chevron-down"}
           size={20}
           color={theme.textSecondary}
@@ -431,7 +431,7 @@ export default function ScheduleScreen() {
               <ThemedText style={[styles.viewAllText, { color: Colors.dark.accent }]}>
                 {t(`Se alle ${speeches.length} taler`, `View all ${speeches.length} speeches`)}
               </ThemedText>
-              <Feather name="arrow-right" size={16} color={Colors.dark.accent} />
+              <EvendiIcon name="arrow-right" size={16} color={Colors.dark.accent} />
             </Pressable>
           ) : (
             <Pressable
@@ -441,7 +441,7 @@ export default function ScheduleScreen() {
               <ThemedText style={[styles.viewAllText, { color: Colors.dark.accent }]}>
                 {t("Rediger taleliste", "Edit speech list")}
               </ThemedText>
-              <Feather name="edit-2" size={14} color={Colors.dark.accent} />
+              <EvendiIcon name="edit-2" size={14} color={Colors.dark.accent} />
             </Pressable>
           )}
         </Animated.View>
@@ -450,7 +450,7 @@ export default function ScheduleScreen() {
           onPress={() => navigation.navigate("SpeechList")}
           style={[styles.addSpeechButton, { borderColor: Colors.dark.accent }]}
         >
-          <Feather name="plus" size={16} color={Colors.dark.accent} />
+          <EvendiIcon name="plus" size={16} color={Colors.dark.accent} />
           <ThemedText style={[styles.addSpeechText, { color: Colors.dark.accent }]}>
             {t("Legg til taler", "Add speeches")}
           </ThemedText>
@@ -462,14 +462,14 @@ export default function ScheduleScreen() {
         onPress={() => navigation.navigate("CoordinatorSharing")}
         style={[styles.shareButton, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}
       >
-        <Feather name="share-2" size={18} color={Colors.dark.accent} />
+        <EvendiIcon name="share-2" size={18} color={Colors.dark.accent} />
         <View style={styles.shareButtonContent}>
           <ThemedText style={styles.shareButtonTitle}>{t("Del med toastmaster", "Share with toastmaster")}</ThemedText>
           <ThemedText style={[styles.shareButtonSubtitle, { color: theme.textMuted }]}>
             {t("Gi koordinatorer tilgang til taler og program", "Give coordinators access to speeches and schedule")}
           </ThemedText>
         </View>
-        <Feather name="chevron-right" size={18} color={theme.textMuted} />
+        <EvendiIcon name="chevron-right" size={18} color={theme.textMuted} />
       </Pressable>
 
       {events.length === 0 ? (
@@ -575,7 +575,7 @@ export default function ScheduleScreen() {
                   },
                 ]}
               >
-                <Feather
+                <EvendiIcon
                   name={icon}
                   size={18}
                   color={selectedIcon === icon ? "#1A1A1A" : theme.textSecondary}
@@ -610,7 +610,7 @@ export default function ScheduleScreen() {
           }}
           style={[styles.addButton, { borderColor: Colors.dark.accent }]}
         >
-          <Feather name="plus" size={20} color={Colors.dark.accent} />
+          <EvendiIcon name="plus" size={20} color={Colors.dark.accent} />
           <ThemedText style={[styles.addButtonText, { color: Colors.dark.accent }]}>
             {t("Legg til hendelse", "Add event")}
           </ThemedText>

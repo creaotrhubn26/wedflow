@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, View, Pressable } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon, EvendiIconGlyphMap, type EvendiIconName } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 
@@ -30,7 +30,7 @@ const CATEGORY_LABELS: Record<string, string> = {
   reception: "Mottakelse",
 };
 
-const CATEGORY_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
+const CATEGORY_ICONS: Record<string, keyof typeof EvendiIconGlyphMap> = {
   ceremony: "heart",
   portraits: "user",
   group: "users",
@@ -38,7 +38,6 @@ const CATEGORY_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
   reception: "music",
 };
 
-type FeatherIconName = keyof typeof Feather.glyphMap;
 
 const isIconKey = (value: string): value is keyof typeof CATEGORY_ICONS =>
   Object.prototype.hasOwnProperty.call(CATEGORY_ICONS, value);
@@ -176,8 +175,8 @@ export default function AITimeScreen() {
         <View style={[styles.headerCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
           <View style={[styles.aiIcon, { backgroundColor: Colors.dark.accent + "20" }]}>
             <View style={styles.mediaIconContainer}>
-              <Feather name="camera" size={16} color={Colors.dark.accent} />
-              <Feather name="video" size={16} color={Colors.dark.accent} />
+              <EvendiIcon name="camera" size={16} color={Colors.dark.accent} />
+              <EvendiIcon name="video" size={16} color={Colors.dark.accent} />
             </View>
           </View>
           <ThemedText type="h2" style={styles.title}>Foto & Video Tidsplan</ThemedText>
@@ -190,7 +189,7 @@ export default function AITimeScreen() {
       {calculating ? (
         <Animated.View entering={FadeInUp.duration(400)} style={styles.calculatingContainer}>
           <View style={[styles.pulseCircle, { backgroundColor: Colors.dark.accent + "20" }]}>
-            <Feather name="loader" size={32} color={Colors.dark.accent} />
+            <EvendiIcon name="loader" size={32} color={Colors.dark.accent} />
           </View>
           <ThemedText style={[styles.calculatingText, { color: theme.textSecondary }]}>
             Beregner optimale tidsrammer...
@@ -205,7 +204,7 @@ export default function AITimeScreen() {
                 { backgroundColor: Colors.dark.accent + "10", borderColor: Colors.dark.accent },
               ]}
             >
-              <Feather name="clock" size={20} color={Colors.dark.accent} />
+              <EvendiIcon name="clock" size={20} color={Colors.dark.accent} />
               <View style={styles.summaryContent}>
                 <ThemedText style={[styles.summaryLabel, { color: theme.textSecondary }]}> 
                   Total fotograferingstid
@@ -220,7 +219,7 @@ export default function AITimeScreen() {
           <Animated.View entering={FadeInDown.delay(300).duration(400)}>
             <View style={styles.slotsContainer}>
               {timeSlots.map((slot) => {
-                const slotIcon: FeatherIconName = isIconKey(slot.type)
+                const slotIcon: EvendiIconName = isIconKey(slot.type)
                   ? CATEGORY_ICONS[slot.type]
                   : "clock";
                 return (
@@ -236,7 +235,7 @@ export default function AITimeScreen() {
                   ]}
                 >
                   <View style={[styles.slotIcon, { backgroundColor: theme.backgroundSecondary }]}> 
-                    <Feather name={slotIcon} size={20} color={Colors.dark.accent} />
+                    <EvendiIcon name={slotIcon} size={20} color={Colors.dark.accent} />
                   </View>
                   <View style={styles.slotInfo}>
                     <ThemedText style={styles.slotTitle}>{slot.title}</ThemedText>
@@ -262,7 +261,7 @@ export default function AITimeScreen() {
 
           {timeSlots.length === 0 ? (
             <View style={styles.emptyState}>
-              <Feather name="camera-off" size={48} color={theme.textMuted} />
+              <EvendiIcon name="camera-off" size={48} color={theme.textMuted} />
               <ThemedText style={[styles.emptyText, { color: theme.textSecondary }]}> 
                 Ingen bilder funnet
               </ThemedText>
@@ -288,19 +287,19 @@ export default function AITimeScreen() {
             <View style={[styles.tipsCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
               <ThemedText type="h4" style={styles.tipsTitle}>Tips</ThemedText>
               <View style={styles.tipItem}>
-                <Feather name="check-circle" size={16} color={Colors.dark.accent} />
+                <EvendiIcon name="check-circle" size={16} color={Colors.dark.accent} />
                 <ThemedText style={[styles.tipText, { color: theme.textSecondary }]}> 
                   Legg inn buffer mellom hver sesjon
                 </ThemedText>
               </View>
               <View style={styles.tipItem}>
-                <Feather name="check-circle" size={16} color={Colors.dark.accent} />
+                <EvendiIcon name="check-circle" size={16} color={Colors.dark.accent} />
                 <ThemedText style={[styles.tipText, { color: theme.textSecondary }]}> 
                   Gruppebilder tar lengre tid enn du tror
                 </ThemedText>
               </View>
               <View style={styles.tipItem}>
-                <Feather name="check-circle" size={16} color={Colors.dark.accent} />
+                <EvendiIcon name="check-circle" size={16} color={Colors.dark.accent} />
                 <ThemedText style={[styles.tipText, { color: theme.textSecondary }]}> 
                   Bruk golden hour for portretter
                 </ThemedText>

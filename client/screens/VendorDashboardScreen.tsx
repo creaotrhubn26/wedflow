@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon, EvendiIconGlyphMap } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import * as Clipboard from "expo-clipboard";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -675,7 +675,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
     showToast(`Tilgangskode ${code} er kopiert.`);
   };
 
-  const getTypeIcon = (type: string): keyof typeof Feather.glyphMap => {
+  const getTypeIcon = (type: string): keyof typeof EvendiIconGlyphMap => {
     switch (type) {
       case "gallery": return "image";
       case "video": return "video";
@@ -782,7 +782,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
             </View>
           ) : (
             <View style={[styles.noThumbnail, { backgroundColor: theme.backgroundRoot }]}>
-              <Feather name="image" size={32} color={theme.textMuted} />
+              <EvendiIcon name="image" size={32} color={theme.textMuted} />
               <ThemedText style={[styles.noThumbnailText, { color: theme.textMuted }]}>Ingen bilder</ThemedText>
             </View>
           )}
@@ -794,7 +794,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
             </ThemedText>
             {item.category ? (
               <View style={styles.categoryRow}>
-                <Feather name="folder" size={12} color={theme.textSecondary} />
+                <EvendiIcon name="folder" size={12} color={theme.textSecondary} />
                 <ThemedText style={[styles.categoryText, { color: theme.textSecondary }]}>
                   {item.category.name}
                 </ThemedText>
@@ -807,7 +807,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
             ) : null}
             <View style={styles.showcaseFooter}>
               <View style={styles.mediaCount}>
-                <Feather name="image" size={12} color={theme.textMuted} />
+                <EvendiIcon name="image" size={12} color={theme.textMuted} />
                 <ThemedText style={[styles.mediaCountText, { color: theme.textMuted }]}>
                   {item.media.length}
                 </ThemedText>
@@ -931,7 +931,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
             </ThemedText>
             {item.weddingDate ? (
               <View style={styles.dateRow}>
-                <Feather name="calendar" size={12} color={theme.textMuted} />
+                <EvendiIcon name="calendar" size={12} color={theme.textMuted} />
                 <ThemedText style={[styles.dateText, { color: theme.textMuted }]}>
                   {item.weddingDate}
                 </ThemedText>
@@ -948,14 +948,14 @@ export default function VendorDashboardScreen({ navigation }: Props) {
               onPress={() => copyAccessCode(item.accessCode)}
               style={[styles.copyBtn, { backgroundColor: theme.accent + "20" }]}
             >
-              <Feather name="copy" size={16} color={theme.accent} />
+              <EvendiIcon name="copy" size={16} color={theme.accent} />
             </Pressable>
           </View>
 
           <View style={styles.itemsList}>
             {(item.items || []).map((deliveryItem: any) => (
               <View key={deliveryItem.id} style={styles.itemRow}>
-                <Feather name={getTypeIcon(deliveryItem.type)} size={14} color={theme.textSecondary} />
+                <EvendiIcon name={getTypeIcon(deliveryItem.type)} size={14} color={theme.textSecondary} />
                 <ThemedText style={[styles.itemLabel, { color: theme.textSecondary }]} numberOfLines={1}>
                   {deliveryItem.label}
                 </ThemedText>
@@ -1052,7 +1052,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
                   }}
                   style={[styles.quickActionBtn, { backgroundColor: theme.accent + "20" }]}
                 >
-                  <Feather name="copy" size={14} color={theme.accent} />
+                  <EvendiIcon name="copy" size={14} color={theme.accent} />
                 </Pressable>
                 <ThemedText style={[styles.priceTag, { color: theme.accent }]}>
                   {formatPrice(item.unitPrice)} / {item.unitType}
@@ -1068,7 +1068,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
           <View style={styles.itemsList}>
             {item.minQuantity && item.minQuantity > 1 ? (
               <View style={styles.itemRow}>
-                <Feather name="hash" size={14} color={theme.textSecondary} />
+                <EvendiIcon name="hash" size={14} color={theme.textSecondary} />
                 <ThemedText style={[styles.itemLabel, { color: theme.textSecondary }]}>
                   Min. antall: {item.minQuantity}
                 </ThemedText>
@@ -1076,7 +1076,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
             ) : null}
             {item.leadTimeDays ? (
               <View style={styles.itemRow}>
-                <Feather name="clock" size={14} color={theme.textSecondary} />
+                <EvendiIcon name="clock" size={14} color={theme.textSecondary} />
                 <ThemedText style={[styles.itemLabel, { color: theme.textSecondary }]}>
                   Leveringstid: {item.leadTimeDays} dager
                 </ThemedText>
@@ -1084,7 +1084,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
             ) : null}
             {item.categoryTag ? (
               <View style={styles.itemRow}>
-                <Feather name="tag" size={14} color={theme.textSecondary} />
+                <EvendiIcon name="tag" size={14} color={theme.textSecondary} />
                 <ThemedText style={[styles.itemLabel, { color: theme.textSecondary }]}>
                   {item.categoryTag}
                 </ThemedText>
@@ -1141,7 +1141,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
                   }}
                   style={[styles.quickActionBtn, { backgroundColor: theme.accent + "20" }]}
                 >
-                  <Feather name="copy" size={14} color={theme.accent} />
+                  <EvendiIcon name="copy" size={14} color={theme.accent} />
                 </Pressable>
                 <View style={[styles.statusBadge, { backgroundColor: getOfferStatusColor(item.status) + "30" }]}>
                   <ThemedText style={[styles.statusText, { color: getOfferStatusColor(item.status) }]}>
@@ -1165,7 +1165,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
         <View style={styles.itemsList}>
           {item.items.slice(0, 3).map((offerItem) => (
             <View key={offerItem.id} style={styles.itemRow}>
-              <Feather name="check" size={14} color={theme.textSecondary} />
+              <EvendiIcon name="check" size={14} color={theme.textSecondary} />
               <ThemedText style={[styles.itemLabel, { color: theme.textSecondary }]} numberOfLines={1}>
                 {offerItem.quantity}x {offerItem.title} - {formatPrice(offerItem.lineTotal)}
               </ThemedText>
@@ -1224,7 +1224,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
                   style={styles.favoriteBtn}
                   hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
                 >
-                  <Feather 
+                  <EvendiIcon 
                     name={isFavorite ? "star" : "star"} 
                     size={18} 
                     color={isFavorite ? "#FFD700" : theme.textMuted}
@@ -1280,7 +1280,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
               <ThemedText style={[styles.businessName, { color: theme.text }]} numberOfLines={1}>{session.businessName}</ThemedText>
             </View>
             <View style={[styles.profileArrow, { backgroundColor: theme.accent + "15" }]}>
-              <Feather name="chevron-right" size={16} color={theme.accent} />
+              <EvendiIcon name="chevron-right" size={16} color={theme.accent} />
             </View>
           </Pressable>
           <Pressable 
@@ -1290,7 +1290,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
               { backgroundColor: pressed ? theme.backgroundTertiary : theme.backgroundSecondary }
             ]}
           >
-            <Feather name="log-out" size={18} color={theme.textSecondary} />
+            <EvendiIcon name="log-out" size={18} color={theme.textSecondary} />
           </Pressable>
           <Pressable 
             onPress={() => navigation.navigate("VendorHelp")}
@@ -1300,7 +1300,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
             ]}
             accessibilityLabel="Hjelp & FAQ"
           >
-            <Feather name="help-circle" size={18} color={theme.accent} />
+            <EvendiIcon name="help-circle" size={18} color={theme.accent} />
           </Pressable>
           <Pressable 
             onPress={() => navigation.navigate("VendorAdminChat")}
@@ -1310,7 +1310,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
             ]}
             accessibilityLabel="Evendi Support"
           >
-            <Feather name="message-circle" size={18} color={theme.accent} />
+            <EvendiIcon name="message-circle" size={18} color={theme.accent} />
           </Pressable>
         </View>
       </View>
@@ -1318,7 +1318,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
       {/* Payment Reminder Banner - FOMO messaging */}
       {subscriptionStatus?.needsPayment && (
         <View style={[styles.paymentBanner, { backgroundColor: subscriptionStatus.isPaused ? "#EF5350" : "#FFA726" }]}>
-          <Feather name={subscriptionStatus.isPaused ? "lock" : "alert-triangle"} size={24} color="#1A1A1A" />
+          <EvendiIcon name={subscriptionStatus.isPaused ? "lock" : "alert-triangle"} size={24} color="#1A1A1A" />
           <View style={{ flex: 1, marginLeft: Spacing.md }}>
             <ThemedText style={styles.paymentBannerTitle}>
               {subscriptionStatus.isPaused 
@@ -1333,15 +1333,15 @@ export default function VendorDashboardScreen({ navigation }: Props) {
             {subscriptionStatus.isPaused && (
               <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8, marginTop: 8 }}>
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                  <Feather name="x-circle" size={14} color="#1A1A1A" />
+                  <EvendiIcon name="x-circle" size={14} color="#1A1A1A" />
                   <ThemedText style={[styles.paymentBannerText, { fontSize: 13, fontWeight: "600" }]}>Ingen showcase</ThemedText>
                 </View>
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                  <Feather name="mail" size={14} color="#1A1A1A" />
+                  <EvendiIcon name="mail" size={14} color="#1A1A1A" />
                   <ThemedText style={[styles.paymentBannerText, { fontSize: 13, fontWeight: "600" }]}>Meldinger deaktivert</ThemedText>
                 </View>
                 <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
-                  <Feather name="slash" size={14} color="#1A1A1A" />
+                  <EvendiIcon name="slash" size={14} color="#1A1A1A" />
                   <ThemedText style={[styles.paymentBannerText, { fontSize: 13, fontWeight: "600" }]}>Henvendelser blokkert</ThemedText>
                 </View>
               </View>
@@ -1357,7 +1357,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
             <ThemedText style={styles.paymentBtnText}>
               {subscriptionStatus.isPaused ? "Reaktiver" : "Sikre plass"}
             </ThemedText>
-            <Feather name="arrow-right" size={16} color={subscriptionStatus.isPaused ? "#EF5350" : "#FFA726"} />
+            <EvendiIcon name="arrow-right" size={16} color={subscriptionStatus.isPaused ? "#EF5350" : "#FFA726"} />
           </Pressable>
         </View>
       )}
@@ -1403,7 +1403,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
             }
           ]}
         >
-          <Feather 
+          <EvendiIcon 
             name={subscriptionStatus.daysRemaining <= 7 ? "alert-circle" : "star"} 
             size={18} 
             color={subscriptionStatus.daysRemaining <= 7 ? "#FFA726" : theme.accent} 
@@ -1428,7 +1428,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
             )}
           </View>
           {subscriptionStatus.daysRemaining <= 7 && (
-            <Feather name="chevron-right" size={18} color="#FFA726" />
+            <EvendiIcon name="chevron-right" size={18} color="#FFA726" />
           )}
         </Pressable>
       )}
@@ -1452,11 +1452,11 @@ export default function VendorDashboardScreen({ navigation }: Props) {
                 }
               ]}
             >
-              <Feather name={insight.icon} size={16} color={insight.color} />
+              <EvendiIcon name={insight.icon} size={16} color={insight.color} />
               <ThemedText style={[styles.insightText, { color: theme.text }]}>
                 {insight.label}
               </ThemedText>
-              <Feather name="chevron-right" size={14} color={insight.color} />
+              <EvendiIcon name="chevron-right" size={14} color={insight.color} />
             </Pressable>
           ))}
         </View>
@@ -1467,7 +1467,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
         <View style={[styles.statsContainer, { backgroundColor: theme.backgroundDefault }]}>
           {quickStats.map((stat, idx) => (
             <View key={idx} style={styles.quickStatCard}>
-              <Feather name={stat.icon} size={16} color={theme.accent} />
+              <EvendiIcon name={stat.icon} size={16} color={theme.accent} />
               <View style={styles.quickStatContent}>
                 <ThemedText style={[styles.quickStatValue, { color: theme.text }]}>
                   {stat.isRating ? stat.value : `${stat.value}${stat.total ? `/${stat.total}` : ''}`}
@@ -1505,7 +1505,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
               ]}
             >
               <View style={styles.tabIconContainer}>
-                <Feather 
+                <EvendiIcon 
                   name={tab.icon} 
                   size={20} 
                   color={isActive ? "#FFFFFF" : theme.textSecondary} 
@@ -1555,7 +1555,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
             ]}
           >
             <View style={[styles.createBtnIconCircle, { backgroundColor: theme.accent }]}>
-              <Feather 
+              <EvendiIcon 
                 name={
                   activeTab === "deliveries" ? "package" : 
                   activeTab === "inspirations" ? "image" :
@@ -1578,7 +1578,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
               </ThemedText>
             </View>
             <View style={[styles.createBtnArrow, { backgroundColor: theme.accent + "15" }]}>
-              <Feather name="plus" size={20} color={theme.accent} />
+              <EvendiIcon name="plus" size={20} color={theme.accent} />
             </View>
           </Pressable>
         </View>
@@ -1609,7 +1609,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
           ListEmptyComponent={() => (
             <View style={styles.emptyContainer}>
               <View style={[styles.emptyIconContainer, { backgroundColor: theme.accent + "15" }]}>
-                <Feather name="package" size={32} color={theme.accent} />
+                <EvendiIcon name="package" size={32} color={theme.accent} />
               </View>
               <ThemedText style={[styles.emptyText, { color: theme.text }]}>
                 {vendorConfig.emptyStates.deliveries.title}
@@ -1641,7 +1641,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
           ListEmptyComponent={() => (
             <View style={styles.emptyContainer}>
               <View style={[styles.emptyIconContainer, { backgroundColor: theme.accent + "15" }]}>
-                <Feather name="image" size={32} color={theme.accent} />
+                <EvendiIcon name="image" size={32} color={theme.accent} />
               </View>
               <ThemedText style={[styles.emptyText, { color: theme.text }]}>
                 {vendorConfig.emptyStates.inspirations.title}
@@ -1673,7 +1673,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
           ListEmptyComponent={() => (
             <View style={styles.emptyContainer}>
               <View style={[styles.emptyIconContainer, { backgroundColor: theme.accent + "15" }]}>
-                <Feather name="shopping-bag" size={32} color={theme.accent} />
+                <EvendiIcon name="shopping-bag" size={32} color={theme.accent} />
               </View>
               <ThemedText style={[styles.emptyText, { color: theme.text }]}>
                 {vendorConfig.emptyStates.products.title}
@@ -1705,7 +1705,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
           ListEmptyComponent={() => (
             <View style={styles.emptyContainer}>
               <View style={[styles.emptyIconContainer, { backgroundColor: theme.accent + "15" }]}>
-                <Feather name="file-text" size={32} color={theme.accent} />
+                <EvendiIcon name="file-text" size={32} color={theme.accent} />
               </View>
               <ThemedText style={[styles.emptyText, { color: theme.text }]}>
                 Ingen tilbud ennå
@@ -1728,7 +1728,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
                     <ThemedText style={styles.cardTitle}>{item.coupleName}</ThemedText>
                     <View style={styles.reviewRatingRow}>
                       {[1, 2, 3, 4, 5].map((star) => (
-                        <Feather
+                        <EvendiIcon
                           key={star}
                           name="star"
                           size={14}
@@ -1828,7 +1828,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
                       navigation.navigate("VendorProfile");
                     }}
                   >
-                    <Feather name="edit-2" size={14} color="#FFFFFF" />
+                    <EvendiIcon name="edit-2" size={14} color="#FFFFFF" />
                     <ThemedText style={styles.googleReviewsBtnText}>Rediger profil</ThemedText>
                   </Pressable>
                 )}
@@ -1843,7 +1843,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
                     </ThemedText>
                     <View style={styles.starsRow}>
                       {[1, 2, 3, 4, 5].map((star) => (
-                        <Feather
+                        <EvendiIcon
                           key={star}
                           name="star"
                           size={12}
@@ -1906,7 +1906,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
                       }}
                       disabled={sendReminderMutation.isPending}
                     >
-                      <Feather 
+                      <EvendiIcon 
                         name="send" 
                         size={14} 
                         color={canSend ? "#1A1A1A" : theme.textMuted} 
@@ -1928,7 +1928,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
           ListEmptyComponent={() => (
             <View style={styles.emptyContainer}>
               <View style={[styles.emptyIconContainer, { backgroundColor: theme.accent + "15" }]}>
-                <Feather name="star" size={32} color={theme.accent} />
+                <EvendiIcon name="star" size={32} color={theme.accent} />
               </View>
               <ThemedText style={[styles.emptyText, { color: theme.text }]}>
                 Ingen anmeldelser ennå
@@ -1953,13 +1953,13 @@ export default function VendorDashboardScreen({ navigation }: Props) {
                   <View style={styles.cardHeader}>
                     <View style={styles.cardTitleRow}>
                       <View style={[styles.coupleAvatar, { backgroundColor: theme.accent + "20" }]}>
-                        <Feather name="heart" size={18} color={theme.accent} />
+                        <EvendiIcon name="heart" size={18} color={theme.accent} />
                       </View>
                       <View style={{ flex: 1, marginLeft: Spacing.sm }}>
                         <ThemedText style={styles.cardTitle}>{item.coupleName}</ThemedText>
                         {weddingDateFormatted && (
                           <ThemedText style={[styles.coupleDate, { color: theme.textSecondary }]}>
-                            <Feather name="calendar" size={12} color={theme.textSecondary} /> {weddingDateFormatted}
+                            <EvendiIcon name="calendar" size={12} color={theme.textSecondary} /> {weddingDateFormatted}
                           </ThemedText>
                         )}
                       </View>
@@ -1984,16 +1984,16 @@ export default function VendorDashboardScreen({ navigation }: Props) {
                         }}
                         style={[styles.accessBadge, { backgroundColor: "#4CAF50" + "20", borderColor: "#4CAF50" }]}
                       >
-                        <Feather name="calendar" size={14} color="#4CAF50" />
+                        <EvendiIcon name="calendar" size={14} color="#4CAF50" />
                         <ThemedText style={[styles.accessBadgeText, { color: "#4CAF50" }]}>
                           Program
                         </ThemedText>
-                        <Feather name="chevron-right" size={14} color="#4CAF50" />
+                        <EvendiIcon name="chevron-right" size={14} color="#4CAF50" />
                       </Pressable>
                     )}
                     {item.canViewSpeeches && (
                       <View style={[styles.accessBadge, { backgroundColor: "#2196F3" + "20", borderColor: "#2196F3" }]}>
-                        <Feather name="mic" size={14} color="#2196F3" />
+                        <EvendiIcon name="mic" size={14} color="#2196F3" />
                         <ThemedText style={[styles.accessBadgeText, { color: "#2196F3" }]}>
                           Taler
                         </ThemedText>
@@ -2001,7 +2001,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
                     )}
                     {item.canViewTableSeating && (
                       <View style={[styles.accessBadge, { backgroundColor: "#9C27B0" + "20", borderColor: "#9C27B0" }]}>
-                        <Feather name="grid" size={14} color="#9C27B0" />
+                        <EvendiIcon name="grid" size={14} color="#9C27B0" />
                         <ThemedText style={[styles.accessBadgeText, { color: "#9C27B0" }]}>
                           Bordplassering
                         </ThemedText>
@@ -2009,7 +2009,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
                     )}
                     {!item.canViewSchedule && !item.canViewSpeeches && !item.canViewTableSeating && (
                       <View style={[styles.accessBadge, { backgroundColor: theme.backgroundSecondary, borderColor: theme.border }]}>
-                        <Feather name="lock" size={14} color={theme.textMuted} />
+                        <EvendiIcon name="lock" size={14} color={theme.textMuted} />
                         <ThemedText style={[styles.accessBadgeText, { color: theme.textMuted }]}>
                           Ingen tilgang gitt ennå
                         </ThemedText>
@@ -2035,7 +2035,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
           }
           ListHeaderComponent={() => (
             <View style={[styles.coupleInfoCard, { backgroundColor: theme.accent + "10", borderColor: theme.accent }]}>
-              <Feather name="info" size={18} color={theme.accent} />
+              <EvendiIcon name="info" size={18} color={theme.accent} />
               <View style={{ flex: 1, marginLeft: Spacing.sm }}>
                 <ThemedText style={[styles.coupleInfoTitle, { color: theme.accent }]}>
                   Brudepar med tilgang
@@ -2049,7 +2049,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
           ListEmptyComponent={() => (
             <View style={styles.emptyContainer}>
               <View style={[styles.emptyIconContainer, { backgroundColor: theme.accent + "15" }]}>
-                <Feather name="users" size={32} color={theme.accent} />
+                <EvendiIcon name="users" size={32} color={theme.accent} />
               </View>
               <ThemedText style={[styles.emptyText, { color: theme.text }]}>
                 Ingen brudepar ennå
@@ -2096,7 +2096,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
                     { borderColor: theme.border }
                   ]}
                 >
-                  <Feather 
+                  <EvendiIcon 
                     name="message-circle" 
                     size={14} 
                     color={conversationFilter === "unread" ? "#1A1A1A" : theme.text} 
@@ -2120,7 +2120,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
                     { borderColor: theme.border }
                   ]}
                 >
-                  <Feather 
+                  <EvendiIcon 
                     name="star" 
                     size={14} 
                     color={conversationFilter === "favorites" ? "#1A1A1A" : theme.text} 
@@ -2149,7 +2149,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
                     { borderColor: theme.border }
                   ]}
                 >
-                  <Feather 
+                  <EvendiIcon 
                     name="clock" 
                     size={14} 
                     color={conversationSort === "recent" ? "#1A1A1A" : theme.text} 
@@ -2173,7 +2173,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
                     { borderColor: theme.border }
                   ]}
                 >
-                  <Feather 
+                  <EvendiIcon 
                     name="user" 
                     size={14} 
                     color={conversationSort === "name" ? "#1A1A1A" : theme.text} 
@@ -2197,7 +2197,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
                     { borderColor: theme.border }
                   ]}
                 >
-                  <Feather 
+                  <EvendiIcon 
                     name="message-square" 
                     size={14} 
                     color={conversationSort === "unread" ? "#1A1A1A" : theme.text} 
@@ -2233,7 +2233,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
           ListEmptyComponent={() => (
             <View style={styles.emptyContainer}>
               <View style={[styles.emptyIconContainer, { backgroundColor: theme.accent + "15" }]}>
-                <Feather name="message-circle" size={32} color={theme.accent} />
+                <EvendiIcon name="message-circle" size={32} color={theme.accent} />
               </View>
               <ThemedText style={[styles.emptyText, { color: theme.text }]}>
                 Ingen meldinger ennå

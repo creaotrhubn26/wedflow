@@ -11,7 +11,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon, EvendiIconGlyphMap } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInRight, FadeIn } from "react-native-reanimated";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -43,7 +43,7 @@ const CATEGORY_LABELS: Record<string, string> = {
   reception: "Mottakelse",
 };
 
-const CATEGORY_ICONS: Record<string, keyof typeof Feather.glyphMap> = {
+const CATEGORY_ICONS: Record<string, keyof typeof EvendiIconGlyphMap> = {
   ceremony: "heart",
   portraits: "user",
   group: "users",
@@ -328,13 +328,13 @@ export default function PhotoPlanScreen() {
         <Animated.View entering={FadeIn.duration(400)} style={[styles.scoutingStats, { backgroundColor: theme.backgroundDefault, borderColor: Colors.dark.accent + '40' }]}>
           <View style={styles.scoutingStatsRow}>
             <View style={styles.scoutingStat}>
-              <Feather name="map-pin" size={14} color={Colors.dark.accent} />
+              <EvendiIcon name="map-pin" size={14} color={Colors.dark.accent} />
               <ThemedText style={[styles.scoutingStatText, { color: theme.text }]}>
                 {scouting.locatedCount(shots)} steder
               </ThemedText>
             </View>
             <View style={styles.scoutingStat}>
-              <Feather name="check-circle" size={14} color="#4CAF50" />
+              <EvendiIcon name="check-circle" size={14} color="#4CAF50" />
               <ThemedText style={[styles.scoutingStatText, { color: theme.text }]}>
                 {scouting.scoutedCount(shots)} befart
               </ThemedText>
@@ -358,7 +358,7 @@ export default function PhotoPlanScreen() {
         <View key={category} style={styles.categorySection}>
           <View style={styles.categoryHeader}>
             <View style={[styles.categoryIcon, { backgroundColor: theme.backgroundDefault }]}>
-              <Feather
+              <EvendiIcon
                 name={CATEGORY_ICONS[category as PhotoShot["category"]]}
                 size={16}
                 color={Colors.dark.accent}
@@ -402,7 +402,7 @@ export default function PhotoPlanScreen() {
                       ]}
                     >
                       {shot.completed ? (
-                        <Feather name="check" size={14} color="#1A1A1A" />
+                        <EvendiIcon name="check" size={14} color="#1A1A1A" />
                       ) : null}
                     </View>
                     <View style={styles.shotInfo}>
@@ -429,7 +429,7 @@ export default function PhotoPlanScreen() {
                               onPress={() => scouting.openShotOnMap(shot)}
                               style={[styles.locationBadge, { backgroundColor: Colors.dark.accent + '15' }]}
                             >
-                              <Feather name="map-pin" size={10} color={Colors.dark.accent} />
+                              <EvendiIcon name="map-pin" size={10} color={Colors.dark.accent} />
                               <ThemedText style={[styles.locationBadgeText, { color: Colors.dark.accent }]} numberOfLines={1}>
                                 {shot.locationName}
                               </ThemedText>
@@ -440,7 +440,7 @@ export default function PhotoPlanScreen() {
                               onPress={() => scouting.openDirectionsToShot(shot)}
                               style={[styles.locationBadge, { backgroundColor: '#2196F3' + '15' }]}
                             >
-                              <Feather name="navigation" size={10} color="#2196F3" />
+                              <EvendiIcon name="navigation" size={10} color="#2196F3" />
                               <ThemedText style={[styles.locationBadgeText, { color: '#2196F3' }]}>
                                 {shot.travelFromVenue}
                               </ThemedText>
@@ -455,7 +455,7 @@ export default function PhotoPlanScreen() {
                           )}
                           {shot.scouted && (
                             <View style={[styles.locationBadge, { backgroundColor: '#4CAF50' + '15' }]}>
-                              <Feather name="check-circle" size={10} color="#4CAF50" />
+                              <EvendiIcon name="check-circle" size={10} color="#4CAF50" />
                               <ThemedText style={[styles.locationBadgeText, { color: '#4CAF50' }]}>
                                 Befart
                               </ThemedText>
@@ -478,7 +478,7 @@ export default function PhotoPlanScreen() {
           <View style={[styles.vendorBridgeHeader, { backgroundColor: theme.backgroundDefault, borderColor: Colors.dark.accent }]}>
             <View style={styles.categoryHeader}>
               <View style={[styles.categoryIcon, { backgroundColor: Colors.dark.accent + '20' }]}>
-                <Feather name="camera" size={16} color={Colors.dark.accent} />
+                <EvendiIcon name="camera" size={16} color={Colors.dark.accent} />
               </View>
               <View style={{ flex: 1 }}>
                 <ThemedText type="h4">Fotografens plan</ThemedText>
@@ -516,9 +516,9 @@ export default function PhotoPlanScreen() {
                     ]}
                   >
                     {shot.completed ? (
-                      <Feather name="check" size={14} color="#1A1A1A" />
+                      <EvendiIcon name="check" size={14} color="#1A1A1A" />
                     ) : (
-                      <Feather name="camera" size={10} color={Colors.dark.accent} />
+                      <EvendiIcon name="camera" size={10} color={Colors.dark.accent} />
                     )}
                   </View>
                   <View style={styles.shotInfo}>
@@ -589,7 +589,7 @@ export default function PhotoPlanScreen() {
           {/* ── Location Scouting Search ── */}
           <View style={styles.locationSection}>
             <View style={styles.locationSearchRow}>
-              <Feather name="map-pin" size={16} color={Colors.dark.accent} style={{ marginRight: Spacing.sm }} />
+              <EvendiIcon name="map-pin" size={16} color={Colors.dark.accent} style={{ marginRight: Spacing.sm }} />
               <ThemedText style={[styles.locationLabel, { color: theme.text }]}>Sted (valgfritt)</ThemedText>
             </View>
             <View style={{ position: 'relative' }}>
@@ -621,7 +621,7 @@ export default function PhotoPlanScreen() {
                     onPress={() => handleSelectLocation(result)}
                     style={[styles.locationDropdownItem, idx < locationResults.length - 1 && { borderBottomWidth: 1, borderBottomColor: theme.border }]}
                   >
-                    <Feather name="map-pin" size={12} color={theme.textSecondary} />
+                    <EvendiIcon name="map-pin" size={12} color={theme.textSecondary} />
                     <View style={{ flex: 1, marginLeft: Spacing.sm }}>
                       <ThemedText style={[styles.locationResultText, { color: theme.text }]} numberOfLines={1}>
                         {result.address}
@@ -639,17 +639,17 @@ export default function PhotoPlanScreen() {
             {selectedLocation && (
               <Animated.View entering={FadeIn.duration(300)} style={[styles.locationPreview, { backgroundColor: Colors.dark.accent + '10', borderColor: Colors.dark.accent + '30' }]}>
                 <View style={styles.locationPreviewRow}>
-                  <Feather name="check-circle" size={14} color="#4CAF50" />
+                  <EvendiIcon name="check-circle" size={14} color="#4CAF50" />
                   <ThemedText style={[styles.locationPreviewText, { color: theme.text }]} numberOfLines={1}>
                     {selectedLocation.locationName}
                   </ThemedText>
                   <Pressable onPress={clearLocationSelection}>
-                    <Feather name="x" size={16} color={theme.textMuted} />
+                    <EvendiIcon name="x" size={16} color={theme.textMuted} />
                   </Pressable>
                 </View>
                 {selectedLocation.travelFromVenue ? (
                   <View style={styles.locationPreviewRow}>
-                    <Feather name="navigation" size={12} color="#2196F3" />
+                    <EvendiIcon name="navigation" size={12} color="#2196F3" />
                     <ThemedText style={[styles.locationPreviewSub, { color: '#2196F3' }]}>
                       Fra {isWedding ? "bryllupssted" : "arrangementssted"}: {selectedLocation.travelFromVenue}
                     </ThemedText>
@@ -683,7 +683,7 @@ export default function PhotoPlanScreen() {
                   },
                 ]}
               >
-                <Feather
+                <EvendiIcon
                   name={CATEGORY_ICONS[cat]}
                   size={14}
                   color={selectedCategory === cat ? "#1A1A1A" : theme.textSecondary}
@@ -719,7 +719,7 @@ export default function PhotoPlanScreen() {
           }}
           style={[styles.addButton, { borderColor: Colors.dark.accent }]}
         >
-          <Feather name="plus" size={20} color={Colors.dark.accent} />
+          <EvendiIcon name="plus" size={20} color={Colors.dark.accent} />
           <ThemedText style={[styles.addButtonText, { color: Colors.dark.accent }]}>
             Legg til bilde
           </ThemedText>

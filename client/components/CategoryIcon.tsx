@@ -1,5 +1,5 @@
 import React from "react";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon, EvendiIconGlyphMap } from "@/components/EvendiIcon";
 
 interface CategoryIconProps {
   name: string;
@@ -7,7 +7,7 @@ interface CategoryIconProps {
   color?: string;
 }
 
-// Icon mapping from category names to Feather icon names
+// Icon mapping from category names to Evendi icon names
 const ICON_MAP: Record<string, string> = {
   photography: "camera",
   videography: "video",
@@ -42,5 +42,5 @@ const ICON_MAP: Record<string, string> = {
 
 export const CategoryIcon: React.FC<CategoryIconProps> = ({ name, size = 24, color = "#000" }) => {
   const iconName = ICON_MAP[name.toLowerCase()] || "briefcase";
-  return <Feather name={iconName as keyof typeof Feather.glyphMap} size={size} color={color} />;
+  return <EvendiIcon name={iconName as keyof typeof EvendiIconGlyphMap} size={size} color={color} />;
 };

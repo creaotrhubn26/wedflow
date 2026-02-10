@@ -13,7 +13,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Feather } from '@expo/vector-icons';
+import { EvendiIcon } from '@/components/EvendiIcon';
 import * as Haptics from 'expo-haptics';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -474,7 +474,7 @@ export function VenueScreen() {
       {capacityWarning && (
         <View style={[styles.emptyState, { backgroundColor: '#DC354520', borderWidth: 1, borderColor: '#DC3545', marginBottom: Spacing.md, padding: Spacing.md }]}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <Feather name="alert-triangle" size={18} color="#DC3545" />
+            <EvendiIcon name="alert-triangle" size={18} color="#DC3545" />
             <ThemedText style={{ color: '#DC3545', fontWeight: '600', marginLeft: Spacing.sm, flex: 1, fontSize: 14 }}>
               Kapasitetsadvarsel: {guestCount} gjester, men lokalet har plass til {venueCapacity}
             </ThemedText>
@@ -485,13 +485,13 @@ export function VenueScreen() {
       <View style={styles.sectionHeader}>
         <ThemedText style={styles.sectionTitle}>Lokalereservasjoner</ThemedText>
         <Pressable onPress={() => openBookingModal()} style={[styles.addButton, { backgroundColor: theme.primary }]}>
-          <Feather name="plus" size={20} color="#fff" />
+          <EvendiIcon name="plus" size={20} color="#fff" />
         </Pressable>
       </View>
 
       {bookings.length === 0 ? (
         <View style={[styles.emptyState, { backgroundColor: theme.backgroundDefault }]}>
-          <Feather name="heart" size={48} color={theme.primary} style={{ opacity: 0.6 }} />
+          <EvendiIcon name="heart" size={48} color={theme.primary} style={{ opacity: 0.6 }} />
           <ThemedText style={[styles.emptyText, { color: theme.text, fontWeight: '600', fontSize: 20 }]}>
             Hvor skal bryllupet holdes?
           </ThemedText>
@@ -577,7 +577,7 @@ export function VenueScreen() {
                       onPress={() => openInMaps(booking.address)}
                       style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 }}
                     >
-                      <Feather name="map-pin" size={12} color={theme.primary} />
+                      <EvendiIcon name="map-pin" size={12} color={theme.primary} />
                       <ThemedText style={[styles.bookingLocation, { color: theme.primary }]}>
                         {booking.address}
                       </ThemedText>
@@ -585,7 +585,7 @@ export function VenueScreen() {
                   )}
                   {(booking.maxGuests || booking.invitedGuests) && (
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 }}>
-                      <Feather name="users" size={12} color={getCapacityStatus(booking.maxGuests, booking.invitedGuests).color} />
+                      <EvendiIcon name="users" size={12} color={getCapacityStatus(booking.maxGuests, booking.invitedGuests).color} />
                       <ThemedText style={[styles.bookingCapacity, { color: getCapacityStatus(booking.maxGuests, booking.invitedGuests).color }]}>
                         {getCapacityStatus(booking.maxGuests, booking.invitedGuests).text || `Maks ${booking.maxGuests || booking.invitedGuests} gjester`}
                       </ThemedText>
@@ -595,13 +595,13 @@ export function VenueScreen() {
                     <View style={{ flexDirection: 'row', gap: 8, marginTop: 4 }}>
                       {booking.cateringIncluded && (
                         <View style={[styles.featureBadge, { backgroundColor: '#10b981' + '15', borderColor: '#10b981' }]}>
-                          <Feather name="coffee" size={10} color="#10b981" />
+                          <EvendiIcon name="coffee" size={10} color="#10b981" />
                           <ThemedText style={[styles.featureBadgeText, { color: '#10b981' }]}>Servering</ThemedText>
                         </View>
                       )}
                       {booking.accommodationAvailable && (
                         <View style={[styles.featureBadge, { backgroundColor: '#3b82f6' + '15', borderColor: '#3b82f6' }]}>
-                          <Feather name="moon" size={10} color="#3b82f6" />
+                          <EvendiIcon name="moon" size={10} color="#3b82f6" />
                           <ThemedText style={[styles.featureBadgeText, { color: '#3b82f6' }]}>Overnatting</ThemedText>
                         </View>
                       )}
@@ -610,7 +610,7 @@ export function VenueScreen() {
                   {booking.siteVisitDate && (
                     <View style={{ marginTop: 8, paddingTop: 8, borderTopWidth: 1, borderTopColor: theme.border }}>
                       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 4 }}>
-                        <Feather name="calendar" size={12} color={theme.accent} />
+                        <EvendiIcon name="calendar" size={12} color={theme.accent} />
                         <ThemedText style={[styles.visitDateText, { color: theme.textSecondary }]}>
                           Befaring: {booking.siteVisitDate}{booking.siteVisitTime && ` kl. ${booking.siteVisitTime}`}
                         </ThemedText>
@@ -619,7 +619,7 @@ export function VenueScreen() {
                         <View style={{ marginTop: 4, gap: 4 }}>
                           {booking.visitNotesLiked && (
                             <View style={{ flexDirection: 'row', gap: 4, alignItems: 'flex-start' }}>
-                              <Feather name="heart" size={11} color="#10b981" style={{ marginTop: 2 }} />
+                              <EvendiIcon name="heart" size={11} color="#10b981" style={{ marginTop: 2 }} />
                               <ThemedText style={[styles.visitNotePreview, { color: theme.textSecondary }]} numberOfLines={1}>
                                 {booking.visitNotesLiked}
                               </ThemedText>
@@ -627,7 +627,7 @@ export function VenueScreen() {
                           )}
                           {booking.visitNotesUnsure && (
                             <View style={{ flexDirection: 'row', gap: 4, alignItems: 'flex-start' }}>
-                              <Feather name="help-circle" size={11} color="#f59e0b" style={{ marginTop: 2 }} />
+                              <EvendiIcon name="help-circle" size={11} color="#f59e0b" style={{ marginTop: 2 }} />
                               <ThemedText style={[styles.visitNotePreview, { color: theme.textSecondary }]} numberOfLines={1}>
                                 {booking.visitNotesUnsure}
                               </ThemedText>
@@ -645,9 +645,9 @@ export function VenueScreen() {
                   }}
                   style={styles.quickActionButton}
                 >
-                  <Feather name="copy" size={16} color={theme.textSecondary} />
+                  <EvendiIcon name="copy" size={16} color={theme.textSecondary} />
                 </Pressable>
-                <Feather name="chevron-right" size={20} color={theme.textSecondary} />
+                <EvendiIcon name="chevron-right" size={20} color={theme.textSecondary} />
               </Pressable>
             </SwipeableRow>
           </Animated.View>
@@ -713,10 +713,10 @@ export function VenueScreen() {
                   timeline[step.key as keyof VenueTimeline] ? { backgroundColor: Colors.light.success, borderColor: Colors.light.success } : {},
                 ]}
               >
-                  {timeline[step.key as keyof VenueTimeline] && <Feather name="check" size={12} color="#fff" />}
+                  {timeline[step.key as keyof VenueTimeline] && <EvendiIcon name="check" size={12} color="#fff" />}
                 </View>
               <View style={styles.timelineStepContent}>
-                <Feather name={step.icon} size={16} color={theme.textSecondary} />
+                <EvendiIcon name={step.icon} size={16} color={theme.textSecondary} />
                 <ThemedText style={[styles.timelineLabel, { color: theme.text }]}>
                   {step.label}
                 </ThemedText>
@@ -753,7 +753,7 @@ export function VenueScreen() {
                     ]}
                   >
                     <View style={[styles.timelineCheckbox, { borderColor: statusColor, backgroundColor: statusColor + '20' }]}>
-                      <Feather name={statusIcon} size={14} color={statusColor} />
+                      <EvendiIcon name={statusIcon} size={14} color={statusColor} />
                     </View>
                     <View style={[styles.timelineStepContent, { flex: 1 }]}>
                       <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: Spacing.md }}>
@@ -787,7 +787,7 @@ export function VenueScreen() {
       <View style={[styles.header, { backgroundColor: theme.backgroundDefault, borderBottomColor: theme.border }]}>
         <View style={styles.headerContent}>
           <View style={[styles.iconCircle, { backgroundColor: Colors.dark.accent + '15' }]}>
-            <Feather name="home" size={24} color={Colors.dark.accent} />
+            <EvendiIcon name="home" size={24} color={Colors.dark.accent} />
           </View>
           <View style={styles.headerText}>
             <ThemedText style={styles.headerTitle}>Lokale</ThemedText>
@@ -874,7 +874,7 @@ export function VenueScreen() {
                       venueType === type.value && { borderColor: theme.primary, backgroundColor: theme.primary + '15' },
                     ]}
                   >
-                    <Feather 
+                    <EvendiIcon 
                       name={type.icon as any} 
                       size={16} 
                       color={venueType === type.value ? theme.primary : theme.textSecondary} 
@@ -915,7 +915,7 @@ export function VenueScreen() {
                       },
                     ]}
                   >
-                    <Feather 
+                    <EvendiIcon 
                       name={statusOption.icon as any} 
                       size={16} 
                       color={status === statusOption.value ? statusOption.color : theme.textSecondary} 
@@ -948,7 +948,7 @@ export function VenueScreen() {
                     isPrimary && { backgroundColor: theme.primary, borderColor: theme.primary },
                   ]}
                 >
-                  {isPrimary && <Feather name="check" size={14} color="#fff" />}
+                  {isPrimary && <EvendiIcon name="check" size={14} color="#fff" />}
                 </View>
                 <View style={{ flex: 1 }}>
                   <ThemedText style={[styles.primaryLabel, { color: theme.text }]}>
@@ -1023,7 +1023,7 @@ export function VenueScreen() {
                     onPress={() => openInMaps(address)}
                     style={[styles.mapButton, { backgroundColor: theme.primary }]}
                   >
-                    <Feather name="map" size={20} color="#fff" />
+                    <EvendiIcon name="map" size={20} color="#fff" />
                   </Pressable>
                 )}
               </View>
@@ -1081,10 +1081,10 @@ export function VenueScreen() {
                     cateringIncluded && { backgroundColor: '#10b981', borderColor: '#10b981' },
                   ]}
                 >
-                  {cateringIncluded && <Feather name="check" size={14} color="#fff" />}
+                  {cateringIncluded && <EvendiIcon name="check" size={14} color="#fff" />}
                 </View>
                 <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                  <Feather name="coffee" size={16} color={theme.textSecondary} />
+                  <EvendiIcon name="coffee" size={16} color={theme.textSecondary} />
                   <ThemedText style={[styles.primaryLabel, { color: theme.text }]}>
                     Servering inkludert
                   </ThemedText>
@@ -1107,10 +1107,10 @@ export function VenueScreen() {
                     accommodationAvailable && { backgroundColor: '#3b82f6', borderColor: '#3b82f6' },
                   ]}
                 >
-                  {accommodationAvailable && <Feather name="check" size={14} color="#fff" />}
+                  {accommodationAvailable && <EvendiIcon name="check" size={14} color="#fff" />}
                 </View>
                 <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                  <Feather name="moon" size={16} color={theme.textSecondary} />
+                  <EvendiIcon name="moon" size={16} color={theme.textSecondary} />
                   <ThemedText style={[styles.primaryLabel, { color: theme.text }]}>
                     Overnatting tilgjengelig
                   </ThemedText>
@@ -1130,7 +1130,7 @@ export function VenueScreen() {
               {vendorName ? (
                 <View style={{ flexDirection: 'row', gap: Spacing.sm, alignItems: 'center' }}>
                   <View style={[styles.input, { borderColor: theme.border, flex: 1, flexDirection: 'row', alignItems: 'center', gap: 8 }]}>
-                    <Feather name="home" size={16} color={theme.accent} />
+                    <EvendiIcon name="home" size={16} color={theme.accent} />
                     <ThemedText style={{ color: theme.text, flex: 1 }}>{vendorName}</ThemedText>
                   </View>
                   <Pressable
@@ -1141,7 +1141,7 @@ export function VenueScreen() {
                     }}
                     style={[styles.mapButton, { backgroundColor: theme.backgroundSecondary }]}
                   >
-                    <Feather name="x" size={16} color={theme.textSecondary} />
+                    <EvendiIcon name="x" size={16} color={theme.textSecondary} />
                   </Pressable>
                 </View>
               ) : (
@@ -1155,7 +1155,7 @@ export function VenueScreen() {
                   }}
                   style={[styles.input, { borderColor: theme.border, flexDirection: 'row', alignItems: 'center', gap: 8, justifyContent: 'center' }]}
                 >
-                  <Feather name="search" size={16} color={theme.accent} />
+                  <EvendiIcon name="search" size={16} color={theme.accent} />
                   <ThemedText style={{ color: theme.accent }}>Finn lokale</ThemedText>
                 </Pressable>
               )}

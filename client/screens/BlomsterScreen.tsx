@@ -13,7 +13,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon, type EvendiIconName } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import * as ImagePicker from "expo-image-picker";
 import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
@@ -58,10 +58,9 @@ const TIMELINE_STEPS = [
 
 const APPOINTMENT_TYPES = ["Konsultasjon", "Oppfølging", "Mockup-visning", "Leveringsplanlegging", "Annet"];
 
-type FeatherIconName = React.ComponentProps<typeof Feather>["name"];
 type FlowerItemType = "bouquet" | "boutonniere" | "centerpiece" | "ceremony" | "arch" | "other";
 
-const ITEM_TYPES: Array<{ key: FlowerItemType; label: string; icon: FeatherIconName }> = [
+const ITEM_TYPES: Array<{ key: FlowerItemType; label: string; icon: EvendiIconName }> = [
   { key: "bouquet", label: "Brudebukett", icon: "heart" },
   { key: "boutonniere", label: "Knapphullsblomst", icon: "user" },
   { key: "centerpiece", label: "Borddekorasjon", icon: "layers" },
@@ -504,7 +503,7 @@ export default function BlomsterScreen() {
     return item?.label || type;
   };
 
-  const getItemTypeIcon = (type: string): FeatherIconName => {
+  const getItemTypeIcon = (type: string): EvendiIconName => {
     const item = ITEM_TYPES.find((i) => i.key === type);
     return item?.icon || "help-circle";
   };
@@ -518,13 +517,13 @@ export default function BlomsterScreen() {
       <View style={styles.sectionHeader}>
         <ThemedText style={styles.sectionTitle}>Avtaler</ThemedText>
         <Pressable onPress={() => openAppointmentModal()} style={[styles.addButton, { backgroundColor: theme.primary }]}>
-          <Feather name="plus" size={20} color="#fff" />
+          <EvendiIcon name="plus" size={20} color="#fff" />
         </Pressable>
       </View>
 
       {appointments.length === 0 ? (
         <View style={[styles.emptyState, { backgroundColor: theme.backgroundDefault }]}>
-          <Feather name="heart" size={48} color={theme.primary} style={{ opacity: 0.6 }} />
+          <EvendiIcon name="heart" size={48} color={theme.primary} style={{ opacity: 0.6 }} />
           <ThemedText style={[styles.emptyText, { color: theme.text, fontWeight: '600', fontSize: 18 }]}>
             Hvilke blomster føles riktige for dere?
           </ThemedText>
@@ -561,7 +560,7 @@ export default function BlomsterScreen() {
                     appointment.completed && { backgroundColor: theme.primary, borderColor: theme.primary },
                   ]}
                 >
-                  {appointment.completed && <Feather name="check" size={14} color="#fff" />}
+                  {appointment.completed && <EvendiIcon name="check" size={14} color="#fff" />}
                 </Pressable>
                 <View style={styles.appointmentInfo}>
                   <ThemedText
@@ -587,9 +586,9 @@ export default function BlomsterScreen() {
                   }}
                   style={styles.quickActionButton}
                 >
-                  <Feather name="copy" size={16} color={theme.textSecondary} />
+                  <EvendiIcon name="copy" size={16} color={theme.textSecondary} />
                 </Pressable>
-                <Feather name="chevron-right" size={20} color={theme.textSecondary} />
+                <EvendiIcon name="chevron-right" size={20} color={theme.textSecondary} />
               </Pressable>
             </SwipeableRow>
           </Animated.View>
@@ -603,7 +602,7 @@ export default function BlomsterScreen() {
       <View style={styles.sectionHeader}>
         <ThemedText style={styles.sectionTitle}>Blomstervalg</ThemedText>
         <Pressable onPress={() => openSelectionModal()} style={[styles.addButton, { backgroundColor: theme.primary }]}>
-          <Feather name="plus" size={20} color="#fff" />
+          <EvendiIcon name="plus" size={20} color="#fff" />
         </Pressable>
       </View>
 
@@ -619,7 +618,7 @@ export default function BlomsterScreen() {
 
       {selections.length === 0 ? (
         <View style={[styles.emptyState, { backgroundColor: theme.backgroundDefault }]}>
-          <Feather name="heart" size={48} color={theme.primary} style={{ opacity: 0.6 }} />
+          <EvendiIcon name="heart" size={48} color={theme.primary} style={{ opacity: 0.6 }} />
           <ThemedText style={[styles.emptyText, { color: theme.text, fontWeight: '600', fontSize: 18 }]}>
             Hvilke blomster føles riktige for dere?
           </ThemedText>
@@ -656,7 +655,7 @@ export default function BlomsterScreen() {
                   <Image source={{ uri: selection.imageUrl }} style={styles.selectionImage} />
                 ) : (
                   <View style={[styles.selectionImagePlaceholder, { backgroundColor: theme.border }]}>
-                    <Feather name={getItemTypeIcon(selection.itemType)} size={32} color={theme.textSecondary} />
+                    <EvendiIcon name={getItemTypeIcon(selection.itemType)} size={32} color={theme.textSecondary} />
                   </View>
                 )}
                 <View style={styles.selectionInfo}>
@@ -684,7 +683,7 @@ export default function BlomsterScreen() {
                   }}
                   style={styles.quickActionButton}
                 >
-                  <Feather name="copy" size={16} color={theme.textSecondary} />
+                  <EvendiIcon name="copy" size={16} color={theme.textSecondary} />
                 </Pressable>
                 <Pressable
                   onPress={() => toggleSelectionConfirmed(selection.id)}
@@ -693,7 +692,7 @@ export default function BlomsterScreen() {
                     { backgroundColor: selection.isConfirmed ? Colors.light.success : theme.border },
                   ]}
                 >
-                  <Feather name="check" size={12} color={selection.isConfirmed ? "#fff" : theme.textSecondary} />
+                  <EvendiIcon name="check" size={12} color={selection.isConfirmed ? "#fff" : theme.textSecondary} />
                 </Pressable>
               </Pressable>
             </Animated.View>
@@ -709,7 +708,7 @@ export default function BlomsterScreen() {
       <Pressable onPress={openBudgetModal} style={[styles.budgetCard, { backgroundColor: theme.backgroundDefault }]}>
         <View style={styles.budgetHeader}>
           <ThemedText style={styles.budgetLabel}>Budsjett for Blomster</ThemedText>
-          <Feather name="edit-2" size={16} color={theme.textSecondary} />
+          <EvendiIcon name="edit-2" size={16} color={theme.textSecondary} />
         </View>
         <ThemedText style={[styles.budgetAmount, { color: theme.primary }]}>
           {formatCurrency(budget)}
@@ -732,9 +731,9 @@ export default function BlomsterScreen() {
         }}
         style={[styles.findVendorsButton, { backgroundColor: theme.primary }]}
       >
-        <Feather name="search" size={18} color="#FFFFFF" />
+        <EvendiIcon name="search" size={18} color="#FFFFFF" />
         <ThemedText style={styles.findVendorsText}>Finn florister</ThemedText>
-        <Feather name="arrow-right" size={18} color="#FFFFFF" />
+        <EvendiIcon name="arrow-right" size={18} color="#FFFFFF" />
       </Pressable>
 
       {/* Progress */}
@@ -771,11 +770,11 @@ export default function BlomsterScreen() {
                   isCompleted ? { backgroundColor: theme.primary, borderColor: theme.primary } : undefined,
                 ]}
               >
-                {isCompleted && <Feather name="check" size={14} color="#fff" />}
+                {isCompleted && <EvendiIcon name="check" size={14} color="#fff" />}
               </View>
               <View style={styles.timelineStepContent}>
                 <View style={[styles.timelineIcon, { backgroundColor: isCompleted ? theme.primary + '20' : theme.border }]}>
-                  <Feather name={step.icon} size={16} color={isCompleted ? theme.primary : theme.textSecondary} />
+                  <EvendiIcon name={step.icon} size={16} color={isCompleted ? theme.primary : theme.textSecondary} />
                 </View>
                 <ThemedText style={[styles.timelineStepLabel, isCompleted ? styles.completedText : undefined]}>
                   {step.label}
@@ -802,7 +801,7 @@ export default function BlomsterScreen() {
             onPress={() => setActiveTab(tab.key)}
             style={[styles.tab, activeTab === tab.key && { borderBottomColor: theme.primary, borderBottomWidth: 2 }]}
           >
-            <Feather name={tab.icon} size={18} color={activeTab === tab.key ? theme.primary : theme.textSecondary} />
+            <EvendiIcon name={tab.icon} size={18} color={activeTab === tab.key ? theme.primary : theme.textSecondary} />
             <ThemedText style={[styles.tabLabel, { color: activeTab === tab.key ? theme.primary : theme.textSecondary }]}>
               {tab.label}
             </ThemedText>
@@ -987,7 +986,7 @@ export default function BlomsterScreen() {
                       selectionItemType === item.key ? { backgroundColor: theme.primary + '20', borderColor: theme.primary } : undefined,
                     ]}
                   >
-                    <Feather
+                    <EvendiIcon
                       name={item.icon}
                       size={20}
                       color={selectionItemType === item.key ? theme.primary : theme.textSecondary}
@@ -1034,7 +1033,7 @@ export default function BlomsterScreen() {
                   <Image source={{ uri: selectionImage }} style={styles.pickedImage} />
                 ) : (
                   <View style={styles.imagePickerPlaceholder}>
-                    <Feather name="image" size={32} color={theme.textSecondary} />
+                    <EvendiIcon name="image" size={32} color={theme.textSecondary} />
                     <ThemedText style={[styles.imagePickerText, { color: theme.textSecondary }]}>
                       Velg bilde
                     </ThemedText>

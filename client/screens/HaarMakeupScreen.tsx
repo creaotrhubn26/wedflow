@@ -15,7 +15,7 @@ import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import * as ImagePicker from "expo-image-picker";
 import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
@@ -527,13 +527,13 @@ export default function HaarMakeupScreen() {
       <View style={styles.sectionHeader}>
         <ThemedText style={styles.sectionTitle}>Avtaler</ThemedText>
         <Pressable onPress={() => openAppointmentModal()} style={[styles.addButton, { backgroundColor: theme.primary }]}>
-          <Feather name="plus" size={20} color="#fff" />
+          <EvendiIcon name="plus" size={20} color="#fff" />
         </Pressable>
       </View>
 
       {appointments.length === 0 ? (
         <View style={[styles.emptyState, { backgroundColor: theme.backgroundDefault }]}>
-          <Feather name="heart" size={48} color={theme.primary} style={{ opacity: 0.6 }} />
+          <EvendiIcon name="heart" size={48} color={theme.primary} style={{ opacity: 0.6 }} />
           <ThemedText style={[styles.emptyText, { color: theme.text, fontWeight: '600', fontSize: 18 }]}>
             Se best ut på dagen deres
           </ThemedText>
@@ -570,7 +570,7 @@ export default function HaarMakeupScreen() {
                     appointment.completed && { backgroundColor: theme.primary, borderColor: theme.primary },
                   ]}
                 >
-                  {appointment.completed && <Feather name="check" size={14} color="#fff" />}
+                  {appointment.completed && <EvendiIcon name="check" size={14} color="#fff" />}
                 </Pressable>
                 <View style={styles.appointmentInfo}>
                   <ThemedText
@@ -596,9 +596,9 @@ export default function HaarMakeupScreen() {
                   }}
                   style={[styles.quickActionButton, { backgroundColor: theme.backgroundSecondary }]}
                 >
-                  <Feather name="copy" size={16} color={Colors.dark.accent} />
+                  <EvendiIcon name="copy" size={16} color={Colors.dark.accent} />
                 </Pressable>
-                <Feather name="chevron-right" size={20} color={theme.textSecondary} />
+                <EvendiIcon name="chevron-right" size={20} color={theme.textSecondary} />
               </Pressable>
             </SwipeableRow>
           </Animated.View>
@@ -612,13 +612,13 @@ export default function HaarMakeupScreen() {
       <View style={styles.sectionHeader}>
         <ThemedText style={styles.sectionTitle}>Looks & Inspirasjon</ThemedText>
         <Pressable onPress={() => openLookModal()} style={[styles.addButton, { backgroundColor: theme.primary }]}>
-          <Feather name="plus" size={20} color="#fff" />
+          <EvendiIcon name="plus" size={20} color="#fff" />
         </Pressable>
       </View>
 
       {looks.length === 0 ? (
         <View style={[styles.emptyState, { backgroundColor: theme.backgroundDefault }]}>
-          <Feather name="heart" size={48} color={theme.primary} style={{ opacity: 0.6 }} />
+          <EvendiIcon name="heart" size={48} color={theme.primary} style={{ opacity: 0.6 }} />
           <ThemedText style={[styles.emptyText, { color: theme.text, fontWeight: '600', fontSize: 18 }]}>
             Hvordan vil dere se ut?
           </ThemedText>
@@ -656,7 +656,7 @@ export default function HaarMakeupScreen() {
                   <Image source={{ uri: look.imageUrl }} style={styles.lookImage} />
                 ) : (
                   <View style={[styles.lookImagePlaceholder, { backgroundColor: theme.border }]}>
-                    <Feather name="image" size={32} color={theme.textSecondary} />
+                    <EvendiIcon name="image" size={32} color={theme.textSecondary} />
                   </View>
                 )}
                 <View style={styles.lookInfo}>
@@ -674,7 +674,7 @@ export default function HaarMakeupScreen() {
                   style={styles.favoriteButton}
                 >
                   <View style={[styles.favoriteIconBg, look.isFavorite && { backgroundColor: Colors.light.error + '20' }]}>
-                    <Feather
+                    <EvendiIcon
                       name="heart"
                       size={18}
                       color={look.isFavorite ? Colors.light.error : theme.textSecondary}
@@ -684,7 +684,7 @@ export default function HaarMakeupScreen() {
                 </Pressable>
                 {look.isSelected && (
                   <View style={[styles.selectedBadge, { backgroundColor: theme.primary }]}>
-                    <Feather name="check" size={12} color="#fff" />
+                    <EvendiIcon name="check" size={12} color="#fff" />
                     <ThemedText style={styles.selectedText}>Valgt</ThemedText>
                   </View>
                 )}
@@ -702,7 +702,7 @@ export default function HaarMakeupScreen() {
       <Pressable onPress={openBudgetModal} style={[styles.budgetCard, { backgroundColor: theme.backgroundDefault }]}>
         <View style={styles.budgetHeader}>
           <ThemedText style={styles.budgetLabel}>Budsjett for Hår & Makeup</ThemedText>
-          <Feather name="edit-2" size={16} color={theme.textSecondary} />
+          <EvendiIcon name="edit-2" size={16} color={theme.textSecondary} />
         </View>
         <ThemedText style={[styles.budgetAmount, { color: theme.primary }]}>
           {formatCurrency(budget)}
@@ -720,9 +720,9 @@ export default function HaarMakeupScreen() {
         }}
         style={[styles.findVendorsButton, { backgroundColor: theme.primary }]}
       >
-        <Feather name="search" size={18} color="#FFFFFF" />
+        <EvendiIcon name="search" size={18} color="#FFFFFF" />
         <ThemedText style={styles.findVendorsText}>Finn hår & makeup-artister</ThemedText>
-        <Feather name="arrow-right" size={18} color="#FFFFFF" />
+        <EvendiIcon name="arrow-right" size={18} color="#FFFFFF" />
       </Pressable>
 
       {/* Progress */}
@@ -759,11 +759,11 @@ export default function HaarMakeupScreen() {
                   isCompleted ? { backgroundColor: theme.primary, borderColor: theme.primary } : undefined,
                 ]}
               >
-                {isCompleted && <Feather name="check" size={14} color="#fff" />}
+                {isCompleted && <EvendiIcon name="check" size={14} color="#fff" />}
               </View>
               <View style={styles.timelineStepContent}>
                 <View style={[styles.timelineIcon, { backgroundColor: isCompleted ? theme.primary + '20' : theme.border }]}>
-                  <Feather name={step.icon} size={16} color={isCompleted ? theme.primary : theme.textSecondary} />
+                  <EvendiIcon name={step.icon} size={16} color={isCompleted ? theme.primary : theme.textSecondary} />
                 </View>
                 <ThemedText style={[styles.timelineStepLabel, isCompleted ? styles.completedText : undefined]}>
                   {step.label}
@@ -790,7 +790,7 @@ export default function HaarMakeupScreen() {
             onPress={() => setActiveTab(tab.key as any)}
             style={[styles.tab, activeTab === tab.key && { borderBottomColor: theme.primary, borderBottomWidth: 2 }]}
           >
-            <Feather name={tab.icon as any} size={18} color={activeTab === tab.key ? theme.primary : theme.textSecondary} />
+            <EvendiIcon name={tab.icon as any} size={18} color={activeTab === tab.key ? theme.primary : theme.textSecondary} />
             <ThemedText style={[styles.tabLabel, { color: activeTab === tab.key ? theme.primary : theme.textSecondary }]}>
               {tab.label}
             </ThemedText>
@@ -812,7 +812,7 @@ export default function HaarMakeupScreen() {
           </View>
         ) : isError ? (
           <View style={[styles.errorContainer, { backgroundColor: theme.backgroundDefault }]}>
-            <Feather name="alert-circle" size={48} color={Colors.light.error} />
+            <EvendiIcon name="alert-circle" size={48} color={Colors.light.error} />
             <ThemedText style={[styles.errorText, { color: theme.text }]}>
               Kunne ikke laste data
             </ThemedText>
@@ -823,7 +823,7 @@ export default function HaarMakeupScreen() {
               onPress={() => refetch()}
               style={[styles.retryButton, { backgroundColor: theme.primary }]}
             >
-              <Feather name="refresh-cw" size={16} color="#fff" />
+              <EvendiIcon name="refresh-cw" size={16} color="#fff" />
               <ThemedText style={styles.retryButtonText}>Prøv igjen</ThemedText>
             </Pressable>
           </View>
@@ -1045,7 +1045,7 @@ export default function HaarMakeupScreen() {
                   <Image source={{ uri: lookImage }} style={styles.pickedImage} />
                 ) : (
                   <View style={styles.imagePickerPlaceholder}>
-                    <Feather name="image" size={32} color={theme.textSecondary} />
+                    <EvendiIcon name="image" size={32} color={theme.textSecondary} />
                     <ThemedText style={[styles.imagePickerText, { color: theme.textSecondary }]}>
                       Velg bilde
                     </ThemedText>
@@ -1055,11 +1055,11 @@ export default function HaarMakeupScreen() {
               {lookImage && (
                 <View style={styles.imageActions}>
                   <Pressable onPress={pickImage} style={[styles.imageActionButton, { backgroundColor: theme.backgroundDefault }]}>
-                    <Feather name="edit-2" size={16} color={theme.primary} />
+                    <EvendiIcon name="edit-2" size={16} color={theme.primary} />
                     <ThemedText style={[styles.imageActionText, { color: theme.primary }]}>Bytt bilde</ThemedText>
                   </Pressable>
                   <Pressable onPress={removeImage} style={[styles.imageActionButton, { backgroundColor: Colors.light.error + '10' }]}>
-                    <Feather name="trash-2" size={16} color={Colors.light.error} />
+                    <EvendiIcon name="trash-2" size={16} color={Colors.light.error} />
                     <ThemedText style={[styles.imageActionText, { color: Colors.light.error }]}>Fjern</ThemedText>
                   </Pressable>
                 </View>

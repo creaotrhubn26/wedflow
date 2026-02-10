@@ -5,7 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Haptics from "expo-haptics";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { ThemedText } from "@/components/ThemedText";
@@ -210,7 +210,7 @@ export default function VendorCateringScreen() {
         >
           <View style={styles.cardHeader}>
             <ThemedText style={[styles.cardTitle, { color: theme.text }]}>Meny & pakker</ThemedText>
-            <Feather name="shopping-bag" size={18} color={theme.textSecondary} />
+            <EvendiIcon name="shopping-bag" size={18} color={theme.textSecondary} />
           </View>
           <ThemedText style={[styles.cardBody, { color: theme.textSecondary }]}>Opprett eller rediger meny-pakker og pris per gjest.</ThemedText>
           <Button style={styles.cardButton} onPress={goToProducts}>Opprett pakke</Button>
@@ -226,7 +226,7 @@ export default function VendorCateringScreen() {
         >
           <View style={styles.cardHeader}>
             <ThemedText style={[styles.cardTitle, { color: theme.text }]}>Tilbud</ThemedText>
-            <Feather name="file-text" size={18} color={theme.textSecondary} />
+            <EvendiIcon name="file-text" size={18} color={theme.textSecondary} />
           </View>
           <ThemedText style={[styles.cardBody, { color: theme.textSecondary }]}>Send tilbud basert på valgte pakker og gjestetall.</ThemedText>
           <Button style={styles.cardButton} onPress={goToOffers}>Send tilbud</Button>
@@ -234,7 +234,7 @@ export default function VendorCateringScreen() {
       </View>
 
       <View style={[styles.infoBox, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-        <Feather name="info" size={16} color={theme.textSecondary} />
+        <EvendiIcon name="info" size={16} color={theme.textSecondary} />
         <ThemedText style={[styles.infoText, { color: theme.textSecondary }]}>Bruk dashbordet for å holde menyer, priser og tilbud oppdatert.</ThemedText>
       </View>
 
@@ -245,7 +245,7 @@ export default function VendorCateringScreen() {
         </View>
         {products.length === 0 ? (
           <View style={styles.emptyRow}>
-            <Feather name="shopping-bag" size={18} color={theme.accent} />
+            <EvendiIcon name="shopping-bag" size={18} color={theme.accent} />
             <View style={{ flex: 1 }}>
               <ThemedText style={[styles.emptyTitle, { color: theme.text }]}>{vendorConfig.emptyStates.products.title}</ThemedText>
               <ThemedText style={[styles.emptySubtitle, { color: theme.textSecondary }]}>{vendorConfig.emptyStates.products.subtitle}</ThemedText>
@@ -267,7 +267,7 @@ export default function VendorCateringScreen() {
                       <ThemedText numberOfLines={1} style={{ color: theme.textSecondary, fontSize: 12 }}>{p.description}</ThemedText>
                     ) : null}
                   </View>
-                  <Feather name="chevron-right" size={18} color={theme.textSecondary} />
+                  <EvendiIcon name="chevron-right" size={18} color={theme.textSecondary} />
                 </Pressable>
               </SwipeableRow>
             </Animated.View>
@@ -282,7 +282,7 @@ export default function VendorCateringScreen() {
         </View>
         {offers.length === 0 ? (
           <View style={styles.emptyRow}>
-            <Feather name="file-text" size={18} color={theme.accent} />
+            <EvendiIcon name="file-text" size={18} color={theme.accent} />
             <View style={{ flex: 1 }}>
               <ThemedText style={[styles.emptyTitle, { color: theme.text }]}>Ingen tilbud</ThemedText>
               <ThemedText style={[styles.emptySubtitle, { color: theme.textSecondary }]}>Send et tilbud basert på meny.</ThemedText>
@@ -301,7 +301,7 @@ export default function VendorCateringScreen() {
                     <ThemedText style={{ color: theme.text, fontWeight: "600" }}>{o.title}</ThemedText>
                     <ThemedText style={{ color: theme.textSecondary, fontSize: 13 }}>{o.status} • {o.totalAmount}{o.currency ? ` ${o.currency}` : ""}</ThemedText>
                   </View>
-                  <Feather name="chevron-right" size={18} color={theme.textSecondary} />
+                  <EvendiIcon name="chevron-right" size={18} color={theme.textSecondary} />
                 </Pressable>
               </SwipeableRow>
             </Animated.View>

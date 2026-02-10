@@ -12,7 +12,7 @@ import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInRight } from "react-native-reanimated";
 import { useQuery } from "@tanstack/react-query";
@@ -186,7 +186,7 @@ export default function VendorsScreen() {
             <CategoryIcon name={getIconName((item as any).categoryName)} size={28} color={Colors.dark.accent} />
             {(item as any).isFeatured && (
               <View style={[styles.featuredBadge, { backgroundColor: Colors.dark.accent }]}>
-                <Feather name="star" size={10} color="#FFFFFF" />
+                <EvendiIcon name="star" size={10} color="#FFFFFF" />
               </View>
             )}
           </View>
@@ -195,18 +195,18 @@ export default function VendorsScreen() {
               <View style={{ flexDirection: "row", alignItems: "center", gap: Spacing.xs, flex: 1 }}>
                 <ThemedText style={styles.vendorName}>{item.name}</ThemedText>
                 {(item as any).isPrioritized && !((item as any).isFeatured) && (
-                  <Feather name="zap" size={14} color={Colors.dark.accent} />
+                  <EvendiIcon name="zap" size={14} color={Colors.dark.accent} />
                 )}
                 {(item as any).hasReviewBadge && (
                   <View style={[styles.reviewBadge, { backgroundColor: Colors.dark.accent }]}>
-                    <Feather name="award" size={10} color="#FFFFFF" />
+                    <EvendiIcon name="award" size={10} color="#FFFFFF" />
                   </View>
                 )}
               </View>
             </View>
           </View>
           <View style={styles.vendorMeta}>
-            <Feather name="map-pin" size={12} color={theme.textSecondary} />
+            <EvendiIcon name="map-pin" size={12} color={theme.textSecondary} />
             <ThemedText style={[styles.vendorLocation, { color: theme.textSecondary }]}>
               {item.location}, {item.country === "Norway" ? "Norge" : item.country === "Sweden" ? "Sverige" : "Danmark"}
             </ThemedText>
@@ -216,7 +216,7 @@ export default function VendorsScreen() {
           </ThemedText>
           <View style={styles.vendorFooter}>
             <View style={styles.ratingContainer}>
-              <Feather name="star" size={14} color={Colors.dark.accent} />
+              <EvendiIcon name="star" size={14} color={Colors.dark.accent} />
               <ThemedText style={[styles.rating, { color: Colors.dark.accent }]}>
                 {item.rating}
               </ThemedText>
@@ -238,7 +238,7 @@ export default function VendorsScreen() {
           { backgroundColor: theme.backgroundSecondary, borderColor: theme.border },
         ]}
       >
-        <Feather name="search" size={18} color={theme.textMuted} />
+        <EvendiIcon name="search" size={18} color={theme.textMuted} />
         <TextInput
           style={[styles.searchInput, { color: theme.text }]}
           placeholder="Søk etter leverandør..."
@@ -269,7 +269,7 @@ export default function VendorsScreen() {
                 },
               ]}
             >
-              <Feather
+              <EvendiIcon
                 name={item.icon as any}
                 size={14}
                 color={selectedCategory === item.id ? "#1A1A1A" : theme.textSecondary}
@@ -331,7 +331,7 @@ export default function VendorsScreen() {
         style={[styles.vendorCta, { backgroundColor: theme.backgroundDefault, borderColor: Colors.dark.accent }]}
       >
         <View style={styles.vendorCtaContent}>
-          <Feather name="briefcase" size={20} color={Colors.dark.accent} />
+          <EvendiIcon name="briefcase" size={20} color={Colors.dark.accent} />
           <View style={styles.vendorCtaText}>
             <ThemedText style={styles.vendorCtaTitle}>Er du leverandør?</ThemedText>
             <ThemedText style={[styles.vendorCtaSubtitle, { color: theme.textSecondary }]}>
@@ -339,7 +339,7 @@ export default function VendorsScreen() {
             </ThemedText>
           </View>
         </View>
-        <Feather name="chevron-right" size={20} color={Colors.dark.accent} />
+        <EvendiIcon name="chevron-right" size={20} color={Colors.dark.accent} />
       </Pressable>
     </>
   );

@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -203,7 +203,7 @@ export default function CoupleMessagesHubScreen() {
                 { backgroundColor: theme.accent + "20" },
               ]}
             >
-              <Feather name="briefcase" size={22} color={theme.accent} />
+              <EvendiIcon name="briefcase" size={22} color={theme.accent} />
             </View>
             <View style={styles.sectionHeaderText}>
               <ThemedText style={styles.sectionTitle}>
@@ -231,7 +231,7 @@ export default function CoupleMessagesHubScreen() {
                 </ThemedText>
               </View>
             )}
-            <Feather
+            <EvendiIcon
               name="chevron-right"
               size={20}
               color={theme.textMuted}
@@ -255,7 +255,7 @@ export default function CoupleMessagesHubScreen() {
                       { backgroundColor: theme.accent + "15" },
                     ]}
                   >
-                    <Feather
+                    <EvendiIcon
                       name="briefcase"
                       size={14}
                       color={theme.accent}
@@ -335,7 +335,7 @@ export default function CoupleMessagesHubScreen() {
                 { backgroundColor: "#8B5CF620" },
               ]}
             >
-              <Feather name="users" size={22} color="#8B5CF6" />
+              <EvendiIcon name="users" size={22} color="#8B5CF6" />
             </View>
             <View style={styles.sectionHeaderText}>
               <ThemedText style={styles.sectionTitle}>
@@ -360,7 +360,7 @@ export default function CoupleMessagesHubScreen() {
             />
           ) : people.length === 0 ? (
             <View style={[styles.emptySection, { borderTopColor: theme.border }]}>
-              <Feather
+              <EvendiIcon
                 name="user-plus"
                 size={20}
                 color={theme.textMuted}
@@ -390,7 +390,7 @@ export default function CoupleMessagesHubScreen() {
                       { backgroundColor: "#8B5CF615" },
                     ]}
                   >
-                    <Feather name="user" size={14} color="#8B5CF6" />
+                    <EvendiIcon name="user" size={14} color="#8B5CF6" />
                   </View>
                   <View style={styles.personInfo}>
                     <ThemedText
@@ -430,7 +430,7 @@ export default function CoupleMessagesHubScreen() {
                         `Call ${person.name}`
                       )}
                     >
-                      <Feather
+                      <EvendiIcon
                         name="phone"
                         size={16}
                         color={person.phone ? "#10B981" : theme.textMuted}
@@ -456,7 +456,7 @@ export default function CoupleMessagesHubScreen() {
                         `Text ${person.name}`
                       )}
                     >
-                      <Feather
+                      <EvendiIcon
                         name="message-square"
                         size={16}
                         color={
@@ -486,7 +486,7 @@ export default function CoupleMessagesHubScreen() {
                       `Show all ${people.length} people`
                     )}
                   </ThemedText>
-                  <Feather
+                  <EvendiIcon
                     name="chevron-right"
                     size={16}
                     color={theme.accent}
@@ -520,7 +520,7 @@ export default function CoupleMessagesHubScreen() {
                 { backgroundColor: "#F5920020" },
               ]}
             >
-              <Feather
+              <EvendiIcon
                 name="headphones"
                 size={22}
                 color="#F59200"
@@ -539,7 +539,7 @@ export default function CoupleMessagesHubScreen() {
                 )}
               </ThemedText>
             </View>
-            <Feather
+            <EvendiIcon
               name="chevron-right"
               size={20}
               color={theme.textMuted}
@@ -569,7 +569,7 @@ export default function CoupleMessagesHubScreen() {
               },
             ]}
           >
-            <Feather name="help-circle" size={20} color={theme.accent} />
+            <EvendiIcon name="help-circle" size={20} color={theme.accent} />
             <ThemedText style={styles.quickActionLabel}>
               {t("Hjelp & FAQ", "Help & FAQ")}
             </ThemedText>
@@ -587,7 +587,7 @@ export default function CoupleMessagesHubScreen() {
               },
             ]}
           >
-            <Feather name="edit-3" size={20} color={theme.accent} />
+            <EvendiIcon name="edit-3" size={20} color={theme.accent} />
             <ThemedText style={styles.quickActionLabel}>
               {t("Tilbakemelding", "Feedback")}
             </ThemedText>
@@ -605,7 +605,7 @@ export default function CoupleMessagesHubScreen() {
               },
             ]}
           >
-            <Feather name="mail" size={20} color={theme.accent} />
+            <EvendiIcon name="mail" size={20} color={theme.accent} />
             <ThemedText style={styles.quickActionLabel}>
               {t("E-post", "Email")}
             </ThemedText>

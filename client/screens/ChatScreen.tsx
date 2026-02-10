@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight, HeaderButton } from "@react-navigation/elements";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -175,7 +175,7 @@ export default function ChatScreen({ route, navigation }: Props) {
     navigation.setOptions({
       headerLeft: () => (
         <HeaderButton onPress={handleDeleteConversation}>
-          <Feather name="trash-2" size={20} color={theme.textSecondary} />
+          <EvendiIcon name="trash-2" size={20} color={theme.textSecondary} />
         </HeaderButton>
       ),
       headerRight: () => (
@@ -184,10 +184,10 @@ export default function ChatScreen({ route, navigation }: Props) {
             setShowVendorInfo(!showVendorInfo);
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           }}>
-            <Feather name="info" size={20} color={showVendorInfo ? Colors.dark.accent : theme.text} />
+            <EvendiIcon name="info" size={20} color={showVendorInfo ? Colors.dark.accent : theme.text} />
           </HeaderButton>
           <HeaderButton onPress={() => navigation.goBack()}>
-            <Feather name="x" size={24} color={theme.text} />
+            <EvendiIcon name="x" size={24} color={theme.text} />
           </HeaderButton>
         </View>
       ),
@@ -559,18 +559,18 @@ export default function ChatScreen({ route, navigation }: Props) {
       {showVendorInfo && conversationDetails?.vendor && (
         <View style={[styles.vendorInfoCard, { backgroundColor: theme.backgroundDefault, borderBottomColor: theme.border }]}>
           <View style={styles.vendorInfoRow}>
-            <Feather name="briefcase" size={16} color={Colors.dark.accent} />
+            <EvendiIcon name="briefcase" size={16} color={Colors.dark.accent} />
             <ThemedText style={styles.vendorInfoText}>{conversationDetails.vendor.businessName}</ThemedText>
           </View>
           <View style={styles.vendorInfoRow}>
-            <Feather name="mail" size={16} color={theme.textMuted} />
+            <EvendiIcon name="mail" size={16} color={theme.textMuted} />
             <ThemedText style={[styles.vendorInfoText, { color: theme.textSecondary }]}>
               {conversationDetails.vendor.email}
             </ThemedText>
           </View>
           {conversationDetails.vendor.phone && (
             <View style={styles.vendorInfoRow}>
-              <Feather name="phone" size={16} color={theme.textMuted} />
+              <EvendiIcon name="phone" size={16} color={theme.textMuted} />
               <ThemedText style={[styles.vendorInfoText, { color: theme.textSecondary }]}>
                 {conversationDetails.vendor.phone}
               </ThemedText>
@@ -580,7 +580,7 @@ export default function ChatScreen({ route, navigation }: Props) {
             onPress={() => setShowVendorInfo(false)}
             style={styles.closeInfoBtn}
           >
-            <Feather name="x" size={16} color={theme.textMuted} />
+            <EvendiIcon name="x" size={16} color={theme.textMuted} />
           </Pressable>
         </View>
       )}
@@ -615,7 +615,7 @@ export default function ChatScreen({ route, navigation }: Props) {
             onPress={() => setSelectedImage(null)}
             style={styles.removeImageBtn}
           >
-            <Feather name="x-circle" size={24} color="#fff" />
+            <EvendiIcon name="x-circle" size={24} color="#fff" />
           </Pressable>
         </View>
       )}
@@ -636,7 +636,7 @@ export default function ChatScreen({ route, navigation }: Props) {
               </ThemedText>
             </View>
             <Pressable onPress={handleCancelEdit} hitSlop={8}>
-              <Feather name="x" size={20} color={theme.textSecondary} />
+              <EvendiIcon name="x" size={20} color={theme.textSecondary} />
             </Pressable>
           </View>
         )}
@@ -645,7 +645,7 @@ export default function ChatScreen({ route, navigation }: Props) {
             onPress={pickImage}
             style={styles.imagePickerBtn}
           >
-            <Feather name="image" size={20} color={selectedImage ? Colors.dark.accent : theme.textMuted} />
+            <EvendiIcon name="image" size={20} color={selectedImage ? Colors.dark.accent : theme.textMuted} />
           </Pressable>
           <TextInput
             style={[styles.textInput, { backgroundColor: theme.backgroundSecondary, color: theme.text }]}
@@ -677,7 +677,7 @@ export default function ChatScreen({ route, navigation }: Props) {
             {sendMutation.isPending || editMessageMutation.isPending || isUploading ? (
               <ActivityIndicator size="small" color="#1A1A1A" />
             ) : (
-              <Feather name={editingMessage ? "check" : "send"} size={18} color={(messageText.trim() || selectedImage) ? "#1A1A1A" : theme.textMuted} />
+              <EvendiIcon name={editingMessage ? "check" : "send"} size={18} color={(messageText.trim() || selectedImage) ? "#1A1A1A" : theme.textMuted} />
             )}
           </Pressable>
         </View>

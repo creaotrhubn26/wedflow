@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
@@ -170,7 +170,7 @@ export default function JoinWeddingScreen() {
   const renderCodeStep = () => (
     <Animated.View entering={FadeInDown.duration(400)} style={[styles.card, { backgroundColor: cardBg }]}>
       <View style={styles.iconCircle}>
-        <Feather name="mail" size={32} color={accent} />
+        <EvendiIcon name="mail" size={32} color={accent} />
       </View>
       <ThemedText style={[styles.cardTitle, { color: textColor }]}>
         {isWedding ? "Bli med i et bryllup" : "Bli med i et arrangement"}
@@ -180,7 +180,7 @@ export default function JoinWeddingScreen() {
       </ThemedText>
 
       <View style={[styles.codeInputContainer, { backgroundColor: inputBg, borderColor }]}>
-        <Feather name="key" size={20} color={subtextColor} style={{ marginRight: 10 }} />
+        <EvendiIcon name="key" size={20} color={subtextColor} style={{ marginRight: 10 }} />
         <TextInput
           style={[styles.codeInput, { color: textColor }]}
           placeholder="WED-XXXXX"
@@ -203,7 +203,7 @@ export default function JoinWeddingScreen() {
           <ActivityIndicator color="#fff" />
         ) : (
           <>
-            <Feather name="check-circle" size={18} color="#fff" style={{ marginRight: 8 }} />
+            <EvendiIcon name="check-circle" size={18} color="#fff" style={{ marginRight: 8 }} />
             <ThemedText style={styles.buttonText}>Valider kode</ThemedText>
           </>
         )}
@@ -216,7 +216,7 @@ export default function JoinWeddingScreen() {
       {validationResult?.couple && (
         <View style={[styles.card, { backgroundColor: cardBg, marginBottom: Spacing.md }]}>
           <View style={styles.coupleInfoRow}>
-            <Feather name="heart" size={20} color="#e91e63" />
+            <EvendiIcon name="heart" size={20} color="#e91e63" />
             <View style={{ marginLeft: 12, flex: 1 }}>
               <ThemedText style={[styles.coupleName, { color: textColor }]}>
                 {validationResult.couple.displayName}
@@ -255,7 +255,7 @@ export default function JoinWeddingScreen() {
                 onPress={() => handleSelectRole(r.key)}
               >
                 <View style={[styles.roleIcon, { backgroundColor: isSelected ? accent + "30" : borderColor }]}>
-                  <Feather name={r.icon} size={18} color={isSelected ? accent : subtextColor} />
+                  <EvendiIcon name={r.icon} size={18} color={isSelected ? accent : subtextColor} />
                 </View>
                 <ThemedText style={[styles.roleLabel, { color: isSelected ? accent : textColor }]}>
                   {r.label}
@@ -273,7 +273,7 @@ export default function JoinWeddingScreen() {
           onPress={handleContinueToDetails}
         >
           <ThemedText style={styles.buttonText}>Fortsett</ThemedText>
-          <Feather name="arrow-right" size={18} color="#fff" style={{ marginLeft: 8 }} />
+          <EvendiIcon name="arrow-right" size={18} color="#fff" style={{ marginLeft: 8 }} />
         </Pressable>
       </View>
     </Animated.View>
@@ -282,7 +282,7 @@ export default function JoinWeddingScreen() {
   const renderDetailsStep = () => (
     <Animated.View entering={FadeInDown.duration(400)} style={[styles.card, { backgroundColor: cardBg }]}>
       <View style={styles.iconCircle}>
-        <Feather name="user-plus" size={32} color={accent} />
+        <EvendiIcon name="user-plus" size={32} color={accent} />
       </View>
       <ThemedText style={[styles.cardTitle, { color: textColor }]}>
         Dine opplysninger
@@ -294,7 +294,7 @@ export default function JoinWeddingScreen() {
       <View style={{ marginTop: Spacing.lg, width: "100%" }}>
         <ThemedText style={[styles.inputLabel, { color: subtextColor }]}>Navn</ThemedText>
         <View style={[styles.inputContainer, { backgroundColor: inputBg, borderColor }]}>
-          <Feather name="user" size={18} color={subtextColor} style={{ marginRight: 10 }} />
+          <EvendiIcon name="user" size={18} color={subtextColor} style={{ marginRight: 10 }} />
           <TextInput
             ref={nameRef}
             style={[styles.textInput, { color: textColor }]}
@@ -310,7 +310,7 @@ export default function JoinWeddingScreen() {
 
         <ThemedText style={[styles.inputLabel, { color: subtextColor, marginTop: Spacing.md }]}>E-post</ThemedText>
         <View style={[styles.inputContainer, { backgroundColor: inputBg, borderColor }]}>
-          <Feather name="mail" size={18} color={subtextColor} style={{ marginRight: 10 }} />
+          <EvendiIcon name="mail" size={18} color={subtextColor} style={{ marginRight: 10 }} />
           <TextInput
             ref={emailRef}
             style={[styles.textInput, { color: textColor }]}
@@ -336,14 +336,14 @@ export default function JoinWeddingScreen() {
           <ActivityIndicator color="#fff" />
         ) : (
           <>
-            <Feather name="check" size={18} color="#fff" style={{ marginRight: 8 }} />
+            <EvendiIcon name="check" size={18} color="#fff" style={{ marginRight: 8 }} />
             <ThemedText style={styles.buttonText}>{isWedding ? "Bli med i bryllupet" : "Bli med i arrangementet"}</ThemedText>
           </>
         )}
       </Pressable>
 
       <Pressable style={styles.backButton} onPress={() => setStep("role")}>
-        <Feather name="arrow-left" size={16} color={subtextColor} />
+        <EvendiIcon name="arrow-left" size={16} color={subtextColor} />
         <ThemedText style={[styles.backText, { color: subtextColor }]}>Tilbake</ThemedText>
       </Pressable>
     </Animated.View>
@@ -352,7 +352,7 @@ export default function JoinWeddingScreen() {
   const renderSuccessStep = () => (
     <Animated.View entering={FadeInDown.duration(400)} style={[styles.card, { backgroundColor: cardBg }]}>
       <View style={[styles.iconCircle, { backgroundColor: "#4caf50" + "20" }]}>
-        <Feather name="check-circle" size={40} color="#4caf50" />
+        <EvendiIcon name="check-circle" size={40} color="#4caf50" />
       </View>
       <ThemedText style={[styles.cardTitle, { color: textColor }]}>
         Du er med! 🎉
@@ -430,7 +430,7 @@ export default function JoinWeddingScreen() {
 function AccessRow({ icon, label, color }: { icon: any; label: string; color: string }) {
   return (
     <View style={styles.accessRow}>
-      <Feather name={icon} size={16} color={color} />
+      <EvendiIcon name={icon} size={16} color={color} />
       <ThemedText style={[styles.accessLabel, { color }]}>{label}</ThemedText>
     </View>
   );

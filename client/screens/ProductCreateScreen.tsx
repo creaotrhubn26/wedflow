@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -877,7 +877,7 @@ export default function ProductCreateScreen({ navigation, route }: Props) {
       <View style={[styles.header, { paddingTop: insets.top + Spacing.md, backgroundColor: theme.backgroundDefault, borderBottomColor: theme.border }]}>
         <View style={styles.headerContent}>
           <View style={[styles.headerIconCircle, { backgroundColor: theme.accent }]}>
-            <Feather name="shopping-bag" size={20} color="#FFFFFF" />
+            <EvendiIcon name="shopping-bag" size={20} color="#FFFFFF" />
           </View>
           <View style={styles.headerTextContainer}>
             <ThemedText style={[styles.headerTitle, { color: theme.text }]}>
@@ -895,7 +895,7 @@ export default function ProductCreateScreen({ navigation, route }: Props) {
             { backgroundColor: pressed ? theme.backgroundSecondary : theme.backgroundRoot },
           ]}
         >
-          <Feather name="x" size={20} color={theme.textSecondary} />
+          <EvendiIcon name="x" size={20} color={theme.textSecondary} />
         </Pressable>
       </View>
       <KeyboardAwareScrollViewCompat
@@ -912,11 +912,11 @@ export default function ProductCreateScreen({ navigation, route }: Props) {
             <View style={[styles.templatesCard, { backgroundColor: theme.accent + "10", borderColor: theme.accent + "30" }]}>
               <View style={styles.templatesHeader}>
                 <View style={styles.templatesHeaderLeft}>
-                  <Feather name="zap" size={18} color={theme.accent} />
+                  <EvendiIcon name="zap" size={18} color={theme.accent} />
                   <ThemedText style={[styles.templatesTitle, { color: theme.accent }]}>Hurtigstart</ThemedText>
                 </View>
                 <Pressable onPress={() => setShowTemplates(false)} style={styles.templatesClose}>
-                  <Feather name="x" size={16} color={theme.textMuted} />
+                  <EvendiIcon name="x" size={16} color={theme.textMuted} />
                 </Pressable>
               </View>
               <ThemedText style={[styles.templatesSubtitle, { color: theme.textSecondary }]}>
@@ -929,7 +929,7 @@ export default function ProductCreateScreen({ navigation, route }: Props) {
                     onPress={() => applyTemplate(template)}
                     style={[styles.templateChip, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}
                   >
-                    <Feather name="copy" size={14} color={theme.accent} />
+                    <EvendiIcon name="copy" size={14} color={theme.accent} />
                     <View style={styles.templateChipContent}>
                       <ThemedText style={[styles.templateChipName, { color: theme.text }]}>{template.name}</ThemedText>
                       <ThemedText style={[styles.templateChipPrice, { color: theme.textMuted }]}>{template.price} kr</ThemedText>
@@ -945,7 +945,7 @@ export default function ProductCreateScreen({ navigation, route }: Props) {
           <View style={[styles.formCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
             <View style={styles.sectionHeader}>
               <View style={[styles.sectionIconCircle, { backgroundColor: theme.accent + "15" }]}>
-                <Feather name="info" size={16} color={theme.accent} />
+                <EvendiIcon name="info" size={16} color={theme.accent} />
               </View>
               <ThemedText style={[styles.formTitle, { color: theme.text }]}>Produktinformasjon</ThemedText>
             </View>
@@ -965,7 +965,7 @@ export default function ProductCreateScreen({ navigation, route }: Props) {
               />
               {titleStatus !== "idle" && (
                 <View style={styles.titleStatusRow}>
-                  <Feather
+                  <EvendiIcon
                     name={
                       titleStatus === "available"
                         ? "check-circle"
@@ -1050,7 +1050,7 @@ export default function ProductCreateScreen({ navigation, route }: Props) {
                     }}
                     style={styles.suggestionChip}
                   >
-                    <Feather name="zap" size={12} color="#f59e0b" />
+                    <EvendiIcon name="zap" size={12} color="#f59e0b" />
                     <ThemedText style={styles.suggestionText}>
                       Foreslått: {getSuggestedPrice(vendorCategory)} kr
                     </ThemedText>
@@ -1153,7 +1153,7 @@ export default function ProductCreateScreen({ navigation, route }: Props) {
                 style={styles.sectionHeader}
               >
                 <View style={[styles.sectionIconCircle, { backgroundColor: theme.accent + "15" }]}>
-                  <Feather name="sliders" size={16} color={theme.accent} />
+                  <EvendiIcon name="sliders" size={16} color={theme.accent} />
                 </View>
                 <ThemedText style={[styles.formTitle, { color: theme.text }]}>
                   {vendorCategory === "Catering" && "Catering-detaljer"}
@@ -1169,7 +1169,7 @@ export default function ProductCreateScreen({ navigation, route }: Props) {
                   {vendorCategory === "Fotograf og videograf" && "Foto & Video-detaljer"}
                 </ThemedText>
                 <View style={{ marginLeft: "auto" }}>
-                  <Feather name={showAdvancedFields ? "chevron-up" : "chevron-down"} size={18} color={theme.textMuted} />
+                  <EvendiIcon name={showAdvancedFields ? "chevron-up" : "chevron-down"} size={18} color={theme.textMuted} />
                 </View>
               </Pressable>
 
@@ -1180,7 +1180,7 @@ export default function ProductCreateScreen({ navigation, route }: Props) {
                 <View style={[styles.smartFieldsCard, { backgroundColor: theme.backgroundRoot, borderColor: theme.border }]}> 
                   <View style={styles.smartFieldsHeader}>
                     <View style={styles.smartFieldsHeaderLeft}>
-                      <Feather name="layers" size={16} color={theme.accent} />
+                      <EvendiIcon name="layers" size={16} color={theme.accent} />
                       <ThemedText style={[styles.smartFieldsTitle, { color: theme.text }]}>Smartvalg</ThemedText>
                     </View>
                     <Switch
@@ -1791,7 +1791,7 @@ export default function ProductCreateScreen({ navigation, route }: Props) {
           <View style={[styles.formCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border, marginTop: Spacing.lg }]}>
             <View style={styles.sectionHeader}>
               <View style={[styles.sectionIconCircle, { backgroundColor: theme.accent + "15" }]}>
-                <Feather name="package" size={16} color={theme.accent} />
+                <EvendiIcon name="package" size={16} color={theme.accent} />
               </View>
               <ThemedText style={[styles.formTitle, { color: theme.text }]}>Lagerstyring</ThemedText>
             </View>
@@ -1855,7 +1855,7 @@ export default function ProductCreateScreen({ navigation, route }: Props) {
                 </View>
 
                 <View style={[styles.infoBox, { backgroundColor: theme.accent + "12", borderColor: theme.accent + "30" }]}>
-                  <Feather name="info" size={16} color={theme.accent} />
+                  <EvendiIcon name="info" size={16} color={theme.accent} />
                   <View style={{ flex: 1, marginLeft: Spacing.sm }}>
                     <ThemedText style={[styles.infoBoxText, { color: theme.text }]}>
                       {availableQuantity && parseInt(availableQuantity) > 0 ? (
@@ -1886,7 +1886,7 @@ export default function ProductCreateScreen({ navigation, route }: Props) {
           <View style={[styles.formCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border, marginTop: Spacing.lg }]}>
             <View style={[styles.pricePreview, { backgroundColor: theme.accent + "12" }]}>
               <View style={[styles.pricePreviewIcon, { backgroundColor: theme.accent }]}>
-                <Feather name="tag" size={16} color="#FFFFFF" />
+                <EvendiIcon name="tag" size={16} color="#FFFFFF" />
               </View>
               <ThemedText style={[styles.pricePreviewText, { color: theme.text }]}>
                 {parseFloat(unitPrice) > 0
@@ -1915,7 +1915,7 @@ export default function ProductCreateScreen({ navigation, route }: Props) {
               ) : (
                 <>
                   <View style={styles.submitBtnIcon}>
-                    <Feather name="check" size={18} color="#FFFFFF" />
+                    <EvendiIcon name="check" size={18} color="#FFFFFF" />
                   </View>
                   <ThemedText style={styles.submitBtnText}>
                     {isEditMode ? "Lagre endringer" : "Opprett produkt"}
@@ -1941,7 +1941,7 @@ export default function ProductCreateScreen({ navigation, route }: Props) {
                   <ActivityIndicator color="#F44336" />
                 ) : (
                   <>
-                    <Feather name="trash-2" size={18} color="#F44336" />
+                    <EvendiIcon name="trash-2" size={18} color="#F44336" />
                     <ThemedText style={[styles.deleteBtnText, { color: "#F44336" }]}>
                       Slett produkt
                     </ThemedText>

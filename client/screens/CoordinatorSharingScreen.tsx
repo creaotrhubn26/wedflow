@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import * as Clipboard from "expo-clipboard";
@@ -286,7 +286,7 @@ export default function CoordinatorSharingScreen() {
           <View style={styles.cardHeader}>
             <View style={styles.coordinatorInfo}>
               <View style={[styles.roleIcon, { backgroundColor: theme.accent + "20" }]}>
-                <Feather name="user" size={20} color={theme.accent} />
+                <EvendiIcon name="user" size={20} color={theme.accent} />
               </View>
               <View style={styles.nameSection}>
                 <ThemedText style={styles.coordinatorName}>{item.name}</ThemedText>
@@ -304,7 +304,7 @@ export default function CoordinatorSharingScreen() {
 
           <View style={[styles.permissionsRow, { borderTopColor: theme.border }]}>
             <View style={styles.permission}>
-              <Feather
+              <EvendiIcon
                 name={item.canViewSpeeches ? "check-circle" : "x-circle"}
                 size={14}
                 color={item.canViewSpeeches ? "#4CAF50" : theme.textMuted}
@@ -314,7 +314,7 @@ export default function CoordinatorSharingScreen() {
               </ThemedText>
             </View>
             <View style={styles.permission}>
-              <Feather
+              <EvendiIcon
                 name={item.canViewSchedule ? "check-circle" : "x-circle"}
                 size={14}
                 color={item.canViewSchedule ? "#4CAF50" : theme.textMuted}
@@ -328,7 +328,7 @@ export default function CoordinatorSharingScreen() {
             <View style={[styles.permissionsRow, { borderTopColor: theme.border, paddingTop: 0, marginTop: -Spacing.xs }]}>
               {item.canEditSpeeches ? (
                 <View style={styles.permission}>
-                  <Feather name="edit-3" size={14} color={theme.accent} />
+                  <EvendiIcon name="edit-3" size={14} color={theme.accent} />
                   <ThemedText style={[styles.permissionText, { color: theme.accent }]}>
                     Rediger taler
                   </ThemedText>
@@ -336,7 +336,7 @@ export default function CoordinatorSharingScreen() {
               ) : null}
               {item.canEditSchedule ? (
                 <View style={styles.permission}>
-                  <Feather name="edit-3" size={14} color={theme.accent} />
+                  <EvendiIcon name="edit-3" size={14} color={theme.accent} />
                   <ThemedText style={[styles.permissionText, { color: theme.accent }]}>
                     Rediger program
                   </ThemedText>
@@ -352,7 +352,7 @@ export default function CoordinatorSharingScreen() {
                 <ThemedText style={[styles.codeText, { color: theme.accent }]}>
                   {item.accessCode}
                 </ThemedText>
-                <Feather name="copy" size={14} color={theme.accent} />
+                <EvendiIcon name="copy" size={14} color={theme.accent} />
               </Pressable>
             </View>
           ) : null}
@@ -362,7 +362,7 @@ export default function CoordinatorSharingScreen() {
               onPress={() => shareLink(item.accessToken, item.roleLabel)}
               style={[styles.actionButton, { backgroundColor: theme.accent + "15" }]}
             >
-              <Feather name="share-2" size={16} color={theme.accent} />
+              <EvendiIcon name="share-2" size={16} color={theme.accent} />
               <ThemedText style={[styles.actionButtonText, { color: theme.accent }]}>
                 Del
               </ThemedText>
@@ -371,7 +371,7 @@ export default function CoordinatorSharingScreen() {
               onPress={() => copyLink(item.accessToken)}
               style={[styles.actionButton, { backgroundColor: theme.accent + "15" }]}
             >
-              <Feather name="link" size={16} color={theme.accent} />
+              <EvendiIcon name="link" size={16} color={theme.accent} />
               <ThemedText style={[styles.actionButtonText, { color: theme.accent }]}>
                 Kopier
               </ThemedText>
@@ -380,7 +380,7 @@ export default function CoordinatorSharingScreen() {
               onPress={() => openEditModal(item)}
               style={[styles.actionButton, { backgroundColor: theme.accent + "15" }]}
             >
-              <Feather name="edit" size={16} color={theme.accent} />
+              <EvendiIcon name="edit" size={16} color={theme.accent} />
               <ThemedText style={[styles.actionButtonText, { color: theme.accent }]}>
                 Rediger
               </ThemedText>
@@ -389,7 +389,7 @@ export default function CoordinatorSharingScreen() {
               onPress={() => handleDelete(item.id, item.name)}
               style={[styles.actionButton, { backgroundColor: "#FF3B3020" }]}
             >
-              <Feather name="trash-2" size={16} color="#FF3B30" />
+              <EvendiIcon name="trash-2" size={16} color="#FF3B30" />
               <ThemedText style={[styles.actionButtonText, { color: "#FF3B30" }]}>
                 Fjern
               </ThemedText>
@@ -419,7 +419,7 @@ export default function CoordinatorSharingScreen() {
     return (
       <View style={[styles.container, styles.centered, { backgroundColor: theme.backgroundRoot }]}>
         <View style={styles.errorContainer}>
-          <Feather name="alert-circle" size={48} color="#FF3B30" />
+          <EvendiIcon name="alert-circle" size={48} color="#FF3B30" />
           <ThemedText style={[styles.errorTitle, { color: theme.text }]}>
             Kunne ikke laste koordinatorer
           </ThemedText>
@@ -463,7 +463,7 @@ export default function CoordinatorSharingScreen() {
         ListEmptyComponent={
           <View style={styles.emptyState}>
             <View style={[styles.emptyIcon, { backgroundColor: theme.accent + "15" }]}>
-              <Feather name="users" size={40} color={theme.accent} />
+              <EvendiIcon name="users" size={40} color={theme.accent} />
             </View>
             <ThemedText style={[styles.emptyTitle, { color: theme.text }]}>
               Ingen koordinatorer lagt til
@@ -489,7 +489,7 @@ export default function CoordinatorSharingScreen() {
           }}
           style={[styles.fab, { backgroundColor: theme.accent }]}
         >
-          <Feather name="plus" size={24} color="#FFFFFF" />
+          <EvendiIcon name="plus" size={24} color="#FFFFFF" />
         </Pressable>
       </View>
 
@@ -512,7 +512,7 @@ export default function CoordinatorSharingScreen() {
                 setShowModal(false);
                 setEditingCoordinator(null);
               }}>
-                <Feather name="x" size={24} color={theme.textMuted} />
+                <EvendiIcon name="x" size={24} color={theme.textMuted} />
               </Pressable>
             </View>
 
@@ -549,7 +549,7 @@ export default function CoordinatorSharingScreen() {
 
               <View style={[styles.toggleRow, { borderBottomColor: theme.border }]}>
                 <View style={styles.toggleInfo}>
-                  <Feather name="mic" size={18} color={theme.text} />
+                  <EvendiIcon name="mic" size={18} color={theme.text} />
                   <ThemedText style={styles.toggleLabel}>Kan se talerliste</ThemedText>
                 </View>
                 <Switch
@@ -562,7 +562,7 @@ export default function CoordinatorSharingScreen() {
 
               <View style={[styles.toggleRow, { borderBottomColor: theme.border }]}>
                 <View style={styles.toggleInfo}>
-                  <Feather name="calendar" size={18} color={theme.text} />
+                  <EvendiIcon name="calendar" size={18} color={theme.text} />
                   <ThemedText style={styles.toggleLabel}>Kan se program</ThemedText>
                 </View>
                 <Switch
@@ -579,7 +579,7 @@ export default function CoordinatorSharingScreen() {
 
               <View style={[styles.toggleRow, { borderBottomColor: theme.border }]}>
                 <View style={styles.toggleInfo}>
-                  <Feather name="edit-3" size={18} color={theme.accent} />
+                  <EvendiIcon name="edit-3" size={18} color={theme.accent} />
                   <View>
                     <ThemedText style={styles.toggleLabel}>Kan redigere taler</ThemedText>
                     <ThemedText style={[styles.toggleHint, { color: theme.textMuted }]}>
@@ -600,7 +600,7 @@ export default function CoordinatorSharingScreen() {
 
               <View style={[styles.toggleRow, { borderBottomColor: theme.border }]}>
                 <View style={styles.toggleInfo}>
-                  <Feather name="edit-3" size={18} color={theme.accent} />
+                  <EvendiIcon name="edit-3" size={18} color={theme.accent} />
                   <View>
                     <ThemedText style={styles.toggleLabel}>Kan redigere program</ThemedText>
                     <ThemedText style={[styles.toggleHint, { color: theme.textMuted }]}>

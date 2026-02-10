@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { StyleSheet, View, Pressable, Share, Linking, ScrollView, ActivityIndicator, RefreshControl } from "react-native";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
@@ -124,7 +124,7 @@ export default function GuestInvitationsScreen() {
         {invites.length === 0 ? (
           <View style={styles.emptyState}>
             <View style={[styles.emptyIcon, { backgroundColor: theme.backgroundSecondary }]}>
-              <Feather name="mail" size={48} color={theme.textMuted} />
+              <EvendiIcon name="mail" size={48} color={theme.textMuted} />
             </View>
             <ThemedText style={[styles.emptyText, { color: theme.textSecondary }]}>Ingen invitasjoner ennå</ThemedText>
             <ThemedText style={{ color: theme.textMuted }}>Opprett invitasjoner fra gjesteskjemaet</ThemedText>
@@ -132,7 +132,7 @@ export default function GuestInvitationsScreen() {
         ) : invites.map((inv) => (
           <View key={inv.id} style={[styles.card, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
             <View style={styles.cardHeader}>
-              <View style={styles.avatar}><Feather name="user" size={18} color={theme.textSecondary} /></View>
+              <View style={styles.avatar}><EvendiIcon name="user" size={18} color={theme.textSecondary} /></View>
               <View style={{ flex: 1 }}>
                 <ThemedText style={styles.name}>{inv.name}</ThemedText>
                 <ThemedText style={{ color: theme.textSecondary, fontSize: 12 }}>{inv.email || inv.phone || ""}</ThemedText>
@@ -157,7 +157,7 @@ export default function GuestInvitationsScreen() {
                 }}
                 style={[styles.actionBtn, { borderColor: theme.border, opacity: canShare ? 1 : 0.6 }]}
               >
-                <Feather name="share-2" size={16} color={Colors.dark.accent} />
+                <EvendiIcon name="share-2" size={16} color={Colors.dark.accent} />
                 <ThemedText style={styles.actionText}>Del</ThemedText>
               </Pressable>
               <Pressable
@@ -170,7 +170,7 @@ export default function GuestInvitationsScreen() {
                 }}
                 style={[styles.actionBtn, { borderColor: theme.border, opacity: canShare ? 1 : 0.6 }]}
               >
-                <Feather name="message-square" size={16} color={Colors.dark.accent} />
+                <EvendiIcon name="message-square" size={16} color={Colors.dark.accent} />
                 <ThemedText style={styles.actionText}>SMS</ThemedText>
               </Pressable>
               <Pressable
@@ -183,7 +183,7 @@ export default function GuestInvitationsScreen() {
                 }}
                 style={[styles.actionBtn, { borderColor: theme.border, opacity: canShare ? 1 : 0.6 }]}
               >
-                <Feather name="mail" size={16} color={Colors.dark.accent} />
+                <EvendiIcon name="mail" size={16} color={Colors.dark.accent} />
                 <ThemedText style={styles.actionText}>E-post</ThemedText>
               </Pressable>
             </View>

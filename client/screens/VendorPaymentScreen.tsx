@@ -14,7 +14,7 @@ import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { ThemedText } from "../components/ThemedText";
 import { ThemedView } from "../components/ThemedView";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import { Colors } from "../constants/theme";
 import { showToast } from "@/lib/toast";
 import { showConfirm } from "@/lib/dialogs";
@@ -161,7 +161,7 @@ export default function VendorPaymentScreen() {
         {/* Header */}
         <View style={styles.header}>
           <Pressable onPress={() => navigation.goBack()} style={styles.backButton}>
-            <Feather name="arrow-left" size={24} color="#fff" />
+            <EvendiIcon name="arrow-left" size={24} color="#fff" />
           </Pressable>
           <ThemedText style={styles.headerTitle}>Sikre din plass</ThemedText>
         </View>
@@ -169,7 +169,7 @@ export default function VendorPaymentScreen() {
         {/* Status Banner */}
         {isTrialing && (
           <View style={[styles.statusBanner, { backgroundColor: "#FFA726" + "20" }]}>
-            <Feather name="clock" size={20} color="#FFA726" />
+            <EvendiIcon name="clock" size={20} color="#FFA726" />
             <View style={{ flex: 1, marginLeft: 12 }}>
               <ThemedText style={styles.statusTitle}>
                 {isPaused
@@ -187,7 +187,7 @@ export default function VendorPaymentScreen() {
 
         {isPaused && (
           <View style={[styles.statusBanner, { backgroundColor: "#EF5350" + "20" }]}>
-            <Feather name="lock" size={20} color="#EF5350" />
+            <EvendiIcon name="lock" size={20} color="#EF5350" />
             <View style={{ flex: 1, marginLeft: 12 }}>
               <ThemedText style={styles.statusTitle}>Tilgangen din er låst</ThemedText>
               <ThemedText style={styles.statusText}>
@@ -212,12 +212,12 @@ export default function VendorPaymentScreen() {
           {/* Features */}
           <View style={styles.featuresSection}>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 8 }}>
-              <Feather name="star" size={16} color={Colors.dark.accent} />
+              <EvendiIcon name="star" size={16} color={Colors.dark.accent} />
               <ThemedText style={styles.featuresTitle}>Inkludert i pakken:</ThemedText>
             </View>
             
             <View style={styles.feature}>
-              <Feather name="check-circle" size={20} color={Colors.dark.accent} />
+              <EvendiIcon name="check-circle" size={20} color={Colors.dark.accent} />
               <ThemedText style={styles.featureText}>
                 Opptil {tier.features.maxPhotos} bilder i showcase-galleriet
               </ThemedText>
@@ -225,7 +225,7 @@ export default function VendorPaymentScreen() {
 
             {tier.features.analytics && (
               <View style={styles.feature}>
-                <Feather name="check-circle" size={20} color={Colors.dark.accent} />
+                <EvendiIcon name="check-circle" size={20} color={Colors.dark.accent} />
                 <ThemedText style={styles.featureText}>
                   Avansert statistikk og innsikt
                 </ThemedText>
@@ -234,7 +234,7 @@ export default function VendorPaymentScreen() {
 
             {tier.features.prioritizedInSearch && (
               <View style={styles.feature}>
-                <Feather name="check-circle" size={20} color={Colors.dark.accent} />
+                <EvendiIcon name="check-circle" size={20} color={Colors.dark.accent} />
                 <ThemedText style={styles.featureText}>
                   Prioritert visning i søkeresultater
                 </ThemedText>
@@ -242,21 +242,21 @@ export default function VendorPaymentScreen() {
             )}
 
             <View style={styles.feature}>
-              <Feather name="check-circle" size={20} color={Colors.dark.accent} />
+              <EvendiIcon name="check-circle" size={20} color={Colors.dark.accent} />
               <ThemedText style={styles.featureText}>
                 Ubegrenset meldinger med brudepar
               </ThemedText>
             </View>
 
             <View style={styles.feature}>
-              <Feather name="check-circle" size={20} color={Colors.dark.accent} />
+              <EvendiIcon name="check-circle" size={20} color={Colors.dark.accent} />
               <ThemedText style={styles.featureText}>
                 Direktekontakt med potensielle kunder
               </ThemedText>
             </View>
 
             <View style={styles.feature}>
-              <Feather name="check-circle" size={20} color={Colors.dark.accent} />
+              <EvendiIcon name="check-circle" size={20} color={Colors.dark.accent} />
               <ThemedText style={styles.featureText}>
                 Profesjonell profil med produkter og inspirasjon
               </ThemedText>
@@ -268,40 +268,40 @@ export default function VendorPaymentScreen() {
         {(isPaused || daysRemaining <= 7) && (
           <View style={styles.missingCard}>
             <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 16 }}>
-              <Feather name="x-circle" size={20} color="#EF5350" />
+              <EvendiIcon name="x-circle" size={20} color="#EF5350" />
               <ThemedText style={styles.missingTitle}>Uten betaling mister du:</ThemedText>
             </View>
             
             <View style={styles.missingItem}>
-              <Feather name="image" size={18} color="#EF5350" />
+              <EvendiIcon name="image" size={18} color="#EF5350" />
               <ThemedText style={styles.missingText}>
                 Showcase-galleriet ditt blir skjult
               </ThemedText>
             </View>
 
             <View style={styles.missingItem}>
-              <Feather name="message-circle" size={18} color="#EF5350" />
+              <EvendiIcon name="message-circle" size={18} color="#EF5350" />
               <ThemedText style={styles.missingText}>
                 Alle aktive samtaler stopper
               </ThemedText>
             </View>
 
             <View style={styles.missingItem}>
-              <Feather name="mail" size={18} color="#EF5350" />
+              <EvendiIcon name="mail" size={18} color="#EF5350" />
               <ThemedText style={styles.missingText}>
                 Nye henvendelser fra brudepar blokkeres
               </ThemedText>
             </View>
 
             <View style={styles.missingItem}>
-              <Feather name="bar-chart-2" size={18} color="#EF5350" />
+              <EvendiIcon name="bar-chart-2" size={18} color="#EF5350" />
               <ThemedText style={styles.missingText}>
                 Statistikk og innsikt deaktiveres
               </ThemedText>
             </View>
 
             <View style={styles.missingItem}>
-              <Feather name="eye-off" size={18} color="#EF5350" />
+              <EvendiIcon name="eye-off" size={18} color="#EF5350" />
               <ThemedText style={styles.missingText}>
                 Profilen din blir usynlig i søk
               </ThemedText>
@@ -312,7 +312,7 @@ export default function VendorPaymentScreen() {
         {/* Social Proof */}
         <View style={styles.proofCard}>
           <View style={{ flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 8 }}>
-            <Feather name="users" size={18} color={Colors.dark.accent} />
+            <EvendiIcon name="users" size={18} color={Colors.dark.accent} />
             <ThemedText style={styles.proofTitle}>Over 50 leverandører har sikret sin plass</ThemedText>
           </View>
           <ThemedText style={styles.proofText}>
@@ -350,7 +350,7 @@ export default function VendorPaymentScreen() {
 
         {/* Vipps Info - Brand Compliance */}
         <View style={styles.vippsInfo}>
-          <Feather name="shield" size={14} color={Colors.dark.textSecondary} />
+          <EvendiIcon name="shield" size={14} color={Colors.dark.textSecondary} />
           <ThemedText style={styles.vippsInfoText}>
             Sikker betaling med Vipps Recurring. Du administrerer abonnementet direkte i Vipps-appen.
           </ThemedText>
@@ -359,15 +359,15 @@ export default function VendorPaymentScreen() {
         {/* Additional Security Info */}
         <View style={styles.securityInfo}>
           <View style={styles.securityItem}>
-            <Feather name="check" size={14} color={Colors.dark.accent} />
+            <EvendiIcon name="check" size={14} color={Colors.dark.accent} />
             <ThemedText style={styles.securityText}>Ingen kortnummer delt</ThemedText>
           </View>
           <View style={styles.securityItem}>
-            <Feather name="lock" size={14} color={Colors.dark.accent} />
+            <EvendiIcon name="lock" size={14} color={Colors.dark.accent} />
             <ThemedText style={styles.securityText}>Kryptert kommunikasjon</ThemedText>
           </View>
           <View style={styles.securityItem}>
-            <Feather name="x-circle" size={14} color={Colors.dark.accent} />
+            <EvendiIcon name="x-circle" size={14} color={Colors.dark.accent} />
             <ThemedText style={styles.securityText}>Lett å avbryte når som helst</ThemedText>
           </View>
         </View>

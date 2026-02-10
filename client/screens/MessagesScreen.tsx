@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import { useQuery } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -193,7 +193,7 @@ export default function MessagesScreen({ navigation }: Props) {
       <View style={[styles.container, { backgroundColor: theme.backgroundRoot }]}>
         <View style={[styles.loginPrompt, { paddingTop: headerHeight + Spacing.xl }]}>
           <View style={[styles.iconCircle, { backgroundColor: theme.accent + "20" }]}>
-            <Feather name="message-circle" size={32} color={theme.accent} />
+            <EvendiIcon name="message-circle" size={32} color={theme.accent} />
           </View>
           <ThemedText style={styles.loginTitle}>Meldinger</ThemedText>
           <ThemedText style={[styles.loginSubtitle, { color: theme.textSecondary }]}>
@@ -226,7 +226,7 @@ export default function MessagesScreen({ navigation }: Props) {
         style={[styles.conversationItem, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}
       >
         <View style={[styles.avatar, { backgroundColor: theme.accent + "20" }]}>
-          <Feather name="briefcase" size={20} color={theme.accent} />
+          <EvendiIcon name="briefcase" size={20} color={theme.accent} />
         </View>
         <View style={styles.conversationContent}>
           <View style={styles.conversationHeader}>
@@ -267,7 +267,7 @@ export default function MessagesScreen({ navigation }: Props) {
       ) : conversations.length === 0 ? (
         <View style={[styles.emptyState, { paddingTop: headerHeight + Spacing.xl }]}>
           <View style={[styles.iconCircle, { backgroundColor: theme.accent + "20" }]}>
-            <Feather name="inbox" size={32} color={theme.accent} />
+            <EvendiIcon name="inbox" size={32} color={theme.accent} />
           </View>
           <ThemedText style={styles.emptyTitle}>Ingen samtaler ennå</ThemedText>
           <ThemedText style={[styles.emptySubtitle, { color: theme.textSecondary }]}>

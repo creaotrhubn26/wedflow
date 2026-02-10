@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import { useMutation } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -279,7 +279,7 @@ export default function CoupleLoginScreen({ navigation, onLoginSuccess }: Props)
         <View style={styles.form}>
           <View>
             <View style={[styles.inputContainer, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }, getFieldStyle("email")]}>
-              <Feather name="mail" size={18} color={touched.email && errors.email ? "#DC3545" : theme.textMuted} />
+              <EvendiIcon name="mail" size={18} color={touched.email && errors.email ? "#DC3545" : theme.textMuted} />
               <TextInput
                 style={[styles.input, { color: theme.text }]}
                 placeholder="E-postadresse"
@@ -298,7 +298,7 @@ export default function CoupleLoginScreen({ navigation, onLoginSuccess }: Props)
 
           <View>
             <View style={[styles.inputContainer, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }, getFieldStyle("password")]}>
-              <Feather name="lock" size={18} color={touched.password && errors.password ? "#DC3545" : theme.textMuted} />
+              <EvendiIcon name="lock" size={18} color={touched.password && errors.password ? "#DC3545" : theme.textMuted} />
               <TextInput
                 style={[styles.input, { color: theme.text }]}
                 placeholder="Passord"
@@ -310,7 +310,7 @@ export default function CoupleLoginScreen({ navigation, onLoginSuccess }: Props)
                 autoCapitalize="none"
               />
               <Pressable onPress={() => setShowPassword(!showPassword)}>
-                <Feather name={showPassword ? "eye-off" : "eye"} size={18} color={theme.textMuted} />
+                <EvendiIcon name={showPassword ? "eye-off" : "eye"} size={18} color={theme.textMuted} />
               </Pressable>
             </View>
             {touched.password && errors.password ? (
@@ -321,7 +321,7 @@ export default function CoupleLoginScreen({ navigation, onLoginSuccess }: Props)
           {isRegistering && (
             <View>
               <View style={[styles.inputContainer, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }, getFieldStyle("displayName")]}>
-                <Feather name="user" size={18} color={touched.displayName && errors.displayName ? "#DC3545" : theme.textMuted} />
+                <EvendiIcon name="user" size={18} color={touched.displayName && errors.displayName ? "#DC3545" : theme.textMuted} />
                 <TextInput
                   style={[styles.input, { color: theme.text }]}
                   placeholder="Ditt navn"
@@ -433,7 +433,7 @@ export default function CoupleLoginScreen({ navigation, onLoginSuccess }: Props)
             onPress={() => navigation.navigate?.("AdminLogin")}
             style={styles.vendorLink}
           >
-            <Feather name="shield" size={16} color={theme.textSecondary} />
+            <EvendiIcon name="shield" size={16} color={theme.textSecondary} />
             <ThemedText style={[styles.vendorLinkText, { color: theme.textSecondary }]}>
               Admin-portal
             </ThemedText>
@@ -496,7 +496,7 @@ export default function CoupleLoginScreen({ navigation, onLoginSuccess }: Props)
                   </View>
                   {isSelected && (
                     <View style={[styles.checkBadge, { backgroundColor: Colors.dark.accent }]}>
-                      <Feather name="check" size={16} color="#1A1A1A" />
+                      <EvendiIcon name="check" size={16} color="#1A1A1A" />
                     </View>
                   )}
                 </Pressable>
@@ -540,7 +540,7 @@ export default function CoupleLoginScreen({ navigation, onLoginSuccess }: Props)
                       </View>
                       {isSelected && (
                         <View style={[styles.checkBadge, { backgroundColor: Colors.dark.accent }]}>
-                          <Feather name="check" size={16} color="#1A1A1A" />
+                          <EvendiIcon name="check" size={16} color="#1A1A1A" />
                         </View>
                       )}
                     </Pressable>
@@ -579,7 +579,7 @@ export default function CoupleLoginScreen({ navigation, onLoginSuccess }: Props)
                   </View>
                   {isSelected && (
                     <View style={[styles.checkBadge, { backgroundColor: Colors.dark.accent }]}>
-                      <Feather name="check" size={16} color="#1A1A1A" />
+                      <EvendiIcon name="check" size={16} color="#1A1A1A" />
                     </View>
                   )}
                 </Pressable>
@@ -654,7 +654,7 @@ export default function CoupleLoginScreen({ navigation, onLoginSuccess }: Props)
                   </View>
                   {isSelected && (
                     <View style={[styles.checkBadge, { backgroundColor: tradition.color }]}>
-                      <Feather name="check" size={16} color="#FFFFFF" />
+                      <EvendiIcon name="check" size={16} color="#FFFFFF" />
                     </View>
                   )}
                 </Pressable>

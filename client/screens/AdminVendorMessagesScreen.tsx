@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import * as Clipboard from "expo-clipboard";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useQuery } from "@tanstack/react-query";
@@ -291,11 +291,11 @@ export default function AdminVendorMessagesScreen({ route, navigation }: Props) 
                     onPress={() => openGuide(m.videoGuideId || "")}
                     style={[styles.guideRef, { backgroundColor: theme.accent + "15", borderColor: theme.accent }]}
                   >
-                    <Feather name="video" size={14} color={theme.accent} />
+                    <EvendiIcon name="video" size={14} color={theme.accent} />
                     <ThemedText style={[styles.guideRefText, { color: theme.accent }]}>
                       {videoGuides.find((g) => g.id === m.videoGuideId)?.title || "Videoguide"}
                     </ThemedText>
-                    <Feather name="external-link" size={12} color={theme.accent} />
+                    <EvendiIcon name="external-link" size={12} color={theme.accent} />
                   </Pressable>
                 )}
                 <ThemedText style={styles.meta}>{new Date(m.createdAt).toLocaleString()}</ThemedText>
@@ -313,12 +313,12 @@ export default function AdminVendorMessagesScreen({ route, navigation }: Props) 
 
       {selectedGuideId && (
         <View style={[styles.selectedGuideBar, { backgroundColor: theme.accent + "10", borderColor: theme.accent }]}>
-          <Feather name="video" size={16} color={theme.accent} />
+          <EvendiIcon name="video" size={16} color={theme.accent} />
           <ThemedText style={[styles.selectedGuideText, { color: theme.accent, flex: 1 }]}>
             {videoGuides.find((g) => g.id === selectedGuideId)?.title || "Videoguide"}
           </ThemedText>
           <Pressable onPress={() => setSelectedGuideId(null)}>
-            <Feather name="x" size={16} color={theme.accent} />
+            <EvendiIcon name="x" size={16} color={theme.accent} />
           </Pressable>
         </View>
       )}
@@ -344,7 +344,7 @@ export default function AdminVendorMessagesScreen({ route, navigation }: Props) 
           style={[styles.guideBtn, { backgroundColor: selectedGuideId ? theme.accent : theme.backgroundDefault }]}
           onPress={() => setShowGuideModal(true)}
         >
-          <Feather name="video" size={18} color={selectedGuideId ? "#FFFFFF" : theme.textSecondary} />
+          <EvendiIcon name="video" size={18} color={selectedGuideId ? "#FFFFFF" : theme.textSecondary} />
         </Pressable>
         <TextInput
           style={[styles.input, { color: theme.text }]}
@@ -360,7 +360,7 @@ export default function AdminVendorMessagesScreen({ route, navigation }: Props) 
           onPress={sendReply}
           disabled={sending || (!replyText.trim() && !selectedGuideId)}
         >
-          {sending ? <ActivityIndicator color="#FFFFFF" /> : <Feather name="send" size={18} color="#FFFFFF" />}
+          {sending ? <ActivityIndicator color="#FFFFFF" /> : <EvendiIcon name="send" size={18} color="#FFFFFF" />}
         </Pressable>
       </View>
 
@@ -369,7 +369,7 @@ export default function AdminVendorMessagesScreen({ route, navigation }: Props) 
           <View style={[styles.modalHeader, { backgroundColor: theme.backgroundSecondary }]}>
             <ThemedText style={styles.modalTitle}>Velg videoguide</ThemedText>
             <Pressable onPress={() => setShowGuideModal(false)}>
-              <Feather name="x" size={20} color={theme.text} />
+              <EvendiIcon name="x" size={20} color={theme.text} />
             </Pressable>
           </View>
           <ScrollView style={styles.modalContent} contentContainerStyle={{ padding: Spacing.md }}>
@@ -400,7 +400,7 @@ export default function AdminVendorMessagesScreen({ route, navigation }: Props) 
                     </ThemedText>
                   </View>
                   {selectedGuideId === guide.id && (
-                    <Feather name="check" size={18} color={theme.accent} />
+                    <EvendiIcon name="check" size={18} color={theme.accent} />
                   )}
                 </Pressable>
               ))

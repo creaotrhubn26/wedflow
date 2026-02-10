@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, View, TextInput, Pressable, ActivityIndicator, Switch } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -123,7 +123,7 @@ export default function TransportDetailsScreen({ navigation }: { navigation: Nat
 
   const renderSectionHeader = (icon: string, title: string) => (
     <View style={styles.sectionHeader}>
-      <View style={[styles.sectionIconCircle, { backgroundColor: theme.accent + "15" }]}><Feather name={icon as any} size={16} color={theme.accent} /></View>
+      <View style={[styles.sectionIconCircle, { backgroundColor: theme.accent + "15" }]}><EvendiIcon name={icon as any} size={16} color={theme.accent} /></View>
       <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>{title}</ThemedText>
     </View>
   );
@@ -141,8 +141,8 @@ export default function TransportDetailsScreen({ navigation }: { navigation: Nat
   if (isLoading) return (
     <View style={[styles.container, { backgroundColor: theme.backgroundRoot }]}>
       <View style={[styles.header, { paddingTop: insets.top + Spacing.md, backgroundColor: theme.backgroundDefault, borderBottomColor: theme.border }]}>
-        <View style={styles.headerContent}><View style={[styles.headerIconCircle, { backgroundColor: theme.accent }]}><Feather name="truck" size={20} color="#FFFFFF" /></View><ThemedText style={[styles.headerTitle, { color: theme.text }]}>Transport</ThemedText></View>
-        <Pressable onPress={() => navigation.goBack()} style={styles.closeButton}><Feather name="x" size={20} color={theme.textSecondary} /></Pressable>
+        <View style={styles.headerContent}><View style={[styles.headerIconCircle, { backgroundColor: theme.accent }]}><EvendiIcon name="truck" size={20} color="#FFFFFF" /></View><ThemedText style={[styles.headerTitle, { color: theme.text }]}>Transport</ThemedText></View>
+        <Pressable onPress={() => navigation.goBack()} style={styles.closeButton}><EvendiIcon name="x" size={20} color={theme.textSecondary} /></Pressable>
       </View>
       <View style={styles.loadingContainer}><ActivityIndicator size="large" color={theme.accent} /></View>
     </View>
@@ -151,8 +151,8 @@ export default function TransportDetailsScreen({ navigation }: { navigation: Nat
   return (
     <View style={[styles.container, { backgroundColor: theme.backgroundRoot }]}>
       <View style={[styles.header, { paddingTop: insets.top + Spacing.md, backgroundColor: theme.backgroundDefault, borderBottomColor: theme.border }]}>
-        <View style={styles.headerContent}><View style={[styles.headerIconCircle, { backgroundColor: theme.accent }]}><Feather name="truck" size={20} color="#FFFFFF" /></View><View><ThemedText style={[styles.headerTitle, { color: theme.text }]}>Transportdetaljer</ThemedText><ThemedText style={[styles.headerSubtitle, { color: theme.textSecondary }]}>Spesifiser dine tjenester</ThemedText></View></View>
-        <Pressable onPress={() => navigation.goBack()} style={styles.closeButton}><Feather name="x" size={20} color={theme.textSecondary} /></Pressable>
+        <View style={styles.headerContent}><View style={[styles.headerIconCircle, { backgroundColor: theme.accent }]}><EvendiIcon name="truck" size={20} color="#FFFFFF" /></View><View><ThemedText style={[styles.headerTitle, { color: theme.text }]}>Transportdetaljer</ThemedText><ThemedText style={[styles.headerSubtitle, { color: theme.textSecondary }]}>Spesifiser dine tjenester</ThemedText></View></View>
+        <Pressable onPress={() => navigation.goBack()} style={styles.closeButton}><EvendiIcon name="x" size={20} color={theme.textSecondary} /></Pressable>
       </View>
 
       <KeyboardAwareScrollViewCompat style={{ flex: 1 }} contentContainerStyle={[styles.content, { paddingTop: Spacing.lg, paddingBottom: insets.bottom + Spacing.xl }]}>
@@ -211,7 +211,7 @@ export default function TransportDetailsScreen({ navigation }: { navigation: Nat
         </View>
 
         <Pressable onPress={() => saveMutation.mutate()} disabled={saveMutation.isPending} style={({ pressed }) => [styles.saveBtn, { backgroundColor: theme.accent }, pressed && { opacity: 0.9 }]}>
-          {saveMutation.isPending ? <ActivityIndicator color="#FFFFFF" /> : <><View style={styles.saveBtnIcon}><Feather name="save" size={16} color="#FFFFFF" /></View><ThemedText style={styles.saveBtnText}>Lagre transportdetaljer</ThemedText></>}
+          {saveMutation.isPending ? <ActivityIndicator color="#FFFFFF" /> : <><View style={styles.saveBtnIcon}><EvendiIcon name="save" size={16} color="#FFFFFF" /></View><ThemedText style={styles.saveBtnText}>Lagre transportdetaljer</ThemedText></>}
         </Pressable>
       </KeyboardAwareScrollViewCompat>
     </View>

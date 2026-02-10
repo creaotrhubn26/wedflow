@@ -11,7 +11,7 @@ import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon, EvendiIconGlyphMap } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import Animated, {
   useAnimatedStyle,
@@ -82,7 +82,7 @@ function formatWeddingDate(dateStr: string, locale: string): string {
 }
 
 interface ActionItemProps {
-  icon: keyof typeof Feather.glyphMap;
+  icon: keyof typeof EvendiIconGlyphMap;
   label: string;
   subtitle?: string;
   theme: ReturnType<typeof useTheme>["theme"];
@@ -107,7 +107,7 @@ function ActionItem({ icon, label, subtitle, theme, onPress, color, badge }: Act
     >
       <Animated.View style={[styles.actionItem, { backgroundColor: theme.backgroundDefault }, animatedStyle]}>
         <View style={[styles.actionIcon, { backgroundColor: iconColor + "15" }]}>
-          <Feather name={icon} size={20} color={iconColor} />
+          <EvendiIcon name={icon} size={20} color={iconColor} />
         </View>
         <View style={styles.actionContent}>
           <ThemedText style={styles.actionLabel}>{label}</ThemedText>
@@ -118,14 +118,14 @@ function ActionItem({ icon, label, subtitle, theme, onPress, color, badge }: Act
             <ThemedText style={styles.badgeText}>{badge}</ThemedText>
           </View>
         ) : null}
-        <Feather name="chevron-right" size={18} color={theme.textMuted} />
+        <EvendiIcon name="chevron-right" size={18} color={theme.textMuted} />
       </Animated.View>
     </Pressable>
   );
 }
 
 interface QuickButtonProps {
-  icon: keyof typeof Feather.glyphMap;
+  icon: keyof typeof EvendiIconGlyphMap;
   label: string;
   color?: string;
   theme: ReturnType<typeof useTheme>["theme"];
@@ -145,7 +145,7 @@ function QuickButton({ icon, label, color, theme, onPress }: QuickButtonProps) {
       style={[styles.quickButton, { backgroundColor: theme.backgroundDefault }]}
     >
       <View style={[styles.quickButtonIcon, { backgroundColor: (color || theme.accent) + "15" }]}>
-        <Feather name={icon} size={18} color={color || theme.accent} />
+        <EvendiIcon name={icon} size={18} color={color || theme.accent} />
       </View>
       <ThemedText style={styles.quickButtonLabel} numberOfLines={1}>{label}</ThemedText>
     </Pressable>
@@ -385,7 +385,7 @@ export default function PlanningScreen() {
   if (error && !wedding) {
     return (
       <View style={[styles.container, styles.centered, { backgroundColor: theme.backgroundRoot, padding: Spacing.xl }]}>
-        <Feather name="alert-circle" size={48} color="#FF3B30" style={{ marginBottom: Spacing.md }} />
+        <EvendiIcon name="alert-circle" size={48} color="#FF3B30" style={{ marginBottom: Spacing.md }} />
         <ThemedText style={{ fontSize: 18, fontWeight: "600", color: theme.text, marginBottom: Spacing.xs, textAlign: "center" }}>
           {t("Kunne ikke laste planlegging", "Could not load planning")}
         </ThemedText>
@@ -424,7 +424,7 @@ export default function PlanningScreen() {
             <View>
               <ThemedText style={styles.heroNames}>{displayCoupleNames}</ThemedText>
               <ThemedText style={[styles.heroVenue, { color: theme.textSecondary }]}>
-                <Feather name="map-pin" size={12} color={theme.textMuted} /> {displayVenue}
+                <EvendiIcon name="map-pin" size={12} color={theme.textMuted} /> {displayVenue}
               </ThemedText>
             </View>
             <View style={styles.heroCountdown}>
@@ -443,11 +443,11 @@ export default function PlanningScreen() {
               }}
               style={styles.heroStat}
             >
-              <Feather name="calendar" size={14} color={theme.accent} />
+              <EvendiIcon name="calendar" size={14} color={theme.accent} />
               <ThemedText style={[styles.heroStatText, { color: theme.text }]}>
                 {wedding ? formatWeddingDate(wedding.weddingDate, locale) : ""}
               </ThemedText>
-              <Feather name="chevron-right" size={14} color={theme.textMuted} style={{ marginLeft: 4 }} />
+              <EvendiIcon name="chevron-right" size={14} color={theme.textMuted} style={{ marginLeft: 4 }} />
             </Pressable>
             <Pressable
               onPress={() => {
@@ -456,14 +456,14 @@ export default function PlanningScreen() {
               }}
               style={styles.heroStat}
             >
-              <Feather name="dollar-sign" size={14} color={isOverBudget ? "#FF3B30" : theme.accent} />
+              <EvendiIcon name="dollar-sign" size={14} color={isOverBudget ? "#FF3B30" : theme.accent} />
               <ThemedText style={[styles.heroStatText, { color: isOverBudget ? "#FF3B30" : theme.text }]}>
                 {t(`${budgetPercent}% brukt`, `${budgetPercent}% spent`)} {isOverBudget
                   ? t(`(+${formatCurrency(budgetRemaining)} over)`, `(+${formatCurrency(budgetRemaining)} over budget)`)
                   : t(`(${formatCurrency(budgetRemaining)} igjen)`, `(${formatCurrency(budgetRemaining)} remaining)`)
                 }
               </ThemedText>
-              <Feather name="chevron-right" size={14} color={theme.textMuted} style={{ marginLeft: 4 }} />
+              <EvendiIcon name="chevron-right" size={14} color={theme.textMuted} style={{ marginLeft: 4 }} />
             </Pressable>
           </View>
         </View>
@@ -480,7 +480,7 @@ export default function PlanningScreen() {
             style={[styles.ctaCard, { backgroundColor: theme.accent + "15", borderColor: theme.accent }]}
           >
             <View style={[styles.ctaIcon, { backgroundColor: theme.accent }]}>
-              <Feather name="calendar" size={20} color="#FFFFFF" />
+              <EvendiIcon name="calendar" size={20} color="#FFFFFF" />
             </View>
             <View style={styles.ctaContent}>
               <ThemedText style={[styles.ctaTitle, { color: theme.text }]}>{t("Lag kjøreplan", "Create schedule")}</ThemedText>
@@ -488,7 +488,7 @@ export default function PlanningScreen() {
                 {t(isWedding ? "Planlegg timeplan for bryllupsdagen" : "Planlegg timeplan for arrangementet", isWedding ? "Plan the wedding day timeline" : "Plan the event timeline")}
               </ThemedText>
             </View>
-            <Feather name="arrow-right" size={20} color={theme.accent} />
+            <EvendiIcon name="arrow-right" size={20} color={theme.accent} />
           </Pressable>
         </Animated.View>
       )}
@@ -503,7 +503,7 @@ export default function PlanningScreen() {
             style={[styles.ctaCard, { backgroundColor: theme.accent + "15", borderColor: theme.accent }]}
           >
             <View style={[styles.ctaIcon, { backgroundColor: theme.accent }]}>
-              <Feather name="dollar-sign" size={20} color="#FFFFFF" />
+              <EvendiIcon name="dollar-sign" size={20} color="#FFFFFF" />
             </View>
             <View style={styles.ctaContent}>
               <ThemedText style={[styles.ctaTitle, { color: theme.text }]}>{t("Sett budsjett", "Set budget")}</ThemedText>
@@ -511,7 +511,7 @@ export default function PlanningScreen() {
                 {t("Få oversikt over utgifter", "Track your spending")}
               </ThemedText>
             </View>
-            <Feather name="arrow-right" size={20} color={theme.accent} />
+            <EvendiIcon name="arrow-right" size={20} color={theme.accent} />
           </Pressable>
         </Animated.View>
       )}
@@ -526,7 +526,7 @@ export default function PlanningScreen() {
             style={[styles.warningCard, { backgroundColor: "#FF3B3015", borderColor: "#FF3B30" }]}
           >
             <View style={[styles.ctaIcon, { backgroundColor: "#FF3B30" }]}>
-              <Feather name="alert-triangle" size={20} color="#FFFFFF" />
+              <EvendiIcon name="alert-triangle" size={20} color="#FFFFFF" />
             </View>
             <View style={styles.ctaContent}>
               <ThemedText style={[styles.ctaTitle, { color: "#FF3B30" }]}>{t("Budsjett overskridet", "Budget exceeded")}</ThemedText>
@@ -534,7 +534,7 @@ export default function PlanningScreen() {
                 {t("Sjekk scenario-kalkulator", "Review scenario calculator")}
               </ThemedText>
             </View>
-            <Feather name="arrow-right" size={20} color="#FF3B30" />
+            <EvendiIcon name="arrow-right" size={20} color="#FF3B30" />
           </Pressable>
         </Animated.View>
       )}
@@ -549,7 +549,7 @@ export default function PlanningScreen() {
             style={[styles.urgencyCard, { backgroundColor: "#FFB74D15", borderColor: "#FFB74D" }]}
           >
             <View style={[styles.ctaIcon, { backgroundColor: "#FFB74D" }]}>
-              <Feather name="clock" size={20} color="#FFFFFF" />
+              <EvendiIcon name="clock" size={20} color="#FFFFFF" />
             </View>
             <View style={styles.ctaContent}>
               <ThemedText style={[styles.ctaTitle, { color: "#FFB74D" }]}>
@@ -559,7 +559,7 @@ export default function PlanningScreen() {
                 {t("Sjekk at alt er på plass", "Make sure everything is ready")}
               </ThemedText>
             </View>
-            <Feather name="arrow-right" size={20} color="#FFB74D" />
+            <EvendiIcon name="arrow-right" size={20} color="#FFB74D" />
           </Pressable>
         </Animated.View>
       )}
@@ -606,11 +606,11 @@ export default function PlanningScreen() {
                   }}
                   style={[styles.nextStep, { borderLeftColor: borderColor, borderLeftWidth: 3 }]}
                 >
-                  <Feather name={step.icon} size={16} color={borderColor} />
+                  <EvendiIcon name={step.icon} size={16} color={borderColor} />
                   <ThemedText style={[styles.nextStepLabel, { color: theme.text, flex: 1 }]}>
                     {step.label}
                   </ThemedText>
-                  <Feather name="chevron-right" size={16} color={theme.textMuted} />
+                  <EvendiIcon name="chevron-right" size={16} color={theme.textMuted} />
                 </Pressable>
               );
             })}
@@ -746,9 +746,9 @@ export default function PlanningScreen() {
                   }}
                   style={[styles.scheduleAddButton, { backgroundColor: theme.accent + "15" }]}
                 >
-                  <Feather name="plus" size={16} color={theme.accent} />
+                  <EvendiIcon name="plus" size={16} color={theme.accent} />
                 </Pressable>
-                <Feather name="arrow-right" size={16} color={theme.accent} />
+                <EvendiIcon name="arrow-right" size={16} color={theme.accent} />
               </View>
             </Pressable>
             {schedule.slice(0, 2).map((event, idx) => (

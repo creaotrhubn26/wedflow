@@ -9,7 +9,7 @@ import {
   TextInput,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useTheme } from "@/hooks/useTheme";
@@ -201,7 +201,7 @@ export default function AdminVendorChatsScreen({ route, navigation }: Props) {
         <ThemedText style={styles.subtitle}>Meldinger fra leverandører</ThemedText>
         <View style={styles.toolsRow}>
           <View style={[styles.searchBox, { borderColor: theme.border, backgroundColor: theme.backgroundSecondary }]}>
-            <Feather name="search" size={16} color={theme.textMuted} />
+            <EvendiIcon name="search" size={16} color={theme.textMuted} />
             <TextInput
               style={[styles.searchInput, { color: theme.text }]}
               placeholder="Søk på navn eller e-post"
@@ -213,7 +213,7 @@ export default function AdminVendorChatsScreen({ route, navigation }: Props) {
             />
             {search.length > 0 && (
               <Pressable onPress={() => setSearch("")}> 
-                <Feather name="x" size={16} color={theme.textMuted} />
+                <EvendiIcon name="x" size={16} color={theme.textMuted} />
               </Pressable>
             )}
           </View>
@@ -249,7 +249,7 @@ export default function AdminVendorChatsScreen({ route, navigation }: Props) {
       {loading && <ActivityIndicator style={{ marginTop: Spacing.lg }} color={theme.accent} />}
       {!loading && conversations.length === 0 && (
         <View style={styles.emptyState}>
-          <Feather name="inbox" size={48} color={theme.textMuted} />
+          <EvendiIcon name="inbox" size={48} color={theme.textMuted} />
           <ThemedText style={[styles.emptyText, { color: theme.textMuted }]}>Ingen meldinger ennå</ThemedText>
         </View>
       )}
@@ -293,10 +293,10 @@ export default function AdminVendorChatsScreen({ route, navigation }: Props) {
                   )}
                   {item.conv.status === "resolved" && (
                     <View style={[styles.statusBadge, { backgroundColor: "#4CAF50" }]}>
-                      <Feather name="check-circle" size={14} color="#FFFFFF" />
+                      <EvendiIcon name="check-circle" size={14} color="#FFFFFF" />
                     </View>
                   )}
-                  <Feather name="chevron-right" size={18} color={theme.textMuted} />
+                  <EvendiIcon name="chevron-right" size={18} color={theme.textMuted} />
                 </View>
               </View>
               <Pressable
@@ -308,7 +308,7 @@ export default function AdminVendorChatsScreen({ route, navigation }: Props) {
                   )
                 }
               >
-                <Feather 
+                <EvendiIcon 
                   name={item.conv.status === "resolved" ? "rotate-ccw" : "check"} 
                   size={12} 
                   color={item.conv.status === "resolved" ? "#FFFFFF" : theme.textSecondary} 

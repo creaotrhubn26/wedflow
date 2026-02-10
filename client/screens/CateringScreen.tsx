@@ -13,7 +13,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -681,7 +681,7 @@ export default function CateringScreen() {
   if (isError) {
     return (
       <View style={[styles.loaderContainer, { backgroundColor: theme.backgroundRoot }]}>
-        <Feather name="alert-circle" size={48} color={theme.error} />
+        <EvendiIcon name="alert-circle" size={48} color={theme.error} />
         <ThemedText style={{ color: theme.error, marginTop: Spacing.sm }}>Kunne ikke laste</ThemedText>
         <ThemedText style={{ color: theme.textSecondary, marginTop: Spacing.xs }}>
           {error instanceof Error ? error.message : "Ukjent feil"}
@@ -698,13 +698,13 @@ export default function CateringScreen() {
       <View style={styles.sectionHeader}>
         <ThemedText style={styles.sectionTitle}>Smaksprøver</ThemedText>
         <Pressable onPress={() => openTastingModal()} style={[styles.addButton, { backgroundColor: theme.primary }]}>
-          <Feather name="plus" size={20} color="#fff" />
+          <EvendiIcon name="plus" size={20} color="#fff" />
         </Pressable>
       </View>
 
       {tastings.length === 0 ? (
         <View style={[styles.emptyState, { backgroundColor: theme.backgroundDefault }]}>
-          <Feather name="heart" size={48} color={theme.primary} style={{ opacity: 0.6 }} />
+          <EvendiIcon name="heart" size={48} color={theme.primary} style={{ opacity: 0.6 }} />
           <ThemedText style={[styles.emptyText, { color: theme.text, fontWeight: '600', fontSize: 18 }]}>
             Hva skal gjestene samles rundt?
           </ThemedText>
@@ -741,7 +741,7 @@ export default function CateringScreen() {
                     tasting.completed && { backgroundColor: theme.primary, borderColor: theme.primary },
                   ]}
                 >
-                  {tasting.completed && <Feather name="check" size={14} color="#fff" />}
+                  {tasting.completed && <EvendiIcon name="check" size={14} color="#fff" />}
                 </Pressable>
                 <View style={styles.tastingInfo}>
                   <ThemedText
@@ -755,7 +755,7 @@ export default function CateringScreen() {
                   {tasting.rating && tasting.rating > 0 && (
                     <View style={styles.ratingRow}>
                       {[1, 2, 3, 4, 5].map((star) => (
-                        <Feather
+                        <EvendiIcon
                           key={star}
                           name="star"
                           size={14}
@@ -772,9 +772,9 @@ export default function CateringScreen() {
                   }}
                   style={styles.quickActionButton}
                 >
-                  <Feather name="copy" size={16} color={theme.textSecondary} />
+                  <EvendiIcon name="copy" size={16} color={theme.textSecondary} />
                 </Pressable>
-                <Feather name="chevron-right" size={20} color={theme.textSecondary} />
+                <EvendiIcon name="chevron-right" size={20} color={theme.textSecondary} />
               </Pressable>
             </SwipeableRow>
           </Animated.View>
@@ -788,7 +788,7 @@ export default function CateringScreen() {
       <View style={styles.sectionHeader}>
         <ThemedText style={styles.sectionTitle}>Meny</ThemedText>
         <Pressable onPress={() => openMenuModal()} style={[styles.addButton, { backgroundColor: theme.primary }]}>
-          <Feather name="plus" size={20} color="#fff" />
+          <EvendiIcon name="plus" size={20} color="#fff" />
         </Pressable>
       </View>
 
@@ -812,7 +812,7 @@ export default function CateringScreen() {
 
       {menu.length === 0 ? (
         <View style={[styles.emptyState, { backgroundColor: theme.backgroundDefault }]}>
-          <Feather name="list" size={48} color={theme.textSecondary} />
+          <EvendiIcon name="list" size={48} color={theme.textSecondary} />
           <ThemedText style={[styles.emptyText, { color: theme.textSecondary }]}>
             Ingen retter lagt til
           </ThemedText>
@@ -897,7 +897,7 @@ export default function CateringScreen() {
                           }}
                           style={[styles.quickActionButton, { marginRight: Spacing.xs }]}
                         >
-                          <Feather name="copy" size={16} color={theme.textSecondary} />
+                          <EvendiIcon name="copy" size={16} color={theme.textSecondary} />
                         </Pressable>
                         <Pressable
                           onPress={() => toggleMenuSelected(menuItem.id)}
@@ -907,7 +907,7 @@ export default function CateringScreen() {
                             menuItem.isSelected && { backgroundColor: theme.primary, borderColor: theme.primary },
                           ]}
                         >
-                          <Feather name="check" size={14} color={menuItem.isSelected ? "#fff" : theme.textSecondary} />
+                          <EvendiIcon name="check" size={14} color={menuItem.isSelected ? "#fff" : theme.textSecondary} />
                         </Pressable>
                       </View>
                     </Pressable>
@@ -926,14 +926,14 @@ export default function CateringScreen() {
       <View style={styles.sectionHeader}>
         <ThemedText style={styles.sectionTitle}>Kostbehov</ThemedText>
         <Pressable onPress={() => openDietaryModal()} style={[styles.addButton, { backgroundColor: theme.primary }]}>
-          <Feather name="plus" size={20} color="#fff" />
+          <EvendiIcon name="plus" size={20} color="#fff" />
         </Pressable>
       </View>
 
       {/* Import from Guest List hint */}
       {guestsWithDietary.length > 0 && (
         <View style={[styles.importHint, { backgroundColor: theme.primary + '20' }]}>
-          <Feather name="info" size={16} color={theme.primary} />
+          <EvendiIcon name="info" size={16} color={theme.primary} />
           <ThemedText style={[styles.importHintText, { color: theme.primary }]}>
             {guestsWithDietary.length} gjest{guestsWithDietary.length !== 1 ? "er" : ""} har registrert kostbehov i gjestelisten
           </ThemedText>
@@ -952,7 +952,7 @@ export default function CateringScreen() {
 
       {dietaryNeeds.length === 0 ? (
         <View style={[styles.emptyState, { backgroundColor: theme.backgroundDefault }]}>
-          <Feather name="alert-circle" size={48} color={theme.textSecondary} />
+          <EvendiIcon name="alert-circle" size={48} color={theme.textSecondary} />
           <ThemedText style={[styles.emptyText, { color: theme.textSecondary }]}>
             Ingen kostbehov registrert
           </ThemedText>
@@ -982,7 +982,7 @@ export default function CateringScreen() {
                 style={[styles.dietaryCard, { backgroundColor: theme.backgroundDefault }]}
               >
                 <View style={[styles.dietaryIcon, { backgroundColor: theme.primary + '20' }]}>
-                  <Feather name="user" size={20} color={theme.primary} />
+                  <EvendiIcon name="user" size={20} color={theme.primary} />
                 </View>
                 <View style={styles.dietaryInfo}>
                   <ThemedText style={styles.dietaryGuestName}>{dietary.guestName}</ThemedText>
@@ -1004,9 +1004,9 @@ export default function CateringScreen() {
                   }}
                   style={[styles.quickActionButton, { marginRight: Spacing.xs }]}
                 >
-                  <Feather name="copy" size={16} color={theme.textSecondary} />
+                  <EvendiIcon name="copy" size={16} color={theme.textSecondary} />
                 </Pressable>
-                <Feather name="chevron-right" size={20} color={theme.textSecondary} />
+                <EvendiIcon name="chevron-right" size={20} color={theme.textSecondary} />
               </Pressable>
             </SwipeableRow>
           </Animated.View>
@@ -1021,7 +1021,7 @@ export default function CateringScreen() {
       <Pressable onPress={openBudgetModal} style={[styles.budgetCard, { backgroundColor: theme.backgroundDefault }]}>
         <View style={styles.budgetHeader}>
           <ThemedText style={styles.budgetLabel}>Budsjett & Gjester</ThemedText>
-          <Feather name="edit-2" size={16} color={theme.textSecondary} />
+          <EvendiIcon name="edit-2" size={16} color={theme.textSecondary} />
         </View>
         <View style={styles.budgetRow}>
           <View style={styles.budgetItem}>
@@ -1056,10 +1056,10 @@ export default function CateringScreen() {
       <Pressable onPress={() => setShowCuisineModal(true)} style={[styles.cuisineCard, { backgroundColor: theme.backgroundDefault }]}>
         <View style={styles.cuisineHeader}>
           <View style={styles.cuisineHeaderLeft}>
-            <Feather name="globe" size={20} color={theme.primary} />
+            <EvendiIcon name="globe" size={20} color={theme.primary} />
             <ThemedText style={styles.cuisineLabel}>Mattype / Kjøkken</ThemedText>
           </View>
-          <Feather name="chevron-right" size={18} color={theme.textSecondary} />
+          <EvendiIcon name="chevron-right" size={18} color={theme.textSecondary} />
         </View>
         {selectedCuisines.length > 0 ? (
           <View style={styles.cuisineTagsContainer}>
@@ -1096,11 +1096,11 @@ export default function CateringScreen() {
           }}
           style={[styles.findCaterersButton, { backgroundColor: theme.primary }]}
         >
-          <Feather name="search" size={18} color="#FFFFFF" />
+          <EvendiIcon name="search" size={18} color="#FFFFFF" />
           <ThemedText style={styles.findCaterersText}>
             Finn caterere med {getCuisineLabels()}
           </ThemedText>
-          <Feather name="arrow-right" size={18} color="#FFFFFF" />
+          <EvendiIcon name="arrow-right" size={18} color="#FFFFFF" />
         </Pressable>
       )}
 
@@ -1110,7 +1110,7 @@ export default function CateringScreen() {
           onPress={syncGuestCountFromRSVP}
           style={[styles.syncCard, { backgroundColor: theme.primary + '20' }]}
         >
-          <Feather name="refresh-cw" size={18} color={theme.primary} />
+          <EvendiIcon name="refresh-cw" size={18} color={theme.primary} />
           <View style={styles.syncContent}>
             <ThemedText style={[styles.syncTitle, { color: theme.primary }]}>
               Synkroniser med gjestelisten
@@ -1119,7 +1119,7 @@ export default function CateringScreen() {
               {confirmedGuestCount} bekreftede gjester i RSVP
             </ThemedText>
           </View>
-          <Feather name="chevron-right" size={20} color={theme.primary} />
+          <EvendiIcon name="chevron-right" size={20} color={theme.primary} />
         </Pressable>
       )}
 
@@ -1157,11 +1157,11 @@ export default function CateringScreen() {
                   isCompleted ? { backgroundColor: theme.primary, borderColor: theme.primary } : undefined,
                 ]}
               >
-                {isCompleted && <Feather name="check" size={14} color="#fff" />}
+                {isCompleted && <EvendiIcon name="check" size={14} color="#fff" />}
               </View>
               <View style={styles.timelineStepContent}>
                 <View style={[styles.timelineIcon, { backgroundColor: isCompleted ? theme.primary + '20' : theme.border }]}>
-                  <Feather name={step.icon} size={16} color={isCompleted ? theme.primary : theme.textSecondary} />
+                  <EvendiIcon name={step.icon} size={16} color={isCompleted ? theme.primary : theme.textSecondary} />
                 </View>
                 <ThemedText style={[styles.timelineStepLabel, isCompleted ? styles.completedText : undefined]}>
                   {step.label}
@@ -1189,7 +1189,7 @@ export default function CateringScreen() {
             onPress={() => setActiveTab(tab.key as any)}
             style={[styles.tab, activeTab === tab.key && { borderBottomColor: theme.primary, borderBottomWidth: 2 }]}
           >
-            <Feather name={tab.icon as any} size={16} color={activeTab === tab.key ? theme.primary : theme.textSecondary} />
+            <EvendiIcon name={tab.icon as any} size={16} color={activeTab === tab.key ? theme.primary : theme.textSecondary} />
             <ThemedText style={[styles.tabLabel, { color: activeTab === tab.key ? theme.primary : theme.textSecondary }]}>
               {tab.label}
             </ThemedText>
@@ -1302,7 +1302,7 @@ export default function CateringScreen() {
               <View style={styles.ratingContainer}>
                 {[1, 2, 3, 4, 5].map((star) => (
                   <Pressable key={star} onPress={() => setTastingRating(star)}>
-                    <Feather
+                    <EvendiIcon
                       name="star"
                       size={32}
                       color={star <= tastingRating ? Colors.light.accent : theme.border}
@@ -1407,7 +1407,7 @@ export default function CateringScreen() {
                       option.state ? { backgroundColor: theme.primary + '20', borderColor: theme.primary } : undefined,
                     ]}
                   >
-                    <Feather
+                    <EvendiIcon
                       name={option.state ? "check-square" : "square"}
                       size={18}
                       color={option.state ? theme.primary : theme.textSecondary}
@@ -1470,11 +1470,11 @@ export default function CateringScreen() {
                   onPress={() => setShowGuestPicker(!showGuestPicker)}
                   style={[styles.guestPickerToggle, { backgroundColor: theme.primary + '20' }]}
                 >
-                  <Feather name="users" size={18} color={theme.primary} />
+                  <EvendiIcon name="users" size={18} color={theme.primary} />
                   <ThemedText style={[styles.guestPickerText, { color: theme.primary }]}>
                     Velg fra gjestelisten
                   </ThemedText>
-                  <Feather name={showGuestPicker ? "chevron-up" : "chevron-down"} size={18} color={theme.primary} />
+                  <EvendiIcon name={showGuestPicker ? "chevron-up" : "chevron-down"} size={18} color={theme.primary} />
                 </Pressable>
 
                 {showGuestPicker && (
@@ -1498,7 +1498,7 @@ export default function CateringScreen() {
                           )}
                         </View>
                         {selectedGuestId === guest.id && (
-                          <Feather name="check" size={18} color={theme.primary} />
+                          <EvendiIcon name="check" size={18} color={theme.primary} />
                         )}
                       </Pressable>
                     ))}
@@ -1650,7 +1650,7 @@ export default function CateringScreen() {
                     </ThemedText>
                     {isSelected && (
                       <View style={[styles.cuisineCheck, { backgroundColor: theme.primary }]}>
-                        <Feather name="check" size={12} color="#fff" />
+                        <EvendiIcon name="check" size={12} color="#fff" />
                       </View>
                     )}
                   </Pressable>

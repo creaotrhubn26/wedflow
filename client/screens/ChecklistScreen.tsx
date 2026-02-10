@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, View, Pressable, TextInput, Modal, Alert } from
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon, EvendiIconGlyphMap } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -26,7 +26,7 @@ type ChecklistCategory = "planning" | "vendors" | "attire" | "logistics" | "fina
 
 const CATEGORY_KEYS: ChecklistCategory[] = ["planning", "vendors", "attire", "logistics", "final"];
 
-const CATEGORY_INFO_NB: Record<ChecklistCategory, { name: string; icon: keyof typeof Feather.glyphMap; color: string }> = {
+const CATEGORY_INFO_NB: Record<ChecklistCategory, { name: string; icon: keyof typeof EvendiIconGlyphMap; color: string }> = {
   planning: { name: "Planlegging", icon: "clipboard", color: "#64B5F6" },
   vendors: { name: "Leverandører", icon: "briefcase", color: "#81C784" },
   attire: { name: "Antrekk", icon: "award", color: "#BA68C8" },
@@ -34,7 +34,7 @@ const CATEGORY_INFO_NB: Record<ChecklistCategory, { name: string; icon: keyof ty
   final: { name: "Siste uken", icon: "check-circle", color: "#E57373" },
 };
 
-const CATEGORY_INFO_EN: Record<ChecklistCategory, { name: string; icon: keyof typeof Feather.glyphMap; color: string }> = {
+const CATEGORY_INFO_EN: Record<ChecklistCategory, { name: string; icon: keyof typeof EvendiIconGlyphMap; color: string }> = {
   planning: { name: "Planning", icon: "clipboard", color: "#64B5F6" },
   vendors: { name: "Vendors", icon: "briefcase", color: "#81C784" },
   attire: { name: "Attire", icon: "award", color: "#BA68C8" },
@@ -484,7 +484,7 @@ export default function ChecklistScreen() {
   if (tasks.length === 0) {
     return (
       <View style={[styles.container, styles.centered, { backgroundColor: theme.backgroundRoot }]}>
-        <Feather name="clipboard" size={64} color={theme.textSecondary} />
+        <EvendiIcon name="clipboard" size={64} color={theme.textSecondary} />
         <ThemedText type="h3" style={{ marginTop: Spacing.lg }}>{t("Tom sjekkliste", "Empty checklist")}</ThemedText>
         <ThemedText style={{ color: theme.textSecondary, textAlign: "center", marginTop: Spacing.sm, marginHorizontal: Spacing.xl }}>
           {t("Opprett standardoppgaver eller legg til dine egne", "Create default tasks or add your own")}
@@ -578,7 +578,7 @@ export default function ChecklistScreen() {
             onPress={handleSeedTraditions}
             style={[styles.urgentCard, { backgroundColor: '#FFB30020', borderColor: '#FFB300', flexDirection: 'row', alignItems: 'center' }]}
           >
-            <Feather name="globe" size={18} color="#FFB300" />
+            <EvendiIcon name="globe" size={18} color="#FFB300" />
             <View style={{ marginLeft: Spacing.sm, flex: 1 }}>
               <ThemedText style={{ color: '#FFB300', fontWeight: '600', fontSize: 14 }}>
                 Legg til tradisjonsoppgaver
@@ -587,7 +587,7 @@ export default function ChecklistScreen() {
                 {coupleProfile?.selectedTraditions?.map(t => CULTURAL_LABELS[t] || t).join(', ')}
               </ThemedText>
             </View>
-            <Feather name="plus-circle" size={18} color="#FFB300" />
+            <EvendiIcon name="plus-circle" size={18} color="#FFB300" />
           </Pressable>
         </Animated.View>
       )}
@@ -595,7 +595,7 @@ export default function ChecklistScreen() {
       {urgentItems.length > 0 ? (
         <Animated.View entering={FadeInDown.delay(200).duration(400)}>
           <View style={[styles.urgentCard, { backgroundColor: theme.error + "20", borderColor: theme.error }]}>
-            <Feather name="alert-triangle" size={20} color={theme.error} />
+            <EvendiIcon name="alert-triangle" size={20} color={theme.error} />
             <View style={styles.urgentContent}>
               <ThemedText style={[styles.urgentTitle, { color: theme.error }]}>
                 {t(
@@ -636,7 +636,7 @@ export default function ChecklistScreen() {
                   },
                 ]}
               >
-                <Feather
+                <EvendiIcon
                   name={preset.icon}
                   size={14}
                   color={quickFilter === preset.value ? "#1A1A1A" : theme.textMuted}
@@ -672,7 +672,7 @@ export default function ChecklistScreen() {
                   { backgroundColor: theme.backgroundSecondary, borderColor: theme.border },
                 ]}
               >
-                <Feather name="plus-circle" size={14} color={Colors.dark.accent} />
+                <EvendiIcon name="plus-circle" size={14} color={Colors.dark.accent} />
                 <ThemedText style={[styles.templateText, { color: theme.text }]}>
                   {template.title}
                 </ThemedText>
@@ -713,7 +713,7 @@ export default function ChecklistScreen() {
                 },
               ]}
             >
-              <Feather name={info.icon} size={14} color={filterCategory === key ? "#FFFFFF" : info.color} />
+              <EvendiIcon name={info.icon} size={14} color={filterCategory === key ? "#FFFFFF" : info.color} />
               <ThemedText style={{ color: filterCategory === key ? "#FFFFFF" : theme.text, fontSize: 13, marginLeft: 4 }}>
                 {info.name}
               </ThemedText>
@@ -759,7 +759,7 @@ export default function ChecklistScreen() {
                       },
                     ]}
                   >
-                    {item.completed ? <Feather name="check" size={12} color="#1A1A1A" /> : null}
+                    {item.completed ? <EvendiIcon name="check" size={12} color="#1A1A1A" /> : null}
                   </View>
                   <View style={styles.itemContent}>
                     <View style={{ flexDirection: "row", alignItems: "center", gap: Spacing.xs }}>
@@ -768,7 +768,7 @@ export default function ChecklistScreen() {
                       </ThemedText>
                       {assignedMeta && (
                         <View style={[styles.assignedBadge, { backgroundColor: Colors.dark.accent + "30" }]}>
-                          <Feather name={assignedMeta.icon} size={10} color={Colors.dark.accent} />
+                          <EvendiIcon name={assignedMeta.icon} size={10} color={Colors.dark.accent} />
                           <ThemedText style={[styles.assignedBadgeText, { color: Colors.dark.accent }]}>
                             {assignedMeta.label}
                           </ThemedText>
@@ -805,7 +805,7 @@ export default function ChecklistScreen() {
         }}
         style={[styles.addButton, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}
       >
-        <Feather name="plus" size={20} color={Colors.dark.accent} />
+        <EvendiIcon name="plus" size={20} color={Colors.dark.accent} />
         <ThemedText style={{ color: Colors.dark.accent, marginLeft: Spacing.sm, fontWeight: "600" }}>
           {t("Legg til oppgave", "Add task")}
         </ThemedText>
@@ -840,7 +840,7 @@ export default function ChecklistScreen() {
                     },
                   ]}
                 >
-                  <Feather name={info.icon} size={16} color={editCategory === key ? info.color : theme.textSecondary} />
+                  <EvendiIcon name={info.icon} size={16} color={editCategory === key ? info.color : theme.textSecondary} />
                   <ThemedText style={{ fontSize: 12, marginTop: 4, color: editCategory === key ? theme.text : theme.textSecondary }}>
                     {info.name}
                   </ThemedText>
@@ -884,7 +884,7 @@ export default function ChecklistScreen() {
                   },
                 ]}
               >
-                <Feather name="users" size={16} color={editAssignedTo === "both" ? Colors.dark.accent : theme.textSecondary} />
+                <EvendiIcon name="users" size={16} color={editAssignedTo === "both" ? Colors.dark.accent : theme.textSecondary} />
                 <ThemedText style={{ marginLeft: 6 }}>{t("Begge", "Both")}</ThemedText>
               </Pressable>
               <Pressable
@@ -897,7 +897,7 @@ export default function ChecklistScreen() {
                   },
                 ]}
               >
-                <Feather name="user" size={16} color={editAssignedTo === "me" ? Colors.dark.accent : theme.textSecondary} />
+                <EvendiIcon name="user" size={16} color={editAssignedTo === "me" ? Colors.dark.accent : theme.textSecondary} />
                 <ThemedText style={{ marginLeft: 6 }}>{t("Meg", "Me")}</ThemedText>
               </Pressable>
               <Pressable
@@ -910,7 +910,7 @@ export default function ChecklistScreen() {
                   },
                 ]}
               >
-                <Feather name="heart" size={16} color={editAssignedTo === "partner" ? Colors.dark.accent : theme.textSecondary} />
+                <EvendiIcon name="heart" size={16} color={editAssignedTo === "partner" ? Colors.dark.accent : theme.textSecondary} />
                 <ThemedText style={{ marginLeft: 6 }}>{t("Partner", "Partner")}</ThemedText>
               </Pressable>
             </View>
@@ -920,7 +920,7 @@ export default function ChecklistScreen() {
                 onPress={openPartnerModal}
                 style={[styles.partnerHint, { backgroundColor: theme.backgroundSecondary, borderColor: theme.border }]}
               >
-                <Feather name="mail" size={14} color={theme.textSecondary} />
+                <EvendiIcon name="mail" size={14} color={theme.textSecondary} />
                 <ThemedText style={[styles.partnerHintText, { color: theme.textSecondary }]}>
                   {t(
                     "Legg inn partnerens e-post for å tildele til partner eller begge.",
@@ -991,7 +991,7 @@ export default function ChecklistScreen() {
                     },
                   ]}
                 >
-                  <Feather name={info.icon} size={16} color={editCategory === key ? info.color : theme.textSecondary} />
+                  <EvendiIcon name={info.icon} size={16} color={editCategory === key ? info.color : theme.textSecondary} />
                   <ThemedText style={{ fontSize: 12, marginTop: 4, color: editCategory === key ? theme.text : theme.textSecondary }}>
                     {info.name}
                   </ThemedText>
@@ -1035,7 +1035,7 @@ export default function ChecklistScreen() {
                   },
                 ]}
               >
-                <Feather name="users" size={16} color={editAssignedTo === "both" ? Colors.dark.accent : theme.textSecondary} />
+                <EvendiIcon name="users" size={16} color={editAssignedTo === "both" ? Colors.dark.accent : theme.textSecondary} />
                 <ThemedText style={{ marginLeft: 6 }}>{t("Begge", "Both")}</ThemedText>
               </Pressable>
               <Pressable
@@ -1048,7 +1048,7 @@ export default function ChecklistScreen() {
                   },
                 ]}
               >
-                <Feather name="user" size={16} color={editAssignedTo === "me" ? Colors.dark.accent : theme.textSecondary} />
+                <EvendiIcon name="user" size={16} color={editAssignedTo === "me" ? Colors.dark.accent : theme.textSecondary} />
                 <ThemedText style={{ marginLeft: 6 }}>{t("Meg", "Me")}</ThemedText>
               </Pressable>
               <Pressable
@@ -1061,7 +1061,7 @@ export default function ChecklistScreen() {
                   },
                 ]}
               >
-                <Feather name="heart" size={16} color={editAssignedTo === "partner" ? Colors.dark.accent : theme.textSecondary} />
+                <EvendiIcon name="heart" size={16} color={editAssignedTo === "partner" ? Colors.dark.accent : theme.textSecondary} />
                 <ThemedText style={{ marginLeft: 6 }}>{t("Partner", "Partner")}</ThemedText>
               </Pressable>
             </View>
@@ -1071,7 +1071,7 @@ export default function ChecklistScreen() {
                 onPress={openPartnerModal}
                 style={[styles.partnerHint, { backgroundColor: theme.backgroundSecondary, borderColor: theme.border }]}
               >
-                <Feather name="mail" size={14} color={theme.textSecondary} />
+                <EvendiIcon name="mail" size={14} color={theme.textSecondary} />
                 <ThemedText style={[styles.partnerHintText, { color: theme.textSecondary }]}
                   >{t(
                     "Legg inn partnerens e-post for å tildele til partner eller begge.",

@@ -5,7 +5,7 @@ import { useHeaderHeight } from "@react-navigation/elements";
 import { useRoute } from "@react-navigation/native";
 import type { RouteProp } from "@react-navigation/native";
 import { useQuery } from "@tanstack/react-query";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon, EvendiIconGlyphMap } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
@@ -75,15 +75,15 @@ export default function WhatsNewScreen() {
     },
   });
 
-  const isFeatherIcon = useCallback(
-    (icon: string): icon is keyof typeof Feather.glyphMap =>
-      Object.prototype.hasOwnProperty.call(Feather.glyphMap, icon),
+  const isEvendiIcon = useCallback(
+    (icon: string): icon is keyof typeof EvendiIconGlyphMap =>
+      Object.prototype.hasOwnProperty.call(EvendiIconGlyphMap, icon),
     []
   );
 
   const resolveIcon = useCallback(
-    (icon: string): keyof typeof Feather.glyphMap => (isFeatherIcon(icon) ? icon : "star"),
-    [isFeatherIcon]
+    (icon: string): keyof typeof EvendiIconGlyphMap => (isEvendiIcon(icon) ? icon : "star"),
+    [isEvendiIcon]
   );
 
   const sortedItems = useMemo(() => {
@@ -162,7 +162,7 @@ export default function WhatsNewScreen() {
 
         {sortedItems.length === 0 && !isLoading ? (
           <View style={[styles.emptyState, { backgroundColor: theme.backgroundSecondary }]}>
-            <Feather name="inbox" size={48} color={theme.accent} />
+            <EvendiIcon name="inbox" size={48} color={theme.accent} />
             <ThemedText style={[styles.emptyTitle, { marginTop: Spacing.md }]}>
               Ingen nyheter for {categoryLabel.toLowerCase()}
             </ThemedText>
@@ -190,7 +190,7 @@ export default function WhatsNewScreen() {
                     },
                   ]}
                 >
-                  <Feather name={resolveIcon(item.icon)} size={24} color={theme.accent} />
+                  <EvendiIcon name={resolveIcon(item.icon)} size={24} color={theme.accent} />
                 </View>
 
                 <View style={styles.itemContent}>
@@ -215,7 +215,7 @@ export default function WhatsNewScreen() {
                         },
                       ]}
                     >
-                      <Feather name="package" size={12} color={theme.accent} />
+                      <EvendiIcon name="package" size={12} color={theme.accent} />
                       <ThemedText style={[styles.versionText, { color: theme.accent }]}>
                         v{item.minAppVersion}+
                       </ThemedText>
@@ -240,7 +240,7 @@ export default function WhatsNewScreen() {
         )}
 
         <View style={[styles.infoBox, { backgroundColor: theme.accent + "15", borderColor: theme.accent }]}>
-          <Feather name="info" size={16} color={theme.accent} />
+          <EvendiIcon name="info" size={16} color={theme.accent} />
           <ThemedText style={[styles.infoText, { color: theme.text }]}>
             <ThemedText style={{ fontWeight: "600" }}>Tips: </ThemedText>
             Disse nyhetene vises også som en modal når du oppgraderer appen.

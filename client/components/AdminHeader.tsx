@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, View, Pressable } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import { useNavigation } from "@react-navigation/native";
 import * as Haptics from "expo-haptics";
 
@@ -39,7 +39,7 @@ export function AdminHeader({ title, subtitle, onBack, showClose = true }: Admin
               { backgroundColor: pressed ? theme.backgroundSecondary : "transparent" },
             ]}
           >
-            <Feather name="arrow-left" size={24} color={theme.text} />
+            <EvendiIcon name="arrow-left" size={24} color={theme.text} />
           </Pressable>
           <View style={styles.titleContainer}>
             <ThemedText style={styles.title}>{title}</ThemedText>
@@ -61,7 +61,7 @@ export function AdminHeader({ title, subtitle, onBack, showClose = true }: Admin
               },
             ]}
           >
-            <Feather name="x" size={20} color={theme.textSecondary} />
+            <EvendiIcon name="x" size={20} color={theme.textSecondary} />
           </Pressable>
         )}
       </View>

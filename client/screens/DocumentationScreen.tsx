@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon, EvendiIconGlyphMap } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import Animated, {
   FadeInDown,
@@ -43,7 +43,7 @@ const { width } = Dimensions.get("window");
 
 interface Feature {
   id: string;
-  icon: keyof typeof Feather.glyphMap;
+  icon: keyof typeof EvendiIconGlyphMap;
   title: string;
   description: string;
   color: string;
@@ -258,14 +258,14 @@ const DEFAULT_VIDEO_TITLE = "Videoguider";
 const DEFAULT_VIDEO_DESCRIPTION =
   "Se vare videoguider for visuell opplaering i alle funksjoner.";
 
-const isFeatherIcon = (icon: string): icon is keyof typeof Feather.glyphMap => {
-  return Object.prototype.hasOwnProperty.call(Feather.glyphMap, icon);
+const isEvendiIcon = (icon: string): icon is keyof typeof EvendiIconGlyphMap => {
+  return Object.prototype.hasOwnProperty.call(EvendiIconGlyphMap, icon);
 };
 
 const isValidColor = (value: string) => /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(value);
 
 const normalizeFeature = (feature: Feature, fallbackColor: string): Feature => {
-  const safeIcon = isFeatherIcon(feature.icon) ? feature.icon : "book-open";
+  const safeIcon = isEvendiIcon(feature.icon) ? feature.icon : "book-open";
   const safeColor = isValidColor(feature.color) ? feature.color : fallbackColor;
   const safeCategory = ["vendor", "couple", "both"].includes(feature.category)
     ? feature.category
@@ -660,7 +660,7 @@ export default function DocumentationScreen() {
                 activeCategory !== "vendor" && { backgroundColor: theme.backgroundSecondary }
               ]}
             >
-              <Feather 
+              <EvendiIcon 
                 name="briefcase" 
                 size={18} 
                 color={activeCategory === "vendor" ? "#FFFFFF" : theme.textSecondary} 
@@ -683,7 +683,7 @@ export default function DocumentationScreen() {
                 activeCategory !== "couple" && { backgroundColor: theme.backgroundSecondary }
               ]}
             >
-              <Feather 
+              <EvendiIcon 
                 name="heart" 
                 size={18} 
                 color={activeCategory === "couple" ? "#FFFFFF" : theme.textSecondary} 
@@ -719,7 +719,7 @@ export default function DocumentationScreen() {
             >
               <View style={styles.featureHeader}>
                 <View style={[styles.featureIcon, { backgroundColor: feature.color + "20" }]}>
-                  <Feather name={feature.icon} size={24} color={feature.color} />
+                  <EvendiIcon name={feature.icon} size={24} color={feature.color} />
                 </View>
                 <View style={styles.featureInfo}>
                   <ThemedText style={styles.featureTitle}>{feature.title}</ThemedText>
@@ -727,7 +727,7 @@ export default function DocumentationScreen() {
                     {feature.description}
                   </ThemedText>
                 </View>
-                <Feather 
+                <EvendiIcon 
                   name={expandedFeature === feature.id ? "chevron-up" : "chevron-down"} 
                   size={20} 
                   color={theme.textMuted} 
@@ -765,7 +765,7 @@ export default function DocumentationScreen() {
         <Animated.View entering={FadeInDown.delay(600).duration(400)}>
           <View style={[styles.tipsBox, { backgroundColor: theme.accent + "15", borderColor: theme.accent }]}>
             <View style={[styles.tipsIcon, { backgroundColor: theme.accent }]}>
-              <Feather name="zap" size={20} color="#FFFFFF" />
+              <EvendiIcon name="zap" size={20} color="#FFFFFF" />
             </View>
             <View style={styles.tipsContent}>
               <ThemedText style={[styles.tipsTitle, { color: theme.accent }]}>
@@ -793,7 +793,7 @@ export default function DocumentationScreen() {
               ]}
             >
               <Animated.View style={[styles.playButton, { backgroundColor: theme.accent }, playButtonStyle]}>
-                <Feather name={videoInterested ? "check" : "play"} size={32} color="#FFFFFF" />
+                <EvendiIcon name={videoInterested ? "check" : "play"} size={32} color="#FFFFFF" />
               </Animated.View>
             </Pressable>
             <ThemedText style={styles.videoTitle}>{videoTitle}</ThemedText>
@@ -810,7 +810,7 @@ export default function DocumentationScreen() {
                 onPress={() => handleOpenVideo(videoUrl)}
                 style={[styles.videoButton, { backgroundColor: theme.accent }]}
               >
-                <Feather name="play" size={18} color="#FFFFFF" />
+                <EvendiIcon name="play" size={18} color="#FFFFFF" />
                 <ThemedText style={styles.videoButtonText}>Apne video</ThemedText>
               </Pressable>
             ) : null}
@@ -822,7 +822,7 @@ export default function DocumentationScreen() {
             <View style={[styles.adminPanel, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
               <View style={styles.adminHeader}>
                 <View style={[styles.adminIcon, { backgroundColor: theme.accent + "20" }]}>
-                  <Feather name="edit" size={18} color={theme.accent} />
+                  <EvendiIcon name="edit" size={18} color={theme.accent} />
                 </View>
                 <View style={styles.adminHeaderText}>
                   <ThemedText style={styles.adminTitle}>Admin: Rediger dokumentasjon</ThemedText>
@@ -874,7 +874,7 @@ export default function DocumentationScreen() {
                             <ThemedText style={[styles.adminGuideBadgeText, { color: theme.textSecondary }]}>Inaktiv</ThemedText>
                           </View>
                         )}
-                        <Feather name={selectedGuideId === guide.id ? "check" : "chevron-right"} size={18} color={theme.textMuted} />
+                        <EvendiIcon name={selectedGuideId === guide.id ? "check" : "chevron-right"} size={18} color={theme.textMuted} />
                       </Pressable>
                     ))}
                   </View>
@@ -920,7 +920,7 @@ export default function DocumentationScreen() {
                 >
                   {savingVideo ? <ActivityIndicator color="#FFFFFF" /> : (
                     <>
-                      <Feather name="save" size={16} color="#FFFFFF" />
+                      <EvendiIcon name="save" size={16} color="#FFFFFF" />
                       <ThemedText style={styles.adminPrimaryButtonText}>Lagre videoseksjon</ThemedText>
                     </>
                   )}
@@ -938,7 +938,7 @@ export default function DocumentationScreen() {
                         { backgroundColor: pressed ? theme.backgroundSecondary : theme.backgroundRoot },
                       ]}
                     >
-                      <Feather name="plus" size={16} color={theme.text} />
+                      <EvendiIcon name="plus" size={16} color={theme.text} />
                       <ThemedText style={[styles.adminAddButtonText, { color: theme.text }]}>Legg til</ThemedText>
                     </Pressable>
                   )}
@@ -962,7 +962,7 @@ export default function DocumentationScreen() {
                           { backgroundColor: pressed ? theme.backgroundSecondary : theme.backgroundRoot },
                         ]}
                       >
-                        <Feather name="edit-2" size={14} color={theme.text} />
+                        <EvendiIcon name="edit-2" size={14} color={theme.text} />
                         <ThemedText style={[styles.adminEditButtonText, { color: theme.text }]}>Rediger</ThemedText>
                       </Pressable>
                     )}
@@ -978,7 +978,7 @@ export default function DocumentationScreen() {
                     >
                       {savingFeatures ? <ActivityIndicator color="#FFFFFF" /> : (
                         <>
-                          <Feather name="save" size={16} color="#FFFFFF" />
+                          <EvendiIcon name="save" size={16} color="#FFFFFF" />
                           <ThemedText style={styles.adminPrimaryButtonText}>Lagre funksjoner</ThemedText>
                         </>
                       )}
@@ -1010,7 +1010,7 @@ export default function DocumentationScreen() {
             <View style={styles.modalHeader}>
               <ThemedText style={styles.modalTitle}>Rediger funksjon</ThemedText>
               <Pressable onPress={() => setEditingFeature(null)}>
-                <Feather name="x" size={22} color={theme.text} />
+                <EvendiIcon name="x" size={22} color={theme.text} />
               </Pressable>
             </View>
 
@@ -1035,7 +1035,7 @@ export default function DocumentationScreen() {
             />
             <TextInput
               style={[styles.modalInput, { borderColor: theme.border, color: theme.text, backgroundColor: theme.backgroundSecondary }]}
-              placeholder="Ikon (Feather)"
+              placeholder="Ikon (Evendi)"
               placeholderTextColor={theme.textMuted}
               value={editingFeature?.icon ?? ""}
               onChangeText={(text) =>
@@ -1098,7 +1098,7 @@ export default function DocumentationScreen() {
                 onPress={handleSaveFeatureDraft}
                 style={[styles.adminPrimaryButton, { backgroundColor: theme.accent }]}
               >
-                <Feather name="save" size={16} color="#FFFFFF" />
+                <EvendiIcon name="save" size={16} color="#FFFFFF" />
                 <ThemedText style={styles.adminPrimaryButtonText}>Lagre</ThemedText>
               </Pressable>
             </View>

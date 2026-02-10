@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon, EvendiIconGlyphMap } from "@/components/EvendiIcon";
 import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { RouteProp } from "@react-navigation/native";
@@ -30,7 +30,7 @@ interface PreviewMode {
   type: "couple" | "vendor";
   label: string;
   description: string;
-  icon: keyof typeof Feather.glyphMap;
+  icon: keyof typeof EvendiIconGlyphMap;
   color: string;
 }
 
@@ -163,7 +163,7 @@ export default function AdminPreviewScreen({ route }: { route: RouteProp<RootSta
       user.email.toLowerCase().includes(searchText.toLowerCase())
   );
 
-  const useCases: Array<{ icon: keyof typeof Feather.glyphMap; text: string }> = [
+  const useCases: Array<{ icon: keyof typeof EvendiIconGlyphMap; text: string }> = [
     { icon: "eye", text: "Kvalitetssikre nye funksjoner uten å endre ekte data" },
     { icon: "message-square", text: "Se nøyaktig hva brukeren rapporterer i support" },
     { icon: "shield", text: "Test tilganger og flyt for både par og leverandorer" },
@@ -212,7 +212,7 @@ export default function AdminPreviewScreen({ route }: { route: RouteProp<RootSta
                     { backgroundColor: mode.color + "20" },
                   ]}
                 >
-                  <Feather name={mode.icon} size={28} color={mode.color} />
+                  <EvendiIcon name={mode.icon} size={28} color={mode.color} />
                 </View>
 
                 <View style={{ flex: 1 }}>
@@ -227,13 +227,13 @@ export default function AdminPreviewScreen({ route }: { route: RouteProp<RootSta
                   </ThemedText>
                 </View>
 
-                <Feather name="chevron-right" size={20} color={theme.textMuted} />
+                <EvendiIcon name="chevron-right" size={20} color={theme.textMuted} />
               </View>
             </Pressable>
           ))}
 
           <View style={[styles.infoBox, { backgroundColor: Colors.dark.accent + "10", borderColor: Colors.dark.accent }]}> 
-            <Feather name="alert-circle" size={18} color={Colors.dark.accent} />
+            <EvendiIcon name="alert-circle" size={18} color={Colors.dark.accent} />
             <View style={{ flex: 1, marginLeft: Spacing.md }}>
               <ThemedText style={[styles.infoBoxTitle, { color: Colors.dark.accent }]}>
                 Du vil se alt som brukeren ser
@@ -271,7 +271,7 @@ export default function AdminPreviewScreen({ route }: { route: RouteProp<RootSta
               }}
               style={styles.backButton}
             >
-              <Feather name="chevron-left" size={20} color={Colors.dark.accent} />
+              <EvendiIcon name="chevron-left" size={20} color={Colors.dark.accent} />
               <ThemedText style={{ color: Colors.dark.accent, fontWeight: "600" }}>
                 Tilbake
               </ThemedText>
@@ -305,7 +305,7 @@ export default function AdminPreviewScreen({ route }: { route: RouteProp<RootSta
             </View>
           ) : filteredUsers.length === 0 ? (
             <View style={styles.emptyContainer}>
-              <Feather name="inbox" size={48} color={theme.textMuted} />
+              <EvendiIcon name="inbox" size={48} color={theme.textMuted} />
               <ThemedText style={[styles.emptyText, { color: theme.textSecondary }]}>
                 {users.length === 0
                   ? `Ingen ${selectedMode === "couple" ? (isWedding ? "brudepar" : "kunder") : "leverandører"} funnet`
@@ -349,7 +349,7 @@ export default function AdminPreviewScreen({ route }: { route: RouteProp<RootSta
                       },
                     ]}
                   >
-                    <Feather
+                    <EvendiIcon
                       name={selectedMode === "couple" ? "heart" : "briefcase"}
                       size={20}
                       color={selectedMode === "couple" ? "#FF6B9D" : "#4A90E2"}
@@ -378,7 +378,7 @@ export default function AdminPreviewScreen({ route }: { route: RouteProp<RootSta
                     )}
                   </View>
 
-                  <Feather
+                  <EvendiIcon
                     name="arrow-right"
                     size={18}
                     color={Colors.dark.accent}
@@ -404,7 +404,7 @@ export default function AdminPreviewScreen({ route }: { route: RouteProp<RootSta
                   <ActivityIndicator color="#000" />
                 ) : (
                   <>
-                    <Feather name="log-in" size={16} color="#000" />
+                    <EvendiIcon name="log-in" size={16} color="#000" />
                     <ThemedText style={styles.enterButtonText}>Logg inn som valgt</ThemedText>
                   </>
                 )}
@@ -418,7 +418,7 @@ export default function AdminPreviewScreen({ route }: { route: RouteProp<RootSta
               { backgroundColor: Colors.dark.accent + "10", borderColor: Colors.dark.accent, marginTop: Spacing.lg },
             ]}
           >
-            <Feather name="info" size={18} color={Colors.dark.accent} />
+            <EvendiIcon name="info" size={18} color={Colors.dark.accent} />
             <View style={{ flex: 1, marginLeft: Spacing.md }}>
               <ThemedText
                 style={[
@@ -437,10 +437,10 @@ export default function AdminPreviewScreen({ route }: { route: RouteProp<RootSta
   );
 }
 
-function UseCaseItem({ icon, text, theme }: { icon: keyof typeof Feather.glyphMap; text: string; theme: Theme }) {
+function UseCaseItem({ icon, text, theme }: { icon: keyof typeof EvendiIconGlyphMap; text: string; theme: Theme }) {
   return (
     <View style={styles.useCaseItem}>
-      <Feather name={icon} size={16} color={Colors.dark.accent} />
+      <EvendiIcon name={icon} size={16} color={Colors.dark.accent} />
       <ThemedText
         style={[
           styles.useCaseItemText,

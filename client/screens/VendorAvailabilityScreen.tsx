@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon, EvendiIconGlyphMap, type EvendiIconName } from "@/components/EvendiIcon";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -55,12 +55,11 @@ interface BookingInfo {
 }
 
 type AvailabilityStatus = VendorAvailability["status"];
-type FeatherIconName = keyof typeof Feather.glyphMap;
 
 const STATUS_OPTIONS: Array<{
   value: AvailabilityStatus;
   label: string;
-  icon: FeatherIconName;
+  icon: EvendiIconName;
   color: string;
 }> = [
   { value: "available", label: "Tilgjengelig", icon: "check-circle", color: "#4CAF50" },
@@ -569,7 +568,7 @@ export default function VendorAvailabilityScreen({ navigation }: NativeStackScre
     let bgColor = theme.backgroundDefault;
     let borderColor = theme.border;
     let statusColor = theme.textMuted;
-    let statusIcon: FeatherIconName | null = null;
+    let statusIcon: EvendiIconName | null = null;
     
     if (availability) {
       if (availability.status === "blocked") {
@@ -632,12 +631,12 @@ export default function VendorAvailabilityScreen({ navigation }: NativeStackScre
         
         {isSelected && (
           <View style={styles.selectedCheckmark}>
-            <Feather name="check" size={10} color="#FFFFFF" />
+            <EvendiIcon name="check" size={10} color="#FFFFFF" />
           </View>
         )}
         
         {statusIcon && !past && !isSelected && (
-          <Feather name={statusIcon} size={12} color={statusColor} style={styles.statusIcon} />
+          <EvendiIcon name={statusIcon} size={12} color={statusColor} style={styles.statusIcon} />
         )}
         
         {bookingCount > 0 && !isSelected && (
@@ -679,7 +678,7 @@ export default function VendorAvailabilityScreen({ navigation }: NativeStackScre
         {/* Header Info */}
         <Animated.View entering={FadeInDown.duration(300)}>
           <View style={[styles.infoCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-            <Feather name="calendar" size={24} color={Colors.dark.accent} />
+            <EvendiIcon name="calendar" size={24} color={Colors.dark.accent} />
             <ThemedText type="h3" style={styles.infoTitle}>Kalender & Tilgjengelighet</ThemedText>
             <ThemedText style={[styles.infoText, { color: theme.textSecondary }]}>
               Administrer tilgjengelighet for datoer. Blokkerte datoer vil ikke kunne motta tilbud.
@@ -688,7 +687,7 @@ export default function VendorAvailabilityScreen({ navigation }: NativeStackScre
               onPress={() => navigation.navigate("VendorDashboard")}
               style={[styles.quickActionBtn, { borderColor: theme.border }]}
             >
-              <Feather name="layout" size={16} color={theme.text} />
+              <EvendiIcon name="layout" size={16} color={theme.text} />
               <ThemedText style={[styles.quickActionText, { color: theme.text }]}>Til dashboard</ThemedText>
             </Pressable>
           </View>
@@ -703,11 +702,11 @@ export default function VendorAvailabilityScreen({ navigation }: NativeStackScre
               <ThemedText style={styles.legendText}>Har bookinger</ThemedText>
             </View>
             <View style={styles.legendRow}>
-              <Feather name="x-circle" size={14} color="#EF5350" />
+              <EvendiIcon name="x-circle" size={14} color="#EF5350" />
               <ThemedText style={styles.legendText}>Blokkert</ThemedText>
             </View>
             <View style={styles.legendRow}>
-              <Feather name="alert-circle" size={14} color="#FF9800" />
+              <EvendiIcon name="alert-circle" size={14} color="#FF9800" />
               <ThemedText style={styles.legendText}>Begrenset kapasitet</ThemedText>
             </View>
           </View>
@@ -717,7 +716,7 @@ export default function VendorAvailabilityScreen({ navigation }: NativeStackScre
         {isMultiSelectMode ? (
           <View style={[styles.multiSelectBar, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
             <View style={styles.multiSelectInfo}>
-              <Feather name="check-square" size={20} color={Colors.dark.accent} />
+              <EvendiIcon name="check-square" size={20} color={Colors.dark.accent} />
               <ThemedText style={styles.multiSelectText}>
                 {selectedDates.size} dato{selectedDates.size !== 1 ? "er" : ""} valgt
               </ThemedText>
@@ -737,7 +736,7 @@ export default function VendorAvailabilityScreen({ navigation }: NativeStackScre
                 <ThemedText style={[styles.multiSelectBtnText, { color: "#1A1A1A" }]}>Rediger</ThemedText>
               </Pressable>
               <Pressable onPress={exitMultiSelectMode} style={styles.cancelMultiBtn}>
-                <Feather name="x" size={20} color={theme.textMuted} />
+                <EvendiIcon name="x" size={20} color={theme.textMuted} />
               </Pressable>
             </View>
           </View>
@@ -746,7 +745,7 @@ export default function VendorAvailabilityScreen({ navigation }: NativeStackScre
             onPress={() => setIsMultiSelectMode(true)}
             style={[styles.enableMultiSelectBtn, { borderColor: theme.border }]}
           >
-            <Feather name="check-square" size={18} color={Colors.dark.accent} />
+            <EvendiIcon name="check-square" size={18} color={Colors.dark.accent} />
             <ThemedText style={[styles.enableMultiSelectText, { color: theme.text }]}>
               Velg flere datoer
             </ThemedText>
@@ -756,13 +755,13 @@ export default function VendorAvailabilityScreen({ navigation }: NativeStackScre
         {/* Month Navigation */}
         <View style={styles.monthNav}>
           <Pressable onPress={() => changeMonth(-1)} style={styles.monthButton}>
-            <Feather name="chevron-left" size={24} color={theme.text} />
+            <EvendiIcon name="chevron-left" size={24} color={theme.text} />
           </Pressable>
           <ThemedText type="h3">
             {currentMonth.toLocaleDateString("nb-NO", { month: "long", year: "numeric" })}
           </ThemedText>
           <Pressable onPress={() => changeMonth(1)} style={styles.monthButton}>
-            <Feather name="chevron-right" size={24} color={theme.text} />
+            <EvendiIcon name="chevron-right" size={24} color={theme.text} />
           </Pressable>
         </View>
 
@@ -776,7 +775,7 @@ export default function VendorAvailabilityScreen({ navigation }: NativeStackScre
             pressed && !isSameMonth(currentMonth, new Date()) && { opacity: 0.7 },
           ]}
         >
-          <Feather name="calendar" size={16} color={theme.text} />
+          <EvendiIcon name="calendar" size={16} color={theme.text} />
           <ThemedText style={[styles.todayBtnText, { color: theme.text }]}>Hopp til i dag</ThemedText>
         </Pressable>
 
@@ -846,7 +845,7 @@ export default function VendorAvailabilityScreen({ navigation }: NativeStackScre
                 })}
               </ThemedText>
               <Pressable onPress={() => setShowEditModal(false)}>
-                <Feather name="x" size={24} color={theme.text} />
+                <EvendiIcon name="x" size={24} color={theme.text} />
               </Pressable>
             </View>
 
@@ -879,7 +878,7 @@ export default function VendorAvailabilityScreen({ navigation }: NativeStackScre
                       editStatus === option.value && { backgroundColor: option.color + "15" },
                     ]}
                   >
-                    <Feather 
+                    <EvendiIcon 
                       name={option.icon} 
                       size={20} 
                       color={editStatus === option.value ? option.color : theme.textMuted} 
@@ -934,7 +933,7 @@ export default function VendorAvailabilityScreen({ navigation }: NativeStackScre
 
               {selectedDate && getBookingsForDate(new Date(selectedDate)) > 0 && (
                 <View style={[styles.warningBox, { backgroundColor: "#FF980015", borderColor: "#FF9800" }]}>
-                  <Feather name="alert-triangle" size={16} color="#FF9800" />
+                  <EvendiIcon name="alert-triangle" size={16} color="#FF9800" />
                   <ThemedText style={[styles.warningText, { color: "#FF9800" }]}>
                     Denne datoen har {getBookingsForDate(new Date(selectedDate))} aktiv(e) booking(er)
                   </ThemedText>
@@ -984,7 +983,7 @@ export default function VendorAvailabilityScreen({ navigation }: NativeStackScre
                 Rediger {selectedDates.size} dato{selectedDates.size !== 1 ? "er" : ""}
               </ThemedText>
               <Pressable onPress={() => setShowBulkModal(false)}>
-                <Feather name="x" size={24} color={theme.text} />
+                <EvendiIcon name="x" size={24} color={theme.text} />
               </Pressable>
             </View>
 
@@ -1033,7 +1032,7 @@ export default function VendorAvailabilityScreen({ navigation }: NativeStackScre
                       editStatus === option.value && { backgroundColor: option.color + "15" },
                     ]}
                   >
-                    <Feather 
+                    <EvendiIcon 
                       name={option.icon} 
                       size={20} 
                       color={editStatus === option.value ? option.color : theme.textMuted} 

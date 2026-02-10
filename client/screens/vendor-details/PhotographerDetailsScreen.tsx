@@ -8,7 +8,7 @@ import {
   Switch,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -209,7 +209,7 @@ export default function PhotographerDetailsScreen({ navigation }: { navigation: 
   const renderSectionHeader = (icon: string, title: string) => (
     <View style={styles.sectionHeader}>
       <View style={[styles.sectionIconCircle, { backgroundColor: theme.accent + "15" }]}>
-        <Feather name={icon as any} size={16} color={theme.accent} />
+        <EvendiIcon name={icon as any} size={16} color={theme.accent} />
       </View>
       <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>{title}</ThemedText>
     </View>
@@ -259,7 +259,7 @@ export default function PhotographerDetailsScreen({ navigation }: { navigation: 
         <View style={[styles.header, { paddingTop: insets.top + Spacing.md, backgroundColor: theme.backgroundDefault, borderBottomColor: theme.border }]}>
           <View style={styles.headerContent}>
             <View style={[styles.headerIconCircle, { backgroundColor: theme.accent }]}>
-              <Feather name="camera" size={20} color="#FFFFFF" />
+              <EvendiIcon name="camera" size={20} color="#FFFFFF" />
             </View>
             <View style={styles.headerTextContainer}>
               <ThemedText style={[styles.headerTitle, { color: theme.text }]}>Fotografdetaljer</ThemedText>
@@ -267,7 +267,7 @@ export default function PhotographerDetailsScreen({ navigation }: { navigation: 
             </View>
           </View>
           <Pressable onPress={() => navigation.goBack()} style={({ pressed }) => [styles.closeButton, { backgroundColor: pressed ? theme.backgroundSecondary : theme.backgroundRoot }]}>
-            <Feather name="x" size={20} color={theme.textSecondary} />
+            <EvendiIcon name="x" size={20} color={theme.textSecondary} />
           </Pressable>
         </View>
         <View style={styles.loadingContainer}>
@@ -282,7 +282,7 @@ export default function PhotographerDetailsScreen({ navigation }: { navigation: 
       <View style={[styles.header, { paddingTop: insets.top + Spacing.md, backgroundColor: theme.backgroundDefault, borderBottomColor: theme.border }]}>
         <View style={styles.headerContent}>
           <View style={[styles.headerIconCircle, { backgroundColor: theme.accent }]}>
-            <Feather name="camera" size={20} color="#FFFFFF" />
+            <EvendiIcon name="camera" size={20} color="#FFFFFF" />
           </View>
           <View style={styles.headerTextContainer}>
             <ThemedText style={[styles.headerTitle, { color: theme.text }]}>Fotografdetaljer</ThemedText>
@@ -290,7 +290,7 @@ export default function PhotographerDetailsScreen({ navigation }: { navigation: 
           </View>
         </View>
         <Pressable onPress={() => navigation.goBack()} style={({ pressed }) => [styles.closeButton, { backgroundColor: pressed ? theme.backgroundSecondary : theme.backgroundRoot }]}>
-          <Feather name="x" size={20} color={theme.textSecondary} />
+          <EvendiIcon name="x" size={20} color={theme.textSecondary} />
         </Pressable>
       </View>
 
@@ -441,7 +441,7 @@ export default function PhotographerDetailsScreen({ navigation }: { navigation: 
           ) : (
             <>
               <View style={styles.saveBtnIcon}>
-                <Feather name="save" size={16} color="#FFFFFF" />
+                <EvendiIcon name="save" size={16} color="#FFFFFF" />
               </View>
               <ThemedText style={styles.saveBtnText}>Lagre fotografdetaljer</ThemedText>
             </>

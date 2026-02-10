@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -440,7 +440,7 @@ export default function DeliveryCreateScreen({ navigation, route }: Props) {
       <View style={[styles.header, { paddingTop: insets.top + Spacing.md, backgroundColor: theme.backgroundDefault, borderBottomColor: theme.border }]}>
         <View style={styles.headerContent}>
           <View style={[styles.headerIconCircle, { backgroundColor: theme.accent }]}>
-            <Feather name="package" size={20} color="#FFFFFF" />
+            <EvendiIcon name="package" size={20} color="#FFFFFF" />
           </View>
           <View style={styles.headerTextContainer}>
             <ThemedText style={[styles.headerTitle, { color: theme.text }]}>
@@ -458,7 +458,7 @@ export default function DeliveryCreateScreen({ navigation, route }: Props) {
             { backgroundColor: pressed ? theme.backgroundSecondary : theme.backgroundRoot },
           ]}
         >
-          <Feather name="x" size={20} color={theme.textSecondary} />
+          <EvendiIcon name="x" size={20} color={theme.textSecondary} />
         </Pressable>
       </View>
       <KeyboardAwareScrollViewCompat
@@ -473,11 +473,11 @@ export default function DeliveryCreateScreen({ navigation, route }: Props) {
           <View style={[styles.templatesCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.accent }]}>
             <View style={styles.templatesHeader}>
               <View style={styles.templatesHeaderLeft}>
-                <Feather name="zap" size={18} color={theme.accent} />
+                <EvendiIcon name="zap" size={18} color={theme.accent} />
                 <ThemedText style={[styles.templatesTitle, { color: theme.accent }]}>Hurtigstart</ThemedText>
               </View>
               <Pressable onPress={() => setShowTemplates(false)} style={styles.templatesClose}>
-                <Feather name="x" size={16} color={theme.textMuted} />
+                <EvendiIcon name="x" size={16} color={theme.textMuted} />
               </Pressable>
             </View>
             <ThemedText style={[styles.templatesSubtitle, { color: theme.textSecondary }]}>
@@ -490,7 +490,7 @@ export default function DeliveryCreateScreen({ navigation, route }: Props) {
                   onPress={() => applyDeliveryTemplate(template)}
                   style={[styles.templateChip, { backgroundColor: theme.backgroundRoot, borderColor: theme.border }]}
                 >
-                  <Feather name="copy" size={14} color={theme.accent} />
+                  <EvendiIcon name="copy" size={14} color={theme.accent} />
                   <View style={styles.templateChipContent}>
                     <ThemedText style={[styles.templateChipTitle, { color: theme.text }]}>{template.title}</ThemedText>
                     <ThemedText style={[styles.templateChipSubtitle, { color: theme.textSecondary }]}>
@@ -506,13 +506,13 @@ export default function DeliveryCreateScreen({ navigation, route }: Props) {
         <View style={[styles.sectionCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
           <View style={styles.sectionHeader}>
             <View style={[styles.sectionIconCircle, { backgroundColor: theme.accent + "15" }]}>
-              <Feather name="users" size={16} color={theme.accent} />
+              <EvendiIcon name="users" size={16} color={theme.accent} />
             </View>
             <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>Brudepar</ThemedText>
           </View>
           <View style={styles.section}>
           <View style={[styles.inputContainer, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-            <Feather name="users" size={18} color={theme.textMuted} />
+            <EvendiIcon name="users" size={18} color={theme.textMuted} />
             <TextInput
               style={[styles.input, { color: theme.text }]}
               placeholder="Navn på brudeparet *"
@@ -522,7 +522,7 @@ export default function DeliveryCreateScreen({ navigation, route }: Props) {
             />
           </View>
           <View style={[styles.inputContainer, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-            <Feather name="mail" size={18} color={theme.textMuted} />
+            <EvendiIcon name="mail" size={18} color={theme.textMuted} />
             <TextInput
               style={[styles.input, { color: theme.text }]}
               placeholder="E-post (valgfritt)"
@@ -534,7 +534,7 @@ export default function DeliveryCreateScreen({ navigation, route }: Props) {
             />
           </View>
           <View style={[styles.inputContainer, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-            <Feather name="calendar" size={18} color={theme.textMuted} />
+            <EvendiIcon name="calendar" size={18} color={theme.textMuted} />
             <TextInput
               style={[styles.input, { color: theme.text }]}
               placeholder="Bryllupsdato (valgfritt)"
@@ -554,26 +554,26 @@ export default function DeliveryCreateScreen({ navigation, route }: Props) {
           <View style={[styles.sectionCard, { backgroundColor: theme.accent + "08", borderColor: theme.accent + "30" }]}>
             <View style={styles.sectionHeader}>
               <View style={[styles.sectionIconCircle, { backgroundColor: theme.accent + "20" }]}>
-                <Feather name="link" size={16} color={theme.accent} />
+                <EvendiIcon name="link" size={16} color={theme.accent} />
               </View>
               <ThemedText style={[styles.sectionTitle, { color: theme.accent }]}>Koblet til prosjekt</ThemedText>
             </View>
             <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 6, paddingHorizontal: 16, paddingBottom: 12 }}>
               {linkedProject && (
                 <View style={{ flexDirection: "row", alignItems: "center", backgroundColor: theme.accent + "15", borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4 }}>
-                  <Feather name="briefcase" size={12} color={theme.accent} />
+                  <EvendiIcon name="briefcase" size={12} color={theme.accent} />
                   <ThemedText style={{ fontSize: 12, color: theme.accent, marginLeft: 4 }}>Prosjekt</ThemedText>
                 </View>
               )}
               {linkedTimeline && (
                 <View style={{ flexDirection: "row", alignItems: "center", backgroundColor: "#7C3AED20", borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4 }}>
-                  <Feather name="clock" size={12} color="#7C3AED" />
+                  <EvendiIcon name="clock" size={12} color="#7C3AED" />
                   <ThemedText style={{ fontSize: 12, color: "#7C3AED", marginLeft: 4 }}>Tidslinje</ThemedText>
                 </View>
               )}
               {linkedCouple && (
                 <View style={{ flexDirection: "row", alignItems: "center", backgroundColor: "#EC489920", borderRadius: 12, paddingHorizontal: 10, paddingVertical: 4 }}>
-                  <Feather name="heart" size={12} color="#EC4899" />
+                  <EvendiIcon name="heart" size={12} color="#EC4899" />
                   <ThemedText style={{ fontSize: 12, color: "#EC4899", marginLeft: 4 }}>Brudepar</ThemedText>
                 </View>
               )}
@@ -584,13 +584,13 @@ export default function DeliveryCreateScreen({ navigation, route }: Props) {
         <View style={[styles.sectionCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
           <View style={styles.sectionHeader}>
             <View style={[styles.sectionIconCircle, { backgroundColor: theme.accent + "15" }]}>
-              <Feather name="file-text" size={16} color={theme.accent} />
+              <EvendiIcon name="file-text" size={16} color={theme.accent} />
             </View>
             <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>Leveranse</ThemedText>
           </View>
           <View style={styles.section}>
           <View style={[styles.inputContainer, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-            <Feather name="tag" size={18} color={theme.textMuted} />
+            <EvendiIcon name="tag" size={18} color={theme.textMuted} />
             <TextInput
               style={[styles.input, { color: theme.text }]}
               placeholder="Tittel *"
@@ -616,7 +616,7 @@ export default function DeliveryCreateScreen({ navigation, route }: Props) {
         <View style={styles.itemsHeader}>
           <View style={styles.itemsHeaderLeft}>
             <View style={[styles.sectionIconCircle, { backgroundColor: theme.accent + "15" }]}>
-              <Feather name="link" size={16} color={theme.accent} />
+              <EvendiIcon name="link" size={16} color={theme.accent} />
             </View>
             <ThemedText style={[styles.sectionTitle, { color: theme.text }]}>Lenker</ThemedText>
           </View>
@@ -627,7 +627,7 @@ export default function DeliveryCreateScreen({ navigation, route }: Props) {
               { backgroundColor: pressed ? theme.accent : theme.accent + "15" }
             ]}
           >
-            <Feather name="plus" size={16} color={theme.accent} />
+            <EvendiIcon name="plus" size={16} color={theme.accent} />
             <ThemedText style={[styles.addItemText, { color: theme.accent }]}>Legg til</ThemedText>
           </Pressable>
         </View>
@@ -638,7 +638,7 @@ export default function DeliveryCreateScreen({ navigation, route }: Props) {
               <ThemedText style={[styles.itemNumber, { color: theme.textMuted }]}>Lenke {index + 1}</ThemedText>
               {items.length > 1 ? (
                 <Pressable onPress={() => removeItem(index)} style={styles.removeBtn}>
-                  <Feather name="x" size={18} color="#EF5350" />
+                  <EvendiIcon name="x" size={18} color="#EF5350" />
                 </Pressable>
               ) : null}
             </View>
@@ -709,7 +709,7 @@ export default function DeliveryCreateScreen({ navigation, route }: Props) {
                   { backgroundColor: pressed ? theme.accent + "20" : theme.accent + "10" }
                 ]}
               >
-                <Feather name="external-link" size={14} color={theme.accent} />
+                <EvendiIcon name="external-link" size={14} color={theme.accent} />
                 <ThemedText style={[styles.testLinkText, { color: theme.accent }]}>
                   Test lenke
                 </ThemedText>
@@ -726,7 +726,7 @@ export default function DeliveryCreateScreen({ navigation, route }: Props) {
                   onPress={() => setShowGoogleDriveHelp(true)}
                   style={[styles.helpBtn, { backgroundColor: theme.accent + "15" }]}
                 >
-                  <Feather name="help-circle" size={14} color={theme.accent} />
+                  <EvendiIcon name="help-circle" size={14} color={theme.accent} />
                 </Pressable>
               </View>
             ) : null}
@@ -750,7 +750,7 @@ export default function DeliveryCreateScreen({ navigation, route }: Props) {
           ) : (
             <>
               <View style={styles.submitBtnIcon}>
-                <Feather name="check" size={18} color="#FFFFFF" />
+                <EvendiIcon name="check" size={18} color="#FFFFFF" />
               </View>
               <ThemedText style={styles.submitBtnText}>
                 {isEditMode ? "Lagre endringer" : "Opprett leveranse"}
@@ -776,7 +776,7 @@ export default function DeliveryCreateScreen({ navigation, route }: Props) {
               <ActivityIndicator color="#F44336" />
             ) : (
               <>
-                <Feather name="trash-2" size={18} color="#F44336" />
+                <EvendiIcon name="trash-2" size={18} color="#F44336" />
                 <ThemedText style={[styles.deleteBtnText, { color: "#F44336" }]}>
                   Slett leveranse
                 </ThemedText>
@@ -796,7 +796,7 @@ export default function DeliveryCreateScreen({ navigation, route }: Props) {
         <View style={[styles.successSheetOverlay, { backgroundColor: "rgba(0,0,0,0.3)" }]}>
           <View style={[styles.successSheet, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
             <View style={[styles.successIcon, { backgroundColor: theme.accent + "20" }]}>
-              <Feather name="check-circle" size={44} color={theme.accent} />
+              <EvendiIcon name="check-circle" size={44} color={theme.accent} />
             </View>
             <ThemedText style={[styles.successTitle, { color: theme.text }]}>
               Leveranse opprettet!
@@ -818,7 +818,7 @@ export default function DeliveryCreateScreen({ navigation, route }: Props) {
                   { backgroundColor: pressed ? theme.accent : theme.accent + "15" }
                 ]}
               >
-                <Feather name="copy" size={16} color={theme.accent} />
+                <EvendiIcon name="copy" size={16} color={theme.accent} />
               </Pressable>
             </View>
             <ThemedText style={[styles.codeHint, { color: theme.textMuted }]}>
@@ -864,7 +864,7 @@ export default function DeliveryCreateScreen({ navigation, route }: Props) {
                 onPress={() => setShowGoogleDriveHelp(false)}
                 style={styles.modalCloseBtn}
               >
-                <Feather name="x" size={24} color={theme.text} />
+                <EvendiIcon name="x" size={24} color={theme.text} />
               </Pressable>
             </View>
 
@@ -919,7 +919,7 @@ export default function DeliveryCreateScreen({ navigation, route }: Props) {
                     </ThemedText>
                   </ThemedText>
                   <View style={[styles.warningBox, { backgroundColor: "#FFF3E0" }]}>
-                    <Feather name="alert-triangle" size={16} color="#FF9800" />
+                    <EvendiIcon name="alert-triangle" size={16} color="#FF9800" />
                     <ThemedText style={styles.warningText}>
                       Viktig: Hvis bildet forblir "Begrenset", vil det ikke vises i appen!
                     </ThemedText>

@@ -3,7 +3,7 @@ import { View, StyleSheet, ScrollView, Pressable, RefreshControl, TouchableOpaci
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Feather } from '@expo/vector-icons';
+import { EvendiIcon } from '@/components/EvendiIcon';
 import * as Haptics from 'expo-haptics';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
@@ -286,7 +286,7 @@ export function MusikkScreen() {
       <View style={[styles.header, { backgroundColor: theme.backgroundDefault, borderBottomColor: theme.border }]}>
         <View style={styles.headerContent}>
           <View style={[styles.iconCircle, { backgroundColor: Colors.dark.accent + '15' }]}>
-            <Feather name="music" size={24} color={Colors.dark.accent} />
+            <EvendiIcon name="music" size={24} color={Colors.dark.accent} />
           </View>
           <View style={styles.headerText}>
             <ThemedText style={styles.headerTitle}>Musikk & DJ</ThemedText>
@@ -338,7 +338,7 @@ export function MusikkScreen() {
         )}
         {activeTab === 'bookings' ? (
           <Animated.View entering={FadeInDown.duration(300)} style={styles.emptyState}>
-            <Feather name="heart" size={48} color={theme.primary} style={{ opacity: 0.6 }} />
+            <EvendiIcon name="heart" size={48} color={theme.primary} style={{ opacity: 0.6 }} />
             <ThemedText style={[styles.emptyTitle, { color: theme.text, fontWeight: '600' }]}>
               Hva er soundtracket til dagen?
             </ThemedText>
@@ -409,7 +409,7 @@ export function MusikkScreen() {
                     onPress={() => openPlaylistLink(preferences.spotifyPlaylistUrl || '')}
                     style={[styles.prefLinkBtn, { borderColor: theme.border }]}
                   >
-                    <Feather name="external-link" size={16} color={theme.textSecondary} />
+                    <EvendiIcon name="external-link" size={16} color={theme.textSecondary} />
                   </Pressable>
                 </View>
                 {spotifyError ? (
@@ -437,7 +437,7 @@ export function MusikkScreen() {
                     onPress={() => openPlaylistLink(preferences.youtubePlaylistUrl || '')}
                     style={[styles.prefLinkBtn, { borderColor: theme.border }]}
                   >
-                    <Feather name="external-link" size={16} color={theme.textSecondary} />
+                    <EvendiIcon name="external-link" size={16} color={theme.textSecondary} />
                   </Pressable>
                 </View>
                 {youtubeError ? (
@@ -515,7 +515,7 @@ export function MusikkScreen() {
             {TIMELINE_STEPS.map((step) => (
               <View key={step.key} style={styles.timelineItem}>
                 <View style={[styles.timelineIconCircle, { backgroundColor: theme.backgroundSecondary }]}>
-                  <Feather name={step.icon} size={20} color={theme.textMuted} />
+                  <EvendiIcon name={step.icon} size={20} color={theme.textMuted} />
                 </View>
                 <View style={styles.timelineContent}>
                   <ThemedText style={styles.timelineLabel}>{step.label}</ThemedText>
@@ -553,7 +553,7 @@ export function MusikkScreen() {
                         ]}
                       >
                         <View style={[styles.timelineIconCircle, { backgroundColor: statusColor + '20' }]}>
-                          <Feather name={statusIcon} size={18} color={statusColor} />
+                          <EvendiIcon name={statusIcon} size={18} color={statusColor} />
                         </View>
                         <View style={styles.speechContent}>
                           <View style={styles.speechHeader}>

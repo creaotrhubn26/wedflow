@@ -5,7 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Haptics from "expo-haptics";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon, EvendiIconGlyphMap } from "@/components/EvendiIcon";
 import { useQuery } from "@tanstack/react-query";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
@@ -427,7 +427,7 @@ export default function VendorMusikkScreen() {
         >
           <View style={styles.cardHeader}>
             <ThemedText style={[styles.cardTitle, { color: theme.text }]}>Musikk-pakker</ThemedText>
-            <Feather name="music" size={18} color={theme.textSecondary} />
+            <EvendiIcon name="music" size={18} color={theme.textSecondary} />
           </View>
           <ThemedText style={[styles.cardBody, { color: theme.textSecondary }]}>Legg til pakker for band, DJ, eller musikere med timepriser og spilleliste.</ThemedText>
           <Button style={styles.cardButton} onPress={goToProducts}>Opprett pakke</Button>
@@ -443,7 +443,7 @@ export default function VendorMusikkScreen() {
         >
           <View style={styles.cardHeader}>
             <ThemedText style={[styles.cardTitle, { color: theme.text }]}>Tilbud</ThemedText>
-            <Feather name="file-text" size={18} color={theme.textSecondary} />
+            <EvendiIcon name="file-text" size={18} color={theme.textSecondary} />
           </View>
           <ThemedText style={[styles.cardBody, { color: theme.textSecondary }]}>Send tilbud med timepriser og tilgjengelighet.</ThemedText>
           <Button style={styles.cardButton} onPress={goToOffers}>Send tilbud</Button>
@@ -451,7 +451,7 @@ export default function VendorMusikkScreen() {
       </View>
 
       <View style={[styles.infoBox, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-        <Feather name="info" size={16} color={theme.textSecondary} />
+        <EvendiIcon name="info" size={16} color={theme.textSecondary} />
         <ThemedText style={[styles.infoText, { color: theme.textSecondary }]}>Legg til lyd-eksempler og spillelister for å øke konvertering.</ThemedText>
       </View>
 
@@ -462,7 +462,7 @@ export default function VendorMusikkScreen() {
         </View>
         {products.length === 0 ? (
           <View style={styles.emptyRow}>
-            <Feather name="music" size={18} color={theme.accent} />
+            <EvendiIcon name="music" size={18} color={theme.accent} />
             <View style={{ flex: 1 }}>
               <ThemedText style={[styles.emptyTitle, { color: theme.text }]}>Ingen pakker ennå</ThemedText>
               <ThemedText style={[styles.emptySubtitle, { color: theme.textSecondary }]}>Legg til musikk-pakker for å komme i gang</ThemedText>
@@ -479,7 +479,7 @@ export default function VendorMusikkScreen() {
                     <ThemedText style={{ color: theme.textSecondary, fontSize: 13 }}>{p.unitPrice} {p.unitType}</ThemedText>
                     {p.description ? <ThemedText numberOfLines={1} style={{ color: theme.textSecondary, fontSize: 12 }}>{p.description}</ThemedText> : null}
                   </View>
-                  <Feather name="chevron-right" size={18} color={theme.textSecondary} />
+                  <EvendiIcon name="chevron-right" size={18} color={theme.textSecondary} />
                 </Pressable>
               </SwipeableRow>
             </Animated.View>
@@ -494,7 +494,7 @@ export default function VendorMusikkScreen() {
         </View>
         {offers.length === 0 ? (
           <View style={styles.emptyRow}>
-            <Feather name="file-text" size={18} color={theme.accent} />
+            <EvendiIcon name="file-text" size={18} color={theme.accent} />
             <View style={{ flex: 1 }}>
               <ThemedText style={[styles.emptyTitle, { color: theme.text }]}>Ingen tilbud ennå</ThemedText>
               <ThemedText style={[styles.emptySubtitle, { color: theme.textSecondary }]}>Send tilbud til kunden</ThemedText>
@@ -512,7 +512,7 @@ export default function VendorMusikkScreen() {
                   </View>
                   <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
                     <ThemedText style={{ fontSize: 12, color: theme.textSecondary }}>{o.status}</ThemedText>
-                    <Feather name="chevron-right" size={18} color={theme.textSecondary} />
+                    <EvendiIcon name="chevron-right" size={18} color={theme.textSecondary} />
                   </View>
                 </Pressable>
               </SwipeableRow>
@@ -529,7 +529,7 @@ export default function VendorMusikkScreen() {
 
         {acceptedOffers.length === 0 ? (
           <View style={styles.emptyRow}>
-            <Feather name="music" size={18} color={theme.accent} />
+            <EvendiIcon name="music" size={18} color={theme.accent} />
             <View style={{ flex: 1 }}>
               <ThemedText style={[styles.emptyTitle, { color: theme.text }]}>Ingen aksepterte tilbud</ThemedText>
               <ThemedText style={[styles.emptySubtitle, { color: theme.textSecondary }]}>Musikkønsker vises når et tilbud er akseptert</ThemedText>
@@ -635,7 +635,7 @@ export default function VendorMusikkScreen() {
                     {culturalTips.length > 0 ? (
                       culturalTips.map((tip, idx) => (
                         <View key={`${tip}-${idx}`} style={styles.tipRow}>
-                          <Feather name="star" size={12} color={theme.accent} />
+                          <EvendiIcon name="star" size={12} color={theme.accent} />
                           <ThemedText style={[styles.tipText, { color: theme.textSecondary }]}>{tip}</ThemedText>
                         </View>
                       ))
@@ -682,7 +682,7 @@ export default function VendorMusikkScreen() {
                                       onPress={() => openLink(vendor.website)}
                                       style={[styles.cultureVendorAction, { borderColor: theme.border, backgroundColor: theme.backgroundSecondary }]}
                                     >
-                                      <Feather name="external-link" size={12} color={theme.textSecondary} />
+                                      <EvendiIcon name="external-link" size={12} color={theme.textSecondary} />
                                       <ThemedText style={[styles.cultureVendorActionText, { color: theme.textSecondary }]}>Nettside</ThemedText>
                                     </Pressable>
                                   ) : null}
@@ -691,7 +691,7 @@ export default function VendorMusikkScreen() {
                                       onPress={() => openPhone(vendor.phone)}
                                       style={[styles.cultureVendorAction, { borderColor: theme.border, backgroundColor: theme.backgroundSecondary }]}
                                     >
-                                      <Feather name="phone" size={12} color={theme.textSecondary} />
+                                      <EvendiIcon name="phone" size={12} color={theme.textSecondary} />
                                       <ThemedText style={[styles.cultureVendorActionText, { color: theme.textSecondary }]}>Ring</ThemedText>
                                     </Pressable>
                                   ) : null}
@@ -702,19 +702,19 @@ export default function VendorMusikkScreen() {
                                   onPress={() => openVendorProfile(vendor)}
                                   style={[styles.cultureVendorAction, { borderColor: theme.border, backgroundColor: theme.backgroundSecondary }]}
                                 >
-                                  <Feather name="user" size={12} color={theme.textSecondary} />
+                                  <EvendiIcon name="user" size={12} color={theme.textSecondary} />
                                   <ThemedText style={[styles.cultureVendorActionText, { color: theme.textSecondary }]}>Profil</ThemedText>
                                 </Pressable>
                                 <Pressable
                                   onPress={() => openChatPicker(vendor)}
                                   style={[styles.cultureVendorAction, { borderColor: theme.border, backgroundColor: theme.backgroundSecondary }]}
                                 >
-                                  <Feather name="message-circle" size={12} color={theme.textSecondary} />
+                                  <EvendiIcon name="message-circle" size={12} color={theme.textSecondary} />
                                   <ThemedText style={[styles.cultureVendorActionText, { color: theme.textSecondary }]}>Chat</ThemedText>
                                 </Pressable>
                               </View>
                             </View>
-                            {vendor.isFeatured ? <Feather name="star" size={14} color={theme.accent} /> : null}
+                            {vendor.isFeatured ? <EvendiIcon name="star" size={14} color={theme.accent} /> : null}
                           </View>
                         );
                       })
@@ -735,7 +735,7 @@ export default function VendorMusikkScreen() {
         <View style={[styles.sectionCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
           <View style={styles.sectionHeaderRow}>
             <ThemedText style={[styles.cardTitle, { color: theme.text }]}>Taler ({speeches.length})</ThemedText>
-            <Feather name="mic" size={18} color={theme.textSecondary} />
+            <EvendiIcon name="mic" size={18} color={theme.textSecondary} />
           </View>
           <ThemedText style={[styles.speechSubtitle, { color: theme.textMuted }]}>
             Pause/senk musikken når taler starter
@@ -746,7 +746,7 @@ export default function VendorMusikkScreen() {
             .map((speech, idx) => {
               const statusColor = speech.status === 'speaking' ? '#f59e0b' :
                 speech.status === 'done' ? '#16a34a' : theme.textSecondary;
-              const statusIcon: keyof typeof Feather.glyphMap = speech.status === 'speaking' ? 'mic' :
+              const statusIcon: keyof typeof EvendiIconGlyphMap = speech.status === 'speaking' ? 'mic' :
                 speech.status === 'done' ? 'check-circle' : 'clock';
 
               return (
@@ -756,7 +756,7 @@ export default function VendorMusikkScreen() {
                 >
                   <View style={[styles.speechRow, { borderBottomColor: theme.border, backgroundColor: theme.backgroundSecondary }]}>
                     <View style={[styles.speechIconCircle, { backgroundColor: statusColor + '20' }]}>
-                      <Feather name={statusIcon} size={16} color={statusColor} />
+                      <EvendiIcon name={statusIcon} size={16} color={statusColor} />
                     </View>
                     <View style={{ flex: 1 }}>
                       <View style={styles.speechHeader}>
@@ -794,7 +794,7 @@ export default function VendorMusikkScreen() {
             <View style={styles.modalHeader}>
               <ThemedText style={[styles.modalTitle, { color: theme.text }]}>Velg par</ThemedText>
               <Pressable onPress={() => setIsChatPickerOpen(false)}>
-                <Feather name="x" size={18} color={theme.textSecondary} />
+                <EvendiIcon name="x" size={18} color={theme.textSecondary} />
               </Pressable>
             </View>
             <ThemedText style={[styles.modalSubtitle, { color: theme.textSecondary }]}>Velg hvilket par denne leverandørsamtalen gjelder.</ThemedText>
@@ -817,7 +817,7 @@ export default function VendorMusikkScreen() {
                   {isStartingChat ? (
                     <ActivityIndicator size="small" color={theme.accent} />
                   ) : (
-                    <Feather name="chevron-right" size={18} color={theme.textSecondary} />
+                    <EvendiIcon name="chevron-right" size={18} color={theme.textSecondary} />
                   )}
                 </Pressable>
               ))}

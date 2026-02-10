@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useNavigation, useRoute } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon, EvendiIconGlyphMap } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { useQuery } from "@tanstack/react-query";
@@ -21,7 +21,7 @@ type FAQCategory = "vendor" | "couple";
 
 interface FAQItem {
   id: string;
-  icon: keyof typeof Feather.glyphMap;
+  icon: keyof typeof EvendiIconGlyphMap;
   question: string;
   answer: string;
   category: FAQCategory;
@@ -33,7 +33,7 @@ interface FAQItem {
 
 interface SupportLink {
   label: string;
-  icon: keyof typeof Feather.glyphMap;
+  icon: keyof typeof EvendiIconGlyphMap;
   description: string;
   url: string | null;
   onPress?: () => void;
@@ -188,7 +188,7 @@ export default function VendorHelpScreen() {
     >
       <Animated.View entering={FadeInDown.duration(400)}>
         <View style={[styles.header, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-          <Feather name="help-circle" size={32} color={Colors.dark.accent} />
+          <EvendiIcon name="help-circle" size={32} color={Colors.dark.accent} />
           <ThemedText style={styles.headerTitle}>Hjelp & FAQ</ThemedText>
           <ThemedText style={[styles.headerSubtitle, { color: theme.textSecondary }]}>
             Alt du trenger å vite om Evendi
@@ -211,7 +211,7 @@ export default function VendorHelpScreen() {
               activeCategory !== "vendor" && { backgroundColor: theme.backgroundDefault, borderColor: theme.border },
             ]}
           >
-            <Feather 
+            <EvendiIcon 
               name="briefcase" 
               size={18} 
               color={activeCategory === "vendor" ? "#FFFFFF" : theme.textSecondary} 
@@ -238,7 +238,7 @@ export default function VendorHelpScreen() {
               activeCategory !== "couple" && { backgroundColor: theme.backgroundDefault, borderColor: theme.border },
             ]}
           >
-            <Feather 
+            <EvendiIcon 
               name="heart" 
               size={18} 
               color={activeCategory === "couple" ? "#FFFFFF" : theme.textSecondary} 
@@ -282,14 +282,14 @@ export default function VendorHelpScreen() {
                 >
                   <View style={styles.faqQuestionContent}>
                     <View style={[styles.iconCircle, { backgroundColor: theme.accent + "15" }]}>
-                      <Feather 
+                      <EvendiIcon 
                         name={item.icon} 
                         size={16} 
                         color={theme.accent} 
                       />
                     </View>
                     <ThemedText style={styles.faqQuestionText}>{item.question}</ThemedText>
-                    <Feather 
+                    <EvendiIcon 
                       name={expandedId === item.id ? "chevron-up" : "chevron-down"} 
                       size={18} 
                       color={theme.textMuted} 
@@ -327,7 +327,7 @@ export default function VendorHelpScreen() {
                 ]}
               >
                 <View style={[styles.helpIcon, { backgroundColor: isVideo ? theme.accent + "20" : theme.backgroundSecondary }]}> 
-                  <Feather name={isVideo ? "play-circle" : link.icon} size={20} color={isVideo ? theme.accent : Colors.dark.accent} />
+                  <EvendiIcon name={isVideo ? "play-circle" : link.icon} size={20} color={isVideo ? theme.accent : Colors.dark.accent} />
                 </View>
                 <View style={styles.helpInfo}>
                   <ThemedText style={styles.helpLabel}>{link.label}</ThemedText>
@@ -340,7 +340,7 @@ export default function VendorHelpScreen() {
                     </View>
                   )}
                 </View>
-                <Feather name="external-link" size={18} color={theme.textMuted} />
+                <EvendiIcon name="external-link" size={18} color={theme.textMuted} />
               </Pressable>
             );
           })}
@@ -349,7 +349,7 @@ export default function VendorHelpScreen() {
 
       <Animated.View entering={FadeInDown.delay(400).duration(400)}>
         <View style={[styles.tipBox, { backgroundColor: theme.accent + "15", borderColor: theme.accent }]}>
-          <Feather name="info" size={20} color={theme.accent} />
+          <EvendiIcon name="info" size={20} color={theme.accent} />
           <ThemedText style={[styles.tipText, { color: theme.text }]}>
             <ThemedText style={{ fontWeight: "600" }}>Tips: </ThemedText>
             Bruk Evendi Support-knappen øverst i Dashboard for rask hjelp. Vi svarer vanligvis innen 24 timer.

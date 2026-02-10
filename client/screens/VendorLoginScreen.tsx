@@ -8,7 +8,7 @@ import {
   Image,
 } from "react-native";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import { useMutation } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -208,7 +208,7 @@ export default function VendorLoginScreen({ navigation }: Props) {
           onPress={() => navigation.goBack()}
           style={styles.backButton}
         >
-          <Feather name="arrow-left" size={24} color={theme.text} />
+          <EvendiIcon name="arrow-left" size={24} color={theme.text} />
         </Pressable>
       </View>
       <KeyboardAwareScrollViewCompat
@@ -231,7 +231,7 @@ export default function VendorLoginScreen({ navigation }: Props) {
         <View style={styles.form}>
           <View>
             <View style={[styles.inputContainer, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }, getFieldStyle("email")]}>
-              <Feather name="mail" size={18} color={touched.email && errors.email ? "#DC3545" : theme.textMuted} />
+              <EvendiIcon name="mail" size={18} color={touched.email && errors.email ? "#DC3545" : theme.textMuted} />
               <TextInput
                 style={[styles.input, { color: theme.text }]}
                 placeholder="E-post"
@@ -254,7 +254,7 @@ export default function VendorLoginScreen({ navigation }: Props) {
 
           <View>
             <View style={[styles.inputContainer, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }, getFieldStyle("password")]}>
-              <Feather name="lock" size={18} color={touched.password && errors.password ? "#DC3545" : theme.textMuted} />
+              <EvendiIcon name="lock" size={18} color={touched.password && errors.password ? "#DC3545" : theme.textMuted} />
               <TextInput
                 style={[styles.input, { color: theme.text }]}
                 placeholder="Passord"
@@ -274,7 +274,7 @@ export default function VendorLoginScreen({ navigation }: Props) {
                 accessibilityRole="button"
                 accessibilityLabel={showPassword ? "Skjul passord" : "Vis passord"}
               >
-                <Feather name={showPassword ? "eye-off" : "eye"} size={18} color={theme.textMuted} />
+                <EvendiIcon name={showPassword ? "eye-off" : "eye"} size={18} color={theme.textMuted} />
               </Pressable>
             </View>
             {touched.password && errors.password ? (

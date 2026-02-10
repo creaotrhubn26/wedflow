@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -345,7 +345,7 @@ export default function AdminSettingsScreen() {
             <ActivityIndicator color="#000" />
           ) : (
             <>
-              <Feather name="save" size={18} color="#000" />
+              <EvendiIcon name="save" size={18} color="#000" />
               <ThemedText style={styles.saveButtonText}>Lagre endringer</ThemedText>
             </>
           )}

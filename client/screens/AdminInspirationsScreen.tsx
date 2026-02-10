@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -152,7 +152,7 @@ export default function AdminInspirationsScreen() {
           <Image source={{ uri: item.coverImageUrl }} style={styles.coverImage} />
         ) : (
           <View style={[styles.placeholderImage, { backgroundColor: theme.backgroundSecondary }]}>
-            <Feather name="image" size={32} color={theme.textMuted} />
+            <EvendiIcon name="image" size={32} color={theme.textMuted} />
           </View>
         )}
         
@@ -176,7 +176,7 @@ export default function AdminInspirationsScreen() {
                 onPress={() => approveMutation.mutate(item.id)}
                 disabled={approveMutation.isPending}
               >
-                <Feather name="check" size={16} color="#000" />
+                <EvendiIcon name="check" size={16} color="#000" />
                 <ThemedText style={styles.actionButtonText}>Godkjenn</ThemedText>
               </Pressable>
               <Pressable
@@ -184,7 +184,7 @@ export default function AdminInspirationsScreen() {
                 onPress={() => handleReject(item.id)}
                 disabled={rejectMutation.isPending}
               >
-                <Feather name="x" size={16} color="#FF6B6B" />
+                <EvendiIcon name="x" size={16} color="#FF6B6B" />
                 <ThemedText style={[styles.actionButtonTextOutline, { color: "#FF6B6B" }]}>Avvis</ThemedText>
               </Pressable>
             </View>
@@ -239,7 +239,7 @@ export default function AdminInspirationsScreen() {
           }}
           ListEmptyComponent={
             <View style={styles.emptyContainer}>
-              <Feather name="inbox" size={48} color={theme.textMuted} />
+              <EvendiIcon name="inbox" size={48} color={theme.textMuted} />
               <ThemedText style={[styles.emptyText, { color: theme.textSecondary }]}>
                 Ingen {selectedTab === "pending" ? "ventende" : selectedTab === "approved" ? "godkjente" : "avviste"} showcases
               </ThemedText>

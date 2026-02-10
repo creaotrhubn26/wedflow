@@ -5,7 +5,7 @@ import { useNavigation } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Haptics from "expo-haptics";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Animated, { FadeInDown } from "react-native-reanimated";
 
@@ -492,7 +492,7 @@ export default function VendorVenueScreen() {
   const renderBookingsTab = () => (
     <View style={styles.tabContent}>
       <View style={[styles.infoBox, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-        <Feather name="info" size={16} color={theme.textSecondary} />
+        <EvendiIcon name="info" size={16} color={theme.textSecondary} />
         <ThemedText style={[styles.infoText, { color: theme.textSecondary }]}>Legg til bilder av lokalet og tidligere arrangementer for å øke konvertering.</ThemedText>
       </View>
 
@@ -500,13 +500,13 @@ export default function VendorVenueScreen() {
         <View style={styles.sectionHeaderRow}>
           <ThemedText style={[styles.cardTitle, { color: theme.text }]}>Bookingforespørsler</ThemedText>
           <Pressable onPress={() => openBookingModal()} style={styles.addIconBtn}>
-            <Feather name="plus" size={18} color={theme.text} />
+            <EvendiIcon name="plus" size={18} color={theme.text} />
           </Pressable>
         </View>
         {bookingsQuery.isLoading ? <ActivityIndicator color={theme.accent} /> : null}
         {bookings.length === 0 ? (
           <View style={styles.emptyRow}>
-            <Feather name="home" size={18} color={theme.accent} />
+            <EvendiIcon name="home" size={18} color={theme.accent} />
             <View style={{ flex: 1 }}>
               <ThemedText style={[styles.emptyTitle, { color: theme.text }]}>Ingen bookinger ennå</ThemedText>
               <ThemedText style={[styles.emptySubtitle, { color: theme.textSecondary }]}>Legg til manuelle bookinger eller importér</ThemedText>
@@ -556,9 +556,9 @@ export default function VendorVenueScreen() {
                     {b.capacity ? <ThemedText style={{ color: theme.textSecondary, fontSize: 12 }}>Kapasitet: {b.capacity}</ThemedText> : null}
                   </View>
                   <Pressable onPress={() => duplicateBooking(b)} style={styles.quickActionButton}>
-                    <Feather name="copy" size={16} color={theme.textSecondary} />
+                    <EvendiIcon name="copy" size={16} color={theme.textSecondary} />
                   </Pressable>
-                  <Feather name="chevron-right" size={18} color={theme.textSecondary} />
+                  <EvendiIcon name="chevron-right" size={18} color={theme.textSecondary} />
                 </Pressable>
               </SwipeableRow>
             </Animated.View>
@@ -570,13 +570,13 @@ export default function VendorVenueScreen() {
         <View style={styles.sectionHeaderRow}>
           <ThemedText style={[styles.cardTitle, { color: theme.text }]}>Tilgjengelighet</ThemedText>
           <Pressable onPress={() => openAvailabilityModal()} style={styles.addIconBtn}>
-            <Feather name="plus" size={18} color={theme.text} />
+            <EvendiIcon name="plus" size={18} color={theme.text} />
           </Pressable>
         </View>
         {availabilityQuery.isLoading ? <ActivityIndicator color={theme.accent} /> : null}
         {availability.length === 0 ? (
           <View style={styles.emptyRow}>
-            <Feather name="calendar" size={18} color={theme.accent} />
+            <EvendiIcon name="calendar" size={18} color={theme.accent} />
             <View style={{ flex: 1 }}>
               <ThemedText style={[styles.emptyTitle, { color: theme.text }]}>Ingen blokker</ThemedText>
               <ThemedText style={[styles.emptySubtitle, { color: theme.textSecondary }]}>Legg til blokkerte datoer eller kapasitetsgrenser</ThemedText>
@@ -599,7 +599,7 @@ export default function VendorVenueScreen() {
                     ) : null}
                     {a.notes ? <ThemedText style={{ color: theme.textSecondary, fontSize: 12 }}>{a.notes}</ThemedText> : null}
                   </View>
-                  <Feather name="chevron-right" size={18} color={theme.textSecondary} />
+                  <EvendiIcon name="chevron-right" size={18} color={theme.textSecondary} />
                 </Pressable>
               </SwipeableRow>
             </Animated.View>
@@ -635,10 +635,10 @@ export default function VendorVenueScreen() {
             <View
               style={[styles.timelineCheckbox, { borderColor: theme.border }, timeline[step.key as keyof VendorVenueTimeline] && { backgroundColor: theme.primary, borderColor: theme.primary }]}
             >
-              {timeline[step.key as keyof VendorVenueTimeline] && <Feather name="check" size={12} color="#fff" />}
+              {timeline[step.key as keyof VendorVenueTimeline] && <EvendiIcon name="check" size={12} color="#fff" />}
             </View>
             <View style={styles.timelineStepContent}>
-              <Feather name={step.icon} size={16} color={theme.textSecondary} />
+              <EvendiIcon name={step.icon} size={16} color={theme.textSecondary} />
               <ThemedText style={[styles.timelineLabel, { color: theme.text }]}>
                 {step.label}
               </ThemedText>
@@ -656,7 +656,7 @@ export default function VendorVenueScreen() {
       <View style={[styles.header, { backgroundColor: theme.backgroundDefault, borderBottomColor: theme.border }]}>
         <View style={styles.headerContent}>
           <View style={[styles.iconCircle, { backgroundColor: Colors.dark.accent + '15' }]}>
-            <Feather name="home" size={24} color={Colors.dark.accent} />
+            <EvendiIcon name="home" size={24} color={Colors.dark.accent} />
           </View>
           <View style={styles.headerText}>
             <ThemedText style={styles.headerTitle}>Lokale</ThemedText>
@@ -798,7 +798,7 @@ export default function VendorVenueScreen() {
                       },
                     ]}
                   >
-                    <Feather 
+                    <EvendiIcon 
                       name={statusOption.icon as any} 
                       size={16} 
                       color={bookingStatus === statusOption.value ? statusOption.color : theme.textSecondary} 

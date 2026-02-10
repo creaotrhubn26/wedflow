@@ -3,7 +3,7 @@ import { ScrollView, StyleSheet, View, Pressable, TextInput, Platform } from "re
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon, EvendiIconGlyphMap } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -356,7 +356,7 @@ export default function RemindersScreen() {
           <View style={[styles.summaryCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
             <View style={styles.summaryRow}>
               <View style={[styles.iconContainer, { backgroundColor: theme.accent + "20" }]}>
-                <Feather name="bell" size={24} color={theme.accent} />
+                <EvendiIcon name="bell" size={24} color={theme.accent} />
               </View>
               <View style={styles.summaryText}>
                 <View style={{ flexDirection: "row", alignItems: "center", gap: Spacing.sm }}>
@@ -394,7 +394,7 @@ export default function RemindersScreen() {
                   <View style={styles.statsRow}>
                     {dueThisWeekReminders.length > 0 && (
                       <View style={styles.statItem}>
-                        <Feather name="clock" size={12} color="#FFB74D" />
+                        <EvendiIcon name="clock" size={12} color="#FFB74D" />
                         <ThemedText style={[styles.statText, { color: theme.textMuted }]}>
                           {copy.statsThisWeek(dueThisWeekReminders.length)}
                         </ThemedText>
@@ -402,7 +402,7 @@ export default function RemindersScreen() {
                     )}
                     {overdueReminders.length > 0 && (
                       <View style={styles.statItem}>
-                        <Feather name="alert-circle" size={12} color="#FF3B30" />
+                        <EvendiIcon name="alert-circle" size={12} color="#FF3B30" />
                         <ThemedText style={[styles.statText, { color: "#FF3B30" }]}>
                           {copy.statsOverdue(overdueReminders.length)}
                         </ThemedText>
@@ -458,8 +458,8 @@ export default function RemindersScreen() {
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                 }}
               >
-                <Feather
-                  name={CATEGORY_ICONS[cat] as keyof typeof Feather.glyphMap}
+                <EvendiIcon
+                  name={CATEGORY_ICONS[cat] as keyof typeof EvendiIconGlyphMap}
                   size={14}
                   color={filterCategory === cat ? "#1A1A1A" : theme.textSecondary}
                   style={styles.filterIcon}
@@ -488,7 +488,7 @@ export default function RemindersScreen() {
               }}
             >
               <View style={[styles.ctaIcon, { backgroundColor: "#FF3B30" }]}>
-                <Feather name="alert-triangle" size={20} color="#FFFFFF" />
+                <EvendiIcon name="alert-triangle" size={20} color="#FFFFFF" />
               </View>
               <View style={styles.ctaContent}>
                 <ThemedText style={[styles.ctaTitle, { color: "#FF3B30" }]}>
@@ -498,7 +498,7 @@ export default function RemindersScreen() {
                   {copy.overdueSubtitle}
                 </ThemedText>
               </View>
-              <Feather name="arrow-right" size={20} color="#FF3B30" />
+              <EvendiIcon name="arrow-right" size={20} color="#FF3B30" />
             </Pressable>
           </Animated.View>
         )}
@@ -513,7 +513,7 @@ export default function RemindersScreen() {
               }}
             >
               <View style={[styles.ctaIcon, { backgroundColor: theme.accent }]}>
-                <Feather name="plus" size={20} color="#FFFFFF" />
+                <EvendiIcon name="plus" size={20} color="#FFFFFF" />
               </View>
               <View style={styles.ctaContent}>
                 <ThemedText style={[styles.ctaTitle, { color: theme.text }]}>{copy.addReminderCta}</ThemedText>
@@ -521,7 +521,7 @@ export default function RemindersScreen() {
                   {copy.allCompleted}
                 </ThemedText>
               </View>
-              <Feather name="arrow-right" size={20} color={theme.accent} />
+              <EvendiIcon name="arrow-right" size={20} color={theme.accent} />
             </Pressable>
           </Animated.View>
         )}
@@ -546,7 +546,7 @@ export default function RemindersScreen() {
                       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                     }}
                   >
-                    <Feather name="dollar-sign" size={12} color={CATEGORY_COLORS.vendor} />
+                    <EvendiIcon name="dollar-sign" size={12} color={CATEGORY_COLORS.vendor} />
                     <ThemedText style={[styles.templateText, { color: theme.textSecondary }]}>{copy.templatePayVendor}</ThemedText>
                   </Pressable>
                   <Pressable
@@ -560,7 +560,7 @@ export default function RemindersScreen() {
                       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                     }}
                   >
-                    <Feather name="calendar" size={12} color={CATEGORY_COLORS.vendor} />
+                    <EvendiIcon name="calendar" size={12} color={CATEGORY_COLORS.vendor} />
                     <ThemedText style={[styles.templateText, { color: theme.textSecondary }]}>{copy.templateVendorMeeting}</ThemedText>
                   </Pressable>
                   <Pressable
@@ -574,7 +574,7 @@ export default function RemindersScreen() {
                       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                     }}
                   >
-                    <Feather name="users" size={12} color={CATEGORY_COLORS.guest} />
+                    <EvendiIcon name="users" size={12} color={CATEGORY_COLORS.guest} />
                     <ThemedText style={[styles.templateText, { color: theme.textSecondary }]}>{copy.templateSendRsvp}</ThemedText>
                   </Pressable>
                   <Pressable
@@ -588,7 +588,7 @@ export default function RemindersScreen() {
                       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                     }}
                   >
-                    <Feather name="trending-up" size={12} color={CATEGORY_COLORS.budget} />
+                    <EvendiIcon name="trending-up" size={12} color={CATEGORY_COLORS.budget} />
                     <ThemedText style={[styles.templateText, { color: theme.textSecondary }]}>{copy.templateCheckBudget}</ThemedText>
                   </Pressable>
                 </ScrollView>
@@ -654,7 +654,7 @@ export default function RemindersScreen() {
                       ]}
                       onPress={() => setShowDatePicker(true)}
                     >
-                      <Feather name="calendar" size={18} color={Colors.dark.accent} />
+                      <EvendiIcon name="calendar" size={18} color={Colors.dark.accent} />
                       <ThemedText style={styles.dateButtonText}>
                         {selectedDate.toLocaleDateString(locale, {
                           weekday: "long",
@@ -699,8 +699,8 @@ export default function RemindersScreen() {
                         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                       }}
                     >
-                      <Feather
-                        name={CATEGORY_ICONS[cat] as keyof typeof Feather.glyphMap}
+                      <EvendiIcon
+                        name={CATEGORY_ICONS[cat] as keyof typeof EvendiIconGlyphMap}
                         size={16}
                         color={selectedCategory === cat ? CATEGORY_COLORS[cat] : theme.textMuted}
                       />
@@ -745,7 +745,7 @@ export default function RemindersScreen() {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               }}
             >
-              <Feather name="plus" size={20} color={theme.accent} />
+              <EvendiIcon name="plus" size={20} color={theme.accent} />
               <ThemedText style={[styles.addButtonText, { color: theme.accent }]}>
                 {copy.addReminder}
               </ThemedText>
@@ -801,7 +801,7 @@ export default function RemindersScreen() {
         {reminders.length === 0 ? (
           <Animated.View entering={FadeInDown.duration(300).delay(300)} style={styles.emptyState}>
             <View style={[styles.emptyIcon, { backgroundColor: theme.accent + "20" }]}>
-              <Feather name="bell-off" size={32} color={theme.accent} />
+              <EvendiIcon name="bell-off" size={32} color={theme.accent} />
             </View>
             <ThemedText style={styles.emptyTitle}>{copy.emptyTitle}</ThemedText>
             <ThemedText style={[styles.emptyText, { color: theme.textMuted }]}>
@@ -858,7 +858,7 @@ function ReminderItem({
             },
           ]}
         >
-          {completed ? <Feather name="check" size={14} color="#1A1A1A" /> : null}
+          {completed ? <EvendiIcon name="check" size={14} color="#1A1A1A" /> : null}
         </View>
       </Pressable>
 
@@ -873,7 +873,7 @@ function ReminderItem({
             {reminder.title}
           </ThemedText>
           <Pressable style={styles.deleteButton} onPress={onDelete}>
-            <Feather name="trash-2" size={16} color={theme.textMuted} />
+            <EvendiIcon name="trash-2" size={16} color={theme.textMuted} />
           </Pressable>
         </View>
 
@@ -888,8 +888,8 @@ function ReminderItem({
 
         <View style={styles.reminderMeta}>
           <View style={[styles.categoryBadge, { backgroundColor: categoryColor + "20" }]}>
-            <Feather
-              name={CATEGORY_ICONS[reminder.category] as keyof typeof Feather.glyphMap}
+            <EvendiIcon
+              name={CATEGORY_ICONS[reminder.category] as keyof typeof EvendiIconGlyphMap}
               size={12}
               color={categoryColor}
             />
@@ -899,7 +899,7 @@ function ReminderItem({
           </View>
 
           <View style={styles.dateInfo}>
-            <Feather
+            <EvendiIcon
               name="calendar"
               size={12}
               color={isOverdue && !completed ? "#FF6B6B" : theme.textMuted}

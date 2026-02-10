@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon, EvendiIconGlyphMap } from "@/components/EvendiIcon";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import * as Haptics from "expo-haptics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -70,7 +70,7 @@ interface SuggestionPayload {
   message: string;
 }
 
-const ICON_MAP: Record<string, keyof typeof Feather.glyphMap> = {
+const ICON_MAP: Record<string, keyof typeof EvendiIconGlyphMap> = {
   heart: "heart",
   camera: "camera",
   music: "music",
@@ -246,7 +246,7 @@ export default function VendorCoupleScheduleScreen({ route, navigation }: Props)
           </View>
           <View style={styles.dotColumn}>
             <View style={[styles.dot, { backgroundColor: Colors.dark.accent }]}>
-              <Feather
+              <EvendiIcon
                 name={ICON_MAP[item.icon || "star"] || "star"}
                 size={12}
                 color="#1A1A1A"
@@ -265,7 +265,7 @@ export default function VendorCoupleScheduleScreen({ route, navigation }: Props)
             <View style={styles.eventHeader}>
               <ThemedText style={styles.eventTitle}>{item.title}</ThemedText>
               <View style={[styles.suggestBadge, { backgroundColor: Colors.dark.accent + "15" }]}>
-                <Feather name="message-circle" size={12} color={Colors.dark.accent} />
+                <EvendiIcon name="message-circle" size={12} color={Colors.dark.accent} />
                 <ThemedText style={[styles.suggestText, { color: Colors.dark.accent }]}>
                   Foreslå
                 </ThemedText>
@@ -329,7 +329,7 @@ export default function VendorCoupleScheduleScreen({ route, navigation }: Props)
   if (!data) {
     return (
       <View style={[styles.container, styles.centered, { backgroundColor: theme.backgroundRoot }]}>
-        <Feather name="lock" size={48} color={theme.textMuted} />
+        <EvendiIcon name="lock" size={48} color={theme.textMuted} />
         <ThemedText style={[styles.errorText, { color: theme.textSecondary }]}>
           Du har ikke tilgang til dette programmet
         </ThemedText>
@@ -356,7 +356,7 @@ export default function VendorCoupleScheduleScreen({ route, navigation }: Props)
         }}
         ListHeaderComponent={
           <View style={[styles.headerCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-            <Feather name="calendar" size={24} color={Colors.dark.accent} />
+            <EvendiIcon name="calendar" size={24} color={Colors.dark.accent} />
             <ThemedText type="h3" style={styles.headerTitle}>
               {coupleName || data.couple.displayName}
             </ThemedText>
@@ -364,7 +364,7 @@ export default function VendorCoupleScheduleScreen({ route, navigation }: Props)
               {formatDate(data.couple.weddingDate)}
             </ThemedText>
             <View style={[styles.viewOnlyBadge, { backgroundColor: Colors.dark.accent + "15" }]}>
-              <Feather name="eye" size={14} color={Colors.dark.accent} />
+              <EvendiIcon name="eye" size={14} color={Colors.dark.accent} />
               <ThemedText style={[styles.viewOnlyText, { color: Colors.dark.accent }]}>
                 Kun visning – trykk for å foreslå endringer
               </ThemedText>
@@ -375,7 +375,7 @@ export default function VendorCoupleScheduleScreen({ route, navigation }: Props)
           data.canViewSpeeches && data.speeches.length > 0 ? (
             <View style={styles.speechSection}>
               <View style={styles.sectionHeader}>
-                <Feather name="mic" size={18} color={Colors.dark.accent} />
+                <EvendiIcon name="mic" size={18} color={Colors.dark.accent} />
                 <ThemedText type="h4" style={styles.sectionTitle}>
                   Taler ({data.speeches.length})
                 </ThemedText>
@@ -390,7 +390,7 @@ export default function VendorCoupleScheduleScreen({ route, navigation }: Props)
         }
         ListEmptyComponent={
           <View style={styles.emptyState}>
-            <Feather name="calendar" size={48} color={theme.textMuted} />
+            <EvendiIcon name="calendar" size={48} color={theme.textMuted} />
             <ThemedText style={[styles.emptyText, { color: theme.textSecondary }]}>
               Ingen hendelser i kjøreplanen ennå
             </ThemedText>
@@ -412,7 +412,7 @@ export default function VendorCoupleScheduleScreen({ route, navigation }: Props)
                 Foreslå endring
               </ThemedText>
               <Pressable onPress={() => setShowSuggestionModal(false)}>
-                <Feather name="x" size={24} color={theme.text} />
+                <EvendiIcon name="x" size={24} color={theme.text} />
               </Pressable>
             </View>
 
@@ -423,7 +423,7 @@ export default function VendorCoupleScheduleScreen({ route, navigation }: Props)
                     Hendelse
                   </ThemedText>
                   <View style={[styles.eventPreview, { backgroundColor: theme.backgroundSecondary }]}>
-                    <Feather
+                    <EvendiIcon
                       name={ICON_MAP[selectedEvent.icon || "star"] || "star"}
                       size={16}
                       color={Colors.dark.accent}
@@ -475,7 +475,7 @@ export default function VendorCoupleScheduleScreen({ route, navigation }: Props)
                 </View>
 
                 <View style={[styles.infoBox, { backgroundColor: Colors.dark.accent + "10", borderColor: Colors.dark.accent }]}>
-                  <Feather name="info" size={16} color={Colors.dark.accent} />
+                  <EvendiIcon name="info" size={16} color={Colors.dark.accent} />
                   <ThemedText style={[styles.infoText, { color: Colors.dark.accent }]}>
                     Brudeparet vil motta forslaget ditt og kan velge å godta eller avvise endringen.
                   </ThemedText>

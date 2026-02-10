@@ -3,7 +3,7 @@ import { View, ScrollView, StyleSheet, TextInput, Pressable, Switch, FlatList } 
 import { useRoute, useNavigation } from "@react-navigation/native";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Feather } from "@expo/vector-icons";
+import { EvendiIcon } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 
 import { ThemedView } from "@/components/ThemedView";
@@ -202,7 +202,7 @@ export default function AdminWhatsNewScreen({ route }: Props) {
                 activeCategory === category && { borderBottomColor: theme.accent, borderBottomWidth: 2 },
               ]}
             >
-              <Feather
+              <EvendiIcon
                 name={category === "vendor" ? "briefcase" : "heart"}
                 size={16}
                 color={activeCategory === category ? theme.accent : theme.textMuted}
@@ -230,7 +230,7 @@ export default function AdminWhatsNewScreen({ route }: Props) {
               }}
               style={[styles.addButton, { backgroundColor: theme.accent }]}
             >
-              <Feather
+              <EvendiIcon
                 name={showForm ? "x" : "plus"}
                 size={18}
                 color="#FFFFFF"
@@ -283,7 +283,7 @@ export default function AdminWhatsNewScreen({ route }: Props) {
                         },
                       ]}
                     >
-                      <Feather
+                      <EvendiIcon
                         name={icon as any}
                         size={20}
                         color={formData.icon === icon ? "#FFFFFF" : theme.accent}
@@ -364,7 +364,7 @@ export default function AdminWhatsNewScreen({ route }: Props) {
                   style={[styles.item, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}
                 >
                   <View style={[styles.itemIcon, { backgroundColor: theme.accent + "20" }]}>
-                    <Feather name={item.icon as any} size={20} color={theme.accent} />
+                    <EvendiIcon name={item.icon as any} size={20} color={theme.accent} />
                   </View>
 
                   <View style={styles.itemContent}>
@@ -394,13 +394,13 @@ export default function AdminWhatsNewScreen({ route }: Props) {
                       onPress={() => handleEdit(item)}
                       style={[styles.actionButton, { backgroundColor: theme.accent + "20" }]}
                     >
-                      <Feather name="edit-2" size={16} color={theme.accent} />
+                      <EvendiIcon name="edit-2" size={16} color={theme.accent} />
                     </Pressable>
                     <Pressable
                       onPress={() => handleDelete(item.id)}
                       style={[styles.actionButton, { backgroundColor: theme.error + "20" }]}
                     >
-                      <Feather name="trash-2" size={16} color={theme.error} />
+                      <EvendiIcon name="trash-2" size={16} color={theme.error} />
                     </Pressable>
                   </View>
                 </View>
@@ -410,7 +410,7 @@ export default function AdminWhatsNewScreen({ route }: Props) {
         </View>
 
         <View style={[styles.infoBox, { backgroundColor: theme.accent + "15", borderColor: theme.accent }]}>
-          <Feather name="info" size={18} color={theme.accent} />
+          <EvendiIcon name="info" size={18} color={theme.accent} />
           <ThemedText style={[styles.infoText, { color: theme.text }]}>
             <ThemedText style={{ fontWeight: "600" }}>Tips: </ThemedText>
             Elementer vises automatisk til brukere som oppgraderer appen. Kun aktive elementer vises.
