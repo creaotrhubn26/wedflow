@@ -1,11 +1,11 @@
 /**
  * Weather / Location / Travel Bridge API
- * Connects Wedflow wedding planning with CreatorHub's location intelligence
+ * Connects Evendi wedding planning with CreatorHub's location intelligence
  * — Kartverket address search, YR.no weather, travel cost calculations
  *
  * Data flows:
- *   CreatorHub ExternalDataService → Backend bridge → Wedflow screens
- *   Wedflow venue selection → Backend bridge → CreatorHub project timelines
+ *   CreatorHub ExternalDataService → Backend bridge → Evendi screens
+ *   Evendi venue selection → Backend bridge → CreatorHub project timelines
  */
 
 import { getApiUrl } from './query-client';
@@ -194,7 +194,7 @@ function getCreatorHubApiUrl(): string {
     if (isLanIp) return `http://${host}:3001`;
   }
 
-  // Fallback: try the same API server (in case Wedflow API proxies)
+  // Fallback: try the same API server (in case Evendi API proxies)
   return getApiUrl();
 }
 

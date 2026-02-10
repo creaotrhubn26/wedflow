@@ -4,10 +4,10 @@ import { useDesignContext } from "@/lib/DesignProvider";
 import { useContext } from "react";
 
 const DEFAULT_DESIGN_SETTINGS = {
-  primaryColor: "#C9A962",
-  backgroundColor: "#1A1A1A",
-  appName: "Wedflow",
-  appTagline: "Din bryllupsplanlegger",
+  primaryColor: "#1E6BFF",
+  backgroundColor: "#0F1F3A",
+  appName: "Evendi",
+  appTagline: "Din arrangementsplanlegger",
   logoUrl: "",
   darkMode: true,
   fontFamily: "System",

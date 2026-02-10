@@ -11,7 +11,7 @@ export function HeaderTitle({ title }: HeaderTitleProps) {
   const { designSettings } = useTheme();
   const logoSource = designSettings.logoUrl
     ? { uri: designSettings.logoUrl }
-    : require("../../assets/images/wedflow-logo.png");
+    : require("../../assets/images/Evendi_logo_norsk_tagline.png");
 
   return (
     <View style={styles.container}>

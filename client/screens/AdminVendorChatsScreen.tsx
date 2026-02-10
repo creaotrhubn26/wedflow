@@ -197,7 +197,7 @@ export default function AdminVendorChatsScreen({ route, navigation }: Props) {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.backgroundRoot }]} edges={["top", "bottom"]}>
       <View style={[styles.header, { paddingTop: headerHeight + Spacing.md }]}>
-        <ThemedText style={styles.title}>Wedflow Support - Leverandører</ThemedText>
+        <ThemedText style={styles.title}>Evendi Support - Leverandører</ThemedText>
         <ThemedText style={styles.subtitle}>Meldinger fra leverandører</ThemedText>
         <View style={styles.toolsRow}>
           <View style={[styles.searchBox, { borderColor: theme.border, backgroundColor: theme.backgroundSecondary }]}>

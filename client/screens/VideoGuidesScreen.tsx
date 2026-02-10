@@ -68,7 +68,7 @@ export default function VideoGuidesScreen() {
       <View style={styles.header}>
         <Feather name="play-circle" size={32} color={theme.accent} />
         <ThemedText style={styles.title}>Videoguider</ThemedText>
-        <ThemedText style={styles.subtitle}>Lær å bruke Wedflow med videoguider</ThemedText>
+        <ThemedText style={styles.subtitle}>Lær å bruke Evendi med videoguider</ThemedText>
       </View>
 
       {isLoading && <ActivityIndicator style={{ marginTop: Spacing.lg }} color={theme.accent} />}

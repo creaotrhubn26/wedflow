@@ -9,6 +9,7 @@ import {
   Linking,
   Modal,
   ActivityIndicator,
+  Image,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
@@ -30,6 +31,8 @@ import type { RouteProp } from "@react-navigation/native";
 
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
+import { useEventType } from "@/hooks/useEventType";
+import { getAppLanguage, type AppLanguage } from "@/lib/storage";
 import { Spacing, BorderRadius } from "@/constants/theme";
 import { getApiUrl } from "@/lib/query-client";
 import { showToast } from "@/lib/toast";
@@ -128,7 +131,7 @@ const FEATURES: Feature[] = [
     id: "deliveries",
     icon: "truck",
     title: "Leveranser og Oppdrag",
-    description: "Opprett og administrer leveranser knyttet til par. Spor status og del detaljer slik at alt er klart til bryllupsdagen.",
+    description: "Opprett og administrer leveranser knyttet til par. Spor status og del detaljer slik at alt er klart til den store dagen.",
     color: "#15AABF",
     category: "vendor",
     steps: [
@@ -143,30 +146,30 @@ const FEATURES: Feature[] = [
     id: "vendor-support",
     icon: "headphones",
     title: "Support og Hjelp",
-    description: "Kontakt Wedflow-teamet direkte, se FAQ, dokumentasjon og videoguider. Vi er her for å hjelpe deg å lykkes.",
+    description: "Kontakt Evendi-teamet direkte, se FAQ, dokumentasjon og videoguider. Vi er her for å hjelpe deg å lykkes.",
     color: "#748FFC",
     category: "vendor",
     steps: [
-      "Klikk 'Wedflow Support' øverst i Dashboard for direkte chat",
+      "Klikk 'Evendi Support' øverst i Dashboard for direkte chat",
       "Bruk 'Hjelp & FAQ' for raske svar på vanlige spørsmål",
       "Se dokumentasjonen for detaljerte guider",
       "Sjekk videoguider for visuell opplæring",
-      "Send e-post til support@wedflow.no for akutte saker"
+      "Send e-post til support@evendi.no for akutte saker"
     ]
   },
   {
     id: "planning",
     icon: "calendar",
-    title: "Planlegg Bryllupet",
+    title: "Planlegg Arrangementet",
     description: "Bruk sjekkliste, budsjett, tidslinje, påminnelser og fotoplan for å holde oversikt over hele planleggingen.",
     color: "#845EF7",
     category: "couple",
     steps: [
       "Gå til 'Planlegging'-fanen",
-      "Sett bryllupsdato og legg til viktige detaljer",
+      "Sett dato og legg til viktige detaljer",
       "Bruk sjekklisten for å spore oppgaver",
       "Administrer budsjett med kategorier og 'Hva om?'-scenarier",
-      "Opprett kjøreplan og tidslinje for bryllupsdagen"
+      "Opprett kjøreplan og tidslinje for den store dagen"
     ]
   },
   {
@@ -203,14 +206,14 @@ const FEATURES: Feature[] = [
     id: "couple-messages",
     icon: "message-circle",
     title: "Meldinger og Kontakt",
-    description: "Chat med leverandører, ring viktige personer i bryllupsfølget, og kontakt Wedflow Support — alt på ett sted.",
+    description: "Chat med leverandører, ring viktige personer i følget, og kontakt Evendi Support — alt på ett sted.",
     color: "#51CF66",
     category: "couple",
     steps: [
       "Gå til Profil > Meldinger",
       "Se leverandørsamtaler med uleste varsler",
       "Ring eller send SMS til viktige personer",
-      "Kontakt Wedflow Support for direkte hjelp",
+      "Kontakt Evendi Support for direkte hjelp",
       "Bruk Hjelp & FAQ for raske svar"
     ]
   },
@@ -223,7 +226,7 @@ const FEATURES: Feature[] = [
     category: "couple",
     steps: [
       "Gå til Profil > Fotoplan",
-      "Legg til bildekategorier (brudepar, familie, venner, detaljer)",
+      "Legg til bildekategorier (par, familie, venner, detaljer)",
       "Spesifiser ønskede bilder i hver kategori",
       "Marker viktige «must-have»-bilder",
       "Del fotoplanen med fotografen"
@@ -237,11 +240,11 @@ const FEATURES: Feature[] = [
     color: "#748FFC",
     category: "both",
     steps: [
-      "Klikk 'Wedflow Support' eller 'Meldinger' i menyen",
+      "Klikk 'Evendi Support' eller 'Meldinger' i menyen",
       "Velg mellom FAQ, direkte chat eller tilbakemelding",
       "Beskriv ditt problem eller spørsmål",
       "Vi svarer innen 24 timer",
-      "Send e-post til support@wedflow.no for akutte saker"
+      "Send e-post til support@evendi.no for akutte saker"
     ]
   }
 ];
@@ -306,10 +309,22 @@ const parseFeaturesSetting = (value: string | undefined, fallbackColor: string) 
   }
 };
 
+// Logo assets
+const LOGO_NO = require("@/assets/images/Evendi_logo_norsk_tagline.png");
+const LOGO_ICON = require("@/assets/images/Evendi_app_icon.png");
+
 export default function DocumentationScreen() {
   const headerHeight = useHeaderHeight();
   const { theme } = useTheme();
+  const { isWedding } = useEventType();
   const queryClient = useQueryClient();
+  const [appLanguage, setAppLanguage] = useState<AppLanguage>("nb");
+
+  useEffect(() => {
+    getAppLanguage().then((lang) => {
+      if (lang) setAppLanguage(lang);
+    });
+  }, []);
   const route = useRoute<RouteProp<RootStackParamList, "Documentation">>();
   const adminKey = route.params?.adminKey ?? "";
   const isAdmin = adminKey.length > 0;
@@ -622,12 +637,14 @@ export default function DocumentationScreen() {
         {/* Header */}
         <Animated.View entering={FadeInDown.duration(400)}>
           <View style={[styles.header, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-            <View style={[styles.headerIcon, { backgroundColor: theme.accent + "20" }]}>
-              <Feather name="book-open" size={32} color={theme.accent} />
-            </View>
-            <ThemedText style={styles.headerTitle}>Slik Bruker Du Wedflow</ThemedText>
+            <Image
+              source={LOGO_NO}
+              style={styles.headerLogo}
+              resizeMode="contain"
+            />
+            <ThemedText style={styles.headerTitle}>Slik Bruker Du Evendi</ThemedText>
             <ThemedText style={[styles.headerSubtitle, { color: theme.textSecondary }]}>
-              Komplett guide til alle funksjoner
+              {appLanguage === "en" ? "Complete guide to all features" : "Komplett guide til alle funksjoner"}
             </ThemedText>
           </View>
         </Animated.View>
@@ -677,7 +694,7 @@ export default function DocumentationScreen() {
                   { color: activeCategory === "couple" ? "#FFFFFF" : theme.textSecondary }
                 ]}
               >
-                For Brudepar
+                {isWedding ? "For Brudepar" : "For Kunder"}
               </ThemedText>
             </Pressable>
           </View>
@@ -1055,7 +1072,7 @@ export default function DocumentationScreen() {
                   ]}
                 >
                   <ThemedText style={[styles.modalCategoryText, { color: editingFeature?.category === category ? "#FFFFFF" : theme.text }]}>
-                    {category === "vendor" ? "Leverandor" : category === "couple" ? "Brudepar" : "Begge"}
+                    {category === "vendor" ? "Leverandor" : category === "couple" ? (isWedding ? "Brudepar" : "Kunde") : "Begge"}
                   </ThemedText>
                 </Pressable>
               ))}
@@ -1113,6 +1130,11 @@ const styles = StyleSheet.create({
     borderRadius: 32,
     alignItems: "center",
     justifyContent: "center",
+    marginBottom: Spacing.md,
+  },
+  headerLogo: {
+    width: 200,
+    height: 80,
     marginBottom: Spacing.md,
   },
   headerTitle: {

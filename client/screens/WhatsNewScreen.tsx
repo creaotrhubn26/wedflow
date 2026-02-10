@@ -167,7 +167,7 @@ export default function WhatsNewScreen() {
               Ingen nyheter for {categoryLabel.toLowerCase()}
             </ThemedText>
             <ThemedText style={[styles.emptyText, { color: theme.textMuted, marginTop: Spacing.sm }]}>
-              Vi jobber konstant med å forbedre Wedflow. Kom tilbake snart for nyheter!
+              Vi jobber konstant med å forbedre Evendi. Kom tilbake snart for nyheter!
             </ThemedText>
           </View>
         ) : (

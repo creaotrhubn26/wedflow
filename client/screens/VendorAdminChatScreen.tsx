@@ -17,14 +17,14 @@ import type { RootStackParamList } from "@/navigation/RootStackNavigator";
 import { showToast } from "@/lib/toast";
 
 const VENDOR_STORAGE_KEY = "wedflow_vendor_session";
-const WELCOME_MESSAGE = "Velkommen til Wedflow Support!\n\nHer kan du kontakte oss direkte med spørsmål, problemer eller tilbakemeldinger. Vi svarer vanligvis innen 24 timer.\n\nFør du sender melding, sjekk våre ressurser:";
+const WELCOME_MESSAGE = "Velkommen til Evendi Support!\n\nHer kan du kontakte oss direkte med spørsmål, problemer eller tilbakemeldinger. Vi svarer vanligvis innen 24 timer.\n\nFør du sender melding, sjekk våre ressurser:";
 const HELP_LINKS = [
   { label: "Fullstendig Dokumentasjon", icon: "book-open" as const, screen: "Documentation" as const, url: null },
   { label: "Hjelp & FAQ", icon: "help-circle" as const, screen: null, url: null },
   { label: "Videoguider", icon: "video" as const, screen: null, url: "https://github.com/creaotrhubn26/wedflow/blob/main/VENDOR_DOCUMENTATION.md#videoguider" },
   { label: "Hva er nytt", icon: "star" as const, screen: "WhatsNew" as const, screenParams: { category: "vendor" }, url: null },
   { label: "Systemstatus", icon: "activity" as const, screen: "Status" as const, url: null },
-  { label: "E-post Support", icon: "mail" as const, screen: null, url: "mailto:support@wedflow.no" },
+  { label: "E-post Support", icon: "mail" as const, screen: null, url: "mailto:support@evendi.no" },
   { label: "Norwedfilm.no", icon: "globe" as const, screen: null, url: "https://norwedfilm.no" },
 ];
 
@@ -272,8 +272,8 @@ export default function VendorAdminChatScreen() {
     <SafeAreaView style={[styles.container, { backgroundColor: theme.backgroundRoot }]} edges={["top","bottom"]}>
       <View style={[styles.header, { borderBottomColor: theme.border }]}>
         <View style={styles.headerContent}>
-          <ThemedText style={styles.title}>Wedflow Support</ThemedText>
-          <ThemedText style={styles.subtitle}>Kommunikasjon med Wedflow-teamet</ThemedText>
+          <ThemedText style={styles.title}>Evendi Support</ThemedText>
+          <ThemedText style={styles.subtitle}>Kommunikasjon med Evendi-teamet</ThemedText>
         </View>
         <Pressable
           onPress={() => navigation.goBack()}
@@ -326,7 +326,7 @@ export default function VendorAdminChatScreen() {
                     </ThemedText>
                     <ThemedText style={[styles.statusNoticeText, { color: theme.text }]}>
                       {appSettings?.find(s => s.key === "maintenance_mode")?.value === "true"
-                        ? appSettings?.find(s => s.key === "maintenance_message")?.value || "Wedflow er for øyeblikket under vedlikehold. Noen funksjoner kan være utilgjengelige."
+                        ? appSettings?.find(s => s.key === "maintenance_message")?.value || "Evendi er for øyeblikket under vedlikehold. Noen funksjoner kan være utilgjengelige."
                         : appSettings?.find(s => s.key === "status_message")?.value || ""}
                     </ThemedText>
                     <Pressable 
@@ -345,7 +345,7 @@ export default function VendorAdminChatScreen() {
                   <View style={[styles.welcomeBox, { backgroundColor: theme.backgroundSecondary, borderColor: theme.border }]}>
                   <View style={styles.welcomeHeader}>
                     <Feather name="message-circle" size={32} color={theme.accent} />
-                    <ThemedText style={styles.welcomeTitle}>Wedflow Support</ThemedText>
+                    <ThemedText style={styles.welcomeTitle}>Evendi Support</ThemedText>
                   </View>
                   <ThemedText style={styles.welcomeBody}>{WELCOME_MESSAGE}</ThemedText>
                   <View style={{ flexDirection: "row", alignItems: "center", gap: Spacing.sm, marginBottom: Spacing.md }}>

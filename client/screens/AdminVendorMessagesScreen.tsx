@@ -245,7 +245,7 @@ export default function AdminVendorMessagesScreen({ route, navigation }: Props) 
     <SafeAreaView style={[styles.container, { backgroundColor: theme.backgroundRoot }]} edges={["top", "bottom"]}>
       <View style={[styles.header, { paddingTop: headerHeight + Spacing.md }]}>
         <ThemedText style={styles.title}>{vendorName || "Leverandør"}</ThemedText>
-        <ThemedText style={styles.subtitle}>Wedflow Support Chat</ThemedText>
+        <ThemedText style={styles.subtitle}>Evendi Support Chat</ThemedText>
       </View>
 
       {loading && <ActivityIndicator style={{ marginTop: Spacing.lg }} color={theme.accent} />}

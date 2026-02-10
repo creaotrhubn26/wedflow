@@ -286,12 +286,12 @@ export default function VendorRegistrationScreen() {
     >
       <View style={styles.logoContainer}>
         <Image
-          source={require("../../assets/images/wedflow-logo.png")}
+          source={require("../../assets/images/Evendi_logo_norsk_tagline.png")}
           style={styles.logo}
           resizeMode="contain"
         />
       </View>
-      <ThemedText style={styles.title}>Bli en Wedflow-leverandør</ThemedText>
+      <ThemedText style={styles.title}>Bli en Evendi-leverandør</ThemedText>
       <ThemedText style={[styles.subtitle, { color: theme.textSecondary }]}>
         Registrer din bedrift og nå ut til tusenvis av kunder i Skandinavia.
       </ThemedText>

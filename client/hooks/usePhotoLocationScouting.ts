@@ -8,7 +8,7 @@
  * - Calculate travel time + distance from wedding venue to shot location
  * - Generate weather tips for outdoor shot locations
  * - Mark shots as "scouted" with location data
- * - Drive location data into the ShotListManager bridge (CreatorHub ↔ Wedflow)
+ * - Drive location data into the ShotListManager bridge (CreatorHub ↔ Evendi)
  * - Growing location scouting database from photographers + couples
  */
 

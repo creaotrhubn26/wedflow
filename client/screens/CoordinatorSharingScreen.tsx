@@ -228,7 +228,7 @@ export default function CoordinatorSharingScreen() {
   };
 
   const copyLink = async (token: string) => {
-    const domain = process.env.EXPO_PUBLIC_DOMAIN || "wedflow.app";
+    const domain = process.env.EXPO_PUBLIC_DOMAIN || "evendi.no";
     const link = `https://${domain}/coordinator/${token}`;
     await Clipboard.setStringAsync(link);
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -237,7 +237,7 @@ export default function CoordinatorSharingScreen() {
 
   const shareLink = async (token: string, name: string) => {
     try {
-      const domain = process.env.EXPO_PUBLIC_DOMAIN || "wedflow.app";
+      const domain = process.env.EXPO_PUBLIC_DOMAIN || "evendi.no";
       const link = `https://${domain}/coordinator/${token}`;
       await Share.share({
         message: `Hei! Du er invitert som ${name || "koordinator"} for vårt bryllup. Åpne lenken for å se program og talerliste:\n\n${link}`,

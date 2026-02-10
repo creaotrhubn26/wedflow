@@ -99,7 +99,7 @@ export default function AdminDashboardScreen() {
     {
       title: "Support-meldinger",
       icon: "message-circle" as const,
-      description: "Svar på Wedflow Support-meldinger fra leverandører",
+      description: "Svar på Evendi Support-meldinger fra leverandører",
       screen: "AdminVendorChats" as const,
     },
     {

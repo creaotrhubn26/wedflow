@@ -379,7 +379,7 @@ export default function VendorPaymentScreen() {
             <ThemedText 
               style={styles.termsLink}
               onPress={() => {
-                const url = "https://wedflow.no/terms-of-sale";
+                const url = "https://evendi.no/terms-of-sale";
                 Linking.openURL(url).catch(() => {
                   showToast("Kunne ikke åpne vilkårene");
                 });

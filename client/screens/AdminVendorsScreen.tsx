@@ -463,7 +463,7 @@ export default function AdminVendorsScreen() {
       <View style={[styles.container, { backgroundColor: theme.backgroundRoot }]}>
         <View style={[styles.loginContainer, { paddingTop: headerHeight + Spacing.xl }]}>
           <Image
-            source={require("../../assets/images/wedflow-logo.png")}
+            source={require("../../assets/images/Evendi_logo_norsk_tagline.png")}
             style={styles.logo}
             resizeMode="contain"
           />

@@ -104,9 +104,9 @@ export default function SharePartnerScreen() {
     try {
       const msg = config.shareLabel
         ? config.shareLabel.shareMessageNo.replace("{name}", name).replace("{code}", code)
-        : `Hei ${name}! Du er invitert til bryllupet vårt på Wedflow. Din invitasjonskode: ${code}. Last ned Wedflow og skriv inn koden for å få tilgang.`;
+        : `Hei ${name}! Du er invitert til bryllupet vårt på Evendi. Din invitasjonskode: ${code}. Last ned Evendi og skriv inn koden for å få tilgang.`;
       await Share.share({
-        message: `${msg}\n\n• App Store: https://apps.apple.com/app/wedflow\n• Google Play: https://play.google.com/store/apps/details?id=no.norwedfilm.wedflow`,
+        message: `${msg}\n\n• App Store: https://apps.apple.com/app/evendi\n• Google Play: https://play.google.com/store/apps/details?id=no.norwedfilm.evendi`,
       });
     } catch {}
   };

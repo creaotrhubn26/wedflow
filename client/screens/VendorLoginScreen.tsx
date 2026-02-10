@@ -218,7 +218,7 @@ export default function VendorLoginScreen({ navigation }: Props) {
         ]}
       >
         <Image
-          source={require("../../assets/images/wedflow-logo.png")}
+          source={require("../../assets/images/Evendi_logo_norsk_tagline.png")}
           style={styles.logo}
           resizeMode="contain"
         />

@@ -119,7 +119,7 @@ export default function StatusScreen() {
         <Animated.View entering={FadeInDown.duration(400)}>
           <View style={[styles.header, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
             <Feather name="activity" size={32} color={getStatusColor()} />
-            <ThemedText style={styles.headerTitle}>{t("Wedflow Status", "Wedflow Status")}</ThemedText>
+            <ThemedText style={styles.headerTitle}>{t("Evendi Status", "Evendi Status")}</ThemedText>
             <ThemedText style={[styles.headerSubtitle, { color: theme.textSecondary }]}>
               {t("Sanntidsstatus for tjenesten", "Real-time service status")}
             </ThemedText>
@@ -240,7 +240,7 @@ export default function StatusScreen() {
 
                 <Pressable
                   onPress={() => {
-                    handleOpenLink("mailto:support@wedflow.no");
+                    handleOpenLink("mailto:support@evendi.no");
                   }}
                   style={[styles.link, { borderColor: theme.border }]}
                 >
@@ -277,13 +277,13 @@ export default function StatusScreen() {
               </Animated.View>
             )}
 
-            {/* Wedflow Vision — The Golden Circle (Simon Sinek) */}
+            {/* Evendi Vision — The Golden Circle (Simon Sinek) */}
             <Animated.View entering={FadeInDown.delay(500).duration(400)}>
               <View style={[styles.section, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
                 <View style={styles.visionHeader}>
                   <Feather name="target" size={24} color={theme.accent} />
                   <ThemedText style={styles.sectionTitle}>
-                    {t("Wedflow Visjonen", "Wedflow Vision")}
+                    {t("Evendi Visjonen", "Evendi Vision")}
                   </ThemedText>
                 </View>
                 <ThemedText style={[styles.visionIntro, { color: theme.textSecondary }]}>
@@ -341,8 +341,8 @@ export default function StatusScreen() {
                   </View>
                   <ThemedText style={[styles.circleText, { color: theme.text }]}>
                     {t(
-                      "Wedflow er en komplett bryllupsplattform — en app der par planlegger bryllupet sitt med kraftige verktøy (planlegging, budsjett, gjester, bordplassering, tidslinje, fotoplan, meldinger), mens leverandører når de rette parene gjennom en markedsplass med profiler, tilbud, produkter og direkte chat. Alt i én app.",
-                      "Wedflow is a complete wedding platform — an app where couples plan their wedding with powerful tools (planning, budget, guests, seating charts, timeline, photo plan, messaging), while vendors reach the right couples through a marketplace with profiles, offers, products and direct chat. All in one app."
+                      "Evendi er en komplett bryllupsplattform — en app der par planlegger bryllupet sitt med kraftige verktøy (planlegging, budsjett, gjester, bordplassering, tidslinje, fotoplan, meldinger), mens leverandører når de rette parene gjennom en markedsplass med profiler, tilbud, produkter og direkte chat. Alt i én app.",
+                      "Evendi is a complete wedding platform — an app where couples plan their wedding with powerful tools (planning, budget, guests, seating charts, timeline, photo plan, messaging), while vendors reach the right couples through a marketplace with profiles, offers, products and direct chat. All in one app."
                     )}
                   </ThemedText>
                 </View>
@@ -359,13 +359,13 @@ export default function StatusScreen() {
               </View>
             </Animated.View>
 
-            {/* Norwedfilm — Why we built Wedflow */}
+            {/* Norwedfilm — Why we built Evendi */}
             <Animated.View entering={FadeInDown.delay(600).duration(400)}>
               <View style={[styles.section, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
                 <View style={styles.visionHeader}>
                   <Feather name="film" size={24} color={theme.accent} />
                   <ThemedText style={styles.sectionTitle}>
-                    {t("Norwedfilm — Historien bak Wedflow", "Norwedfilm — The story behind Wedflow")}
+                    {t("Norwedfilm — Historien bak Evendi", "Norwedfilm — The story behind Evendi")}
                   </ThemedText>
                 </View>
                 <ThemedText style={[styles.visionIntro, { color: theme.textSecondary }]}>
@@ -443,8 +443,8 @@ export default function StatusScreen() {
                   </View>
                   <ThemedText style={[styles.circleText, { color: theme.text }]}>
                     {t(
-                      "Vi tror at de beste bryllupsopplevelsene oppstår fra ekte relasjoner. Vi tar oss tid til å forstå parets historie, stil og visjon — og vår diskrete tilnærming lar oss fange autentiske, uforberedte øyeblikk mens paret simpelthen nyter dagen sin. Den samme filosofien driver Wedflow.",
-                      "We believe the best wedding experiences come from genuine connections. We take the time to understand each couple's story, style, and vision — and our unobtrusive approach lets us capture authentic, candid moments while couples simply enjoy their day. The same philosophy drives Wedflow."
+                      "Vi tror at de beste bryllupsopplevelsene oppstår fra ekte relasjoner. Vi tar oss tid til å forstå parets historie, stil og visjon — og vår diskrete tilnærming lar oss fange autentiske, uforberedte øyeblikk mens paret simpelthen nyter dagen sin. Den samme filosofien driver Evendi.",
+                      "We believe the best wedding experiences come from genuine connections. We take the time to understand each couple's story, style, and vision — and our unobtrusive approach lets us capture authentic, candid moments while couples simply enjoy their day. The same philosophy drives Evendi."
                     )}
                   </ThemedText>
                 </View>
@@ -457,14 +457,14 @@ export default function StatusScreen() {
                     </View>
                     <View style={{ flex: 1 }}>
                       <ThemedText style={[styles.norwedLabel, { color: "#51CF66" }]}>
-                        {t("Løsningen: Wedflow", "The solution: Wedflow")}
+                        {t("Løsningen: Evendi", "The solution: Evendi")}
                       </ThemedText>
                     </View>
                   </View>
                   <ThemedText style={[styles.circleText, { color: theme.text }]}>
                     {t(
-                      "Derfor bygget vi Wedflow — appen vi selv ønsket at fantes. En komplett bryllupsplattform der par planlegger bryllupet sitt med kraftige verktøy, og leverandører når de rette parene gjennom en markedsplass med direkte kommunikasjon. Alt i én app, designet med kjærlighet for skandinaviske bryllup.",
-                      "That's why we built Wedflow — the app we wished existed ourselves. A complete wedding platform where couples plan their wedding with powerful tools, and vendors reach the right couples through a marketplace with direct communication. All in one app, designed with love for Scandinavian weddings."
+                      "Derfor bygget vi Evendi — appen vi selv ønsket at fantes. En komplett bryllupsplattform der par planlegger bryllupet sitt med kraftige verktøy, og leverandører når de rette parene gjennom en markedsplass med direkte kommunikasjon. Alt i én app, designet med kjærlighet for skandinaviske bryllup.",
+                      "That's why we built Evendi — the app we wished existed ourselves. A complete wedding platform where couples plan their wedding with powerful tools, and vendors reach the right couples through a marketplace with direct communication. All in one app, designed with love for Scandinavian weddings."
                     )}
                   </ThemedText>
                 </View>

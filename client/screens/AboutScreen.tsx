@@ -53,13 +53,13 @@ export default function AboutScreen() {
   const maintenanceMessage = getSetting("maintenance_message");
   const statusMessage = getSetting("status_message").trim();
   const statusType = getSetting("status_type", "info");
-  const appName = getSetting("app_name", designSettings.appName ?? "Wedflow");
+  const appName = getSetting("app_name", designSettings.appName ?? "Evendi");
   const appTagline = getSetting("app_tagline", designSettings.appTagline ?? (isWedding ? "Din bryllupsplanlegger" : "Din arrangementsplanlegger"));
   const appDescription = getSetting(
     "app_description",
     isWedding
-      ? "Wedflow er en komplett bryllupsplattform for par og leverandorer i Skandinavia. Planlegg gjestelister, bordplassering, budsjett, timeline og samarbeid med leverandorer i en felles oversikt."
-      : "Wedflow er en komplett arrangementsplattform for planleggere og leverandorer i Skandinavia. Planlegg gjestelister, bordplassering, budsjett, timeline og samarbeid med leverandorer i en felles oversikt."
+      ? "Evendi er en komplett bryllupsplattform for par og leverandorer i Skandinavia. Planlegg gjestelister, bordplassering, budsjett, timeline og samarbeid med leverandorer i en felles oversikt."
+      : "Evendi er en komplett arrangementsplattform for planleggere og leverandorer i Skandinavia. Planlegg gjestelister, bordplassering, budsjett, timeline og samarbeid med leverandorer i en felles oversikt."
   );
   const companyDescription = getSetting(
     "app_company_description",
@@ -100,7 +100,7 @@ export default function AboutScreen() {
     if (designSettings.logoUrl) {
       return { uri: designSettings.logoUrl };
     }
-    return require("../../assets/images/wedflow-logo.png");
+    return require("../../assets/images/Evendi_logo_norsk_tagline.png");
   }, [designSettings.logoUrl]);
 
   useLayoutEffect(() => {
@@ -156,7 +156,7 @@ export default function AboutScreen() {
             <ThemedText style={[styles.statusNoticeText, { color: theme.text }]}>
               {maintenanceMode
                 ? maintenanceMessage ||
-                  "Wedflow er for oyeblikket under vedlikehold. Noen funksjoner kan vaere utilgjengelige."
+                  "Evendi er for oyeblikket under vedlikehold. Noen funksjoner kan vaere utilgjengelige."
                 : statusMessage}
             </ThemedText>
             <Pressable 

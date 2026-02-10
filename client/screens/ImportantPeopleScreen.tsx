@@ -203,9 +203,9 @@ export default function ImportantPeopleScreen() {
     try {
       const msg = config.shareLabel
         ? config.shareLabel.shareMessageNo.replace("{name}", personName).replace("{code}", code)
-        : `Hei ${personName}! Du er invitert til bryllupet vårt på Wedflow. Din invitasjonskode: ${code}. Last ned Wedflow og skriv inn koden for å få tilgang.`;
+        : `Hei ${personName}! Du er invitert til bryllupet vårt på Evendi. Din invitasjonskode: ${code}. Last ned Evendi og skriv inn koden for å få tilgang.`;
       await Share.share({
-        message: `${msg}\n\n• App Store: https://apps.apple.com/app/wedflow\n• Google Play: https://play.google.com/store/apps/details?id=com.wedflow`,
+        message: `${msg}\n\n• App Store: https://apps.apple.com/app/evendi\n• Google Play: https://play.google.com/store/apps/details?id=com.evendi`,
       });
     } catch {}
   };
@@ -560,7 +560,7 @@ export default function ImportantPeopleScreen() {
                 </View>
 
                 <ThemedText style={[styles.inviteHint, { color: theme.textMuted }]}>
-                  {invitePerson?.name} kan bruke denne koden i "Bli med i bryllup"-skjermen i Wedflow-appen.
+                  {invitePerson?.name} kan bruke denne koden i "Bli med i bryllup"-skjermen i Evendi-appen.
                 </ThemedText>
               </View>
             ) : (

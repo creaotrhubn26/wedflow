@@ -68,7 +68,7 @@ export default function VendorHelpScreen() {
       {
         label: "Fullstendig dokumentasjon",
         icon: "book-open" as const,
-        description: "Alt om Wedflow for leverandører",
+        description: "Alt om Evendi for leverandører",
         url: null,
         onPress: () => navigation.navigate("Documentation", {}),
         settingKey: "help_show_documentation",
@@ -95,8 +95,8 @@ export default function VendorHelpScreen() {
       {
         label: "E-post Support",
         icon: "mail" as const,
-        description: "support@wedflow.no",
-        url: "mailto:support@wedflow.no",
+        description: "support@evendi.no",
+        url: "mailto:support@evendi.no",
         settingKey: "help_show_email_support",
         defaultVisible: "false",
       },
@@ -191,7 +191,7 @@ export default function VendorHelpScreen() {
           <Feather name="help-circle" size={32} color={Colors.dark.accent} />
           <ThemedText style={styles.headerTitle}>Hjelp & FAQ</ThemedText>
           <ThemedText style={[styles.headerSubtitle, { color: theme.textSecondary }]}>
-            Alt du trenger å vite om Wedflow
+            Alt du trenger å vite om Evendi
           </ThemedText>
         </View>
       </Animated.View>
@@ -352,7 +352,7 @@ export default function VendorHelpScreen() {
           <Feather name="info" size={20} color={theme.accent} />
           <ThemedText style={[styles.tipText, { color: theme.text }]}>
             <ThemedText style={{ fontWeight: "600" }}>Tips: </ThemedText>
-            Bruk Wedflow Support-knappen øverst i Dashboard for rask hjelp. Vi svarer vanligvis innen 24 timer.
+            Bruk Evendi Support-knappen øverst i Dashboard for rask hjelp. Vi svarer vanligvis innen 24 timer.
           </ThemedText>
         </View>
       </Animated.View>

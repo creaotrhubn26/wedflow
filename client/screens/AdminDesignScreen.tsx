@@ -75,9 +75,9 @@ export default function AdminDesignScreen() {
   const route = useRoute<RouteProp<RootStackParamList, "AdminDesign">>();
   const adminKey = route.params?.adminKey || "";
 
-  const [primaryColor, setPrimaryColor] = useState("#C9A962");
-  const [backgroundColor, setBackgroundColor] = useState("#1A1A1A");
-  const [appName, setAppName] = useState("Wedflow");
+  const [primaryColor, setPrimaryColor] = useState("#1E6BFF");
+  const [backgroundColor, setBackgroundColor] = useState("#0F1F3A");
+  const [appName, setAppName] = useState("Evendi");
   const [tagline, setTagline] = useState("Din bryllupsplanlegger");
   const [logoUrl, setLogoUrl] = useState("");
   const [darkMode, setDarkMode] = useState(true);
@@ -118,9 +118,9 @@ export default function AdminDesignScreen() {
         const setting = settings.find(s => s.key === key);
         return setting?.value || defaultValue;
       };
-      setPrimaryColor(getSetting("design_primary_color", "#C9A962"));
-      setBackgroundColor(getSetting("design_background_color", "#1A1A1A"));
-      setAppName(getSetting("app_name", "Wedflow"));
+      setPrimaryColor(getSetting("design_primary_color", "#1E6BFF"));
+      setBackgroundColor(getSetting("design_background_color", "#0F1F3A"));
+      setAppName(getSetting("app_name", "Evendi"));
       setTagline(getSetting("app_tagline", "Din bryllupsplanlegger"));
       setLogoUrl(getSetting("app_logo_url", ""));
       setDarkMode(getSetting("design_dark_mode", "true") === "true");
@@ -302,7 +302,7 @@ export default function AdminDesignScreen() {
             style={[styles.input, { backgroundColor: theme.backgroundSecondary, color: theme.text, borderColor: theme.border }]}
             value={appName}
             onChangeText={setAppName}
-            placeholder="Wedflow"
+            placeholder="Evendi"
             placeholderTextColor={theme.textMuted}
           />
 

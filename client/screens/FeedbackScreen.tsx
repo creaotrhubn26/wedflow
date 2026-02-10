@@ -137,7 +137,7 @@ export default function FeedbackScreen() {
           </View>
           <ThemedText style={[Typography.h2, { textAlign: "center" }]}>Takk for tilbakemeldingen!</ThemedText>
           <ThemedText style={[Typography.body, { opacity: 0.7, textAlign: "center", marginTop: Spacing.sm }]}>
-            Vi setter stor pris på at du tar deg tid til å hjelpe oss med å forbedre Wedflow.
+            Vi setter stor pris på at du tar deg tid til å hjelpe oss med å forbedre Evendi.
           </ThemedText>
           <Pressable
             style={[styles.secondaryButton, { borderColor: theme.border, marginTop: Spacing.lg }]}
@@ -183,7 +183,7 @@ export default function FeedbackScreen() {
             <ThemedText style={[styles.statusNoticeText, { color: theme.text }]}>
               {maintenanceMode
                 ? maintenanceMessage ||
-                  "Wedflow er for oyeblikket under vedlikehold. Noen funksjoner kan vaere utilgjengelige."
+                  "Evendi er for oyeblikket under vedlikehold. Noen funksjoner kan vaere utilgjengelige."
                 : statusMessage}
             </ThemedText>
             <Pressable 
@@ -197,7 +197,7 @@ export default function FeedbackScreen() {
           </View>
         </View>
       )}
-      <ThemedText style={Typography.h2}>Gi tilbakemelding til Wedflow</ThemedText>
+      <ThemedText style={Typography.h2}>Gi tilbakemelding til Evendi</ThemedText>
       <ThemedText style={[Typography.small, { opacity: 0.7, marginBottom: Spacing.xl }]}>
         Din tilbakemelding hjelper oss å forbedre appen for alle brudepar.
       </ThemedText>

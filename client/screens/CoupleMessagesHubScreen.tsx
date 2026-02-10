@@ -498,7 +498,7 @@ export default function CoupleMessagesHubScreen() {
         </View>
       </Animated.View>
 
-      {/* ── Wedflow Support ── */}
+      {/* ── Evendi Support ── */}
       <Animated.View entering={FadeInDown.delay(300).duration(400)}>
         <Pressable
           onPress={() => {
@@ -528,14 +528,14 @@ export default function CoupleMessagesHubScreen() {
             </View>
             <View style={styles.sectionHeaderText}>
               <ThemedText style={styles.sectionTitle}>
-                {t("Wedflow Support", "Wedflow Support")}
+                {t("Evendi Support", "Evendi Support")}
               </ThemedText>
               <ThemedText
                 style={[styles.sectionSubtitle, { color: theme.textSecondary }]}
               >
                 {t(
-                  "Chat med Wedflow-teamet for hjelp",
-                  "Chat with the Wedflow team for help"
+                  "Chat med Evendi-teamet for hjelp",
+                  "Chat with the Evendi team for help"
                 )}
               </ThemedText>
             </View>
@@ -595,7 +595,7 @@ export default function CoupleMessagesHubScreen() {
           <Pressable
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              Linking.openURL("mailto:support@wedflow.no");
+              Linking.openURL("mailto:support@evendi.no");
             }}
             style={[
               styles.quickAction,

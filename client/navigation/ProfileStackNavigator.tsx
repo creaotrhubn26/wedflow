@@ -176,7 +176,7 @@ export default function ProfileStackNavigator() {
         name="About"
         component={AboutScreen}
         options={{
-          title: "Om Wedflow",
+          title: "Om Evendi",
         }}
       />
       <Stack.Screen
@@ -218,7 +218,7 @@ export default function ProfileStackNavigator() {
         name="CoupleAdminChat"
         component={VendorAdminChatScreen}
         options={{
-          title: "Wedflow Support",
+          title: "Evendi Support",
         }}
       />
       <Stack.Screen

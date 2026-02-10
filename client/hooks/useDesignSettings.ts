@@ -17,10 +17,10 @@ export interface DesignSettings {
 }
 
 const DEFAULT_SETTINGS: DesignSettings = {
-  primaryColor: "#C9A962",
-  backgroundColor: "#1A1A1A",
-  appName: "Wedflow",
-  appTagline: "Din bryllupsplanlegger",
+  primaryColor: "#1E6BFF",
+  backgroundColor: "#0F1F3A",
+  appName: "Evendi",
+  appTagline: "Din arrangementsplanlegger",
   logoUrl: "", // Will be set from backend or use bundled logo in HeaderTitle
   darkMode: true,
   fontFamily: "System",

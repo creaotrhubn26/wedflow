@@ -476,7 +476,7 @@ export default function RootStackNavigator() {
               headerShown: true,
               headerTitle: () => (
                 <Image
-                  source={require("../../assets/images/wedflow-logo.png")}
+                  source={require("../../assets/images/Evendi_logo_norsk_tagline.png")}
                   style={{ width: 300, height: 80 }}
                   resizeMode="contain"
                 />
@@ -531,7 +531,7 @@ export default function RootStackNavigator() {
             options={{
               headerTitle: () => (
                 <Image
-                  source={require("../../assets/images/wedflow-logo.png")}
+                  source={require("../../assets/images/Evendi_logo_norsk_tagline.png")}
                   style={{ width: 300, height: 80 }}
                   resizeMode="contain"
                 />
@@ -544,7 +544,7 @@ export default function RootStackNavigator() {
             options={{
               headerTitle: () => (
                 <Image
-                  source={require("../../assets/images/wedflow-logo.png")}
+                  source={require("../../assets/images/Evendi_logo_norsk_tagline.png")}
                   style={{ width: 300, height: 80 }}
                   resizeMode="contain"
                 />
@@ -557,7 +557,7 @@ export default function RootStackNavigator() {
             options={{
               headerTitle: () => (
                 <Image
-                  source={require("../../assets/images/wedflow-logo.png")}
+                  source={require("../../assets/images/Evendi_logo_norsk_tagline.png")}
                   style={{ width: 300, height: 80 }}
                   resizeMode="contain"
                 />
@@ -570,7 +570,7 @@ export default function RootStackNavigator() {
             options={{
               headerTitle: () => (
                 <Image
-                  source={require("../../assets/images/wedflow-logo.png")}
+                  source={require("../../assets/images/Evendi_logo_norsk_tagline.png")}
                   style={{ width: 300, height: 80 }}
                   resizeMode="contain"
                 />
@@ -583,7 +583,7 @@ export default function RootStackNavigator() {
             options={{
               headerTitle: () => (
                 <Image
-                  source={require("../../assets/images/wedflow-logo.png")}
+                  source={require("../../assets/images/Evendi_logo_norsk_tagline.png")}
                   style={{ width: 300, height: 80 }}
                   resizeMode="contain"
                 />
@@ -596,7 +596,7 @@ export default function RootStackNavigator() {
             options={{
               headerTitle: () => (
                 <Image
-                  source={require("../../assets/images/wedflow-logo.png")}
+                  source={require("../../assets/images/Evendi_logo_norsk_tagline.png")}
                   style={{ width: 300, height: 80 }}
                   resizeMode="contain"
                 />
@@ -609,7 +609,7 @@ export default function RootStackNavigator() {
             options={{
               headerTitle: () => (
                 <Image
-                  source={require("../../assets/images/wedflow-logo.png")}
+                  source={require("../../assets/images/Evendi_logo_norsk_tagline.png")}
                   style={{ width: 300, height: 80 }}
                   resizeMode="contain"
                 />
@@ -636,7 +636,7 @@ export default function RootStackNavigator() {
             options={{
               headerTitle: () => (
                 <Image
-                  source={require("../../assets/images/wedflow-logo.png")}
+                  source={require("../../assets/images/Evendi_logo_norsk_tagline.png")}
                   style={{ width: 300, height: 80 }}
                   resizeMode="contain"
                 />
@@ -649,7 +649,7 @@ export default function RootStackNavigator() {
             options={{
               headerTitle: () => (
                 <Image
-                  source={require("../../assets/images/wedflow-logo.png")}
+                  source={require("../../assets/images/Evendi_logo_norsk_tagline.png")}
                   style={{ width: 300, height: 80 }}
                   resizeMode="contain"
                 />
@@ -662,7 +662,7 @@ export default function RootStackNavigator() {
             options={{
               headerTitle: () => (
                 <Image
-                  source={require("../../assets/images/wedflow-logo.png")}
+                  source={require("../../assets/images/Evendi_logo_norsk_tagline.png")}
                   style={{ width: 300, height: 80 }}
                   resizeMode="contain"
                 />
@@ -675,7 +675,7 @@ export default function RootStackNavigator() {
             options={{
               headerTitle: () => (
                 <Image
-                  source={require("../../assets/images/wedflow-logo.png")}
+                  source={require("../../assets/images/Evendi_logo_norsk_tagline.png")}
                   style={{ width: 300, height: 80 }}
                   resizeMode="contain"
                 />
@@ -688,7 +688,7 @@ export default function RootStackNavigator() {
             options={{
               headerTitle: () => (
                 <Image
-                  source={require("../../assets/images/wedflow-logo.png")}
+                  source={require("../../assets/images/Evendi_logo_norsk_tagline.png")}
                   style={{ width: 300, height: 80 }}
                   resizeMode="contain"
                 />

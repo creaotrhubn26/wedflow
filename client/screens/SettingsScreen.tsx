@@ -176,7 +176,7 @@ export default function SettingsScreen() {
       <Animated.View entering={FadeInDown.delay(400).duration(400)}>
         <View style={styles.footer}>
           <ThemedText style={[styles.footerText, { color: theme.textMuted }]}>
-            Wedflow by Norwedfilm
+            Evendi by Norwedfilm
           </ThemedText>
           <ThemedText style={[styles.footerText, { color: theme.textMuted }]}>
             Laget med kjærlighet i Norge

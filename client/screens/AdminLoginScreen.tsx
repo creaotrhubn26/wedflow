@@ -88,7 +88,7 @@ export default function AdminLoginScreen({ navigation, onLoginSuccess, initialAd
         contentContainerStyle={styles.content}
       >
         <Image
-          source={require("../../assets/images/wedflow-logo.png")}
+          source={require("../../assets/images/Evendi_logo_norsk_tagline.png")}
           style={styles.logo}
           resizeMode="contain"
         />

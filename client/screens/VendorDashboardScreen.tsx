@@ -1308,7 +1308,7 @@ export default function VendorDashboardScreen({ navigation }: Props) {
               styles.logoutBtn,
               { backgroundColor: pressed ? theme.backgroundTertiary : theme.backgroundSecondary }
             ]}
-            accessibilityLabel="Wedflow Support"
+            accessibilityLabel="Evendi Support"
           >
             <Feather name="message-circle" size={18} color={theme.accent} />
           </Pressable>

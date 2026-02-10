@@ -500,7 +500,7 @@ export default function ProfileScreen() {
           />
           <MenuItem
             icon="info"
-            label={t("Om Wedflow", "About Wedflow")}
+            label={t("Om Evendi", "About Evendi")}
             theme={theme}
             onPress={() => navigation.navigate("About")}
           />
@@ -524,7 +524,7 @@ export default function ProfileScreen() {
           />
           <MenuItem
             icon="message-square"
-            label={t("Tilbakemelding til Wedflow", "Feedback to Wedflow")}
+            label={t("Tilbakemelding til Evendi", "Feedback to Evendi")}
             theme={theme}
             onPress={() => navigation.navigate("Feedback")}
           />

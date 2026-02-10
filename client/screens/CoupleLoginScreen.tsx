@@ -264,12 +264,12 @@ export default function CoupleLoginScreen({ navigation, onLoginSuccess }: Props)
         contentContainerStyle={styles.content}
       >
         <Image
-          source={require("../../assets/images/wedflow-logo.png")}
+          source={require("../../assets/images/Evendi_logo_norsk_tagline.png")}
           style={styles.logo}
           resizeMode="contain"
         />
 
-        <ThemedText style={styles.title}>Velkommen til Wedflow</ThemedText>
+        <ThemedText style={styles.title}>Velkommen til Evendi</ThemedText>
         <ThemedText style={[styles.subtitle, { color: theme.textSecondary }]}>
           {isRegistering 
             ? "Opprett konto for å planlegge arrangementet ditt"
@@ -441,7 +441,7 @@ export default function CoupleLoginScreen({ navigation, onLoginSuccess }: Props)
         </View>
 
         <ThemedText style={[styles.infoText, { color: theme.textMuted }]}>
-          Med Wedflow får du full kontroll over planleggingen – fra gjesteoversikt og tidslinje til budsjett og leverandørsamtaler.
+          Med Evendi får du full kontroll over planleggingen – fra gjesteoversikt og tidslinje til budsjett og leverandørsamtaler.
         </ThemedText>
       </KeyboardAwareScrollViewCompat>
 
