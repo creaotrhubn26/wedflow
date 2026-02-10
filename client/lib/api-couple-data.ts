@@ -364,6 +364,15 @@ export interface PhotoShot {
   category: 'ceremony' | 'portraits' | 'group' | 'details' | 'reception';
   completed: boolean;
   sortOrder?: number;
+  // Location scouting fields
+  locationName?: string | null;
+  locationLat?: number | null;
+  locationLng?: number | null;
+  locationNotes?: string | null;
+  weatherTip?: string | null;
+  travelFromVenue?: string | null;
+  imageUri?: string | null;
+  scouted?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }

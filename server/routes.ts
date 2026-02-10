@@ -10283,7 +10283,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     try {
       const { id } = req.params;
-      const { title, description, category, completed, sortOrder } = req.body;
+      const { title, description, category, completed, sortOrder,
+              locationName, locationLat, locationLng, locationNotes,
+              weatherTip, travelFromVenue, imageUri, scouted } = req.body;
 
       const updateData: any = { updatedAt: new Date() };
       if (title !== undefined) updateData.title = title;
@@ -10291,6 +10293,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (category !== undefined) updateData.category = category;
       if (completed !== undefined) updateData.completed = completed;
       if (sortOrder !== undefined) updateData.sortOrder = sortOrder;
+      // Location scouting fields
+      if (locationName !== undefined) updateData.locationName = locationName;
+      if (locationLat !== undefined) updateData.locationLat = locationLat;
+      if (locationLng !== undefined) updateData.locationLng = locationLng;
+      if (locationNotes !== undefined) updateData.locationNotes = locationNotes;
+      if (weatherTip !== undefined) updateData.weatherTip = weatherTip;
+      if (travelFromVenue !== undefined) updateData.travelFromVenue = travelFromVenue;
+      if (imageUri !== undefined) updateData.imageUri = imageUri;
+      if (scouted !== undefined) updateData.scouted = scouted;
 
       const [updated] = await db.update(couplePhotoShots)
         .set(updateData)

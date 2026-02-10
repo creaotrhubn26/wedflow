@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, timestamp, integer, boolean, date, index, uniqueIndex } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, timestamp, integer, boolean, date, doublePrecision, index, uniqueIndex } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -508,7 +508,7 @@ export const coupleImportantPeople = pgTable("couple_important_people", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-// Photo shot list
+// Photo shot list — with location scouting intelligence
 export const couplePhotoShots = pgTable("couple_photo_shots", {
   id: varchar("id")
     .primaryKey()
@@ -519,6 +519,15 @@ export const couplePhotoShots = pgTable("couple_photo_shots", {
   category: text("category").notNull(), // 'ceremony', 'portraits', 'group', 'details', 'reception'
   completed: boolean("completed").notNull().default(false),
   sortOrder: integer("sort_order").default(0),
+  // Location scouting fields
+  locationName: text("location_name"),
+  locationLat: doublePrecision("location_lat"),
+  locationLng: doublePrecision("location_lng"),
+  locationNotes: text("location_notes"),
+  weatherTip: text("weather_tip"),
+  travelFromVenue: text("travel_from_venue"),
+  imageUri: text("image_uri"),
+  scouted: boolean("scouted").default(false),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -567,6 +576,15 @@ export const createPhotoShotSchema = z.object({
   category: z.enum(['ceremony', 'portraits', 'group', 'details', 'reception']),
   completed: z.boolean().optional(),
   sortOrder: z.number().int().optional(),
+  // Location scouting fields
+  locationName: z.string().optional(),
+  locationLat: z.number().optional(),
+  locationLng: z.number().optional(),
+  locationNotes: z.string().optional(),
+  weatherTip: z.string().optional(),
+  travelFromVenue: z.string().optional(),
+  imageUri: z.string().optional(),
+  scouted: z.boolean().optional(),
 });
 
 // Types for new tables
