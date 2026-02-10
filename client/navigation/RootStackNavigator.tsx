@@ -51,6 +51,7 @@ import WhatsNewScreen from "@/screens/WhatsNewScreen";
 import DocumentationScreen from "@/screens/DocumentationScreen";
 import VideoGuidesScreen from "@/screens/VideoGuidesScreen";
 import { useScreenOptions } from "@/hooks/useScreenOptions";
+import { AuthProvider } from "@/lib/AuthContext";
 import {
   VenueDetailsScreen,
   PhotographerDetailsScreen,
@@ -147,6 +148,11 @@ export default function RootStackNavigator() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [storedAdminKey, setStoredAdminKey] = useState("");
+
+  const handleCoupleLogout = async () => {
+    await AsyncStorage.removeItem(COUPLE_STORAGE_KEY);
+    setIsLoggedIn(false);
+  };
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -693,11 +699,16 @@ export default function RootStackNavigator() {
       ) : (
         <Stack.Screen
           name="Main"
-          component={MainTabNavigator}
           options={{
             headerShown: false,
           }}
-        />
+        >
+          {() => (
+            <AuthProvider value={{ logout: handleCoupleLogout }}>
+              <MainTabNavigator />
+            </AuthProvider>
+          )}
+        </Stack.Screen>
       )}
     </Stack.Navigator>
   );

@@ -53,120 +53,195 @@ const FEATURES: Feature[] = [
     id: "profile",
     icon: "user",
     title: "Opprett og Administrer Profil",
-    description: "Din bedriftsprofil er det første par ser. Hold den oppdatert med bilder, beskrivelse og priser.",
+    description: "Din bedriftsprofil er det første par ser. Hold den oppdatert med bilder, beskrivelse, priser og kontaktinfo for å skille deg ut.",
     color: "#FF6B6B",
     category: "vendor",
     steps: [
       "Gå til 'Min Profil' fra Dashboard",
-      "Fyll inn virksomhetsinformasjon",
-      "Last opp logoer og bilder",
-      "Angi priskategorier og tjenester",
-      "Lagre endringer"
+      "Fyll inn virksomhetsinformasjon og beskrivelse",
+      "Last opp logo og porteføljebilder",
+      "Angi priskategorier, tjenester og tilgjengelighet",
+      "Lagre endringer — profilen oppdateres umiddelbart"
     ]
   },
   {
     id: "messages",
     icon: "message-circle",
     title: "Håndter Meldinger",
-    description: "Kommuniser direkte med par, send tilbud, og administrer alle henvendelser på ett sted.",
+    description: "Kommuniser direkte med par, send tilbud, del filer og administrer alle henvendelser på ett sted. Rask respons øker synligheten din.",
     color: "#51CF66",
     category: "vendor",
     steps: [
-      "Klikk på 'Meldinger' i navigasjonen",
-      "Se alle aktive samtaler",
-      "Svar på henvendelser raskt",
-      "Send dokumenter og kontrakter",
-      "Bruk maler for raskere svar"
+      "Klikk på 'Meldinger' i Dashboard",
+      "Se alle aktive samtaler sortert etter siste melding",
+      "Svar på henvendelser raskt — under 2 timer gir best resultat",
+      "Send dokumenter, bilder og kontrakter direkte i chatten",
+      "Du får push-varsler for nye meldinger"
     ]
   },
   {
     id: "inspiration",
     icon: "image",
     title: "Del Inspirasjon",
-    description: "Vis fram ditt arbeid i inspirasjonsgalleriet. Jo flere gode bilder, jo bedre synlighet!",
+    description: "Vis fram ditt arbeid i inspirasjonsgalleriet. Jo flere gode bilder, jo bedre synlighet! Par bruker galleriet aktivt for å finne leverandører.",
     color: "#4DABF7",
     category: "vendor",
     steps: [
-      "Naviger til 'Inspirasjon'",
+      "Naviger til 'Inspirasjon' i Dashboard",
       "Klikk '+ Nytt bilde'",
-      "Last opp høykvalitetsbilder",
-      "Legg til beskrivelse og tags",
-      "Del med par"
+      "Last opp høykvalitetsbilder (min. 1080px bredde)",
+      "Legg til beskrivelse, tags og kategori",
+      "Publiser — bildet vises i Showcase-fanen for alle par"
     ]
   },
   {
     id: "offers",
     icon: "tag",
     title: "Opprett Tilbud",
-    description: "Tiltrekk par med spesialtilbud og kampanjer. Vis hva som gjør deg unik.",
+    description: "Tiltrekk par med spesialtilbud, sesongtilbud og kampanjer. Tilbud vises på profilen din og i leverandørsøk.",
     color: "#FFA94D",
     category: "vendor",
     steps: [
-      "Åpne 'Tilbud'-seksjonen",
+      "Åpne 'Tilbud'-seksjonen i Dashboard",
       "Klikk 'Opprett nytt tilbud'",
-      "Sett pris og rabatt",
-      "Angi gyldighetsperiode",
-      "Publiser tilbudet"
+      "Sett pris, rabatt og beskrivelse",
+      "Angi gyldighetsperiode (start- og sluttdato)",
+      "Publiser — tilbudet vises på profilsiden din"
+    ]
+  },
+  {
+    id: "products",
+    icon: "package",
+    title: "Administrer Produkter",
+    description: "Legg til alle tjenester og produkter du tilbyr med priser, beskrivelser og bilder. Par kan se hele sortimentet ditt.",
+    color: "#E64980",
+    category: "vendor",
+    steps: [
+      "Gå til 'Produkter' i Dashboard",
+      "Klikk '+ Nytt produkt'",
+      "Legg til navn, beskrivelse og pris",
+      "Last opp produktbilder",
+      "Kategoriser produktet for enkel navigasjon"
+    ]
+  },
+  {
+    id: "deliveries",
+    icon: "truck",
+    title: "Leveranser og Oppdrag",
+    description: "Opprett og administrer leveranser knyttet til par. Spor status og del detaljer slik at alt er klart til bryllupsdagen.",
+    color: "#15AABF",
+    category: "vendor",
+    steps: [
+      "Åpne 'Leveranser' i Dashboard",
+      "Opprett ny leveranse knyttet til et par",
+      "Legg til tidsfrist, beskrivelse og detaljer",
+      "Oppdater status etter hvert som arbeidet skrider frem",
+      "Paret får automatisk oppdateringer"
+    ]
+  },
+  {
+    id: "vendor-support",
+    icon: "headphones",
+    title: "Support og Hjelp",
+    description: "Kontakt Wedflow-teamet direkte, se FAQ, dokumentasjon og videoguider. Vi er her for å hjelpe deg å lykkes.",
+    color: "#748FFC",
+    category: "vendor",
+    steps: [
+      "Klikk 'Wedflow Support' øverst i Dashboard for direkte chat",
+      "Bruk 'Hjelp & FAQ' for raske svar på vanlige spørsmål",
+      "Se dokumentasjonen for detaljerte guider",
+      "Sjekk videoguider for visuell opplæring",
+      "Send e-post til support@wedflow.no for akutte saker"
     ]
   },
   {
     id: "planning",
     icon: "calendar",
     title: "Planlegg Bryllupet",
-    description: "Bruk vår sjekkliste, budsjett og tidslinje for å holde oversikt over hele planleggingen.",
+    description: "Bruk sjekkliste, budsjett, tidslinje, påminnelser og fotoplan for å holde oversikt over hele planleggingen.",
     color: "#845EF7",
     category: "couple",
     steps: [
-      "Gå til 'Planlegging'",
-      "Sett bryllupsdato",
-      "Bruk sjekklisten for oppgaver",
-      "Administrer budsjett",
-      "Lag tidslinje for dagen"
+      "Gå til 'Planlegging'-fanen",
+      "Sett bryllupsdato og legg til viktige detaljer",
+      "Bruk sjekklisten for å spore oppgaver",
+      "Administrer budsjett med kategorier og 'Hva om?'-scenarier",
+      "Opprett kjøreplan og tidslinje for bryllupsdagen"
     ]
   },
   {
     id: "vendors",
     icon: "briefcase",
     title: "Finn Leverandører",
-    description: "Søk blant hundrevis av leverandører. Filtrer på kategori, sted og pris.",
+    description: "Søk blant leverandører direkte i planleggingsskjermene. Filtrer på kategori og sted, se profiler og start chat.",
     color: "#20C997",
     category: "couple",
     steps: [
-      "Åpne 'Leverandører'",
-      "Bruk filtre for å finne riktig kategori",
-      "Se profiler og bilder",
-      "Les anmeldelser",
-      "Send melding direkte"
+      "Åpne en planleggingsskjerm (Blomster, Catering, Transport osv.)",
+      "Bruk søkefeltet for å finne leverandører",
+      "Se profiler med bilder, anmeldelser og priser",
+      "Trykk 'Send melding' for å starte chat",
+      "Alle samtaler ligger under Profil > Meldinger"
     ]
   },
   {
     id: "guests",
     icon: "users",
     title: "Administrer Gjester",
-    description: "Hold oversikt over gjestelisten, RSVP, matpreferanser og bordplassering.",
+    description: "Hold oversikt over gjestelisten, RSVP, matpreferanser, allergier og bordplassering med interaktivt bordkart.",
     color: "#FA5252",
     category: "couple",
     steps: [
-      "Naviger til 'Gjester'",
-      "Legg til gjester",
-      "Send digitale invitasjoner",
-      "Spor RSVP-svar",
-      "Planlegg bordplassering"
+      "Naviger til 'Gjester'-fanen",
+      "Legg til gjester med navn og kontaktinfo",
+      "Spor RSVP-svar og matpreferanser",
+      "Registrer allergier og spesielle behov",
+      "Planlegg bordplassering med det interaktive bordkartet"
+    ]
+  },
+  {
+    id: "couple-messages",
+    icon: "message-circle",
+    title: "Meldinger og Kontakt",
+    description: "Chat med leverandører, ring viktige personer i bryllupsfølget, og kontakt Wedflow Support — alt på ett sted.",
+    color: "#51CF66",
+    category: "couple",
+    steps: [
+      "Gå til Profil > Meldinger",
+      "Se leverandørsamtaler med uleste varsler",
+      "Ring eller send SMS til viktige personer",
+      "Kontakt Wedflow Support for direkte hjelp",
+      "Bruk Hjelp & FAQ for raske svar"
+    ]
+  },
+  {
+    id: "couple-photo",
+    icon: "camera",
+    title: "Fotoplan",
+    description: "Planlegg hvilke bilder du vil ha tatt. Del fotoplanen med fotografen for å sikre at ingen viktige øyeblikk går tapt.",
+    color: "#F06595",
+    category: "couple",
+    steps: [
+      "Gå til Profil > Fotoplan",
+      "Legg til bildekategorier (brudepar, familie, venner, detaljer)",
+      "Spesifiser ønskede bilder i hver kategori",
+      "Marker viktige «must-have»-bilder",
+      "Del fotoplanen med fotografen"
     ]
   },
   {
     id: "support",
     icon: "help-circle",
     title: "Få Support",
-    description: "Trenger du hjelp? Kontakt oss via chat, e-post eller se vår omfattende FAQ.",
+    description: "Trenger du hjelp? Kontakt oss via chat, e-post eller se vår omfattende FAQ. Vi svarer vanligvis innen 24 timer.",
     color: "#748FFC",
     category: "both",
     steps: [
-      "Klikk 'Wedflow Support' i menyen",
-      "Velg mellom FAQ eller direkte chat",
-      "Beskriv ditt problem",
+      "Klikk 'Wedflow Support' eller 'Meldinger' i menyen",
+      "Velg mellom FAQ, direkte chat eller tilbakemelding",
+      "Beskriv ditt problem eller spørsmål",
       "Vi svarer innen 24 timer",
-      "Få personlig hjelp"
+      "Send e-post til support@wedflow.no for akutte saker"
     ]
   }
 ];

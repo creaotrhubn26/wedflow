@@ -20,6 +20,11 @@ import VendorReviewsScreen from "@/screens/VendorReviewsScreen";
 import VendorProfileScreen from "@/screens/VendorProfileScreen";
 import VendorDetailScreen from "@/screens/VendorDetailScreen";
 import FeedbackScreen from "@/screens/FeedbackScreen";
+import VendorHelpScreen from "@/screens/VendorHelpScreen";
+import VendorAdminChatScreen from "@/screens/VendorAdminChatScreen";
+import CoupleMessagesHubScreen from "@/screens/CoupleMessagesHubScreen";
+import MessagesScreen from "@/screens/MessagesScreen";
+import ChatScreen from "@/screens/ChatScreen";
 import StatusScreen from "@/screens/StatusScreen";
 import WhatsNewScreen from "@/screens/WhatsNewScreen";
 import { useScreenOptions } from "@/hooks/useScreenOptions";
@@ -52,6 +57,11 @@ export type ProfileStackParamList = {
   SharePartner: undefined;
   VendorReviews: undefined;
   Feedback: undefined;
+  CoupleHelp: undefined;
+  CoupleAdminChat: undefined;
+  CoupleMessagesHub: undefined;
+  CoupleMessages: undefined;
+  CoupleChat: { conversationId: string; vendorName: string };
   Status: undefined;
   WhatsNew: { category?: "vendor" | "couple" };
 };
@@ -196,6 +206,42 @@ export default function ProfileStackNavigator() {
         options={{
           title: "Tilbakemelding",
         }}
+      />
+      <Stack.Screen
+        name="CoupleHelp"
+        component={VendorHelpScreen}
+        options={{
+          title: "Hjelp & FAQ",
+        }}
+      />
+      <Stack.Screen
+        name="CoupleAdminChat"
+        component={VendorAdminChatScreen}
+        options={{
+          title: "Wedflow Support",
+        }}
+      />
+      <Stack.Screen
+        name="CoupleMessagesHub"
+        component={CoupleMessagesHubScreen}
+        options={{
+          title: "Meldinger",
+        }}
+      />
+      <Stack.Screen
+        name="CoupleMessages"
+        component={MessagesScreen}
+        options={{
+          title: "Leverandørmeldinger",
+        }}
+      />
+      <Stack.Screen
+        name="CoupleChat"
+        component={ChatScreen}
+        options={({ route }) => ({
+          title: route.params.vendorName,
+          headerBackVisible: false,
+        })}
       />
       <Stack.Screen
         name="Status"

@@ -2,7 +2,7 @@ import React, { useMemo, useState } from "react";
 import { ScrollView, StyleSheet, View, Pressable, Linking, ActivityIndicator, RefreshControl } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useRoute } from "@react-navigation/native";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
@@ -27,6 +27,8 @@ interface FAQItem {
   category: FAQCategory;
   sortOrder: number;
   isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 interface SupportLink {
@@ -43,9 +45,13 @@ export default function VendorHelpScreen() {
   const insets = useSafeAreaInsets();
   const headerHeight = useHeaderHeight();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const route = useRoute();
   const { theme } = useTheme();
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [activeCategory, setActiveCategory] = useState<FAQCategory>("vendor");
+
+  // When opened as CoupleHelp, only show couple FAQ
+  const isCoupleMode = route.name === "CoupleHelp";
+  const [activeCategory, setActiveCategory] = useState<FAQCategory>(isCoupleMode ? "couple" : "vendor");
 
   // Fetch app settings to control visibility of support links
   const { data: appSettings, refetch: refetchSettings, isFetching: isSettingsFetching } = useQuery<AppSetting[]>({
@@ -125,6 +131,17 @@ export default function VendorHelpScreen() {
     },
   });
 
+  // Compute the most recent updatedAt across all FAQ items
+  const lastUpdated = useMemo(() => {
+    if (!faqData.length) return null;
+    const dates = faqData
+      .map((item) => item.updatedAt || item.createdAt)
+      .filter(Boolean)
+      .map((d) => new Date(d!).getTime());
+    if (!dates.length) return null;
+    return new Date(Math.max(...dates));
+  }, [faqData]);
+
   const handleToggle = (index: number) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     const nextId = faqData[index]?.id;
@@ -179,6 +196,7 @@ export default function VendorHelpScreen() {
         </View>
       </Animated.View>
 
+      {!isCoupleMode && (
       <Animated.View entering={FadeInDown.delay(100).duration(400)}>
         <View style={styles.categoryTabs}>
           <Pressable
@@ -236,12 +254,18 @@ export default function VendorHelpScreen() {
           </Pressable>
         </View>
       </Animated.View>
+      )}
 
       <Animated.View entering={FadeInDown.delay(200).duration(400)}>
         <View style={[styles.section, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
           <ThemedText style={styles.sectionTitle}>
             {activeCategory === "vendor" ? "Ofte stilte spørsmål" : "Slik hjelper du parene"}
           </ThemedText>
+          {lastUpdated && (
+            <ThemedText style={[styles.lastUpdated, { color: theme.textMuted }]}>
+              Sist oppdatert: {lastUpdated.toLocaleDateString("nb-NO", { day: "numeric", month: "long", year: "numeric" })}
+            </ThemedText>
+          )}
           
           {isLoading ? (
             <ActivityIndicator style={{ marginTop: Spacing.lg }} color={theme.accent} />
@@ -384,6 +408,10 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: "600",
+    marginBottom: Spacing.xs,
+  },
+  lastUpdated: {
+    fontSize: 12,
     marginBottom: Spacing.md,
   },
   faqItem: {

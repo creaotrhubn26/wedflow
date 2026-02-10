@@ -5,6 +5,8 @@ import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { useQuery } from "@tanstack/react-query";
 import Animated, { FadeInDown } from "react-native-reanimated";
+import { useNavigation } from "@react-navigation/native";
+import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 import { ThemedText } from "@/components/ThemedText";
 import { useTheme } from "@/hooks/useTheme";
@@ -12,6 +14,7 @@ import { Spacing, BorderRadius, Colors } from "@/constants/theme";
 import { getApiUrl } from "@/lib/query-client";
 import { getAppLanguage, type AppLanguage } from "@/lib/storage";
 import { showToast } from "@/lib/toast";
+import type { RootStackParamList } from "@/navigation/RootStackNavigator";
 
 interface AppSetting {
   id: string;
@@ -23,6 +26,7 @@ interface AppSetting {
 
 export default function StatusScreen() {
   const { theme } = useTheme();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [appLanguage, setAppLanguage] = useState<AppLanguage>("nb");
 
   useEffect(() => {
@@ -222,15 +226,16 @@ export default function StatusScreen() {
 
                 <Pressable
                   onPress={() => {
-                    handleOpenLink("https://github.com/creaotrhubn26/wedflow/blob/main/VENDOR_DOCUMENTATION.md");
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    navigation.navigate("Documentation" as any);
                   }}
                   style={[styles.link, { borderColor: theme.border }]}
                 >
                   <View style={[styles.linkIcon, { backgroundColor: theme.accent + "15" }]}>
                     <Feather name="book-open" size={18} color={theme.accent} />
                   </View>
-                  <ThemedText style={styles.linkText}>{t("Dokumentasjon", "Documentation")}</ThemedText>
-                  <Feather name="external-link" size={16} color={theme.textMuted} />
+                  <ThemedText style={styles.linkText}>{t("Fullstendig dokumentasjon", "Full documentation")}</ThemedText>
+                  <Feather name="chevron-right" size={16} color={theme.textMuted} />
                 </Pressable>
 
                 <Pressable
@@ -271,6 +276,211 @@ export default function StatusScreen() {
                 </View>
               </Animated.View>
             )}
+
+            {/* Wedflow Vision — The Golden Circle (Simon Sinek) */}
+            <Animated.View entering={FadeInDown.delay(500).duration(400)}>
+              <View style={[styles.section, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
+                <View style={styles.visionHeader}>
+                  <Feather name="target" size={24} color={theme.accent} />
+                  <ThemedText style={styles.sectionTitle}>
+                    {t("Wedflow Visjonen", "Wedflow Vision")}
+                  </ThemedText>
+                </View>
+                <ThemedText style={[styles.visionIntro, { color: theme.textSecondary }]}>
+                  {t(
+                    "Inspirert av Simon Sineks Golden Circle — vi starter med HVORFOR.",
+                    "Inspired by Simon Sinek's Golden Circle — we start with WHY."
+                  )}
+                </ThemedText>
+
+                {/* WHY */}
+                <View style={[styles.circleCard, { backgroundColor: "#FFD70020", borderColor: "#FFD700" }]}>
+                  <View style={styles.circleHeader}>
+                    <View style={[styles.circleBadge, { backgroundColor: "#FFD700" }]}>
+                      <ThemedText style={styles.circleBadgeText}>WHY</ThemedText>
+                    </View>
+                    <ThemedText style={[styles.circleLabel, { color: "#FFD700" }]}>
+                      {t("Hvorfor vi eksisterer", "Why we exist")}
+                    </ThemedText>
+                  </View>
+                  <ThemedText style={[styles.circleText, { color: theme.text }]}>
+                    {t(
+                      "Vi tror at bryllupsplanlegging skal være en av de mest magiske opplevelsene i livet — ikke en kilde til stress og kaos. Alle par fortjener å nyte veien mot sin store dag, og alle leverandører fortjener å jobbe med engasjerte par som verdsetter arbeidet deres.",
+                      "We believe wedding planning should be one of the most magical experiences in life — not a source of stress and chaos. Every couple deserves to enjoy the journey to their big day, and every vendor deserves to work with engaged couples who value their craft."
+                    )}
+                  </ThemedText>
+                </View>
+
+                {/* HOW */}
+                <View style={[styles.circleCard, { backgroundColor: theme.accent + "15", borderColor: theme.accent }]}>
+                  <View style={styles.circleHeader}>
+                    <View style={[styles.circleBadge, { backgroundColor: theme.accent }]}>
+                      <ThemedText style={styles.circleBadgeText}>HOW</ThemedText>
+                    </View>
+                    <ThemedText style={[styles.circleLabel, { color: theme.accent }]}>
+                      {t("Hvordan vi gjør det", "How we do it")}
+                    </ThemedText>
+                  </View>
+                  <ThemedText style={[styles.circleText, { color: theme.text }]}>
+                    {t(
+                      "Vi kobler par med de beste leverandørene gjennom smart teknologi, sømløs kommunikasjon og verktøy som forenkler alt — fra budsjettstyring og gjestehåndtering til tidslinje, bordplassering og leveranser. Alt samlet på ett sted, tilgjengelig fra mobilen.",
+                      "We connect couples with the best vendors through smart technology, seamless communication and tools that simplify everything — from budget management and guest handling to timeline, seating charts and deliveries. All gathered in one place, accessible from your phone."
+                    )}
+                  </ThemedText>
+                </View>
+
+                {/* WHAT */}
+                <View style={[styles.circleCard, { backgroundColor: "#51CF6620", borderColor: "#51CF66" }]}>
+                  <View style={styles.circleHeader}>
+                    <View style={[styles.circleBadge, { backgroundColor: "#51CF66" }]}>
+                      <ThemedText style={styles.circleBadgeText}>WHAT</ThemedText>
+                    </View>
+                    <ThemedText style={[styles.circleLabel, { color: "#51CF66" }]}>
+                      {t("Hva vi tilbyr", "What we offer")}
+                    </ThemedText>
+                  </View>
+                  <ThemedText style={[styles.circleText, { color: theme.text }]}>
+                    {t(
+                      "Wedflow er en komplett bryllupsplattform — en app der par planlegger bryllupet sitt med kraftige verktøy (planlegging, budsjett, gjester, bordplassering, tidslinje, fotoplan, meldinger), mens leverandører når de rette parene gjennom en markedsplass med profiler, tilbud, produkter og direkte chat. Alt i én app.",
+                      "Wedflow is a complete wedding platform — an app where couples plan their wedding with powerful tools (planning, budget, guests, seating charts, timeline, photo plan, messaging), while vendors reach the right couples through a marketplace with profiles, offers, products and direct chat. All in one app."
+                    )}
+                  </ThemedText>
+                </View>
+
+                <View style={[styles.visionFooter, { borderTopColor: theme.border }]}>
+                  <Feather name="heart" size={16} color={theme.accent} />
+                  <ThemedText style={[styles.visionFooterText, { color: theme.textMuted }]}>
+                    {t(
+                      "\"Folk kjøper ikke HVA du gjør, de kjøper HVORFOR du gjør det.\" — Simon Sinek",
+                      "\"People don't buy WHAT you do, they buy WHY you do it.\" — Simon Sinek"
+                    )}
+                  </ThemedText>
+                </View>
+              </View>
+            </Animated.View>
+
+            {/* Norwedfilm — Why we built Wedflow */}
+            <Animated.View entering={FadeInDown.delay(600).duration(400)}>
+              <View style={[styles.section, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
+                <View style={styles.visionHeader}>
+                  <Feather name="film" size={24} color={theme.accent} />
+                  <ThemedText style={styles.sectionTitle}>
+                    {t("Norwedfilm — Historien bak Wedflow", "Norwedfilm — The story behind Wedflow")}
+                  </ThemedText>
+                </View>
+                <ThemedText style={[styles.visionIntro, { color: theme.textSecondary }]}>
+                  {t(
+                    "\"Love stories elegantly told\" — Norwedfilm",
+                    "\"Love stories elegantly told\" — Norwedfilm"
+                  )}
+                </ThemedText>
+
+                {/* Who is Norwedfilm */}
+                <View style={[styles.norwedStoryCard, { backgroundColor: theme.backgroundSecondary, borderColor: theme.border }]}>
+                  <View style={styles.norwedStoryRow}>
+                    <View style={[styles.norwedIconCircle, { backgroundColor: theme.accent }]}>
+                      <Feather name="video" size={20} color="#FFFFFF" />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <ThemedText style={[styles.norwedLabel, { color: theme.accent }]}>
+                        {t("Hvem er Norwedfilm?", "Who is Norwedfilm?")}
+                      </ThemedText>
+                    </View>
+                  </View>
+                  <ThemedText style={[styles.circleText, { color: theme.text }]}>
+                    {t(
+                      "Norwedfilm er et bryllupsfoto- og filmselskap basert i Oslo, med over 200 bryllup dokumentert gjennom 8+ år. Vi spesialiserer oss på tidløs bryllupsfotografi og cinematiske bryllupsfilmer — vi fanger ekte øyeblikk med et kunstnerisk blikk og forteller kjærlighetshistorier med følelse og eleganse.",
+                      "Norwedfilm is a wedding photography & videography studio based in Oslo, with 200+ weddings documented over 8+ years. We specialize in timeless wedding photography and cinematic wedding films — capturing authentic moments with an artistic eye and telling love stories with emotion and elegance."
+                    )}
+                  </ThemedText>
+                  <View style={styles.norwedStats}>
+                    <View style={styles.norwedStat}>
+                      <ThemedText style={[styles.norwedStatNumber, { color: theme.accent }]}>200+</ThemedText>
+                      <ThemedText style={[styles.norwedStatLabel, { color: theme.textMuted }]}>
+                        {t("Bryllup", "Weddings")}
+                      </ThemedText>
+                    </View>
+                    <View style={styles.norwedStat}>
+                      <ThemedText style={[styles.norwedStatNumber, { color: theme.accent }]}>8+</ThemedText>
+                      <ThemedText style={[styles.norwedStatLabel, { color: theme.textMuted }]}>
+                        {t("År erfaring", "Years exp.")}
+                      </ThemedText>
+                    </View>
+                  </View>
+                </View>
+
+                {/* The problem */}
+                <View style={[styles.norwedStoryCard, { backgroundColor: theme.backgroundSecondary, borderColor: theme.border }]}>
+                  <View style={styles.norwedStoryRow}>
+                    <View style={[styles.norwedIconCircle, { backgroundColor: "#FF6B6B" }]}>
+                      <Feather name="alert-circle" size={20} color="#FFFFFF" />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <ThemedText style={[styles.norwedLabel, { color: "#FF6B6B" }]}>
+                        {t("Problemet vi så fra innsiden", "The problem we saw from the inside")}
+                      </ThemedText>
+                    </View>
+                  </View>
+                  <ThemedText style={[styles.circleText, { color: theme.text }]}>
+                    {t(
+                      "Etter å ha vært til stede på hundrevis av bryllup, så vi det samme mønsteret gang etter gang: stressede par som jonglerte mellom meldinger, Excel-ark og forskjellige apper for budsjett, gjester og tidslinje. Leverandører slet med å nå de riktige parene og administrere bestillinger effektivt. Det fantes rett og slett ikke én plattform som løste alt — spesielt ikke tilpasset det skandinaviske markedet.",
+                      "After being present at hundreds of weddings, we saw the same pattern over and over: stressed couples juggling messages, spreadsheets and different apps for budget, guests and timeline. Vendors struggled to reach the right couples and manage bookings efficiently. There simply wasn't a single platform solving everything — especially not tailored for the Scandinavian market."
+                    )}
+                  </ThemedText>
+                </View>
+
+                {/* Our philosophy */}
+                <View style={[styles.norwedStoryCard, { backgroundColor: theme.backgroundSecondary, borderColor: theme.border }]}>
+                  <View style={styles.norwedStoryRow}>
+                    <View style={[styles.norwedIconCircle, { backgroundColor: theme.accent }]}>
+                      <Feather name="heart" size={20} color="#FFFFFF" />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <ThemedText style={[styles.norwedLabel, { color: theme.accent }]}>
+                        {t("Vår filosofi", "Our philosophy")}
+                      </ThemedText>
+                    </View>
+                  </View>
+                  <ThemedText style={[styles.circleText, { color: theme.text }]}>
+                    {t(
+                      "Vi tror at de beste bryllupsopplevelsene oppstår fra ekte relasjoner. Vi tar oss tid til å forstå parets historie, stil og visjon — og vår diskrete tilnærming lar oss fange autentiske, uforberedte øyeblikk mens paret simpelthen nyter dagen sin. Den samme filosofien driver Wedflow.",
+                      "We believe the best wedding experiences come from genuine connections. We take the time to understand each couple's story, style, and vision — and our unobtrusive approach lets us capture authentic, candid moments while couples simply enjoy their day. The same philosophy drives Wedflow."
+                    )}
+                  </ThemedText>
+                </View>
+
+                {/* The solution */}
+                <View style={[styles.norwedStoryCard, { backgroundColor: "#51CF6610", borderColor: "#51CF66" }]}>
+                  <View style={styles.norwedStoryRow}>
+                    <View style={[styles.norwedIconCircle, { backgroundColor: "#51CF66" }]}>
+                      <Feather name="zap" size={20} color="#FFFFFF" />
+                    </View>
+                    <View style={{ flex: 1 }}>
+                      <ThemedText style={[styles.norwedLabel, { color: "#51CF66" }]}>
+                        {t("Løsningen: Wedflow", "The solution: Wedflow")}
+                      </ThemedText>
+                    </View>
+                  </View>
+                  <ThemedText style={[styles.circleText, { color: theme.text }]}>
+                    {t(
+                      "Derfor bygget vi Wedflow — appen vi selv ønsket at fantes. En komplett bryllupsplattform der par planlegger bryllupet sitt med kraftige verktøy, og leverandører når de rette parene gjennom en markedsplass med direkte kommunikasjon. Alt i én app, designet med kjærlighet for skandinaviske bryllup.",
+                      "That's why we built Wedflow — the app we wished existed ourselves. A complete wedding platform where couples plan their wedding with powerful tools, and vendors reach the right couples through a marketplace with direct communication. All in one app, designed with love for Scandinavian weddings."
+                    )}
+                  </ThemedText>
+                </View>
+
+                <Pressable
+                  onPress={() => handleOpenLink("https://norwedfilm.no")}
+                  style={[styles.norwedCta, { backgroundColor: theme.accent + "15", borderColor: theme.accent }]}
+                >
+                  <Feather name="globe" size={18} color={theme.accent} />
+                  <ThemedText style={[styles.norwedCtaText, { color: theme.accent }]}>
+                    {t("Besøk norwedfilm.no", "Visit norwedfilm.no")}
+                  </ThemedText>
+                  <Feather name="external-link" size={14} color={theme.accent} />
+                </Pressable>
+              </View>
+            </Animated.View>
           </>
         )}
       </ScrollView>
@@ -364,4 +574,117 @@ const styles = StyleSheet.create({
     alignItems: "flex-start",
   },
   infoText: { flex: 1, fontSize: 13, lineHeight: 20 },
+  visionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.sm,
+    marginBottom: Spacing.xs,
+  },
+  visionIntro: {
+    fontSize: 13,
+    lineHeight: 20,
+    marginBottom: Spacing.lg,
+    fontStyle: "italic",
+  },
+  circleCard: {
+    padding: Spacing.md,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1.5,
+    marginBottom: Spacing.md,
+  },
+  circleHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.sm,
+    marginBottom: Spacing.sm,
+  },
+  circleBadge: {
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 4,
+    borderRadius: BorderRadius.sm,
+  },
+  circleBadgeText: {
+    color: "#FFFFFF",
+    fontSize: 12,
+    fontWeight: "800",
+    letterSpacing: 1,
+  },
+  circleLabel: {
+    fontSize: 15,
+    fontWeight: "600",
+  },
+  circleText: {
+    fontSize: 14,
+    lineHeight: 22,
+  },
+  visionFooter: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    gap: Spacing.sm,
+    marginTop: Spacing.sm,
+    paddingTop: Spacing.md,
+    borderTopWidth: 1,
+  },
+  visionFooterText: {
+    flex: 1,
+    fontSize: 12,
+    lineHeight: 18,
+    fontStyle: "italic",
+  },
+  norwedStoryCard: {
+    padding: Spacing.md,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    marginBottom: Spacing.sm,
+  },
+  norwedStoryRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.sm,
+    marginBottom: Spacing.sm,
+  },
+  norwedIconCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  norwedLabel: {
+    fontSize: 15,
+    fontWeight: "600",
+  },
+  norwedStats: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginTop: Spacing.md,
+    paddingTop: Spacing.md,
+    borderTopWidth: 1,
+    borderTopColor: "rgba(255,255,255,0.1)",
+  },
+  norwedStat: {
+    alignItems: "center",
+  },
+  norwedStatNumber: {
+    fontSize: 22,
+    fontWeight: "800",
+  },
+  norwedStatLabel: {
+    fontSize: 11,
+    marginTop: 2,
+  },
+  norwedCta: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: Spacing.sm,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    marginTop: Spacing.sm,
+  },
+  norwedCtaText: {
+    fontSize: 15,
+    fontWeight: "600",
+  },
 });

@@ -31,6 +31,8 @@ import { WeddingDetails } from "@/lib/types";
 import type { AppSetting } from "../../shared/schema";
 import { getApiUrl } from "@/lib/query-client";
 import { showToast } from "@/lib/toast";
+import { showConfirm } from "@/lib/dialogs";
+import { useAuth } from "@/lib/AuthContext";
 
 type NavigationProp = NativeStackNavigationProp<ProfileStackParamList>;
 
@@ -41,6 +43,7 @@ export default function ProfileScreen() {
   const { theme } = useTheme();
   const navigation = useNavigation<NavigationProp>();
   const rootNavigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const { logout } = useAuth();
 
   const [wedding, setWedding] = useState<WeddingDetails | null>(null);
   const [loading, setLoading] = useState(true);
@@ -485,14 +488,15 @@ export default function ProfileScreen() {
         <View style={styles.menuSection}>
           <MenuItem
             icon="help-circle"
-            label={t("Hjelp", "Help")}
+            label={t("Hjelp & FAQ", "Help & FAQ")}
             theme={theme}
-            onPress={() => showToast(
-              t(
-                "E-post: contact@norwedfilm.no\nNettside: norwedfilm.no\nInstagram: @norwedfilm",
-                "Email: contact@norwedfilm.no\nWebsite: norwedfilm.no\nInstagram: @norwedfilm"
-              )
-            )}
+            onPress={() => navigation.navigate("CoupleHelp")}
+          />
+          <MenuItem
+            icon="message-circle"
+            label={t("Meldinger", "Messages")}
+            theme={theme}
+            onPress={() => navigation.navigate("CoupleMessagesHub")}
           />
           <MenuItem
             icon="info"
@@ -513,18 +517,6 @@ export default function ProfileScreen() {
             onPress={() => navigation.navigate("SharePartner")}
           />
           <MenuItem
-            icon="briefcase"
-            label={t("Leverandørportal", "Vendor portal")}
-            theme={theme}
-            onPress={() => navigation.navigate("VendorLogin")}
-          />
-          <MenuItem
-            icon="shield"
-            label={t("Admin", "Admin")}
-            theme={theme}
-            onPress={() => rootNavigation.navigate("AdminLogin")}
-          />
-          <MenuItem
             icon="star"
             label={t("Anmeld leverandører", "Review vendors")}
             theme={theme}
@@ -535,6 +527,24 @@ export default function ProfileScreen() {
             label={t("Tilbakemelding til Wedflow", "Feedback to Wedflow")}
             theme={theme}
             onPress={() => navigation.navigate("Feedback")}
+          />
+          <MenuItem
+            icon="log-out"
+            label={t("Logg ut", "Log out")}
+            theme={theme}
+            destructive
+            onPress={async () => {
+              const confirmed = await showConfirm({
+                title: t("Logg ut", "Log out"),
+                message: t("Er du sikker på at du vil logge ut?", "Are you sure you want to log out?"),
+                confirmLabel: t("Logg ut", "Log out"),
+                cancelLabel: t("Avbryt", "Cancel"),
+                destructive: true,
+              });
+              if (confirmed) {
+                logout();
+              }
+            }}
           />
         </View>
       </Animated.View>
@@ -547,9 +557,11 @@ interface MenuItemProps {
   label: string;
   theme: any;
   onPress: () => void;
+  destructive?: boolean;
 }
 
-function MenuItem({ icon, label, theme, onPress }: MenuItemProps) {
+function MenuItem({ icon, label, theme, onPress, destructive }: MenuItemProps) {
+  const iconColor = destructive ? "#DC3545" : Colors.dark.accent;
   return (
     <Pressable
       onPress={() => {
@@ -563,11 +575,11 @@ function MenuItem({ icon, label, theme, onPress }: MenuItemProps) {
       ]}
     >
       <View
-        style={[styles.menuIcon, { backgroundColor: theme.backgroundSecondary }]}
+        style={[styles.menuIcon, { backgroundColor: destructive ? "#DC354515" : theme.backgroundSecondary }]}
       >
-        <Feather name={icon} size={18} color={Colors.dark.accent} />
+        <Feather name={icon} size={18} color={iconColor} />
       </View>
-      <ThemedText style={styles.menuLabel}>{label}</ThemedText>
+      <ThemedText style={[styles.menuLabel, destructive && { color: "#DC3545" }]}>{label}</ThemedText>
       <Feather name="chevron-right" size={18} color={theme.textMuted} />
     </Pressable>
   );

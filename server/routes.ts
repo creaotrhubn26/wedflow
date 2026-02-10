@@ -11733,7 +11733,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const parsed = updateFaqItemSchema.parse(req.body);
       
       const [item] = await db.update(faqItems)
-        .set(parsed)
+        .set({ ...parsed, updatedAt: new Date() })
         .where(eq(faqItems.id, id))
         .returning();
 
