@@ -1,8 +1,8 @@
 /**
  * Event Type Icons — Maps event types to bundled PNG images and EvendiIcon fallbacks.
  *
- * 16 event types have bundled PNGs in assets/images/event_types/.
- * The remaining 3 (conference, team_building, awards_night)
+ * 17 event types have bundled PNGs.
+ * The remaining 2 (team_building, awards_night)
  * fall back to EvendiIcon (Feather icons).
  * Admin can override any event type icon with a custom image URI
  * stored in AsyncStorage via useCustomEventIcons().
@@ -98,6 +98,7 @@ const BUNDLED_IMAGES: Partial<Record<EventType, ImageSourcePropType>> = {
   onboarding_day: require("@/../../assets/images/event_types/Evendi_event_type_onbording_day.png"),
   trade_fair: require("@/../../assets/images/event_types/Evendi_event_type_trade_fair.png"),
   product_launch: require("@/../../assets/qa-games/qna-product-launch.png"),
+  conference: require("@/../../assets/images/event_types/Evendi_event_type_conference.png"),
 };
 
 /**
