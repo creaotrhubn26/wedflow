@@ -12,6 +12,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { optimizeImage, PHOTO_PRESET } from "@/lib/optimize-image";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -513,7 +514,8 @@ export function KakeScreen() {
     });
 
     if (!result.canceled && result.assets[0]) {
-      setDesignImageUrl(result.assets[0].uri);
+      const optimizedUri = await optimizeImage(result.assets[0].uri, PHOTO_PRESET);
+      setDesignImageUrl(optimizedUri);
     }
   };
 

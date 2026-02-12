@@ -17,6 +17,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { EvendiIcon } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import * as ImagePicker from "expo-image-picker";
+import { optimizeImage, PHOTO_PRESET } from "@/lib/optimize-image";
 import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -279,7 +280,8 @@ export default function BrudekjoleScreen() {
     });
 
     if (!result.canceled && result.assets[0]) {
-      setDressImage(result.assets[0].uri);
+      const optimizedUri = await optimizeImage(result.assets[0].uri, PHOTO_PRESET);
+      setDressImage(optimizedUri);
     }
   };
 

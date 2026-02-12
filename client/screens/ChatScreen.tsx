@@ -16,6 +16,7 @@ import * as Haptics from "expo-haptics";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Animated, { FadeIn } from "react-native-reanimated";
 import * as ImagePicker from "expo-image-picker";
+import { optimizeImage, PHOTO_PRESET } from "@/lib/optimize-image";
 import { uploadChatImage, isSupabaseConfigured } from "@/lib/supabase-storage";
 
 import { ThemedText } from "@/components/ThemedText";
@@ -282,7 +283,8 @@ export default function ChatScreen({ route, navigation }: Props) {
     });
 
     if (!result.canceled && result.assets[0]) {
-      setSelectedImage(result.assets[0].uri);
+      const optimizedUri = await optimizeImage(result.assets[0].uri, PHOTO_PRESET);
+      setSelectedImage(optimizedUri);
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     }
   };

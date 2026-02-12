@@ -18,6 +18,7 @@ import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { EvendiIcon } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
 import * as ImagePicker from "expo-image-picker";
+import { optimizeImage, PHOTO_PRESET } from "@/lib/optimize-image";
 import Animated, { FadeInDown, FadeInRight } from "react-native-reanimated";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -379,7 +380,8 @@ export default function HaarMakeupScreen() {
     });
 
     if (!result.canceled && result.assets[0]) {
-      setLookImage(result.assets[0].uri);
+      const optimizedUri = await optimizeImage(result.assets[0].uri, PHOTO_PRESET);
+      setLookImage(optimizedUri);
     }
   };
 
