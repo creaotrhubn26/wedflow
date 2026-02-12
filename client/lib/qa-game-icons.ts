@@ -15,7 +15,7 @@ const GAME_IMAGES: Record<string, ImageSourcePropType> = {
   icebreaker: require("@/../../assets/qa-games/qna-icebreaker.png"),
   quiz: require("@/../../assets/qa-games/qna-quiz.png"),
   two_truths: require("@/../../assets/qa-games/qna-two-truths.png"),
-  qa_open: require("@/../../assets/qa-games/qna-games-logo.png"),
+  qa_open: require("@/../../assets/qa-games/qna-qa-open.png"),
   product_launch: require("@/../../assets/qa-games/qna-product-launch.png"),
 };
 
@@ -88,6 +88,6 @@ export const ALL_DEFAULT_GAME_ICONS: { mode: string; label: string; image: Image
   { mode: "icebreaker", label: "Icebreaker", image: GAME_IMAGES.icebreaker },
   { mode: "quiz", label: "Quiz", image: GAME_IMAGES.quiz },
   { mode: "two_truths", label: "To sannheter", image: GAME_IMAGES.two_truths },
-  { mode: "qa_open", label: "Åpne spørsmål", image: GAME_IMAGES.qa_open },
+  { mode: "qa_open", label: "Apne sporsmal", image: GAME_IMAGES.qa_open },
   { mode: "product_launch", label: "Produktlansering", image: GAME_IMAGES.product_launch },
 ];
