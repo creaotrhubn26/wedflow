@@ -14,6 +14,7 @@ import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { useFocusEffect } from "@react-navigation/native";
 import { EvendiIcon } from "@/components/EvendiIcon";
 import * as Haptics from "expo-haptics";
+import * as ImagePicker from "expo-image-picker";
 import Animated, { FadeInDown, FadeInRight, SlideInRight } from "react-native-reanimated";
 
 import { ThemedText } from "@/components/ThemedText";
@@ -394,6 +395,28 @@ export default function QaSystemScreen() {
       next[gameMode] = value;
     }
     await handleUpdateSetting(settingsKey, Object.keys(next).length > 0 ? next : undefined);
+  };
+
+  /** Pick an image from the device library and store its local URI as the custom icon. */
+  const pickGameIcon = async (gameMode?: string) => {
+    const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (status !== "granted") {
+      showToast("Vi trenger tilgang til bildebiblioteket for å velge ikon.");
+      return;
+    }
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 0.8,
+    });
+    if (result.canceled || !result.assets[0]) return;
+    const uri = result.assets[0].uri;
+    if (gameMode) {
+      await handleUpdateGameIconSetting("customGameIcons", gameMode, uri);
+    } else {
+      await handleUpdateSetting("customQaIcon", uri);
+    }
   };
 
   const handleAddGameScore = async (score: GameScore) => {
@@ -1156,7 +1179,7 @@ export default function QaSystemScreen() {
                 Tilpass ikoner og farger
               </ThemedText>
               <ThemedText style={{ color: theme.textSecondary, fontSize: 12, marginBottom: Spacing.md }}>
-                Endre spillikoner og aksentfarger. Legg inn en bilde-URL for egendefinert ikon.
+                Trykk pa ikonet for a velge nytt bilde fra bildebiblioteket.
               </ThemedText>
 
               {availableGames.map((g) => {
@@ -1164,10 +1187,15 @@ export default function QaSystemScreen() {
                 const currentAccent = getSettings(session).customGameAccents?.[g.mode] ?? getGameAccent(g.mode);
                 return (
                   <View key={g.mode} style={[styles.iconCustomRow, { borderBottomColor: theme.border }]}>
-                    <Image
-                      source={getGameImage(g.mode, getSettings(session).customGameIcons)}
-                      style={{ width: 40, height: 40, borderRadius: 8 }}
-                    />
+                    <Pressable onPress={() => pickGameIcon(g.mode)}>
+                      <Image
+                        source={getGameImage(g.mode, getSettings(session).customGameIcons)}
+                        style={{ width: 40, height: 40, borderRadius: 8 }}
+                      />
+                      <View style={styles.iconPickerBadge}>
+                        <EvendiIcon name="camera" size={10} color="#fff" />
+                      </View>
+                    </Pressable>
                     <View style={{ flex: 1, marginLeft: Spacing.md }}>
                       <ThemedText style={{ color: theme.text, fontWeight: "600", fontSize: 14 }}>
                         {g.labelNo}
@@ -1179,7 +1207,6 @@ export default function QaSystemScreen() {
                     {/* Accent color indicator */}
                     <Pressable
                       onPress={() => {
-                        // Cycle through available accent colors
                         const colors = Object.values(GAME_ACCENT_COLORS);
                         const idx = colors.indexOf(currentAccent);
                         const next = colors[(idx + 1) % colors.length];
@@ -1202,10 +1229,15 @@ export default function QaSystemScreen() {
 
               {/* Custom Q&A session icon */}
               <View style={[styles.iconCustomRow, { borderBottomColor: "transparent" }]}>
-                <Image
-                  source={getQaSessionIcon(getSettings(session).customQaIcon)}
-                  style={{ width: 40, height: 40, borderRadius: 8 }}
-                />
+                <Pressable onPress={() => pickGameIcon()}>
+                  <Image
+                    source={getQaSessionIcon(getSettings(session).customQaIcon)}
+                    style={{ width: 40, height: 40, borderRadius: 8 }}
+                  />
+                  <View style={styles.iconPickerBadge}>
+                    <EvendiIcon name="camera" size={10} color="#fff" />
+                  </View>
+                </Pressable>
                 <View style={{ flex: 1, marginLeft: Spacing.md }}>
                   <ThemedText style={{ color: theme.text, fontWeight: "600", fontSize: 14 }}>
                     Q&A Hovedikon
@@ -2337,6 +2369,17 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: 12,
     marginRight: Spacing.sm,
+  },
+  iconPickerBadge: {
+    position: "absolute",
+    bottom: -2,
+    right: -2,
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: "rgba(0,0,0,0.6)",
+    alignItems: "center",
+    justifyContent: "center",
   },
   settingRow: {
     flexDirection: "row",
