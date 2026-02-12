@@ -6,6 +6,7 @@ import {
   TextInput,
   Pressable,
   RefreshControl,
+  Image,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useHeaderHeight } from "@react-navigation/elements";
@@ -33,6 +34,12 @@ import {
   ICEBREAKER_QUESTIONS,
   TWO_TRUTHS_QUESTIONS,
 } from "@shared/event-types";
+import {
+  getGameImage,
+  getGameAccent,
+  SHOE_TURN_IMAGES,
+  QA_GAMES_LOGO,
+} from "@/lib/qa-game-icons";
 
 // ─────────────────────── Tabs ───────────────────────
 type QaTab = "audience" | "games" | "cloud" | "admin";
@@ -661,7 +668,7 @@ export default function QaSystemScreen() {
     >
       {/* ── Event Type Banner ── */}
       <View style={[styles.eventBanner, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-        <ThemedText style={{ fontSize: 20 }}>{config.icon}</ThemedText>
+        <Image source={QA_GAMES_LOGO} style={{ width: 40, height: 40, borderRadius: 8 }} resizeMode="cover" />
         <View style={{ flex: 1, marginLeft: Spacing.sm }}>
           <ThemedText style={[styles.eventBannerTitle, { color: theme.text }]}>
             Q&A – {config.labelNo}
@@ -1101,7 +1108,7 @@ export default function QaSystemScreen() {
                         <ThemedText style={[styles.leaderboardRank, {
                           color: i === 0 ? "#f59e0b" : i === 1 ? "#94a3b8" : i === 2 ? "#d97706" : theme.textSecondary,
                         }]}>
-                          {i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `${i + 1}.`}
+                          {i === 0 ? "1." : i === 1 ? "2." : i === 2 ? "3." : `${i + 1}.`}
                         </ThemedText>
                         <View style={{ flex: 1 }}>
                           <ThemedText style={{ color: theme.text, fontWeight: "600", fontSize: 14 }}>
@@ -1222,6 +1229,7 @@ function GamesTab({
   onAddScore: (score: GameScore) => Promise<void>;
 }) {
   const game = games[selectedGameIndex] || games[0];
+  const accent = getGameAccent(game.mode);
   const presetQuestions = getPresetQuestions(game.mode);
 
   // Score tracking
@@ -1329,42 +1337,57 @@ function GamesTab({
     <>
       {/* Game selector (if multiple games) */}
       {games.length > 1 && (
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{ gap: Spacing.sm, marginBottom: Spacing.lg }}
-        >
-          {games.map((g, i) => {
-            const isActive = i === selectedGameIndex;
-            return (
-              <Pressable
-                key={g.mode}
-                onPress={() => {
-                  setSelectedGameIndex(i);
-                  resetGame();
-                }}
-                style={[
-                  styles.gamePickerChip,
-                  {
-                    backgroundColor: isActive ? "#f59e0b20" : theme.backgroundSecondary,
-                    borderColor: isActive ? "#f59e0b" : theme.border,
-                  },
-                ]}
-              >
-                <ThemedText style={{ fontSize: 18 }}>{g.icon}</ThemedText>
-                <ThemedText
-                  style={{
-                    color: isActive ? "#f59e0b" : theme.text,
-                    fontWeight: "600",
-                    fontSize: 13,
+        <View style={{ marginBottom: Spacing.lg }}>
+          <ThemedText style={{ color: theme.textSecondary, fontSize: 12, fontWeight: "600", marginBottom: Spacing.sm, textTransform: "uppercase", letterSpacing: 0.5 }}>
+            Velg aktivitet
+          </ThemedText>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={{ gap: Spacing.md }}
+          >
+            {games.map((g, i) => {
+              const isActive = i === selectedGameIndex;
+              const accent = getGameAccent(g.mode);
+              return (
+                <Pressable
+                  key={g.mode}
+                  onPress={() => {
+                    setSelectedGameIndex(i);
+                    resetGame();
                   }}
+                  style={[
+                    styles.gamePickerCard,
+                    {
+                      backgroundColor: isActive ? accent + "12" : theme.backgroundSecondary,
+                      borderColor: isActive ? accent : theme.border,
+                    },
+                  ]}
                 >
-                  {g.labelNo}
-                </ThemedText>
-              </Pressable>
-            );
-          })}
-        </ScrollView>
+                  <Image
+                    source={getGameImage(g.mode)}
+                    style={styles.gamePickerImage}
+                    resizeMode="cover"
+                  />
+                  <ThemedText
+                    numberOfLines={1}
+                    style={{
+                      color: isActive ? accent : theme.text,
+                      fontWeight: "700",
+                      fontSize: 12,
+                      textAlign: "center",
+                    }}
+                  >
+                    {g.labelNo}
+                  </ThemedText>
+                  {isActive && (
+                    <View style={[styles.gamePickerDot, { backgroundColor: accent }]} />
+                  )}
+                </Pressable>
+              );
+            })}
+          </ScrollView>
+        </View>
       )}
 
       {/* Instructions view */}
@@ -1374,7 +1397,7 @@ function GamesTab({
           style={[styles.gameCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}
         >
           <View style={styles.gameHeader}>
-            <ThemedText style={{ fontSize: 40 }}>{game.icon}</ThemedText>
+            <Image source={getGameImage(game.mode)} style={{ width: 56, height: 56, borderRadius: 12 }} />
             <ThemedText style={[styles.gameTitle, { color: theme.text }]}>
               {game.labelNo}
             </ThemedText>
@@ -1393,8 +1416,8 @@ function GamesTab({
                 entering={FadeInRight.delay(i * 100).duration(300)}
                 style={styles.instructionStep}
               >
-                <View style={[styles.stepNumber, { backgroundColor: "#f59e0b20" }]}>
-                  <ThemedText style={{ color: "#f59e0b", fontWeight: "700", fontSize: 14 }}>
+                <View style={[styles.stepNumber, { backgroundColor: accent + "20" }]}>
+                  <ThemedText style={{ color: accent, fontWeight: "700", fontSize: 14 }}>
                     {i + 1}
                   </ThemedText>
                 </View>
@@ -1408,7 +1431,7 @@ function GamesTab({
           {presetQuestions.length > 0 && (
             <Pressable
               onPress={startGame}
-              style={[styles.startGameButton, { backgroundColor: "#f59e0b" }]}
+              style={[styles.startGameButton, { backgroundColor: accent }]}
             >
               <EvendiIcon name="play" size={20} color="#fff" />
               <ThemedText style={styles.startGameText}>
@@ -1425,10 +1448,13 @@ function GamesTab({
               </ThemedText>
               {topScores.map((s, i) => (
                 <View key={s.id} style={styles.miniScoreRow}>
-                  <ThemedText style={{ color: i === 0 ? "#f59e0b" : theme.textSecondary, fontSize: 13 }}>
-                    {i === 0 ? "🏆" : `${i + 1}.`} {s.playerName}
-                  </ThemedText>
-                  <ThemedText style={{ color: "#f59e0b", fontWeight: "700", fontSize: 13 }}>
+                  <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                    {i === 0 ? <EvendiIcon name="award" size={13} color={accent} /> : <ThemedText style={{ color: theme.textSecondary, fontSize: 13 }}>{i + 1}.</ThemedText>}
+                    <ThemedText style={{ color: i === 0 ? accent : theme.textSecondary, fontSize: 13 }}>
+                      {s.playerName}
+                    </ThemedText>
+                  </View>
+                  <ThemedText style={{ color: accent, fontWeight: "700", fontSize: 13 }}>
                     {s.score}p
                   </ThemedText>
                 </View>
@@ -1452,8 +1478,8 @@ function GamesTab({
               </ThemedText>
               {settings.showGameScore && (
                 <View style={styles.scoreBadge}>
-                  <EvendiIcon name="award" size={12} color="#f59e0b" />
-                  <ThemedText style={{ color: "#f59e0b", fontWeight: "700", fontSize: 14 }}>
+                  <EvendiIcon name="award" size={12} color={accent} />
+                  <ThemedText style={{ color: accent, fontWeight: "700", fontSize: 14 }}>
                     {currentScore} p
                   </ThemedText>
                 </View>
@@ -1464,7 +1490,7 @@ function GamesTab({
                 style={[
                   styles.progressFill,
                   {
-                    backgroundColor: "#f59e0b",
+                    backgroundColor: accent,
                     width: `${((shoeGameQuestionIndex + 1) / gameQuestionPool.length) * 100}%`,
                   },
                 ]}
@@ -1475,9 +1501,9 @@ function GamesTab({
           {/* Timer */}
           {settings.gameTimerEnabled && (
             <View style={[styles.timerDisplay, { backgroundColor: timerValue <= 5 ? "#ef444420" : theme.backgroundSecondary }]}>
-              <EvendiIcon name="clock" size={16} color={timerValue <= 5 ? "#ef4444" : "#f59e0b"} />
+              <EvendiIcon name="clock" size={16} color={timerValue <= 5 ? "#ef4444" : accent} />
               <ThemedText style={{
-                color: timerValue <= 5 ? "#ef4444" : "#f59e0b",
+                color: timerValue <= 5 ? "#ef4444" : accent,
                 fontWeight: "800",
                 fontSize: 18,
                 fontVariant: ["tabular-nums"],
@@ -1489,8 +1515,8 @@ function GamesTab({
 
           {/* Category chip */}
           {currentQ.category && (
-            <View style={[styles.categoryChip, { backgroundColor: "#f59e0b15" }]}>
-              <ThemedText style={{ color: "#f59e0b", fontSize: 11, fontWeight: "600" }}>
+            <View style={[styles.categoryChip, { backgroundColor: accent + "15" }]}>
+              <ThemedText style={{ color: accent, fontSize: 11, fontWeight: "600" }}>
                 {currentQ.category}
               </ThemedText>
             </View>
@@ -1507,14 +1533,14 @@ function GamesTab({
           {game.mode === "shoe_game" && (
             <View style={styles.shoeIndicators}>
               <View style={[styles.shoeIndicator, { backgroundColor: "#ec489920" }]}>
-                <ThemedText style={{ fontSize: 28 }}>👠</ThemedText>
+                <Image source={SHOE_TURN_IMAGES.bride} style={{ width: 36, height: 36 }} />
                 <ThemedText style={{ color: "#ec4899", fontWeight: "700", fontSize: 16 }}>
                   {roleLabels.primary.no}
                 </ThemedText>
               </View>
               <ThemedText style={{ color: theme.textMuted, fontSize: 24 }}>eller</ThemedText>
               <View style={[styles.shoeIndicator, { backgroundColor: Colors.dark.accent + "20" }]}>
-                <ThemedText style={{ fontSize: 28 }}>👞</ThemedText>
+                <Image source={SHOE_TURN_IMAGES.groom} style={{ width: 36, height: 36 }} />
                 <ThemedText style={{ color: Colors.dark.accent, fontWeight: "700", fontSize: 16 }}>
                   {roleLabels.secondary.no}
                 </ThemedText>
@@ -1536,10 +1562,10 @@ function GamesTab({
               </Pressable>
               <Pressable
                 onPress={() => addPoints(5)}
-                style={[styles.scoreBtn, { backgroundColor: "#f59e0b20", borderColor: "#f59e0b" }]}
+                style={[styles.scoreBtn, { backgroundColor: accent + "20", borderColor: accent }]}
               >
-                <EvendiIcon name="minus" size={14} color="#f59e0b" />
-                <ThemedText style={{ color: "#f59e0b", fontWeight: "700", fontSize: 13 }}>
+                <EvendiIcon name="minus" size={14} color={accent} />
+                <ThemedText style={{ color: accent, fontWeight: "700", fontSize: 13 }}>
                   Delvis +5p
                 </ThemedText>
               </Pressable>
@@ -1566,7 +1592,7 @@ function GamesTab({
             {shoeGameQuestionIndex < gameQuestionPool.length - 1 ? (
               <Pressable
                 onPress={nextQuestion}
-                style={[styles.gameNavBtn, { backgroundColor: "#f59e0b", borderColor: "#f59e0b" }]}
+                style={[styles.gameNavBtn, { backgroundColor: accent, borderColor: accent }]}
               >
                 <ThemedText style={{ color: "#fff", fontWeight: "600" }}>Neste</ThemedText>
                 <EvendiIcon name="chevron-right" size={20} color="#fff" />
@@ -1595,10 +1621,10 @@ function GamesTab({
       {showGameComplete && (
         <Animated.View
           entering={FadeInDown.duration(400)}
-          style={[styles.gameCard, { backgroundColor: theme.backgroundDefault, borderColor: "#f59e0b" }]}
+          style={[styles.gameCard, { backgroundColor: theme.backgroundDefault, borderColor: accent }]}
         >
           <View style={styles.gameHeader}>
-            <ThemedText style={{ fontSize: 48 }}>🎉</ThemedText>
+            <Image source={getGameImage(game.mode)} style={{ width: 64, height: 64, borderRadius: 16 }} />
             <ThemedText style={[styles.gameTitle, { color: theme.text }]}>
               {game.labelNo} fullført!
             </ThemedText>
@@ -1606,11 +1632,11 @@ function GamesTab({
 
           {settings.showGameScore && (
             <View style={styles.completeSummary}>
-              <View style={[styles.completeScoreCard, { backgroundColor: "#f59e0b15" }]}>
-                <ThemedText style={{ color: "#f59e0b", fontSize: 40, fontWeight: "800" }}>
+              <View style={[styles.completeScoreCard, { backgroundColor: accent + "15" }]}>
+                <ThemedText style={{ color: accent, fontSize: 40, fontWeight: "800" }}>
                   {currentScore}
                 </ThemedText>
-                <ThemedText style={{ color: "#f59e0b", fontSize: 14, fontWeight: "600" }}>
+                <ThemedText style={{ color: accent, fontSize: 14, fontWeight: "600" }}>
                   poeng totalt
                 </ThemedText>
               </View>
@@ -1645,7 +1671,7 @@ function GamesTab({
 
           <Pressable
             onPress={resetGame}
-            style={[styles.startGameButton, { backgroundColor: "#f59e0b" }]}
+            style={[styles.startGameButton, { backgroundColor: accent }]}
           >
             <EvendiIcon name="refresh-cw" size={18} color="#fff" />
             <ThemedText style={styles.startGameText}>
@@ -2071,6 +2097,26 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginTop: Spacing.xs,
     textAlign: "center",
+  },
+  gamePickerCard: {
+    alignItems: "center",
+    width: 100,
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.sm,
+    borderRadius: BorderRadius.md,
+    borderWidth: 2,
+    gap: Spacing.xs,
+  },
+  gamePickerImage: {
+    width: 56,
+    height: 56,
+    borderRadius: 12,
+  },
+  gamePickerDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    marginTop: 2,
   },
   instructionsList: {
     marginBottom: Spacing.xl,
