@@ -7814,12 +7814,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Helper to notify vendors about changes (defined early for use in couple endpoints)
-  async function notifyVendorsOfChangeInternal(coupleId: string, changeType: 'schedule' | 'speech', actorName: string, description: string) {
+  async function notifyVendorsOfChangeInternal(coupleId: string, changeType: 'schedule' | 'speech' | 'table_seating' | 'music', actorName: string, description: string) {
     try {
       const contracts = await db.select({
         vendorId: coupleVendorContracts.vendorId,
         notifyOnScheduleChanges: coupleVendorContracts.notifyOnScheduleChanges,
         notifyOnSpeechChanges: coupleVendorContracts.notifyOnSpeechChanges,
+        notifyOnTableChanges: coupleVendorContracts.notifyOnTableChanges,
+        notifyOnMusicChanges: coupleVendorContracts.notifyOnMusicChanges,
       })
         .from(coupleVendorContracts)
         .where(and(
@@ -7830,19 +7832,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const [couple] = await db.select({
         displayName: coupleProfiles.displayName,
       }).from(coupleProfiles).where(eq(coupleProfiles.id, coupleId));
+
+      const notifyConfig: Record<string, { field: keyof typeof contracts[0]; type: string; title: string; label: string }> = {
+        schedule: { field: 'notifyOnScheduleChanges', type: 'schedule_changed', title: 'Programendring', label: 'programmet' },
+        speech: { field: 'notifyOnSpeechChanges', type: 'speech_changed', title: 'Talelisteendring', label: 'talelisten' },
+        table_seating: { field: 'notifyOnTableChanges', type: 'table_changed', title: 'Bordplasseringsendring', label: 'bordplasseringen' },
+        music: { field: 'notifyOnMusicChanges', type: 'music_changed', title: 'Musikkendring', label: 'musikkplanen' },
+      };
+
+      const config = notifyConfig[changeType];
+      if (!config) return;
       
       for (const contract of contracts) {
-        const shouldNotify = changeType === 'schedule' 
-          ? contract.notifyOnScheduleChanges 
-          : contract.notifyOnSpeechChanges;
+        const shouldNotify = contract[config.field];
         
         if (shouldNotify) {
           await db.insert(notifications).values({
             recipientType: "vendor",
             recipientId: contract.vendorId,
-            type: changeType === 'schedule' ? "schedule_changed" : "speech_changed",
-            title: changeType === 'schedule' ? "Programendring" : "Talelisteendring",
-            body: `${actorName} har endret ${changeType === 'schedule' ? 'bryllupsprogrammet' : 'talelisten'} for ${couple?.displayName || 'brudeparet'}. ${description}`,
+            type: config.type,
+            title: config.title,
+            body: `${actorName} har endret ${config.label} for ${couple?.displayName || 'arrangøren'}. ${description}`,
             actorType: "couple",
             actorId: coupleId,
             actorName: actorName,
@@ -8218,6 +8228,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         })
         .returning();
       
+      // Notify vendors about new table
+      const [cp] = await db.select({ displayName: coupleProfiles.displayName })
+        .from(coupleProfiles).where(eq(coupleProfiles.id, coupleId));
+      await notifyVendorsOfChangeInternal(coupleId, 'table_seating', cp?.displayName || 'Arrangøren', `Nytt bord "${table.name}" ble opprettet.`);
+      
       res.status(201).json({ ...table, guests: [] });
     } catch (error) {
       console.error("Error creating table:", error);
@@ -8258,34 +8273,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Notify vendors who can view table seating
-      const contracts = await db.select({
-        vendorId: coupleVendorContracts.vendorId,
-        notifyOnTableChanges: coupleVendorContracts.notifyOnTableChanges,
-      })
-        .from(coupleVendorContracts)
-        .where(and(
-          eq(coupleVendorContracts.coupleId, coupleId),
-          eq(coupleVendorContracts.status, "active"),
-          eq(coupleVendorContracts.canViewTableSeating, true)
-        ));
-      
-      const [couple] = await db.select({ displayName: coupleProfiles.displayName })
+      const [cp] = await db.select({ displayName: coupleProfiles.displayName })
         .from(coupleProfiles).where(eq(coupleProfiles.id, coupleId));
-      
-      for (const contract of contracts) {
-        if (contract.notifyOnTableChanges) {
-          await db.insert(notifications).values({
-            recipientType: "vendor",
-            recipientId: contract.vendorId,
-            type: "table_changed",
-            title: "Bordplassering endret",
-            body: `${couple?.displayName || 'Brudeparet'} har endret "${updated.name}".`,
-            actorType: "couple",
-            actorId: coupleId,
-            actorName: couple?.displayName || 'Brudeparet',
-          });
-        }
-      }
+      await notifyVendorsOfChangeInternal(coupleId, 'table_seating', cp?.displayName || 'Arrangøren', `"${updated.name}" ble endret.`);
       
       res.json(updated);
     } catch (error) {
@@ -8309,11 +8299,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
           eq(tableGuestAssignments.coupleId, coupleId)
         ));
       
+      // Get table name before deleting for notification
+      const [deleting] = await db.select({ name: weddingTables.name })
+        .from(weddingTables)
+        .where(and(eq(weddingTables.id, id), eq(weddingTables.coupleId, coupleId)));
+      
       await db.delete(weddingTables)
         .where(and(
           eq(weddingTables.id, id),
           eq(weddingTables.coupleId, coupleId)
         ));
+      
+      // Notify vendors
+      if (deleting) {
+        const [cp] = await db.select({ displayName: coupleProfiles.displayName })
+          .from(coupleProfiles).where(eq(coupleProfiles.id, coupleId));
+        await notifyVendorsOfChangeInternal(coupleId, 'table_seating', cp?.displayName || 'Arrangøren', `"${deleting.name}" ble fjernet.`);
+      }
       
       res.json({ message: "Bord slettet" });
     } catch (error) {
@@ -8896,7 +8898,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (!coupleId) return;
 
     try {
-      const { vendorId, offerId, vendorRole, notifyOnScheduleChanges, notifyOnSpeechChanges, canViewSchedule, canViewSpeeches } = req.body;
+      const { vendorId, offerId, vendorRole, notifyOnScheduleChanges, notifyOnSpeechChanges, notifyOnTableChanges, notifyOnMusicChanges, canViewSchedule, canViewSpeeches, canViewTableSeating, canViewMusic, canViewCoordinators, canViewReviews } = req.body;
       
       // Check if contract already exists
       const [existing] = await db.select()
@@ -8919,8 +8921,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           vendorRole,
           notifyOnScheduleChanges: notifyOnScheduleChanges ?? true,
           notifyOnSpeechChanges: notifyOnSpeechChanges ?? true,
+          notifyOnTableChanges: notifyOnTableChanges ?? false,
+          notifyOnMusicChanges: notifyOnMusicChanges ?? false,
           canViewSchedule: canViewSchedule ?? true,
           canViewSpeeches: canViewSpeeches ?? false,
+          canViewTableSeating: canViewTableSeating ?? false,
+          canViewMusic: canViewMusic ?? false,
+          canViewCoordinators: canViewCoordinators ?? false,
+          canViewReviews: canViewReviews ?? false,
         })
         .returning();
       
@@ -8953,7 +8961,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     try {
       const { id } = req.params;
-      const { notifyOnScheduleChanges, notifyOnSpeechChanges, canViewSchedule, canViewSpeeches, status } = req.body;
+      const { notifyOnScheduleChanges, notifyOnSpeechChanges, notifyOnTableChanges, notifyOnMusicChanges, canViewSchedule, canViewSpeeches, canViewTableSeating, canViewMusic, canViewCoordinators, canViewReviews, status } = req.body;
       
       // Get current contract to check if status is changing to cancelled
       const [currentContract] = await db.select()
@@ -9002,8 +9010,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
               .set({
                 notifyOnScheduleChanges,
                 notifyOnSpeechChanges,
+                notifyOnTableChanges,
+                notifyOnMusicChanges,
                 canViewSchedule,
                 canViewSpeeches,
+                canViewTableSeating,
+                canViewMusic,
+                canViewCoordinators,
+                canViewReviews,
                 status,
                 updatedAt: new Date(),
               })
@@ -9029,8 +9043,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .set({
           notifyOnScheduleChanges,
           notifyOnSpeechChanges,
+          notifyOnTableChanges,
+          notifyOnMusicChanges,
           canViewSchedule,
           canViewSpeeches,
+          canViewTableSeating,
+          canViewMusic,
+          canViewCoordinators,
+          canViewReviews,
           status,
           updatedAt: new Date(),
         })
@@ -12030,6 +12050,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (!coupleId) return;
     try {
       const [performance] = await db.insert(coupleMusicPerformances).values({ coupleId, ...req.body }).returning();
+      const [cp] = await db.select({ displayName: coupleProfiles.displayName }).from(coupleProfiles).where(eq(coupleProfiles.id, coupleId));
+      await notifyVendorsOfChangeInternal(coupleId, 'music', cp?.displayName || 'Arrangøren', `Ny opptreden lagt til.`);
       res.json(performance);
     } catch (error) {
       console.error("Error creating performance:", error);
@@ -12046,6 +12068,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .set({ ...req.body, updatedAt: new Date() })
         .where(and(eq(coupleMusicPerformances.id, id), eq(coupleMusicPerformances.coupleId, coupleId)))
         .returning();
+      const [cp] = await db.select({ displayName: coupleProfiles.displayName }).from(coupleProfiles).where(eq(coupleProfiles.id, coupleId));
+      await notifyVendorsOfChangeInternal(coupleId, 'music', cp?.displayName || 'Arrangøren', `Opptreden ble oppdatert.`);
       res.json(performance);
     } catch (error) {
       console.error("Error updating performance:", error);
@@ -12060,6 +12084,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { id } = req.params;
       await db.delete(coupleMusicPerformances)
         .where(and(eq(coupleMusicPerformances.id, id), eq(coupleMusicPerformances.coupleId, coupleId)));
+      const [cp] = await db.select({ displayName: coupleProfiles.displayName }).from(coupleProfiles).where(eq(coupleProfiles.id, coupleId));
+      await notifyVendorsOfChangeInternal(coupleId, 'music', cp?.displayName || 'Arrangøren', `En opptreden ble fjernet.`);
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting performance:", error);
@@ -12072,6 +12098,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     if (!coupleId) return;
     try {
       const [setlist] = await db.insert(coupleMusicSetlists).values({ coupleId, ...req.body }).returning();
+      const [cp] = await db.select({ displayName: coupleProfiles.displayName }).from(coupleProfiles).where(eq(coupleProfiles.id, coupleId));
+      await notifyVendorsOfChangeInternal(coupleId, 'music', cp?.displayName || 'Arrangøren', `Ny spilleliste lagt til.`);
       res.json(setlist);
     } catch (error) {
       console.error("Error creating setlist:", error);
@@ -12088,6 +12116,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .set({ ...req.body, updatedAt: new Date() })
         .where(and(eq(coupleMusicSetlists.id, id), eq(coupleMusicSetlists.coupleId, coupleId)))
         .returning();
+      const [cp] = await db.select({ displayName: coupleProfiles.displayName }).from(coupleProfiles).where(eq(coupleProfiles.id, coupleId));
+      await notifyVendorsOfChangeInternal(coupleId, 'music', cp?.displayName || 'Arrangøren', `Spilleliste ble oppdatert.`);
       res.json(setlist);
     } catch (error) {
       console.error("Error updating setlist:", error);
@@ -12102,6 +12132,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { id } = req.params;
       await db.delete(coupleMusicSetlists)
         .where(and(eq(coupleMusicSetlists.id, id), eq(coupleMusicSetlists.coupleId, coupleId)));
+      const [cp] = await db.select({ displayName: coupleProfiles.displayName }).from(coupleProfiles).where(eq(coupleProfiles.id, coupleId));
+      await notifyVendorsOfChangeInternal(coupleId, 'music', cp?.displayName || 'Arrangøren', `En spilleliste ble fjernet.`);
       res.json({ success: true });
     } catch (error) {
       console.error("Error deleting setlist:", error);

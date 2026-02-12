@@ -1,6 +1,6 @@
 # Evendi ↔ CreatorHub Bridge – Fullstendig dokumentasjon
 
-> Sist oppdatert: 12. februar 2026
+> Sist oppdatert: 13. juni 2025
 
 ---
 
@@ -115,12 +115,12 @@ Broen skal gi **sømløs, sanntids dataflyt** mellom arrangør og leverandør �
 │                      │                              │                      │
 │  ┌────────────────┐  │    HTTP med API-nøkkel       │  ┌────────────────┐  │
 │  │/api/creatorhub  │◄──────────────────────────────│  │  Frontend       │  │
-│  │ 39 endepunkter  │  │                              │  │  kaller         │  │
+│  │ 42 endepunkter  │  │                              │  │  kaller         │  │
 │  └────────────────┘  │                              │  │  /api/evendi    │  │
 │                      │                              │  └────────────────┘  │
 │  ┌────────────────┐  │    HTTP med API-nøkkel       │  ┌────────────────┐  │
 │  │  Frontend       │──────────────────────────────►│  │/api/evendi      │  │
-│  │  kaller         │  │                              │  │ 62 endepunkter  │  │
+│  │  kaller         │  │                              │  │ 65 endepunkter  │  │
 │  │  getApiUrl()    │  │                              │  │ + catch-all     │  │
 │  └────────────────┘  │                              │  └────────────────┘  │
 └─────────────────────┘                              └──────────────────────┘
@@ -200,7 +200,7 @@ Leverandør endrer hendelse i CreatorHub
 
 ## 3. HVA – Produkt (nåværende status)
 
-### Broet i dag (18 domener)
+### Broet i dag (21 domener)
 
 | Domene | Retning | Evendi-endepunkt | CreatorHub-endepunkt |
 |---|---|---|---|
@@ -222,10 +222,15 @@ Leverandør endrer hendelse i CreatorHub
 | **Leverandør-prosjekt-bro** | CH → Evendi | Delt DB | `/api/evendi/vendor-project-bridge` |
 | **Vær / Lokasjon / Reise** | Begge veier | `/api/weather/*` | `/api/evendi/weather-location/*` |
 | **Invitasjoner** | CH → Evendi | `/api/couple/wedding-invites/*` | `/api/evendi/couple/:coupleId/wedding-invites` |
+| **Taler / Program** ✨ | CH → Evendi | `/api/creatorhub/speeches/:coupleId` | `/api/evendi/speeches/:coupleId` |
+| **Bordplassering** ✨ | CH → Evendi | `/api/creatorhub/tables/:coupleId` | `/api/evendi/tables/:coupleId` |
+| **Musikk / Spillelister** ✨ | CH → Evendi | `/api/creatorhub/music/:coupleId` | `/api/evendi/music/:coupleId` |
+| **Koordinatorer** ✨ | CH → Evendi | `/api/creatorhub/coordinators/:coupleId` | `/api/evendi/coordinators/:coupleId` |
+| **Anmeldelser** ✨ | CH → Evendi | `/api/creatorhub/reviews/:vendorId` | `/api/evendi/reviews/:vendorId` |
 
 ### Tellersammendrag
-- **Evendi → CreatorHub-ruter:** 39 endepunkter under `/api/creatorhub/*`
-- **CreatorHub → Evendi-ruter:** 62 dedikerte endepunkter + 1 catch-all proxy under `/api/evendi/*`
+- **Evendi → CreatorHub-ruter:** 42 endepunkter under `/api/creatorhub/*`
+- **CreatorHub → Evendi-ruter:** 65 dedikerte endepunkter + 1 catch-all proxy under `/api/evendi/*`
 - **Arrangementstyper:** 17 (6 B2C + 11 B2B) definert i `EVENT_TYPE_CONFIGS`
 - **Leverandørkategorier:** 27 slugs i `VENDOR_CATEGORIES`
 - **Kultursynk:** 17 kulturelle nøkler (norsk, sikh, indisk, pakistansk, … annet)
@@ -237,7 +242,7 @@ Leverandør endrer hendelse i CreatorHub
 
 ### Komponentkart
 
-CreatorHub har **10 frontend-komponenter** som aktivt konsumerer Evendi bridge-data:
+CreatorHub har **15 frontend-komponenter** som aktivt konsumerer Evendi bridge-data:
 
 ```
 CreatorHub Frontend (frontend/client/src/)
@@ -254,10 +259,33 @@ CreatorHub Frontend (frontend/client/src/)
 │   │   │           /api/evendi/important-people?coupleId=X
 │   │   │           /api/evendi/important-people/:id (PUT/POST/DELETE)
 │   │   │
-│   │   └── EvendiOfferManager.tsx        ← Tilbud/kontrakter (544 linjer)
-│   │         Kall: /api/evendi/offers (GET/POST/DELETE)
-│   │               /api/evendi/contracts
-│   │               /api/evendi/contacts
+│   │   ├── EvendiOfferManager.tsx        ← Tilbud/kontrakter (544 linjer)
+│   │   │     Kall: /api/evendi/offers (GET/POST/DELETE)
+│   │   │           /api/evendi/contracts
+│   │   │           /api/evendi/contacts
+│   │   │
+│   │   ├── EvendiSpeeches.tsx            ← ✨ Taler/programpunkter (read-only)
+│   │   │     Kall: /api/evendi/speeches/:coupleId
+│   │   │     Feature-gated: isEventFeatureEnabled(eventType, 'speeches')
+│   │   │     Viser: Talerliste, rekkefølge, varighet, roller, tidspunkt
+│   │   │
+│   │   ├── EvendiSeating.tsx             ← ✨ Bordplassering (read-only)
+│   │   │     Kall: /api/evendi/tables/:coupleId
+│   │   │     Feature-gated: isEventFeatureEnabled(eventType, 'seating')
+│   │   │     Viser: Bord med kategorier, gjester per bord, setekapasitet
+│   │   │
+│   │   ├── EvendiMusic.tsx               ← ✨ Musikk/spillelister (read-only)
+│   │   │     Kall: /api/evendi/music/:coupleId
+│   │   │     Feature-gated: isEventFeatureEnabled(eventType, 'speeches')
+│   │   │     Viser: Musikkønsker, opptredener, spillelister, Spotify/YouTube
+│   │   │
+│   │   ├── EvendiCoordinators.tsx        ← ✨ Koordinatorer/Toastmastere (read-only)
+│   │   │     Kall: /api/evendi/coordinators/:coupleId
+│   │   │     Viser: Koordinatorliste med roller, tilganger, sist aktiv
+│   │   │
+│   │   └── EvendiReviews.tsx             ← ✨ Anmeldelser (read-only)
+│   │         Kall: /api/evendi/reviews/:vendorId
+│   │         Viser: Gjennomsnittsvurdering, fordeling, anmeldelseskort
 │   │
 │   ├── chat/
 │   │   ├── UniversalChatWidget.tsx       ← Arrangør↔Leverandør chat
@@ -278,9 +306,13 @@ CreatorHub Frontend (frontend/client/src/)
 │   │               /api/evendi/weather-location/sync-from-project/:id
 │   │
 │   ├── wedding/
-│   │   ├── WeddingTimelineAdmin.tsx      ← Tidslinje-administrasjon (hovedkomponent)
+│   │   ├── WeddingTimelineAdmin.tsx      ← Tidslinje-administrasjon (hovedkomponent, 11 tabs)
 │   │   │     Kall: /api/evendi/traditions-bridge?coupleId=X
-│   │   │     Import: EvendiImportantPeople
+│   │   │     Import: EvendiImportantPeople, EvendiSpeeches, EvendiSeating,
+│   │   │             EvendiMusic, EvendiCoordinators, EvendiReviews
+│   │   │     Tabs: Oversikt | Hendelser | Personer | Taler | Bordplassering |
+│   │   │           Musikk | Koordinatorer | Anmeldelser | Klienttilgang |
+│   │   │           Innstillinger | Google Drive Backup
 │   │   │     Bruker: isEventFeatureEnabled() for feature-gating
 │   │   │
 │   │   ├── WeddingTimelineOverview.tsx   ← Tidslinjeoversikt
@@ -329,17 +361,29 @@ if (isEventFeatureEnabled(eventType, 'seating'))  → vis bordplassering
 if (isEventFeatureEnabled(eventType, 'photoplan')) → vis fotoplan
 ```
 
-### DB-felt som allerede ligger klart
+### DB-felt for tilgangsstyring
 
-Tabellen `couple_vendor_contracts` har allerede kolonner for tilgangsstyring:
+Tabellen `couple_vendor_contracts` har kolonner for tilgangsstyring:
 ```sql
-can_view_schedule        -- Leverandør kan se tidslinje
-can_view_speeches        -- Leverandør kan se taler/program ← IKKE KOBLET TIL FRONTEND
-can_view_table_seating   -- Leverandør kan se bordplassering ← IKKE KOBLET TIL FRONTEND
-notify_on_schedule_changes -- Push-varsel ved tidslinjeendring
-notify_on_speech_changes   -- Push-varsel ved taleendring ← IKKE KOBLET
-notify_on_table_changes    -- Push-varsel ved bordendring ← IKKE KOBLET
+-- Tilgang
+can_view_schedule        -- ✅ Leverandør kan se tidslinje
+can_view_speeches        -- ✅ Leverandør kan se taler/program
+can_view_table_seating   -- ✅ Leverandør kan se bordplassering
+can_view_music           -- ✅ Leverandør kan se musikkplan (NY)
+can_view_coordinators    -- ✅ Leverandør kan se koordinatorer (NY)
+can_view_reviews         -- ✅ Leverandør kan se anmeldelser (NY)
+
+-- Push-varsler
+notify_on_schedule_changes -- ✅ Push-varsel ved tidslinjeendring
+notify_on_speech_changes   -- ✅ Push-varsel ved taleendring
+notify_on_table_changes    -- ✅ Push-varsel ved bordendring
+notify_on_music_changes    -- ✅ Push-varsel ved musikkendring (NY)
 ```
+
+Alle felt er koblet til:
+1. **Contract POST/PATCH** – oppretting og oppdatering av avtaler
+2. **CreatorHub proxy** – tilgangssjekk i backend-endepunkter
+3. **notifyVendorsOfChangeInternal()** – push-varsler ved endringer (4 typer: schedule, speech, table_seating, music)
 
 ---
 
@@ -363,11 +407,15 @@ UniversalDashboard → /:profession-dashboard-material
   │     │
   │     └── Åpne tidslinje ──→ [Tidslinje-tab]
   │
-  ├── [Tidslinje-tab] ─────→ WeddingTimelineAdmin
+  ├── [Tidslinje-tab] ─────→ WeddingTimelineAdmin (11 tabs)
   │     ├── Tidslinjeoversikt (events fra Evendi)
   │     ├── Viktige personer (EvendiImportantPeople)
   │     ├── Kulturtype fra traditions bridge
-  │     └── ⚠️ MANGLER: Taler, Bordplassering
+  │     ├── ✅ Taler/Program (EvendiSpeeches)
+  │     ├── ✅ Bordplassering (EvendiSeating)
+  │     ├── ✅ Musikk/Spillelister (EvendiMusic)
+  │     ├── ✅ Koordinatorer (EvendiCoordinators)
+  │     └── ✅ Anmeldelser (EvendiReviews)
   │
   ├── [Kommunikasjon-tab] ──→ UniversalChatWidget
   │     ├── Samtaler med arrangør
@@ -445,28 +493,25 @@ WeddingTimelineAdmin.tsx:
 
 ---
 
-## 6. GAP-ANALYSE – Ikke broet ennå
+## 6. GAP-ANALYSE – Status per domene
 
-### Høy prioritet – klar for implementering
+### ✅ Implementert (alle 3 faser fullført)
 
-| Domene | Evendi-endepunkt | DB-felt klart? | CreatorHub-komponent | Status |
+| Domene | Evendi-endepunkt | DB-felt | CreatorHub-komponent | Status |
 |---|---|---|---|---|
-| **Taler / Program** | `/api/speeches` | ✅ `can_view_speeches`, `notify_on_speech_changes` | ❌ Mangler `EvendiSpeeches.tsx` | Klar for impl. |
-| **Bordplassering** | `/api/couple/tables` | ✅ `can_view_table_seating`, `notify_on_table_changes` | ❌ Mangler `EvendiSeating.tsx` | Klar for impl. |
+| **Taler / Program** | `/api/creatorhub/speeches/:coupleId` | ✅ `can_view_speeches`, `notify_on_speech_changes` | ✅ `EvendiSpeeches.tsx` | ✅ Fase 1 |
+| **Bordplassering** | `/api/creatorhub/tables/:coupleId` | ✅ `can_view_table_seating`, `notify_on_table_changes` | ✅ `EvendiSeating.tsx` | ✅ Fase 2 |
+| **Musikk / Spillelister** | `/api/creatorhub/music/:coupleId` | ✅ `can_view_music`, `notify_on_music_changes` | ✅ `EvendiMusic.tsx` | ✅ Fase 3 |
+| **Koordinatorer** | `/api/creatorhub/coordinators/:coupleId` | ✅ `can_view_coordinators` | ✅ `EvendiCoordinators.tsx` | ✅ Fase 3 |
+| **Anmeldelser** | `/api/creatorhub/reviews/:vendorId` | ✅ `can_view_reviews` | ✅ `EvendiReviews.tsx` | ✅ Fase 3 |
 
-**Begge** har:
-- Evendi API-endepunkter som fungerer ✅
-- DB-kolonner for tilgangsstyring i `couple_vendor_contracts` ✅
-- Feature-flagg i `event-types.ts` (`speeches: true` for 15/17, `seating: true` for 13/17) ✅
-- **Mangler kun**: CreatorHub backend-endepunkt + frontend-komponent
-
-### Medium prioritet
-
-| Domene | Evendi-endepunkt | DB-felt? | CreatorHub-komponent | Status |
-|---|---|---|---|---|
-| **Musikk / Spillelister** | `/api/couple/music/*` | ❌ Ingen DB-felt | ❌ Mangler | Trenger DB-migrasjon |
-| **Koordinatorinfo** | `/api/couple/coordinators` | ❌ Ingen DB-felt | ❌ Mangler | Trenger DB-migrasjon |
-| **Anmeldelser** | `/api/couple/reviews` | ❌ Ingen DB-felt | ❌ Mangler | Trenger DB-migrasjon |
+Alle domener har:
+- Evendi bridge-endepunkt (`/api/creatorhub/*`) med `authenticateApiKey`
+- CreatorHub proxy-endepunkt (`/api/evendi/*`) med contract-sjekk
+- Frontend-komponent i `components/evendi/`
+- Tab i `WeddingTimelineAdmin` (11 tabs totalt)
+- Feature-gating via `isEventFeatureEnabled()` der relevant
+- Push-varsler via `notifyVendorsOfChangeInternal()` (schedule, speech, table_seating, music)
 
 ### Lav prioritet
 
@@ -494,8 +539,10 @@ WeddingTimelineAdmin.tsx:
 | Fil | Rolle |
 |---|---|
 | [`shared/event-types.ts`](../shared/event-types.ts) | **Kjerneregisteret** — 17 event-typer, features, roller, 27 vendor-kategorier, Q&A-spill, event↔kategori-mapping |
-| `server/creatorhub-routes.ts` | 39 endepunkter CreatorHub kaller |
-| `server/routes.ts` | Vær-proxy, leveransesporing, leverandør-bro-ruter, speeches, tables |
+| `server/creatorhub-routes.ts` | 42 endepunkter CreatorHub kaller (inkl. speeches, tables, music, coordinators, reviews) |
+| `server/routes.ts` | Vær-proxy, leveransesporing, leverandør-bro-ruter, speeches, tables, musikk + `notifyVendorsOfChangeInternal()` (4 change types) |
+| `shared/schema.ts` | Drizzle ORM-skjema med tilgangsfelter i `coupleVendorContracts` |
+| `migrations/0037_add_bridge_access_fields.sql` | DB-migrasjon for `can_view_music`, `can_view_coordinators`, `can_view_reviews`, `notify_on_music_changes` |
 | `client/components/VendorCreatorHubBridge.tsx` | Leverandør ser CreatorHub-prosjekter |
 | `client/lib/api-weather-location-bridge.ts` | Vær/lokasjon/reise-hjelpefunksjoner |
 | `client/screens/DeliveryAccessScreen.tsx` | Arrangør-leveransetilgang |
@@ -506,36 +553,75 @@ WeddingTimelineAdmin.tsx:
 | `frontend/client/src/lib/evendi-api.ts` | **API-klient** — typer, helpers, feature-gating, auth, React Query keys |
 | `frontend/client/src/components/evendi/EvendiImportantPeople.tsx` | Viktige personer CRUD (599 linjer) |
 | `frontend/client/src/components/evendi/EvendiOfferManager.tsx` | Tilbud/kontrakter (544 linjer) |
+| `frontend/client/src/components/evendi/EvendiSpeeches.tsx` | ✨ Taler/programpunkter (read-only, feature-gated) |
+| `frontend/client/src/components/evendi/EvendiSeating.tsx` | ✨ Bordplassering (read-only, feature-gated) |
+| `frontend/client/src/components/evendi/EvendiMusic.tsx` | ✨ Musikk/spillelister (read-only, feature-gated) |
+| `frontend/client/src/components/evendi/EvendiCoordinators.tsx` | ✨ Koordinatorer/toastmastere (read-only) |
+| `frontend/client/src/components/evendi/EvendiReviews.tsx` | ✨ Anmeldelser med vurderingsfordeling (read-only) |
 | `frontend/client/src/components/chat/UniversalChatWidget.tsx` | Arrangør↔Leverandør chat |
 | `frontend/client/src/components/chat/FullscreenChatWidget.tsx` | Fullskjerm chatvisning |
 | `frontend/client/src/components/project/ProjectCreationWithMemoryCards.tsx` | Prosjektoppretting med traditions/photo-shots/weather bridge |
-| `frontend/client/src/components/wedding/WeddingTimelineAdmin.tsx` | Tidslinje-administrasjon (hovednav for bridge-data) |
+| `frontend/client/src/components/wedding/WeddingTimelineAdmin.tsx` | Tidslinje-administrasjon (11 tabs, hovednav for bridge-data) |
 | `frontend/client/src/components/wedding/WeddingTimelineEditor.tsx` | Editor med speech-type events |
 | `frontend/client/src/components/universal/UniversalDashboard.tsx` | Hoveddashboard med tab-struktur |
 | `frontend/client/src/components/universal/UniversalShowcase.tsx` | Showcase → Delivery bridge |
-| `backend/server/index.ts` | 62 `/api/evendi/*`-endepunkter + catch-all proxy |
+| `frontend/client/src/hooks/use-toast.ts` | Toast-varslingssystem (MUI Snackbar) |
+| `frontend/client/src/components/ui/toaster.tsx` | Toast-renderer |
+| `backend/server/index.ts` | 65 `/api/evendi/*`-endepunkter + catch-all proxy |
 | `backend/server/tradition-checklists.ts` | Tradisjonsspesifikke sjekklisteelementer (17 kulturer) |
 
 ---
 
-## 8. ANBEFALING – Implementeringsplan
+## 8. IMPLEMENTERINGSLOGG – Alle faser fullført
 
-### Fase 1: Taler / Programpunkter (høyest impact, lavest innsats)
+### ✅ Fase 1: Taler / Programpunkter
 
-Alt grunnlag er på plass (DB-felt, Evendi API, feature-flagg). Trenger:
+1. **`server/creatorhub-routes.ts`** → `GET /api/creatorhub/speeches/:coupleId` (henter fra `speeches`-tabell, filtrerer private felt)
+2. **`backend/server/index.ts`** → `GET /api/evendi/speeches/:coupleId` med contract-sjekk (`can_view_speeches`)
+3. **`components/evendi/EvendiSpeeches.tsx`** → Talerliste med navn, rolle, varighet, rekkefølge, tidspunkt
+4. **`WeddingTimelineAdmin.tsx`** → Tab 3 (Taler/Program), feature-gated bak `speeches`
 
-1. **`server/creatorhub-routes.ts`** → Nytt endepunkt `GET /api/creatorhub/speeches/:coupleId`
-2. **`backend/server/index.ts`** → Nytt endepunkt `GET /api/evendi/speeches/:coupleId` med contract-sjekk
-3. **`components/evendi/EvendiSpeeches.tsx`** → Ny komponent for visning
-4. **`WeddingTimelineAdmin.tsx`** → Importer og vis `EvendiSpeeches` gated bak `isEventFeatureEnabled('speeches')`
+### ✅ Fase 2: Bordplassering
 
-### Fase 2: Bordplassering (samme mønster)
+1. **`server/creatorhub-routes.ts`** → `GET /api/creatorhub/tables/:coupleId` (henter fra `weddingTables` + `tableGuestAssignments` + `weddingGuests`)
+2. **`backend/server/index.ts`** → `GET /api/evendi/tables/:coupleId` med contract-sjekk (`can_view_table_seating`)
+3. **`components/evendi/EvendiSeating.tsx`** → Bordkart med kategorier, gjester, kapasitet
+4. **`WeddingTimelineAdmin.tsx`** → Tab 4 (Bordplassering), feature-gated bak `seating`
 
-1. **`server/creatorhub-routes.ts`** → `GET /api/creatorhub/tables/:coupleId`
-2. **`backend/server/index.ts`** → `GET /api/evendi/tables/:coupleId` med contract-sjekk
-3. **`components/evendi/EvendiSeating.tsx`** → Ny komponent for bordvisning
-4. **`WeddingTimelineAdmin.tsx`** → Importer og vis `EvendiSeating` gated bak `isEventFeatureEnabled('seating')`
+### ✅ Fase 3: Musikk / Koordinatorer / Anmeldelser
 
-### Fase 3: Musikk / Koordinator / Anmeldelser
+**DB-migrasjon:** `migrations/0037_add_bridge_access_fields.sql`
+- `can_view_music`, `notify_on_music_changes`, `can_view_coordinators`, `can_view_reviews`
 
-Krever DB-migrasjon for tilgangsfelter i `couple_vendor_contracts` + nye endepunkter og komponenter.
+**Musikk:**
+1. **`server/creatorhub-routes.ts`** → `GET /api/creatorhub/music/:coupleId` (performances + setlists + preferences)
+2. **`backend/server/index.ts`** → `GET /api/evendi/music/:coupleId` med contract-sjekk (`can_view_music`)
+3. **`components/evendi/EvendiMusic.tsx`** → Musikkønsker, opptredener, spillelister med Spotify/YouTube-lenker
+4. **`WeddingTimelineAdmin.tsx`** → Tab 5 (Musikk), feature-gated bak `speeches`
+
+**Koordinatorer:**
+1. **`server/creatorhub-routes.ts`** → `GET /api/creatorhub/coordinators/:coupleId` (aktive koordinatorinvitasjoner)
+2. **`backend/server/index.ts`** → `GET /api/evendi/coordinators/:coupleId` med contract-sjekk (`can_view_coordinators`)
+3. **`components/evendi/EvendiCoordinators.tsx`** → Koordinatorliste med roller, tilganger, sist aktiv
+4. **`WeddingTimelineAdmin.tsx`** → Tab 6 (Koordinatorer)
+
+**Anmeldelser:**
+1. **`server/creatorhub-routes.ts`** → `GET /api/creatorhub/reviews/:vendorId` (godkjente anmeldelser + leverandørsvar)
+2. **`backend/server/index.ts`** → `GET /api/evendi/reviews/:vendorId` (ingen contract-sjekk, offentlige data)
+3. **`components/evendi/EvendiReviews.tsx`** → Vurderingsfordeling, anmeldelseskort med leverandørsvar
+4. **`WeddingTimelineAdmin.tsx`** → Tab 7 (Anmeldelser)
+
+### Push-varsler (notifyVendorsOfChangeInternal)
+
+Konfigurasjonsdrevet helper i `routes.ts` med 4 endringstyper:
+
+| Type | Trigger | Tittel | DB-felt |
+|---|---|---|---|
+| `schedule` | Tidslinje CRUD | Programendring | `notifyOnScheduleChanges` |
+| `speech` | Tale CRUD | Talelisteendring | `notifyOnSpeechChanges` |
+| `table_seating` | Bord/gjesteplassering CRUD | Bordplasseringsendring | `notifyOnTableChanges` |
+| `music` | Opptreden/spilleliste CRUD | Musikkendring | `notifyOnMusicChanges` |
+
+### Kontraktendepunkter
+
+`POST /api/couple/vendor-contracts` og `PATCH /api/couple/vendor-contracts/:id` håndterer nå alle 10 tilgangs-/varselfelter.

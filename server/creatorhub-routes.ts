@@ -37,6 +37,12 @@ import {
   weddingGuests,
   tableGuestAssignments,
   coupleVendorContracts,
+  coupleMusicPerformances,
+  coupleMusicSetlists,
+  coupleMusicPreferences,
+  coordinatorInvitations,
+  vendorReviews,
+  vendorReviewResponses,
 } from "@shared/schema";
 import { eq, and, desc, sql, gte, lte, inArray, or } from "drizzle-orm";
 
@@ -1509,6 +1515,188 @@ export function registerCreatorhubRoutes(app: Express) {
     } catch (err: any) {
       console.error("CreatorHub tables bridge error:", err);
       return res.status(500).json({ error: "Failed to fetch tables" });
+    }
+  });
+
+  // ===============================================
+  // MUSIC BRIDGE — GET /api/creatorhub/music/:coupleId
+  // ===============================================
+
+  /**
+   * GET /api/creatorhub/music/:coupleId
+   * Returns performances, setlists, and preferences for the organizer.
+   * Used by CreatorHub vendors (e.g. musicians, DJs) to see planned music.
+   */
+  app.get("/api/creatorhub/music/:coupleId", authenticateApiKey, async (req: CreatorhubRequest, res: Response) => {
+    try {
+      const { coupleId } = req.params;
+
+      // Verify organizer exists
+      const [organizer] = await db.select({
+        displayName: coupleProfiles.displayName,
+        eventType: coupleProfiles.eventType,
+      }).from(coupleProfiles).where(eq(coupleProfiles.id, coupleId));
+
+      if (!organizer) {
+        return res.status(404).json({ error: "Organizer not found" });
+      }
+
+      const [performances, setlists, preferencesRows] = await Promise.all([
+        db.select().from(coupleMusicPerformances)
+          .where(eq(coupleMusicPerformances.coupleId, coupleId))
+          .orderBy(coupleMusicPerformances.date),
+        db.select().from(coupleMusicSetlists)
+          .where(eq(coupleMusicSetlists.coupleId, coupleId)),
+        db.select().from(coupleMusicPreferences)
+          .where(eq(coupleMusicPreferences.coupleId, coupleId)),
+      ]);
+
+      const preferences = preferencesRows[0] || null;
+
+      return res.json({
+        performances,
+        setlists,
+        preferences: preferences ? {
+          spotifyPlaylistUrl: preferences.spotifyPlaylistUrl,
+          youtubePlaylistUrl: preferences.youtubePlaylistUrl,
+          entranceSong: preferences.entranceSong,
+          firstDanceSong: preferences.firstDanceSong,
+          lastSong: preferences.lastSong,
+          doNotPlay: preferences.doNotPlay,
+          additionalNotes: preferences.additionalNotes,
+        } : null,
+        coupleId,
+        eventType: organizer.eventType || "wedding",
+        organizerName: organizer.displayName,
+        totalPerformances: performances.length,
+        totalSetlists: setlists.length,
+      });
+    } catch (err: any) {
+      console.error("CreatorHub music bridge error:", err);
+      return res.status(500).json({ error: "Failed to fetch music data" });
+    }
+  });
+
+  // ===============================================
+  // COORDINATORS BRIDGE — GET /api/creatorhub/coordinators/:coupleId
+  // ===============================================
+
+  /**
+   * GET /api/creatorhub/coordinators/:coupleId
+   * Returns coordinator/toastmaster invitations for the organizer.
+   * Vendors can see who else is involved in coordinating the event.
+   */
+  app.get("/api/creatorhub/coordinators/:coupleId", authenticateApiKey, async (req: CreatorhubRequest, res: Response) => {
+    try {
+      const { coupleId } = req.params;
+
+      // Verify organizer exists
+      const [organizer] = await db.select({
+        displayName: coupleProfiles.displayName,
+        eventType: coupleProfiles.eventType,
+      }).from(coupleProfiles).where(eq(coupleProfiles.id, coupleId));
+
+      if (!organizer) {
+        return res.status(404).json({ error: "Organizer not found" });
+      }
+
+      const invitations = await db.select({
+        id: coordinatorInvitations.id,
+        name: coordinatorInvitations.name,
+        roleLabel: coordinatorInvitations.roleLabel,
+        email: coordinatorInvitations.email,
+        canViewSpeeches: coordinatorInvitations.canViewSpeeches,
+        canViewSchedule: coordinatorInvitations.canViewSchedule,
+        canEditSpeeches: coordinatorInvitations.canEditSpeeches,
+        canEditSchedule: coordinatorInvitations.canEditSchedule,
+        status: coordinatorInvitations.status,
+        lastAccessedAt: coordinatorInvitations.lastAccessedAt,
+        createdAt: coordinatorInvitations.createdAt,
+      })
+        .from(coordinatorInvitations)
+        .where(and(
+          eq(coordinatorInvitations.coupleId, coupleId),
+          eq(coordinatorInvitations.status, "active")
+        ))
+        .orderBy(desc(coordinatorInvitations.createdAt));
+
+      return res.json({
+        coordinators: invitations,
+        coupleId,
+        eventType: organizer.eventType || "wedding",
+        organizerName: organizer.displayName,
+        totalCoordinators: invitations.length,
+      });
+    } catch (err: any) {
+      console.error("CreatorHub coordinators bridge error:", err);
+      return res.status(500).json({ error: "Failed to fetch coordinators" });
+    }
+  });
+
+  // ===============================================
+  // REVIEWS BRIDGE — GET /api/creatorhub/reviews/:vendorId
+  // ===============================================
+
+  /**
+   * GET /api/creatorhub/reviews/:vendorId
+   * Returns approved reviews for a vendor, visible to other vendors (e.g. for reference).
+   * Also used by organizers viewing vendor profiles.
+   */
+  app.get("/api/creatorhub/reviews/:vendorId", authenticateApiKey, async (req: CreatorhubRequest, res: Response) => {
+    try {
+      const { vendorId } = req.params;
+
+      // Get approved reviews with response
+      const reviews = await db.select({
+        id: vendorReviews.id,
+        rating: vendorReviews.rating,
+        title: vendorReviews.title,
+        body: vendorReviews.body,
+        isAnonymous: vendorReviews.isAnonymous,
+        createdAt: vendorReviews.createdAt,
+      })
+        .from(vendorReviews)
+        .where(and(
+          eq(vendorReviews.vendorId, vendorId),
+          eq(vendorReviews.isApproved, true)
+        ))
+        .orderBy(desc(vendorReviews.createdAt));
+
+      // Get vendor responses for these reviews
+      const reviewIds = reviews.map(r => r.id);
+      let responses: any[] = [];
+      if (reviewIds.length > 0) {
+        responses = await db.select({
+          reviewId: vendorReviewResponses.reviewId,
+          body: vendorReviewResponses.body,
+          createdAt: vendorReviewResponses.createdAt,
+        })
+          .from(vendorReviewResponses)
+          .where(inArray(vendorReviewResponses.reviewId, reviewIds));
+      }
+
+      const responsesByReview: Record<string, any> = {};
+      responses.forEach(r => { responsesByReview[r.reviewId] = r; });
+
+      const reviewsWithResponses = reviews.map(r => ({
+        ...r,
+        vendorResponse: responsesByReview[r.id] || null,
+      }));
+
+      // Calculate average rating
+      const avgRating = reviews.length > 0
+        ? reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+        : 0;
+
+      return res.json({
+        reviews: reviewsWithResponses,
+        vendorId,
+        totalReviews: reviews.length,
+        averageRating: Math.round(avgRating * 10) / 10,
+      });
+    } catch (err: any) {
+      console.error("CreatorHub reviews bridge error:", err);
+      return res.status(500).json({ error: "Failed to fetch reviews" });
     }
   });
 
