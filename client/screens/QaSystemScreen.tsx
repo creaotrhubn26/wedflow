@@ -37,8 +37,11 @@ import {
 import {
   getGameImage,
   getGameAccent,
+  getQaSessionIcon,
   SHOE_TURN_IMAGES,
   QA_GAMES_LOGO,
+  ALL_DEFAULT_GAME_ICONS,
+  GAME_ACCENT_COLORS,
 } from "@/lib/qa-game-icons";
 
 // ─────────────────────── Tabs ───────────────────────
@@ -364,7 +367,7 @@ export default function QaSystemScreen() {
     );
   };
 
-  const handleUpdateSetting = async (key: keyof QaSettings, value: boolean | number) => {
+  const handleUpdateSetting = async (key: keyof QaSettings, value: boolean | number | string | Record<string, string> | undefined) => {
     if (!session) return;
     const currentSettings = getSettings(session);
     const updated: QaSession = {
@@ -373,6 +376,24 @@ export default function QaSystemScreen() {
     };
     await saveSession(updated);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  };
+
+  /** Update a single key inside a nested settings record (customGameIcons, customGameAccents). */
+  const handleUpdateGameIconSetting = async (
+    settingsKey: "customGameIcons" | "customGameAccents",
+    gameMode: string,
+    value: string | undefined,
+  ) => {
+    if (!session) return;
+    const currentSettings = getSettings(session);
+    const current = currentSettings[settingsKey] ?? {};
+    const next = { ...current };
+    if (value === undefined) {
+      delete next[gameMode];
+    } else {
+      next[gameMode] = value;
+    }
+    await handleUpdateSetting(settingsKey, Object.keys(next).length > 0 ? next : undefined);
   };
 
   const handleAddGameScore = async (score: GameScore) => {
@@ -668,7 +689,7 @@ export default function QaSystemScreen() {
     >
       {/* ── Event Type Banner ── */}
       <View style={[styles.eventBanner, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}>
-        <Image source={QA_GAMES_LOGO} style={{ width: 40, height: 40, borderRadius: 8 }} resizeMode="cover" />
+        <Image source={getQaSessionIcon(getSettings(session).customQaIcon)} style={{ width: 40, height: 40, borderRadius: 8 }} resizeMode="cover" />
         <View style={{ flex: 1, marginLeft: Spacing.sm }}>
           <ThemedText style={[styles.eventBannerTitle, { color: theme.text }]}>
             Q&A – {config.labelNo}
@@ -1128,6 +1149,83 @@ export default function QaSystemScreen() {
             </View>
           )}
 
+          {/* ── Icon & Accent Customization ── */}
+          {hasGames && (
+            <View style={[styles.adminControls, { backgroundColor: theme.backgroundDefault, borderColor: theme.border, marginTop: Spacing.md }]}>
+              <ThemedText style={[styles.settingsSectionTitle, { color: theme.text }]}>
+                Tilpass ikoner og farger
+              </ThemedText>
+              <ThemedText style={{ color: theme.textSecondary, fontSize: 12, marginBottom: Spacing.md }}>
+                Endre spillikoner og aksentfarger. Legg inn en bilde-URL for egendefinert ikon.
+              </ThemedText>
+
+              {availableGames.map((g) => {
+                const currentIcon = getSettings(session).customGameIcons?.[g.mode];
+                const currentAccent = getSettings(session).customGameAccents?.[g.mode] ?? getGameAccent(g.mode);
+                return (
+                  <View key={g.mode} style={[styles.iconCustomRow, { borderBottomColor: theme.border }]}>
+                    <Image
+                      source={getGameImage(g.mode, getSettings(session).customGameIcons)}
+                      style={{ width: 40, height: 40, borderRadius: 8 }}
+                    />
+                    <View style={{ flex: 1, marginLeft: Spacing.md }}>
+                      <ThemedText style={{ color: theme.text, fontWeight: "600", fontSize: 14 }}>
+                        {g.labelNo}
+                      </ThemedText>
+                      <ThemedText style={{ color: theme.textMuted, fontSize: 11 }}>
+                        {currentIcon ? "Egendefinert ikon" : "Standard ikon"}
+                      </ThemedText>
+                    </View>
+                    {/* Accent color indicator */}
+                    <Pressable
+                      onPress={() => {
+                        // Cycle through available accent colors
+                        const colors = Object.values(GAME_ACCENT_COLORS);
+                        const idx = colors.indexOf(currentAccent);
+                        const next = colors[(idx + 1) % colors.length];
+                        handleUpdateGameIconSetting("customGameAccents", g.mode, next);
+                      }}
+                      style={[styles.accentDot, { backgroundColor: currentAccent }]}
+                    />
+                    {/* Reset icon */}
+                    {currentIcon && (
+                      <Pressable
+                        onPress={() => handleUpdateGameIconSetting("customGameIcons", g.mode, undefined)}
+                        style={{ padding: Spacing.xs }}
+                      >
+                        <EvendiIcon name="x" size={16} color={theme.textMuted} />
+                      </Pressable>
+                    )}
+                  </View>
+                );
+              })}
+
+              {/* Custom Q&A session icon */}
+              <View style={[styles.iconCustomRow, { borderBottomColor: "transparent" }]}>
+                <Image
+                  source={getQaSessionIcon(getSettings(session).customQaIcon)}
+                  style={{ width: 40, height: 40, borderRadius: 8 }}
+                />
+                <View style={{ flex: 1, marginLeft: Spacing.md }}>
+                  <ThemedText style={{ color: theme.text, fontWeight: "600", fontSize: 14 }}>
+                    Q&A Hovedikon
+                  </ThemedText>
+                  <ThemedText style={{ color: theme.textMuted, fontSize: 11 }}>
+                    {getSettings(session).customQaIcon ? "Egendefinert" : "Standard logo"}
+                  </ThemedText>
+                </View>
+                {getSettings(session).customQaIcon && (
+                  <Pressable
+                    onPress={() => handleUpdateSetting("customQaIcon", undefined)}
+                    style={{ padding: Spacing.xs }}
+                  >
+                    <EvendiIcon name="x" size={16} color={theme.textMuted} />
+                  </Pressable>
+                )}
+              </View>
+            </View>
+          )}
+
           {/* Admin filter pills */}
           <ScrollView
             horizontal
@@ -1229,7 +1327,7 @@ function GamesTab({
   onAddScore: (score: GameScore) => Promise<void>;
 }) {
   const game = games[selectedGameIndex] || games[0];
-  const accent = getGameAccent(game.mode);
+  const accent = getGameAccent(game.mode, settings.customGameAccents);
   const presetQuestions = getPresetQuestions(game.mode);
 
   // Score tracking
@@ -1348,7 +1446,7 @@ function GamesTab({
           >
             {games.map((g, i) => {
               const isActive = i === selectedGameIndex;
-              const accent = getGameAccent(g.mode);
+              const accent = getGameAccent(g.mode, settings.customGameAccents);
               return (
                 <Pressable
                   key={g.mode}
@@ -1365,7 +1463,7 @@ function GamesTab({
                   ]}
                 >
                   <Image
-                    source={getGameImage(g.mode)}
+                    source={getGameImage(g.mode, settings.customGameIcons)}
                     style={styles.gamePickerImage}
                     resizeMode="cover"
                   />
@@ -1397,7 +1495,7 @@ function GamesTab({
           style={[styles.gameCard, { backgroundColor: theme.backgroundDefault, borderColor: theme.border }]}
         >
           <View style={styles.gameHeader}>
-            <Image source={getGameImage(game.mode)} style={{ width: 56, height: 56, borderRadius: 12 }} />
+            <Image source={getGameImage(game.mode, settings.customGameIcons)} style={{ width: 56, height: 56, borderRadius: 12 }} />
             <ThemedText style={[styles.gameTitle, { color: theme.text }]}>
               {game.labelNo}
             </ThemedText>
@@ -1624,7 +1722,7 @@ function GamesTab({
           style={[styles.gameCard, { backgroundColor: theme.backgroundDefault, borderColor: accent }]}
         >
           <View style={styles.gameHeader}>
-            <Image source={getGameImage(game.mode)} style={{ width: 64, height: 64, borderRadius: 16 }} />
+            <Image source={getGameImage(game.mode, settings.customGameIcons)} style={{ width: 64, height: 64, borderRadius: 16 }} />
             <ThemedText style={[styles.gameTitle, { color: theme.text }]}>
               {game.labelNo} fullført!
             </ThemedText>
@@ -2227,6 +2325,18 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "700",
     marginBottom: Spacing.md,
+  },
+  iconCustomRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingVertical: Spacing.md,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+  },
+  accentDot: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    marginRight: Spacing.sm,
   },
   settingRow: {
     flexDirection: "row",

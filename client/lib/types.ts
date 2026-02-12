@@ -159,6 +159,10 @@ export interface QaSettings {
   showGameLeaderboard: boolean;
   shuffleQuestions: boolean;
   audienceCanSeeAnswers: boolean;
+  // Custom icon overrides (admin-uploaded image URIs)
+  customQaIcon?: string;                       // main Q&A session icon
+  customGameIcons?: Record<string, string>;     // per game mode → image URI
+  customGameAccents?: Record<string, string>;   // per game mode → hex color
 }
 
 export interface GameScore {
