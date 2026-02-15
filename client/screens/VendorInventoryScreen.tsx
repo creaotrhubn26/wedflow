@@ -80,8 +80,6 @@ export default function VendorInventoryScreen({ navigation }: Props) {
     const available = total - item.bookingBuffer;
     const percentage = total > 0 ? (available / total) * 100 : 0;
     const statusColor = getStatusColor(available, total);
-    const percentage = total > 0 ? (available / total) * 100 : 0;
-    const statusColor = getStatusColor(available, total);
 
     return (
       <Animated.View entering={FadeInDown.duration(300).delay(index * 50)}>

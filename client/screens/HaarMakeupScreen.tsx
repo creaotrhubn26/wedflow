@@ -721,7 +721,6 @@ export default function HaarMakeupScreen() {
         onPress={() => {
           navigation.navigate("VendorMatching", { 
             category: "beauty",
-            selectedTraditions: coupleProfile?.selectedTraditions || [],
           });
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         }}

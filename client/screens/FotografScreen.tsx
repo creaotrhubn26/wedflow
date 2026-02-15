@@ -163,7 +163,6 @@ export function FotografScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     navigation.navigate('VendorMatching', { 
       category: 'photographer',
-      selectedTraditions: coupleProfile?.selectedTraditions || [],
     });
   };
 

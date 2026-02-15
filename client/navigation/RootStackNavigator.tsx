@@ -38,6 +38,8 @@ import StatusScreen from "@/screens/StatusScreen";
 import VendorHelpScreen from "@/screens/VendorHelpScreen";
 import WhatsNewScreen from "@/screens/WhatsNewScreen";
 import DocumentationScreen from "@/screens/DocumentationScreen";
+import VideoGuidesScreen from "@/screens/VideoGuidesScreen";
+import AdminSmokeTestScreen from "@/screens/AdminSmokeTestScreen";
 import { useScreenOptions } from "@/hooks/useScreenOptions";
 import {
   VenueDetailsScreen,
@@ -96,6 +98,8 @@ export type RootStackParamList = {
   Status: undefined;
   WhatsNew: { category?: "vendor" | "couple" };
   Documentation: undefined;
+  VideoGuides: undefined;
+  AdminSmokeTest: { adminKey: string };
   Main: undefined;
 };
 
@@ -568,6 +572,24 @@ export default function RootStackNavigator({ skipSplash = false }: { skipSplash?
                 />
               ),
             }}
+          />
+          <Stack.Screen
+            name="VideoGuides"
+            component={VideoGuidesScreen}
+            options={{
+              headerTitle: () => (
+                <Image
+                  source={require("../../assets/images/Evendi_logo_english_tagline.png")}
+                  style={{ width: 300, height: 80 }}
+                  resizeMode="contain"
+                />
+              ),
+            }}
+          />
+          <Stack.Screen
+            name="AdminSmokeTest"
+            component={AdminSmokeTestScreen}
+            options={{ headerShown: false }}
           />
         </>
       ) : (

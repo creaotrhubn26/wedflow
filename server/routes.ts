@@ -7,7 +7,7 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 import { registerSubscriptionRoutes } from "./subscription-routes";
 import { vendors, vendorCategories, vendorRegistrationSchema, vendorSessions, deliveries, deliveryItems, createDeliverySchema, inspirationCategories, inspirations, inspirationMedia, createInspirationSchema, vendorFeatures, vendorInspirationCategories, inspirationInquiries, createInquirySchema, coupleProfiles, coupleSessions, conversations, messages, coupleLoginSchema, sendMessageSchema, reminders, createReminderSchema, vendorProducts, createVendorProductSchema, vendorOffers, vendorOfferItems, createOfferSchema, appSettings, speeches, createSpeechSchema, messageReminders, scheduleEvents, coordinatorInvitations, guestInvitations, createGuestInvitationSchema, coupleVendorContracts, notifications, activityLogs, weddingTables, weddingGuests, insertWeddingGuestSchema, updateWeddingGuestSchema, tableGuestAssignments, appFeedback, vendorReviews, vendorReviewResponses, checklistTasks, createChecklistTaskSchema, adminConversations, adminMessages, sendAdminMessageSchema, faqItems, insertFaqItemSchema, updateFaqItemSchema, insertAppSettingSchema, updateAppSettingSchema, whatsNewItems, insertWhatsNewSchema, updateWhatsNewSchema, videoGuides, insertVideoGuideSchema, updateVideoGuideSchema, vendorSubscriptions, subscriptionTiers, vendorCategoryDetails, vendorAvailability, createVendorAvailabilitySchema } from "@shared/schema";
-import { eq, and, desc, sql, inArray } from "drizzle-orm";
+import { eq, and, desc, sql, inArray, or } from "drizzle-orm";
 
 function generateAccessCode(): string {
   return crypto.randomBytes(8).toString("hex").toUpperCase();
@@ -4431,7 +4431,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const coupleData = await db.select({
         id: coupleProfiles.id,
-        name: coupleProfiles.partnerName,
+        name: coupleProfiles.displayName,
         email: coupleProfiles.email,
       }).from(coupleProfiles).limit(50);
       
@@ -4451,9 +4451,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const vendorData = await db.select({
         id: vendors.id,
-        name: vendors.companyName,
+        name: vendors.businessName,
         email: vendors.email,
-        category: vendors.category,
+        category: vendors.categoryId,
       })
         .from(vendors)
         .where(eq(vendors.status, "approved"))
@@ -6735,7 +6735,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         actorId: vendorId,
         actorName: vendor?.businessName || "Leverandør",
         action: "schedule_suggestion",
-        description: `Foreslo endring: ${message.substring(0, 50)}${message.length > 50 ? '...' : ''}`,
+        entityType: "schedule_event",
+        entityId: coupleId,
       });
 
       res.json({ success: true, message: "Forslag sendt til brudeparet" });

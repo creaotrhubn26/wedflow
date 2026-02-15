@@ -69,7 +69,7 @@ export default function VendorHelpScreen() {
         icon: "book-open" as const,
         description: "Alt om Evendi for leverandører",
         url: null,
-        onPress: () => navigation.navigate("Documentation", {}),
+        onPress: () => navigation.navigate("Documentation"),
         settingKey: "help_show_documentation",
         defaultVisible: "true",
       },

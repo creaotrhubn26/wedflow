@@ -1094,8 +1094,6 @@ export default function CateringScreen() {
             navigation.navigate("VendorMatching", {
               category: "catering",
               guestCount: guestCount || undefined,
-              cuisineTypes: selectedCuisines,
-              selectedTraditions: coupleProfile?.selectedTraditions || [],
             });
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
           }}
