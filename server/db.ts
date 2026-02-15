@@ -1,7 +1,6 @@
-import { config } from "dotenv";
-// Load .env with override so it wins over Codespace/system env vars
-config({ path: ".env", override: true });
-config({ path: ".env.local", override: true });
+import 'dotenv/config';
+import { config } from 'dotenv';
+config({ override: true });
 
 import { drizzle } from "drizzle-orm/node-postgres";
 import pg from "pg";

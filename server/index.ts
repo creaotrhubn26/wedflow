@@ -7,10 +7,9 @@ import { initializeSubscriptionCrons } from "./cron-subscriptions";
 import * as fs from "fs";
 import * as path from "path";
 
-// Load .env with override so it wins over Codespace/system env vars
-import { config } from "dotenv";
-config({ path: ".env", override: true });
-config({ path: ".env.local", override: true });
+import 'dotenv/config';
+import { config } from 'dotenv';
+config({ override: true });
 
 console.log("DATABASE_URL loaded:", process.env.DATABASE_URL ? "YES" : "NO");
 console.log("ADMIN_SECRET loaded:", process.env.ADMIN_SECRET ? "YES" : "NO");
