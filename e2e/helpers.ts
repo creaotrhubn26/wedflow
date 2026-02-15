@@ -58,24 +58,14 @@ let cachedCoupleId: string | null = null;
 export async function getCoupleAuth(request: APIRequestContext): Promise<{ token: string; coupleId: string }> {
   if (cachedCoupleToken && cachedCoupleId) return { token: cachedCoupleToken, coupleId: cachedCoupleId };
   
-  const loginRes = await request.post(`${EVENDI_URL}/api/couple/login`, {
-    data: { email: 'couple1@example.com', password: 'password123' },
+  // /api/couples/login auto-registers if new, requires displayName
+  const loginRes = await request.post(`${EVENDI_URL}/api/couples/login`, {
+    data: { email: 'e2e-couple@evendi.no', displayName: 'E2E Couple', password: 'Test@1234' },
   });
   
-  if (loginRes.ok()) {
-    const body = await loginRes.json();
-    cachedCoupleToken = body.token;
-    cachedCoupleId = body.coupleId || body.couple?.id;
-    return { token: cachedCoupleToken!, coupleId: cachedCoupleId! };
-  }
-  
-  // If login fails, try register
-  const regRes = await request.post(`${EVENDI_URL}/api/couple/register`, {
-    data: { email: 'couple1@example.com', password: 'password123', name: 'Test Couple' },
-  });
-  const body = await regRes.json();
-  cachedCoupleToken = body.token;
-  cachedCoupleId = body.coupleId || body.couple?.id;
+  const body = await loginRes.json();
+  cachedCoupleToken = body.sessionToken;
+  cachedCoupleId = body.couple?.id;
   return { token: cachedCoupleToken!, coupleId: cachedCoupleId! };
 }
 
