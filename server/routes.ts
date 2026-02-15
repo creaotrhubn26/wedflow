@@ -3051,20 +3051,22 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/speeches", async (req: Request, res: Response) => {
     try {
       const coupleId = await checkCoupleAuth(req, res);
+      if (!coupleId) return;
       const allSpeeches = await db.select()
         .from(speeches)
-        .where(coupleId ? eq(speeches.coupleId, coupleId) : sql`1=1`)
+        .where(eq(speeches.coupleId, coupleId))
         .orderBy(speeches.sortOrder);
       res.json(allSpeeches);
     } catch (error) {
       console.error("Error fetching speeches:", error);
-      res.status(500).json({ error: "Kunne ikke hente taleliste" });
+      if (!res.headersSent) res.status(500).json({ error: "Kunne ikke hente taleliste" });
     }
   });
 
   app.post("/api/speeches", async (req: Request, res: Response) => {
     try {
       const coupleId = await checkCoupleAuth(req, res);
+      if (!coupleId) return;
       const validatedData = createSpeechSchema.parse(req.body);
       
       // Get the max sort order
@@ -3128,6 +3130,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/speeches/:id", async (req: Request, res: Response) => {
     try {
       const coupleId = await checkCoupleAuth(req, res);
+      if (!coupleId) return;
       const { id } = req.params;
       const { speakerName, role, durationMinutes, sortOrder, notes, scheduledTime } = req.body;
 
@@ -3189,6 +3192,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete("/api/speeches/:id", async (req: Request, res: Response) => {
     try {
       const coupleId = await checkCoupleAuth(req, res);
+      if (!coupleId) return;
       const { id } = req.params;
       
       // Get speech info before deleting for notification
@@ -3542,8 +3546,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         .returning();
 
       res.status(201).json(product);
-    } catch (error) {
-      console.error("Error creating vendor product:", error);
+    } catch (error: any) {
+      if (error?.name === 'ZodError') {
+        return res.status(400).json({ error: "Ugyldig data", details: error.errors });
+      }
+      console.error("Error creating vendor product:", error?.message || String(error));
       res.status(500).json({ error: "Kunne ikke opprette produkt" });
     }
   });
